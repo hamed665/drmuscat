@@ -4,7 +4,7 @@ create table if not exists public.centers (
   name_en text not null,
   name_ar text null,
   legal_name text null,
-  center_type provider_status not null,
+  center_type center_type not null,
   status provider_status not null default 'draft',
   verification_status verification_status not null default 'unverified',
   primary_phone text null,

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
-const PHASE = '2.5A';
+const PHASE = '2.5B';
 
 const required = [
   '0001_extensions.sql',
@@ -13,7 +13,8 @@ const required = [
   '0007_center_locations.sql',
   '0008_center_services.sql',
   '0009_center_ownership_claims.sql',
-  '0010_doctors.sql'
+  '0010_doctors.sql',
+  '0011_doctor_practice_locations.sql'
 ];
 
 const dir = 'supabase/migrations';
@@ -42,7 +43,6 @@ const forbiddenTables = [
   'center_location_mappings',
   'providers',
   'doctor_services',
-  'doctor_practice_locations',
   'doctor_centers',
   'doctor_memberships',
   'doctor_schedules',
@@ -74,6 +74,13 @@ let foundDoctorAppLocaleUsage = false;
 let foundDoctorCountryCodeUsage = false;
 let foundDoctorYearsExperienceCheck = false;
 let foundDoctorsUpdatedAtTrigger = false;
+
+let foundDoctorPracticeLocationsTable = false;
+let foundDoctorPracticeLocationsDoctorRef = false;
+let foundDoctorPracticeLocationsCenterRef = false;
+let foundDoctorPracticeLocationsCenterLocationRef = false;
+let foundDoctorPracticeLocationsSpecialtyRef = false;
+let foundDoctorPracticeLocationsUpdatedAtTrigger = false;
 
 try {
   if (!statSync(dir).isDirectory()) throw new Error(`${dir} is not a directory`);
@@ -223,7 +230,15 @@ for (const file of files) {
   if (/\bdefault_country\s+country_code\s+not\s+null\s+default\s+'om'/i.test(content)) foundDoctorCountryCodeUsage = true;
   if (/\byears_experience\s+is\s+null\s+or\s*\(\s*years_experience\s*>=\s*0\s+and\s+years_experience\s*<=\s*80\s*\)/i.test(content) || /\bconstraint\s+doctors_years_experience_check\b/i.test(content)) foundDoctorYearsExperienceCheck = true;
   if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.doctors\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) foundDoctorsUpdatedAtTrigger = true;
+
+  if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.doctor_practice_locations\b/i.test(content)) foundDoctorPracticeLocationsTable = true;
+  if (/\bdoctor_id\s+uuid\s+not\s+null\s+references\s+public\.doctors\s*\(\s*id\s*\)/i.test(content)) foundDoctorPracticeLocationsDoctorRef = true;
+  if (/\bcenter_id\s+uuid\s+not\s+null\s+references\s+public\.centers\s*\(\s*id\s*\)/i.test(content)) foundDoctorPracticeLocationsCenterRef = true;
+  if (/\bcenter_location_id\s+uuid\s+null\s+references\s+public\.center_locations\s*\(\s*id\s*\)/i.test(content)) foundDoctorPracticeLocationsCenterLocationRef = true;
+  if (/\bprimary_specialty_id\s+uuid\s+null\s+references\s+public\.specialties\s*\(\s*id\s*\)/i.test(content)) foundDoctorPracticeLocationsSpecialtyRef = true;
+  if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.doctor_practice_locations\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) foundDoctorPracticeLocationsUpdatedAtTrigger = true;
 }
+
 
 for (const table of allowedGeoTables) if (!createdGeoTables.has(table)) { console.error(`ERROR: Phase ${PHASE} requires CREATE TABLE public.${table}.`); process.exit(1); }
 for (const table of allowedTaxonomyTables) if (!createdTaxonomyTables.has(table)) { console.error(`ERROR: Phase ${PHASE} requires CREATE TABLE public.${table}.`); process.exit(1); }
@@ -247,6 +262,9 @@ if (!foundDoctorSpecialtiesReference) { console.error(`ERROR: Phase ${PHASE} req
 if (!foundDoctorVerificationStatusUsage || !foundDoctorProviderStatusUsage || !foundDoctorAppLocaleUsage || !foundDoctorCountryCodeUsage) { console.error(`ERROR: Phase ${PHASE} requires doctors enum usage for verification_status, provider_status, app_locale, and country_code.`); process.exit(1); }
 if (!foundDoctorYearsExperienceCheck) { console.error(`ERROR: Phase ${PHASE} requires doctors years_experience safe check (0..80 or null).`); process.exit(1); }
 if (!foundDoctorsUpdatedAtTrigger) { console.error(`ERROR: Phase ${PHASE} requires doctors BEFORE UPDATE trigger using public.set_updated_at().`); process.exit(1); }
+if (!foundDoctorPracticeLocationsTable) { console.error(`ERROR: Phase ${PHASE} requires CREATE TABLE public.doctor_practice_locations in 0011_doctor_practice_locations.sql.`); process.exit(1); }
+if (!foundDoctorPracticeLocationsDoctorRef || !foundDoctorPracticeLocationsCenterRef || !foundDoctorPracticeLocationsCenterLocationRef || !foundDoctorPracticeLocationsSpecialtyRef) { console.error(`ERROR: Phase ${PHASE} requires doctor_practice_locations references to doctors, centers, center_locations, and specialties.`); process.exit(1); }
+if (!foundDoctorPracticeLocationsUpdatedAtTrigger) { console.error(`ERROR: Phase ${PHASE} requires doctor_practice_locations BEFORE UPDATE trigger using public.set_updated_at().`); process.exit(1); }
 
 console.log(`Phase ${PHASE} migration validation passed.`);
 console.log(`Validated files: ${required.join(', ')}`);

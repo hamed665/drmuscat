@@ -245,3 +245,44 @@ Strict exclusions:
 - no Persian/Hindi routes
 - no country expansion beyond Oman
 - no unrelated refactor
+
+## Phase 2.5E — Doctor Schedule Exceptions / Overrides Foundation
+
+Approved in this phase:
+- `supabase/migrations/0014_doctor_schedule_exceptions.sql`
+- Doctor schedule exceptions / overrides foundation only (`public.doctor_schedule_exceptions` + `doctor_schedule_exception_type` enum)
+
+Explicitly not included yet:
+- no seed rows yet
+- no appointment tables yet
+- no appointment slots yet
+- no bookings yet
+- no pricing/payment tables yet
+- no insurance tables yet
+- no reviews/ratings yet
+- no RLS yet
+- no frontend/backend app features yet
+
+Strict exclusions:
+- no appointment tables
+- no appointment slots
+- no booking tables
+- no patient tables
+- no pricing/payment tables
+- no insurance tables
+- no reviews/ratings tables
+- no legal/consent tables
+- no behavior events tables
+- no sponsored slots tables
+- no audit log tables
+- no RLS policies
+- no seed rows
+- no frontend pages
+- no admin UI
+- no provider dashboard
+- no payment code
+- no appointment engine
+- no AI chat
+- no Persian/Hindi routes
+- no country expansion beyond Oman
+- no unrelated refactor

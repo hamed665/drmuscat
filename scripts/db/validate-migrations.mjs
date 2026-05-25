@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
-const PHASE = '2.5D';
+const PHASE = '2.5E';
 
 const required = [
   '0001_extensions.sql',
@@ -16,7 +16,8 @@ const required = [
   '0010_doctors.sql',
   '0011_doctor_practice_locations.sql',
   '0012_doctor_services.sql',
-  '0013_doctor_schedules.sql'
+  '0013_doctor_schedules.sql',
+  '0014_doctor_schedule_exceptions.sql'
 ];
 
 const dir = 'supabase/migrations';
@@ -48,6 +49,8 @@ const forbiddenTables = [
   'doctor_memberships',
   'appointments',
   'appointment_slots',
+  'bookings',
+  'patients',
   'insurance',
   'pricing',
   'reviews',
@@ -62,7 +65,7 @@ const forbiddenTables = [
 const allowedGeoTables = ['geo_countries', 'geo_regions', 'geo_cities', 'geo_areas'];
 const allowedTaxonomyTables = ['taxonomy_groups', 'service_categories', 'services', 'specialties'];
 const allowedOwnershipTables = ['center_claims', 'center_memberships'];
-const allowedDoctorTables = ['doctors', 'doctor_services', 'doctor_schedules'];
+const allowedDoctorTables = ['doctors', 'doctor_services', 'doctor_schedules', 'doctor_schedule_exceptions'];
 
 let foundDoctorsTable = false;
 let foundDoctorTitleUsage = false;
@@ -109,6 +112,22 @@ let foundDoctorSchedulesTimeWindowCheck = false;
 let foundDoctorSchedulesSlotMinutesCheck = false;
 let foundDoctorSchedulesTimezoneDefault = false;
 let foundDoctorSchedulesUpdatedAtTrigger = false;
+
+
+let foundDoctorScheduleExceptionTypeEnum = false;
+let foundDoctorScheduleExceptionsTable = false;
+let foundDoctorScheduleExceptionsDoctorRef = false;
+let foundDoctorScheduleExceptionsScheduleRef = false;
+let foundDoctorScheduleExceptionsPracticeLocationRef = false;
+let foundDoctorScheduleExceptionsCenterRef = false;
+let foundDoctorScheduleExceptionsCenterLocationRef = false;
+let foundDoctorScheduleExceptionsTypeUsage = false;
+let foundDoctorScheduleExceptionsDateNotNull = false;
+let foundDoctorScheduleExceptionsStartTime = false;
+let foundDoctorScheduleExceptionsEndTime = false;
+let foundDoctorScheduleExceptionsTimePairCheck = false;
+let foundDoctorScheduleExceptionsTimeWindowCheck = false;
+let foundDoctorScheduleExceptionsUpdatedAtTrigger = false;
 
 try {
   if (!statSync(dir).isDirectory()) throw new Error(`${dir} is not a directory`);
@@ -288,6 +307,21 @@ for (const file of files) {
   if (/\btimezone\s+text\s+not\s+null\s+default\s+'Asia\/Muscat'/i.test(content)) foundDoctorSchedulesTimezoneDefault = true;
   if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.doctor_schedules\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) foundDoctorSchedulesUpdatedAtTrigger = true;
 
+  if (file === '0014_doctor_schedule_exceptions.sql' && /create\s+type\s+doctor_schedule_exception_type\s+as\s+enum/i.test(content)) foundDoctorScheduleExceptionTypeEnum = true;
+  if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.doctor_schedule_exceptions\b/i.test(content)) foundDoctorScheduleExceptionsTable = true;
+  if (/\bdoctor_id\s+uuid\s+not\s+null\s+references\s+public\.doctors\s*\(\s*id\s*\)/i.test(content)) foundDoctorScheduleExceptionsDoctorRef = true;
+  if (/\bdoctor_schedule_id\s+uuid\s+null\s+references\s+public\.doctor_schedules\s*\(\s*id\s*\)/i.test(content)) foundDoctorScheduleExceptionsScheduleRef = true;
+  if (/\bdoctor_practice_location_id\s+uuid\s+null\s+references\s+public\.doctor_practice_locations\s*\(\s*id\s*\)/i.test(content)) foundDoctorScheduleExceptionsPracticeLocationRef = true;
+  if (/\bcenter_id\s+uuid\s+null\s+references\s+public\.centers\s*\(\s*id\s*\)/i.test(content)) foundDoctorScheduleExceptionsCenterRef = true;
+  if (/\bcenter_location_id\s+uuid\s+null\s+references\s+public\.center_locations\s*\(\s*id\s*\)/i.test(content)) foundDoctorScheduleExceptionsCenterLocationRef = true;
+  if (/\bexception_type\s+doctor_schedule_exception_type\s+not\s+null\b/i.test(content)) foundDoctorScheduleExceptionsTypeUsage = true;
+  if (/\bexception_date\s+date\s+not\s+null\b/i.test(content)) foundDoctorScheduleExceptionsDateNotNull = true;
+  if (/\bstart_time\s+time\s+null\b/i.test(content)) foundDoctorScheduleExceptionsStartTime = true;
+  if (/\bend_time\s+time\s+null\b/i.test(content)) foundDoctorScheduleExceptionsEndTime = true;
+  if (/\bconstraint\s+doctor_schedule_exceptions_time_pair_check\b/i.test(content) || /(start_time\s+is\s+null\s+and\s+end_time\s+is\s+null)[\s\S]*(start_time\s+is\s+not\s+null\s+and\s+end_time\s+is\s+not\s+null)/i.test(content)) foundDoctorScheduleExceptionsTimePairCheck = true;
+  if (/\bconstraint\s+doctor_schedule_exceptions_time_window_check\b/i.test(content) || /end_time\s*>\s*start_time/i.test(content)) foundDoctorScheduleExceptionsTimeWindowCheck = true;
+  if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.doctor_schedule_exceptions\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) foundDoctorScheduleExceptionsUpdatedAtTrigger = true;
+
   if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.doctor_practice_locations\b/i.test(content)) foundDoctorPracticeLocationsTable = true;
   if (/\bdoctor_id\s+uuid\s+not\s+null\s+references\s+public\.doctors\s*\(\s*id\s*\)/i.test(content)) foundDoctorPracticeLocationsDoctorRef = true;
   if (/\bcenter_id\s+uuid\s+not\s+null\s+references\s+public\.centers\s*\(\s*id\s*\)/i.test(content)) foundDoctorPracticeLocationsCenterRef = true;
@@ -339,6 +373,16 @@ if (!foundDoctorSchedulesTimeWindowCheck) { console.error(`ERROR: Phase ${PHASE}
 if (!foundDoctorSchedulesSlotMinutesCheck) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedules safe slot_minutes check (null or 5..240).`); process.exit(1); }
 if (!foundDoctorSchedulesTimezoneDefault) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedules timezone default 'Asia/Muscat'.`); process.exit(1); }
 if (!foundDoctorSchedulesUpdatedAtTrigger) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedules BEFORE UPDATE trigger using public.set_updated_at().`); process.exit(1); }
+
+
+if (!foundDoctorScheduleExceptionTypeEnum) { console.error(`ERROR: Phase ${PHASE} requires create type doctor_schedule_exception_type as enum in 0014_doctor_schedule_exceptions.sql.`); process.exit(1); }
+if (!foundDoctorScheduleExceptionsTable) { console.error(`ERROR: Phase ${PHASE} requires CREATE TABLE public.doctor_schedule_exceptions in 0014_doctor_schedule_exceptions.sql.`); process.exit(1); }
+if (!foundDoctorScheduleExceptionsDoctorRef || !foundDoctorScheduleExceptionsScheduleRef || !foundDoctorScheduleExceptionsPracticeLocationRef || !foundDoctorScheduleExceptionsCenterRef || !foundDoctorScheduleExceptionsCenterLocationRef) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedule_exceptions references to doctors, doctor_schedules, doctor_practice_locations, centers, and center_locations.`); process.exit(1); }
+if (!foundDoctorScheduleExceptionsTypeUsage) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedule_exceptions.exception_type to use doctor_schedule_exception_type enum.`); process.exit(1); }
+if (!foundDoctorScheduleExceptionsDateNotNull) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedule_exceptions.exception_date date not null.`); process.exit(1); }
+if (!foundDoctorScheduleExceptionsStartTime || !foundDoctorScheduleExceptionsEndTime) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedule_exceptions start_time and end_time time columns.`); process.exit(1); }
+if (!foundDoctorScheduleExceptionsTimePairCheck || !foundDoctorScheduleExceptionsTimeWindowCheck) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedule_exceptions safe start_time/end_time pairing and ordering checks.`); process.exit(1); }
+if (!foundDoctorScheduleExceptionsUpdatedAtTrigger) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedule_exceptions BEFORE UPDATE trigger using public.set_updated_at().`); process.exit(1); }
 
 console.log(`Phase ${PHASE} migration validation passed.`);
 console.log(`Validated files: ${required.join(', ')}`);

@@ -9,7 +9,16 @@ const required = [
   '0005_taxonomy.sql',
   '0006_centers.sql'
 ];
+
 const dir = 'supabase/migrations';
+
+const requiredEnumChecks = [
+  {
+    file: '0002_enums.sql',
+    regex: /create\s+type\s+center_type\s+as\s+enum/i,
+    message: 'Phase 2.4A requires create type center_type as enum in 0002_enums.sql.'
+  }
+];
 
 const forbiddenPatterns = [
   { regex: /\bpostgis\b/i, message: 'postgis is deferred and forbidden in Phase 2.4A.' },
@@ -53,14 +62,18 @@ try {
 }
 
 const files = readdirSync(dir).filter((name) => name.endsWith('.sql')).sort();
+
 if (files.join('|') !== required.join('|')) {
   console.error('ERROR: Phase 2.4A requires exactly these migration files:');
   required.forEach((name) => console.error(`- ${name}`));
+
   const missing = required.filter((name) => !files.includes(name));
   const unexpected = files.filter((name) => !required.includes(name));
+
   if (missing.length) console.error(`Missing required files: ${missing.join(', ')}`);
   if (unexpected.length) console.error(`Unexpected SQL migration files: ${unexpected.join(', ')}`);
   if (!files.length) console.error('No SQL migration files were found.');
+
   process.exit(1);
 }
 
@@ -69,8 +82,8 @@ let foundSetUpdatedAtFunction = false;
 let foundProfilesUpdatedAtTrigger = false;
 let foundCentersTable = false;
 let foundCentersUpdatedAtTrigger = false;
-
 let centersCenterTypeUsesProviderStatus = false;
+
 const createdGeoTables = new Set();
 const createdTaxonomyTables = new Set();
 
@@ -84,8 +97,16 @@ for (const file of files) {
     }
   }
 
+  for (const check of requiredEnumChecks) {
+    if (file === check.file && !check.regex.test(content)) {
+      console.error(`ERROR: ${check.message}`);
+      process.exit(1);
+    }
+  }
+
   for (const table of forbiddenTables) {
     const tableRegex = new RegExp(`\\b${table}\\b`, 'i');
+
     if (tableRegex.test(content)) {
       console.error(`ERROR: ${file} references forbidden table for Phase 2.4A: ${table}`);
       process.exit(1);
@@ -105,18 +126,23 @@ for (const file of files) {
   if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.profiles\b/i.test(content)) {
     foundProfilesTable = true;
   }
+
   if (/\bcreate\s+or\s+replace\s+function\s+public\.set_updated_at\s*\(\s*\)\b/i.test(content)) {
     foundSetUpdatedAtFunction = true;
   }
+
   if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.profiles\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) {
     foundProfilesUpdatedAtTrigger = true;
   }
+
   if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.centers\b/i.test(content)) {
     foundCentersTable = true;
   }
+
   if (/\bcenter_type\s+provider_status\b/i.test(content)) {
     centersCenterTypeUsesProviderStatus = true;
   }
+
   if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.centers\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) {
     foundCentersUpdatedAtTrigger = true;
   }
@@ -126,21 +152,24 @@ if (!foundProfilesTable) {
   console.error('ERROR: Phase 2.4A requires CREATE TABLE public.profiles from 0003_profiles_auth.sql.');
   process.exit(1);
 }
+
 if (foundSetUpdatedAtFunction && !foundProfilesUpdatedAtTrigger) {
   console.error('ERROR: public.set_updated_at() is only allowed when used by a trigger on public.profiles.updated_at.');
   process.exit(1);
 }
+
 if (!foundCentersTable) {
   console.error('ERROR: Phase 2.4A requires CREATE TABLE public.centers from 0006_centers.sql.');
   process.exit(1);
 }
+
 if (!foundCentersUpdatedAtTrigger) {
   console.error('ERROR: Phase 2.4A requires a BEFORE UPDATE trigger on public.centers using public.set_updated_at().');
   process.exit(1);
 }
 
 if (centersCenterTypeUsesProviderStatus) {
-  console.error('ERROR: Phase 2.4A forbids `center_type provider_status`; center_type must use the canonical center/facility enum from 0002_enums.sql.');
+  console.error('ERROR: Phase 2.4A forbids `center_type provider_status`; center_type must use the canonical center_type enum from 0002_enums.sql.');
   process.exit(1);
 }
 

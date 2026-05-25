@@ -3,6 +3,7 @@
 This file defines the approved Phase 2.4A migration scope.
 
 ## Approved files for Phase 2.4A
+
 - `supabase/migrations/0001_extensions.sql`
 - `supabase/migrations/0002_enums.sql`
 - `supabase/migrations/0003_profiles_auth.sql`
@@ -12,7 +13,16 @@ This file defines the approved Phase 2.4A migration scope.
 
 No other SQL migration files are allowed in this phase.
 
+## Already approved before Phase 2.4A
+
+- Phase 2.1: core extensions and enums
+- Phase 2.2A: profiles/auth foundation
+- Phase 2.2B: geo hierarchy foundation
+- Phase 2.3: taxonomy/services foundation
+- Phase 2.3B: `center_type` enum patch only
+
 ## Allowed in Phase 2.4A
+
 - Centers core foundation only.
 - Canonical center business entity table only:
   - `public.centers`
@@ -20,6 +30,7 @@ No other SQL migration files are allowed in this phase.
 - Idempotent `updated_at` trigger for `public.centers` using existing `public.set_updated_at()`.
 
 ## Explicitly not allowed in Phase 2.4A
+
 - No seed rows yet.
 - No seed SQL files in `supabase/seed`.
 - No PostGIS yet.
@@ -27,24 +38,23 @@ No other SQL migration files are allowed in this phase.
 - No `public.center_locations` yet.
 - No `public.center_services` yet.
 - No provider ownership tables yet.
+- No provider tables yet.
 - No doctor tables yet.
 - No appointment tables.
 - No legal/consent tables.
 - No behavior events tables.
 - No sponsored slots tables.
 - No audit log tables.
-- No RLS yet.
-- No `CREATE POLICY`.
-- No `ALTER TABLE ... ENABLE ROW LEVEL SECURITY`.
-- No `INSERT` statements.
-- No `DROP` statements.
+- No RLS policies yet.
 - No search ranking/indexing yet.
 - No frontend/backend app features yet.
 
 ## Strict exclusions
+
 - no location mapping tables
 - no service mapping tables
 - no provider ownership tables
+- no provider tables
 - no doctor tables
 - no appointment tables
 - no legal/consent tables
@@ -63,7 +73,8 @@ No other SQL migration files are allowed in this phase.
 - no country expansion beyond Oman
 - no unrelated refactor
 
-## Commands
+## Required validation commands
+
 - `pnpm lint`
 - `pnpm typecheck`
 - `pnpm build`

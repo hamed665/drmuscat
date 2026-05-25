@@ -6,27 +6,30 @@ const required = [
   '0002_enums.sql',
   '0003_profiles_auth.sql',
   '0004_geo.sql',
-  '0005_taxonomy.sql'
+  '0005_taxonomy.sql',
+  '0006_centers.sql'
 ];
 const dir = 'supabase/migrations';
 
 const forbiddenPatterns = [
-  { regex: /\bpostgis\b/i, message: 'postgis is deferred and forbidden in Phase 2.3.' },
-  { regex: /\bgeometry\b/i, message: 'geometry is forbidden in Phase 2.3.' },
-  { regex: /\bgeography\b/i, message: 'geography is forbidden in Phase 2.3.' },
-  { regex: /\bcreate\s+policy\b/i, message: 'CREATE POLICY is forbidden in Phase 2.3.' },
-  { regex: /\benable\s+row\s+level\s+security\b/i, message: 'ENABLE ROW LEVEL SECURITY is forbidden in Phase 2.3.' },
-  { regex: /\binsert\s+into\b/i, message: 'INSERT INTO is forbidden in Phase 2.3.' },
-  { regex: /\bdrop\b/i, message: 'DROP statements are forbidden in Phase 2.3.' }
+  { regex: /\bpostgis\b/i, message: 'postgis is deferred and forbidden in Phase 2.4A.' },
+  { regex: /\bgeometry\b/i, message: 'geometry is forbidden in Phase 2.4A.' },
+  { regex: /\bgeography\b/i, message: 'geography is forbidden in Phase 2.4A.' },
+  { regex: /\bcreate\s+policy\b/i, message: 'CREATE POLICY is forbidden in Phase 2.4A.' },
+  { regex: /\benable\s+row\s+level\s+security\b/i, message: 'ENABLE ROW LEVEL SECURITY is forbidden in Phase 2.4A.' },
+  { regex: /\binsert\s+into\b/i, message: 'INSERT INTO is forbidden in Phase 2.4A.' },
+  { regex: /\bdrop\b/i, message: 'DROP statements are forbidden in Phase 2.4A.' }
 ];
 
 const forbiddenTables = [
-  'centers',
+  'center_locations',
+  'center_services',
+  'center_owners',
+  'provider_locations',
+  'center_location_mappings',
   'providers',
   'doctors',
   'doctor_practice_locations',
-  'provider_locations',
-  'center_locations',
   'appointments',
   'appointment_slots',
   'insurance',
@@ -51,7 +54,7 @@ try {
 
 const files = readdirSync(dir).filter((name) => name.endsWith('.sql')).sort();
 if (files.join('|') !== required.join('|')) {
-  console.error('ERROR: Phase 2.3 requires exactly these migration files:');
+  console.error('ERROR: Phase 2.4A requires exactly these migration files:');
   required.forEach((name) => console.error(`- ${name}`));
   const missing = required.filter((name) => !files.includes(name));
   const unexpected = files.filter((name) => !required.includes(name));
@@ -64,6 +67,8 @@ if (files.join('|') !== required.join('|')) {
 let foundProfilesTable = false;
 let foundSetUpdatedAtFunction = false;
 let foundProfilesUpdatedAtTrigger = false;
+let foundCentersTable = false;
+let foundCentersUpdatedAtTrigger = false;
 const createdGeoTables = new Set();
 const createdTaxonomyTables = new Set();
 
@@ -72,7 +77,7 @@ for (const file of files) {
 
   for (const rule of forbiddenPatterns) {
     if (rule.regex.test(content)) {
-      console.error(`ERROR: ${file} violates Phase 2.3 rule: ${rule.message}`);
+      console.error(`ERROR: ${file} violates Phase 2.4A rule: ${rule.message}`);
       process.exit(1);
     }
   }
@@ -80,7 +85,7 @@ for (const file of files) {
   for (const table of forbiddenTables) {
     const tableRegex = new RegExp(`\\b${table}\\b`, 'i');
     if (tableRegex.test(content)) {
-      console.error(`ERROR: ${file} references forbidden table for Phase 2.3: ${table}`);
+      console.error(`ERROR: ${file} references forbidden table for Phase 2.4A: ${table}`);
       process.exit(1);
     }
   }
@@ -104,30 +109,44 @@ for (const file of files) {
   if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.profiles\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) {
     foundProfilesUpdatedAtTrigger = true;
   }
+  if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.centers\b/i.test(content)) {
+    foundCentersTable = true;
+  }
+  if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.centers\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) {
+    foundCentersUpdatedAtTrigger = true;
+  }
 }
 
 if (!foundProfilesTable) {
-  console.error('ERROR: Phase 2.3 requires CREATE TABLE public.profiles from 0003_profiles_auth.sql.');
+  console.error('ERROR: Phase 2.4A requires CREATE TABLE public.profiles from 0003_profiles_auth.sql.');
   process.exit(1);
 }
 if (foundSetUpdatedAtFunction && !foundProfilesUpdatedAtTrigger) {
   console.error('ERROR: public.set_updated_at() is only allowed when used by a trigger on public.profiles.updated_at.');
   process.exit(1);
 }
+if (!foundCentersTable) {
+  console.error('ERROR: Phase 2.4A requires CREATE TABLE public.centers from 0006_centers.sql.');
+  process.exit(1);
+}
+if (!foundCentersUpdatedAtTrigger) {
+  console.error('ERROR: Phase 2.4A requires a BEFORE UPDATE trigger on public.centers using public.set_updated_at().');
+  process.exit(1);
+}
 
 for (const table of allowedGeoTables) {
   if (!createdGeoTables.has(table)) {
-    console.error(`ERROR: Phase 2.3 requires CREATE TABLE public.${table}.`);
+    console.error(`ERROR: Phase 2.4A requires CREATE TABLE public.${table}.`);
     process.exit(1);
   }
 }
 
 for (const table of allowedTaxonomyTables) {
   if (!createdTaxonomyTables.has(table)) {
-    console.error(`ERROR: Phase 2.3 requires CREATE TABLE public.${table}.`);
+    console.error(`ERROR: Phase 2.4A requires CREATE TABLE public.${table}.`);
     process.exit(1);
   }
 }
 
-console.log('Phase 2.3 migration validation passed.');
+console.log('Phase 2.4A migration validation passed.');
 console.log(`Validated files: ${required.join(', ')}`);

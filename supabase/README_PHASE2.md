@@ -1,31 +1,33 @@
-# Phase 2.3 — Supabase Taxonomy/Services Foundation
+# Phase 2.4A — Supabase Centers Core Foundation
 
-This file defines the approved Phase 2.3 migration scope.
+This file defines the approved Phase 2.4A migration scope.
 
-## Approved files for Phase 2.3
+## Approved files for Phase 2.4A
 - `supabase/migrations/0001_extensions.sql`
 - `supabase/migrations/0002_enums.sql`
 - `supabase/migrations/0003_profiles_auth.sql`
 - `supabase/migrations/0004_geo.sql`
 - `supabase/migrations/0005_taxonomy.sql`
+- `supabase/migrations/0006_centers.sql`
 
 No other SQL migration files are allowed in this phase.
 
-## Allowed in Phase 2.3
-- Taxonomy/services foundation only.
-- Canonical taxonomy tables only:
-  - `public.taxonomy_groups`
-  - `public.service_categories`
-  - `public.services`
-  - `public.specialties`
-- Essential foreign keys and indexes only.
-- Idempotent `updated_at` triggers for taxonomy tables using existing `public.set_updated_at()`.
+## Allowed in Phase 2.4A
+- Centers core foundation only.
+- Canonical center business entity table only:
+  - `public.centers`
+- Essential constraints and indexes only.
+- Idempotent `updated_at` trigger for `public.centers` using existing `public.set_updated_at()`.
 
-## Explicitly not allowed in Phase 2.3
+## Explicitly not allowed in Phase 2.4A
 - No seed rows yet.
+- No seed SQL files in `supabase/seed`.
 - No PostGIS yet.
 - No geometry/geography columns.
-- No center/provider/doctor tables yet.
+- No `public.center_locations` yet.
+- No `public.center_services` yet.
+- No provider ownership tables yet.
+- No doctor tables yet.
 - No appointment tables.
 - No legal/consent tables.
 - No behavior events tables.
@@ -40,7 +42,9 @@ No other SQL migration files are allowed in this phase.
 - No frontend/backend app features yet.
 
 ## Strict exclusions
-- no center/provider tables
+- no location mapping tables
+- no service mapping tables
+- no provider ownership tables
 - no doctor tables
 - no appointment tables
 - no legal/consent tables
@@ -70,4 +74,4 @@ No other SQL migration files are allowed in this phase.
 - `pnpm test:db:rls`
 - `pnpm test:db:seed`
 
-Phase 2.3 does not require Supabase login, linking to a remote project, or a live Supabase instance.
+Phase 2.4A does not require Supabase login, linking to a remote project, or a live Supabase instance.

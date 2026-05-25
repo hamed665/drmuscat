@@ -2,7 +2,18 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const envExamplePath = resolve(process.cwd(), '.env.example');
-const requiredKeys = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+const requiredKeys = [
+  'NEXT_PUBLIC_APP_URL',
+  'NEXT_PUBLIC_SITE_NAME',
+  'NEXT_PUBLIC_DEFAULT_LOCALE',
+  'NEXT_PUBLIC_SUPPORTED_LOCALES',
+  'NEXT_PUBLIC_DEFAULT_COUNTRY',
+  'NEXT_PUBLIC_ALLOWED_PUBLIC_LOCALES',
+  'NEXT_PUBLIC_ALLOWED_PUBLIC_COUNTRIES',
+  'NEXT_PUBLIC_ENABLE_INDEXING',
+  'NEXT_PUBLIC_SUPABASE_URL',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY'
+];
 
 if (!existsSync(envExamplePath)) {
   console.error('Missing .env.example file.');
@@ -25,5 +36,5 @@ for (const key of requiredKeys) {
 if (failed) {
   process.exitCode = 1;
 } else {
-  console.log('.env.example contract validation passed.');
+  console.log('.env.example Phase 1 contract validation passed.');
 }

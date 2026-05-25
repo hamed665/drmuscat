@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
-const PHASE = '2.5C';
+const PHASE = '2.5D';
 
 const required = [
   '0001_extensions.sql',
@@ -15,7 +15,8 @@ const required = [
   '0009_center_ownership_claims.sql',
   '0010_doctors.sql',
   '0011_doctor_practice_locations.sql',
-  '0012_doctor_services.sql'
+  '0012_doctor_services.sql',
+  '0013_doctor_schedules.sql'
 ];
 
 const dir = 'supabase/migrations';
@@ -45,7 +46,6 @@ const forbiddenTables = [
   'providers',
   'doctor_centers',
   'doctor_memberships',
-  'doctor_schedules',
   'appointments',
   'appointment_slots',
   'insurance',
@@ -62,7 +62,7 @@ const forbiddenTables = [
 const allowedGeoTables = ['geo_countries', 'geo_regions', 'geo_cities', 'geo_areas'];
 const allowedTaxonomyTables = ['taxonomy_groups', 'service_categories', 'services', 'specialties'];
 const allowedOwnershipTables = ['center_claims', 'center_memberships'];
-const allowedDoctorTables = ['doctors', 'doctor_services'];
+const allowedDoctorTables = ['doctors', 'doctor_services', 'doctor_schedules'];
 
 let foundDoctorsTable = false;
 let foundDoctorTitleUsage = false;
@@ -94,6 +94,21 @@ let foundDoctorServicesServiceRef = false;
 let foundDoctorServicesSpecialtyRef = false;
 let foundDoctorServicesScopeCheck = false;
 let foundDoctorServicesUpdatedAtTrigger = false;
+
+
+let foundDoctorScheduleDayEnum = false;
+let foundDoctorSchedulesTable = false;
+let foundDoctorSchedulesDoctorRef = false;
+let foundDoctorSchedulesPracticeLocationRef = false;
+let foundDoctorSchedulesCenterRef = false;
+let foundDoctorSchedulesCenterLocationRef = false;
+let foundDoctorSchedulesDayEnumUsage = false;
+let foundDoctorSchedulesStartTime = false;
+let foundDoctorSchedulesEndTime = false;
+let foundDoctorSchedulesTimeWindowCheck = false;
+let foundDoctorSchedulesSlotMinutesCheck = false;
+let foundDoctorSchedulesTimezoneDefault = false;
+let foundDoctorSchedulesUpdatedAtTrigger = false;
 
 try {
   if (!statSync(dir).isDirectory()) throw new Error(`${dir} is not a directory`);
@@ -258,6 +273,21 @@ for (const file of files) {
   if (/\bconstraint\s+doctor_services_service_scope_check\s+check\s*\([\s\S]*service_id\s+is\s+not\s+null[\s\S]*specialty_id\s+is\s+not\s+null[\s\S]*service_category_id\s+is\s+not\s+null[\s\S]*\)/i.test(content)) foundDoctorServicesScopeCheck = true;
   if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.doctor_services\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) foundDoctorServicesUpdatedAtTrigger = true;
 
+
+  if (file === '0013_doctor_schedules.sql' && /create\s+type\s+doctor_schedule_day\s+as\s+enum/i.test(content)) foundDoctorScheduleDayEnum = true;
+  if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.doctor_schedules\b/i.test(content)) foundDoctorSchedulesTable = true;
+  if (/\bdoctor_id\s+uuid\s+not\s+null\s+references\s+public\.doctors\s*\(\s*id\s*\)/i.test(content)) foundDoctorSchedulesDoctorRef = true;
+  if (/\bdoctor_practice_location_id\s+uuid\s+null\s+references\s+public\.doctor_practice_locations\s*\(\s*id\s*\)/i.test(content)) foundDoctorSchedulesPracticeLocationRef = true;
+  if (/\bcenter_id\s+uuid\s+null\s+references\s+public\.centers\s*\(\s*id\s*\)/i.test(content)) foundDoctorSchedulesCenterRef = true;
+  if (/\bcenter_location_id\s+uuid\s+null\s+references\s+public\.center_locations\s*\(\s*id\s*\)/i.test(content)) foundDoctorSchedulesCenterLocationRef = true;
+  if (/\bday_of_week\s+doctor_schedule_day\s+not\s+null\b/i.test(content)) foundDoctorSchedulesDayEnumUsage = true;
+  if (/\bstart_time\s+time\s+not\s+null\b/i.test(content)) foundDoctorSchedulesStartTime = true;
+  if (/\bend_time\s+time\s+not\s+null\b/i.test(content)) foundDoctorSchedulesEndTime = true;
+  if (/\bend_time\s*>\s*start_time\b/i.test(content) || /\bconstraint\s+doctor_schedules_time_window_check\b/i.test(content)) foundDoctorSchedulesTimeWindowCheck = true;
+  if (/\bslot_minutes\s+is\s+null\s+or\s*\(\s*slot_minutes\s*>=\s*5\s+and\s+slot_minutes\s*<=\s*240\s*\)/i.test(content) || /\bconstraint\s+doctor_schedules_slot_minutes_check\b/i.test(content)) foundDoctorSchedulesSlotMinutesCheck = true;
+  if (/\btimezone\s+text\s+not\s+null\s+default\s+'Asia\/Muscat'/i.test(content)) foundDoctorSchedulesTimezoneDefault = true;
+  if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.doctor_schedules\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) foundDoctorSchedulesUpdatedAtTrigger = true;
+
   if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.doctor_practice_locations\b/i.test(content)) foundDoctorPracticeLocationsTable = true;
   if (/\bdoctor_id\s+uuid\s+not\s+null\s+references\s+public\.doctors\s*\(\s*id\s*\)/i.test(content)) foundDoctorPracticeLocationsDoctorRef = true;
   if (/\bcenter_id\s+uuid\s+not\s+null\s+references\s+public\.centers\s*\(\s*id\s*\)/i.test(content)) foundDoctorPracticeLocationsCenterRef = true;
@@ -298,6 +328,17 @@ if (!foundDoctorServicesTable) { console.error(`ERROR: Phase ${PHASE} requires C
 if (!foundDoctorServicesDoctorRef || !foundDoctorServicesPracticeLocationRef || !foundDoctorServicesCenterRef || !foundDoctorServicesCenterLocationRef || !foundDoctorServicesCenterServiceRef || !foundDoctorServicesTaxonomyRef || !foundDoctorServicesServiceCategoryRef || !foundDoctorServicesServiceRef || !foundDoctorServicesSpecialtyRef) { console.error(`ERROR: Phase ${PHASE} requires doctor_services references to doctors, doctor_practice_locations, centers, center_locations, center_services, taxonomy_groups, service_categories, services, and specialties.`); process.exit(1); }
 if (!foundDoctorServicesScopeCheck) { console.error(`ERROR: Phase ${PHASE} requires doctor_services check constraint ensuring one of service_id, specialty_id, or service_category_id is not null.`); process.exit(1); }
 if (!foundDoctorServicesUpdatedAtTrigger) { console.error(`ERROR: Phase ${PHASE} requires doctor_services BEFORE UPDATE trigger using public.set_updated_at().`); process.exit(1); }
+
+
+if (!foundDoctorScheduleDayEnum) { console.error(`ERROR: Phase ${PHASE} requires create type doctor_schedule_day as enum in 0013_doctor_schedules.sql.`); process.exit(1); }
+if (!foundDoctorSchedulesTable) { console.error(`ERROR: Phase ${PHASE} requires CREATE TABLE public.doctor_schedules in 0013_doctor_schedules.sql.`); process.exit(1); }
+if (!foundDoctorSchedulesDoctorRef || !foundDoctorSchedulesPracticeLocationRef || !foundDoctorSchedulesCenterRef || !foundDoctorSchedulesCenterLocationRef) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedules references to doctors, doctor_practice_locations, centers, and center_locations.`); process.exit(1); }
+if (!foundDoctorSchedulesDayEnumUsage) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedules.day_of_week to use doctor_schedule_day enum.`); process.exit(1); }
+if (!foundDoctorSchedulesStartTime || !foundDoctorSchedulesEndTime) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedules start_time and end_time as time columns.`); process.exit(1); }
+if (!foundDoctorSchedulesTimeWindowCheck) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedules safe check end_time > start_time.`); process.exit(1); }
+if (!foundDoctorSchedulesSlotMinutesCheck) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedules safe slot_minutes check (null or 5..240).`); process.exit(1); }
+if (!foundDoctorSchedulesTimezoneDefault) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedules timezone default 'Asia/Muscat'.`); process.exit(1); }
+if (!foundDoctorSchedulesUpdatedAtTrigger) { console.error(`ERROR: Phase ${PHASE} requires doctor_schedules BEFORE UPDATE trigger using public.set_updated_at().`); process.exit(1); }
 
 console.log(`Phase ${PHASE} migration validation passed.`);
 console.log(`Validated files: ${required.join(', ')}`);

@@ -1,0 +1,56 @@
+name: DrMuscat CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Prepare pnpm 10.22.0
+        run: corepack prepare pnpm@10.22.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+
+      - name: Routes check
+        run: pnpm routes:check
+
+      - name: Env check
+        run: pnpm env:check
+
+      - name: Validate migrations
+        run: pnpm db:validate:migrations
+
+      - name: Validate seeds
+        run: pnpm db:validate:seeds
+
+      - name: Static RLS tests
+        run: pnpm test:db:rls
+
+      - name: Static seed tests
+        run: pnpm test:db:seed

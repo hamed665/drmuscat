@@ -649,3 +649,18 @@ Phase 3.6A scope:
 - `test:db:seed` is no longer a Phase 2 placeholder
 - static tests do not replace future live Supabase RLS integration tests
 - live DB RLS tests should be added later in a dedicated phase
+
+## Phase 3.6B — CI Validation Workflow
+
+- Approved file:
+  - `.github/workflows/ci.yml`
+- Scope is CI validation workflow only.
+- No migrations.
+- No schema changes.
+- No seed rows.
+- No frontend/backend app features.
+- Runs lint/typecheck/build/routes/env/db validators/static RLS/static seed tests.
+- Does not replace future live Supabase integration tests.
+- Does not run `db reset`.
+- Does not require Supabase services.
+

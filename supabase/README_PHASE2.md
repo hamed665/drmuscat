@@ -474,3 +474,24 @@ Explicitly not included in this phase:
 - no notifications/reminders
 - no medical records
 - no behavior events
+
+
+## Phase 3.0A — RLS Auth Helpers and Public Catalog Read Policies
+
+Approved in this phase:
+- `supabase/migrations/0031_rls_auth_helpers.sql` approved
+- `supabase/migrations/0032_rls_public_catalog_read_policies.sql` approved
+- RLS auth helpers and public catalog read policies only
+
+Explicitly not included yet:
+- no private table RLS yet
+- no appointment RLS yet
+- no patient data RLS yet
+- no provider write policies yet
+- no admin write policies yet
+- no seed rows
+- no frontend/backend app features
+- no payments/invoices/checkout
+- no notifications/reminders
+- no medical records
+- no behavior events

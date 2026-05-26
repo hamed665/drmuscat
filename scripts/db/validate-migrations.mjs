@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
-const PHASE = '2.9B';
+const PHASE = '3.0A';
 
 const required = [
   '0001_extensions.sql',
@@ -33,7 +33,9 @@ const required = [
   '0027_sponsored_campaigns.sql',
   '0028_legal_documents.sql',
   '0029_consent_logs.sql',
-  '0030_audit_logs.sql'
+  '0030_audit_logs.sql',
+  '0031_rls_auth_helpers.sql',
+  '0032_rls_public_catalog_read_policies.sql'
 ];
 
 const dir = 'supabase/migrations';
@@ -59,8 +61,6 @@ const forbiddenPatterns = [
   { regex: /\bpostgis\b/i, message: `postgis is deferred and forbidden in Phase ${PHASE}.` },
   { regex: /\bgeometry\b/i, message: `geometry is forbidden in Phase ${PHASE}.` },
   { regex: /\bgeography\b/i, message: `geography is forbidden in Phase ${PHASE}.` },
-  { regex: /\bcreate\s+policy\b/i, message: `CREATE POLICY is forbidden in Phase ${PHASE}.` },
-  { regex: /\benable\s+row\s+level\s+security\b/i, message: `ENABLE ROW LEVEL SECURITY is forbidden in Phase ${PHASE}.` },
   { regex: /\binsert\s+into\b/i, message: `INSERT INTO is forbidden in Phase ${PHASE}.` },
   { regex: /\bdrop\b/i, message: `DROP statements are forbidden in Phase ${PHASE}.` }
 ];
@@ -106,6 +106,11 @@ const allowedGeoTables = ['geo_countries', 'geo_regions', 'geo_cities', 'geo_are
 const allowedTaxonomyTables = ['taxonomy_groups', 'service_categories', 'services', 'specialties'];
 const allowedOwnershipTables = ['center_claims', 'center_memberships'];
 const allowedDoctorTables = ['doctors', 'doctor_services', 'doctor_schedules', 'doctor_schedule_exceptions', 'appointment_slots'];
+
+const rlsPolicyFile = '0032_rls_public_catalog_read_policies.sql';
+const helperFunctionFile = '0031_rls_auth_helpers.sql';
+const createPolicyPattern = /\bcreate\s+policy\b/i;
+const enableRlsPattern = /\benable\s+row\s+level\s+security\b/i;
 
 let foundDoctorsTable = false;
 let foundDoctorTitleUsage = false;
@@ -446,6 +451,15 @@ for (const file of files) {
       fail(`${file} violates rule: ${rule.message}`);
     }
   }
+
+  if (createPolicyPattern.test(content) && file !== rlsPolicyFile) {
+    fail(`${file} violates rule: CREATE POLICY is allowed only in ${rlsPolicyFile}.`);
+  }
+
+  if (enableRlsPattern.test(content) && file !== rlsPolicyFile) {
+    fail(`${file} violates rule: ENABLE ROW LEVEL SECURITY is allowed only in ${rlsPolicyFile}.`);
+  }
+
 
   for (const check of requiredEnumChecks) {
     if (file === check.file && !check.regex.test(content)) {
@@ -891,6 +905,47 @@ if (!foundMediaEntityTypeEnum || !foundMediaUsageKindEnum || !foundEntityMediaTa
 if (!foundSubscriptionPlanStatusEnum || !foundSubscriptionPlansTable || !foundSubscriptionPlansStatusUsage || !foundSubscriptionPlansIntervalUsage || !foundSubscriptionPlansSlugUnique || !foundSubscriptionPlansPriceCheck || !foundSubscriptionPlansCurrencyDefault || !foundSubscriptionPlansUpdatedAtTrigger) { console.error(`ERROR: Phase ${PHASE} requires complete subscription_plans enum/table/constraints/trigger foundation.`); process.exit(1); }
 if (!foundCenterSubscriptionStatusEnum || !foundCenterSubscriptionsTable || !foundCenterSubscriptionsCenterRef || !foundCenterSubscriptionsPlanRef || !foundCenterSubscriptionsProfileRef || !foundCenterSubscriptionsStatusUsage || !foundCenterSubscriptionsIntervalUsage || !foundCenterSubscriptionsDateChecks || !foundCenterSubscriptionsPartialUnique || !foundCenterSubscriptionsUpdatedAtTrigger) { console.error(`ERROR: Phase ${PHASE} requires complete center_subscriptions enum/table/references/constraints/partial-unique/trigger foundation.`); process.exit(1); }
 requireCondition(foundSponsoredCampaignStatusEnum && foundSponsoredCampaignsTable && foundSponsoredPlacementsTable && foundSponsoredCampaignsCenterRef && foundSponsoredCampaignsProfileRef && foundSponsoredCampaignsStatusUsage && foundSponsoredPlacementsCampaignRef && foundSponsoredPlacementsCenterRef && foundSponsoredPlacementsDoctorRef && foundSponsoredPlacementsCenterServiceRef && foundSponsoredPlacementsDoctorServiceRef && foundSponsoredPlacementsSlotTypeUsage && foundSponsoredPlacementsCountryUsage && foundSponsoredPlacementsLocaleUsage && foundSponsoredPlacementsTargetCheck && foundSponsoredCampaignsUpdatedAtTrigger && foundSponsoredPlacementsUpdatedAtTrigger, 'requires complete sponsored_campaigns/sponsored_placements enum/table/references/constraints/trigger foundation.');
+
+
+const helpersContent = readFileSync(`${dir}/${helperFunctionFile}`, 'utf8');
+const rlsContent = readFileSync(`${dir}/${rlsPolicyFile}`, 'utf8');
+
+const requiredHelperPatterns = [
+  /create\s+or\s+replace\s+function\s+public\.current_profile_id\s*\(/i,
+  /create\s+or\s+replace\s+function\s+public\.is_platform_admin\s*\(/i,
+  /create\s+or\s+replace\s+function\s+public\.is_provider_user\s*\(/i,
+  /create\s+or\s+replace\s+function\s+public\.is_patient_user\s*\(/i,
+  /auth\.uid\s*\(\s*\)/i,
+  /public\.profiles/i,
+  /deleted_at\s+is\s+null/i,
+  /is_platform_admin/i,
+  /is_provider_user/i,
+  /is_patient_user/i
+];
+for (const pattern of requiredHelperPatterns) {
+  requireCondition(pattern.test(helpersContent), `0031_rls_auth_helpers.sql missing required pattern: ${pattern}`);
+}
+
+const requiredRlsPatterns = [
+  /alter\s+table\s+public\.centers\s+enable\s+row\s+level\s+security/i,
+  /alter\s+table\s+public\.doctors\s+enable\s+row\s+level\s+security/i,
+  /alter\s+table\s+public\.reviews\s+enable\s+row\s+level\s+security/i,
+  /alter\s+table\s+public\.media_assets\s+enable\s+row\s+level\s+security/i,
+  /alter\s+table\s+public\.entity_media\s+enable\s+row\s+level\s+security/i,
+  /create\s+policy[\s\S]*on\s+public\.centers[\s\S]*for\s+select/i,
+  /create\s+policy[\s\S]*on\s+public\.doctors[\s\S]*for\s+select/i,
+  /create\s+policy[\s\S]*on\s+public\.reviews[\s\S]*for\s+select/i,
+  /create\s+policy[\s\S]*on\s+public\.media_assets[\s\S]*for\s+select/i,
+  /create\s+policy[\s\S]*on\s+public\.entity_media[\s\S]*for\s+select/i,
+  /to\s+anon\s*,\s*authenticated/i,
+  /create\s+policy[\s\S]*on\s+public\.centers[\s\S]*using\s*\([\s\S]*status\s*=\s*'active'[\s\S]*is_active\s*=\s*true[\s\S]*deleted_at\s+is\s+null/i,
+  /create\s+policy[\s\S]*on\s+public\.doctors[\s\S]*using\s*\([\s\S]*status\s*=\s*'active'[\s\S]*is_active\s*=\s*true[\s\S]*deleted_at\s+is\s+null/i,
+  /create\s+policy[\s\S]*on\s+public\.reviews[\s\S]*using\s*\([\s\S]*status\s*=\s*'approved'[\s\S]*deleted_at\s+is\s+null/i,
+  /create\s+policy[\s\S]*on\s+public\.media_assets[\s\S]*using\s*\([\s\S]*status\s*=\s*'approved'[\s\S]*deleted_at\s+is\s+null/i
+];
+for (const pattern of requiredRlsPatterns) {
+  requireCondition(pattern.test(rlsContent), `0032_rls_public_catalog_read_policies.sql missing required pattern: ${pattern}`);
+}
 
 console.log(`Phase ${PHASE} migration validation passed.`);
 console.log(`Validated files: ${required.join(', ')}`);

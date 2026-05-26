@@ -347,3 +347,23 @@ Explicitly not included yet:
 - no medical records/diagnoses/prescriptions/lab results yet
 - no RLS yet
 - no frontend/backend app features yet
+
+## Phase 2.6C — Appointment Operations Foundation
+
+Approved in this phase:
+- `supabase/migrations/0018_appointment_status_history.sql` approved
+- `supabase/migrations/0019_appointment_cancellations.sql` approved
+- appointment operations foundation only
+- status history and cancellations only
+
+Explicitly not included yet:
+- no seed rows yet
+- no payments/pricing yet
+- no insurance tables yet
+- no reviews/ratings yet
+- no notifications/reminders yet
+- no medical records/diagnoses/prescriptions/lab results yet
+- no legal/consent tables yet
+- no audit log tables yet
+- no RLS yet
+- no frontend/backend app features yet

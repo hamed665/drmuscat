@@ -19,7 +19,7 @@ type OptionalStandardFields = {
   description?: string;
 };
 
-type PostalAddressJsonLd = {
+export type PostalAddressJsonLd = {
   '@type': 'PostalAddress';
   streetAddress?: string;
   addressLocality?: string;

@@ -60,11 +60,11 @@ const forbiddenJsonLdClaimPatterns = [
   /verified\s+by\s+moh/i,
   /moh\s+approved/i,
   /moh\s+certified/i,
-  /rating(s)?/i,
-  /review(s)?/i,
-  /book(ing)?/i,
-  /insurance/i,
-  /license/i
+  /\brating(s)?\b/i,
+  /\breview(s)?\b/i,
+  /\bbook(ing)?\b/i,
+  /\binsurance\b/i,
+  /\blicense\b/i
 ];
 
 if (forbiddenJsonLdClaimPatterns.some((pattern) => pattern.test(jsonLdSource))) {

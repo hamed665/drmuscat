@@ -37,6 +37,52 @@ for (const file of requiredFiles) {
   await ensureFileExists(file);
 }
 
+
+const jsonLdPath = 'src/lib/seo/jsonld.ts';
+await ensureFileExists(jsonLdPath);
+const jsonLdSource = await readText(jsonLdPath);
+
+assertMatch(jsonLdSource, /export\s+function\s+createJsonLd\s*</, 'src/lib/seo/jsonld.ts must export createJsonLd.');
+assertMatch(jsonLdSource, /export\s+function\s+serializeJsonLd\s*\(/, 'src/lib/seo/jsonld.ts must export serializeJsonLd.');
+
+for (const token of ['Organization', 'WebSite', 'BreadcrumbList', 'FAQPage', 'Physician', 'MedicalClinic', 'MedicalOrganization']) {
+  if (!jsonLdSource.includes(token)) {
+    throw new Error(`src/lib/seo/jsonld.ts must include ${token} schema support.`);
+  }
+}
+
+if (/dangerouslySetInnerHTML/i.test(jsonLdSource)) {
+  throw new Error('src/lib/seo/jsonld.ts must not use dangerouslySetInnerHTML.');
+}
+
+const forbiddenJsonLdClaimPatterns = [
+  /moh[-\s]*verified/i,
+  /verified\s+by\s+moh/i,
+  /moh\s+approved/i,
+  /moh\s+certified/i,
+  /rating(s)?/i,
+  /review(s)?/i,
+  /book(ing)?/i,
+  /insurance/i,
+  /license/i
+];
+
+if (forbiddenJsonLdClaimPatterns.some((pattern) => pattern.test(jsonLdSource))) {
+  throw new Error('src/lib/seo/jsonld.ts must not include fake MOH/rating/review/booking/insurance/license claims.');
+}
+
+if (
+  /from\s+['"`]@supabase\//i.test(jsonLdSource) ||
+  /require\(\s*['"`]@supabase\//i.test(jsonLdSource) ||
+  /import\(\s*['"`]@supabase\//i.test(jsonLdSource) ||
+  /from\s+['"`]react['"`]/i.test(jsonLdSource) ||
+  /require\(\s*['"`]react['"`]\s*\)/i.test(jsonLdSource) ||
+  /import\(\s*['"`]react['"`]\s*\)/i.test(jsonLdSource)
+) {
+  throw new Error('src/lib/seo/jsonld.ts must not import Supabase or React.');
+}
+
+
 const siteSource = await readText('src/lib/seo/site.ts');
 const robotsSource = await readText('src/app/robots.ts');
 const sitemapSource = await readText('src/app/sitemap.ts');

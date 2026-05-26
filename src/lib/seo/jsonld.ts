@@ -1,68 +1,163 @@
-type SchemaContext = 'https://schema.org';
+export type JsonLdContext = 'https://schema.org';
 
-type BaseJsonLd<TType extends string> = {
-  '@context': SchemaContext;
+type JsonLdPrimitive = string | number | boolean | null;
+
+type JsonLdValue =
+  | JsonLdPrimitive
+  | JsonLdValue[]
+  | {
+      [key: string]: JsonLdValue;
+    };
+
+export type JsonLdBase<TType extends string> = {
+  '@context': JsonLdContext;
   '@type': TType;
 };
 
-export type OrganizationJsonLd = BaseJsonLd<'Organization'> & {
-  name: string;
+type OptionalStandardFields = {
   url?: string;
-  logo?: string;
+  description?: string;
 };
 
-export type WebsiteJsonLd = BaseJsonLd<'WebSite'> & {
-  name: string;
-  url: string;
-  inLanguage?: string;
+type PostalAddressJsonLd = {
+  '@type': 'PostalAddress';
+  streetAddress?: string;
+  addressLocality?: string;
+  addressRegion?: string;
+  postalCode?: string;
+  addressCountry?: string;
 };
 
-export type BreadcrumbListJsonLd = BaseJsonLd<'BreadcrumbList'> & {
-  itemListElement: Array<{
-    '@type': 'ListItem';
-    position: number;
+export type OrganizationJsonLd = JsonLdBase<'Organization'> &
+  OptionalStandardFields & {
     name: string;
-    item: string;
-  }>;
-};
+    logo?: string;
+    sameAs?: string[];
+    address?: PostalAddressJsonLd;
+  };
 
-export type FaqPageJsonLd = BaseJsonLd<'FAQPage'> & {
-  mainEntity: Array<{
-    '@type': 'Question';
+export type WebSiteJsonLd = JsonLdBase<'WebSite'> &
+  OptionalStandardFields & {
     name: string;
-    acceptedAnswer: {
-      '@type': 'Answer';
-      text: string;
-    };
-  }>;
+  };
+
+type BreadcrumbListItemJsonLd = {
+  '@type': 'ListItem';
+  position: number;
+  name: string;
+  item: string;
 };
 
-export type PhysicianJsonLd = BaseJsonLd<'Physician'> & {
-  name: string;
-  medicalSpecialty?: string;
-  url?: string;
+export type BreadcrumbListJsonLd = JsonLdBase<'BreadcrumbList'> & {
+  itemListElement: BreadcrumbListItemJsonLd[];
 };
 
-export type MedicalClinicJsonLd = BaseJsonLd<'MedicalClinic'> & {
+type FaqQuestionJsonLd = {
+  '@type': 'Question';
   name: string;
-  url?: string;
-  medicalSpecialty?: string;
+  acceptedAnswer: {
+    '@type': 'Answer';
+    text: string;
+  };
 };
 
-export type MedicalOrganizationJsonLd = BaseJsonLd<'MedicalOrganization'> & {
-  name: string;
-  url?: string;
+export type FaqPageJsonLd = JsonLdBase<'FAQPage'> & {
+  mainEntity: FaqQuestionJsonLd[];
 };
+
+export type PhysicianJsonLd = JsonLdBase<'Physician'> &
+  OptionalStandardFields & {
+    name: string;
+    medicalSpecialty?: string | string[];
+    address?: PostalAddressJsonLd;
+  };
+
+export type MedicalClinicJsonLd = JsonLdBase<'MedicalClinic'> &
+  OptionalStandardFields & {
+    name: string;
+    medicalSpecialty?: string | string[];
+    address?: PostalAddressJsonLd;
+  };
+
+export type MedicalOrganizationJsonLd = JsonLdBase<'MedicalOrganization'> &
+  OptionalStandardFields & {
+    name: string;
+    address?: PostalAddressJsonLd;
+  };
+
+export type PharmacyJsonLd = JsonLdBase<'Pharmacy'> &
+  OptionalStandardFields & {
+    name: string;
+    address?: PostalAddressJsonLd;
+  };
+
+export type DiagnosticLabJsonLd = JsonLdBase<'DiagnosticLab'> &
+  OptionalStandardFields & {
+    name: string;
+    address?: PostalAddressJsonLd;
+  };
+
+export type MedicalTestJsonLd = JsonLdBase<'MedicalTest'> &
+  OptionalStandardFields & {
+    name: string;
+  };
 
 export type SupportedJsonLd =
   | OrganizationJsonLd
-  | WebsiteJsonLd
+  | WebSiteJsonLd
   | BreadcrumbListJsonLd
   | FaqPageJsonLd
   | PhysicianJsonLd
   | MedicalClinicJsonLd
-  | MedicalOrganizationJsonLd;
+  | MedicalOrganizationJsonLd
+  | PharmacyJsonLd
+  | DiagnosticLabJsonLd
+  | MedicalTestJsonLd;
 
 export function createJsonLd<T extends SupportedJsonLd>(schema: T): T {
   return schema;
+}
+
+function sanitizeJsonLdForScript(value: string): string {
+  return value
+    .replace(/<\//g, '<\\/')
+    .replace(/<!--/g, '<\\!--')
+    .replace(/-->/g, '--\\>');
+}
+
+export function serializeJsonLd(schema: SupportedJsonLd): string {
+  const raw = JSON.stringify(schema as unknown as JsonLdValue);
+  return sanitizeJsonLdForScript(raw);
+}
+
+export function createBreadcrumbListJsonLd(
+  items: Array<{ name: string; item: string }>
+): BreadcrumbListJsonLd {
+  return createJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((entry, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: entry.name,
+      item: entry.item
+    }))
+  });
+}
+
+export function createFaqPageJsonLd(
+  items: Array<{ question: string; answer: string }>
+): FaqPageJsonLd {
+  return createJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((entry) => ({
+      '@type': 'Question',
+      name: entry.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: entry.answer
+      }
+    }))
+  });
 }

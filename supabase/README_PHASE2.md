@@ -495,3 +495,20 @@ Explicitly not included yet:
 - no notifications/reminders
 - no medical records
 - no behavior events
+
+## Phase 3.1A — Profiles RLS Foundation
+
+Approved in this phase:
+- `supabase/migrations/0033_profiles_rls.sql`
+- Profiles RLS foundation only.
+- Authenticated users can `SELECT` only their own non-deleted profile.
+- Platform admins can `SELECT` all non-deleted profiles.
+
+Explicitly not included yet:
+- no anon profile access
+- no profile `INSERT`/`UPDATE`/`DELETE` policies yet
+- no auth triggers
+- no profile creation flow
+- no frontend/backend app features
+- no seed rows
+- no private appointment/patient/provider/admin RLS beyond profiles yet

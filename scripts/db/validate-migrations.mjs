@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
-const PHASE = '3.0A';
+const PHASE = '3.1A';
 
 const required = [
   '0001_extensions.sql',
@@ -35,7 +35,8 @@ const required = [
   '0029_consent_logs.sql',
   '0030_audit_logs.sql',
   '0031_rls_auth_helpers.sql',
-  '0032_rls_public_catalog_read_policies.sql'
+  '0032_rls_public_catalog_read_policies.sql',
+  '0033_profiles_rls.sql'
 ];
 
 const dir = 'supabase/migrations';
@@ -107,7 +108,12 @@ const allowedTaxonomyTables = ['taxonomy_groups', 'service_categories', 'service
 const allowedOwnershipTables = ['center_claims', 'center_memberships'];
 const allowedDoctorTables = ['doctors', 'doctor_services', 'doctor_schedules', 'doctor_schedule_exceptions', 'appointment_slots'];
 
-const rlsPolicyFile = '0032_rls_public_catalog_read_policies.sql';
+const rlsPolicyFiles = new Set([
+  '0032_rls_public_catalog_read_policies.sql',
+  '0033_profiles_rls.sql'
+]);
+const catalogRlsPolicyFile = '0032_rls_public_catalog_read_policies.sql';
+const profilesRlsPolicyFile = '0033_profiles_rls.sql';
 const helperFunctionFile = '0031_rls_auth_helpers.sql';
 const createPolicyPattern = /\bcreate\s+policy\b/i;
 const enableRlsPattern = /\benable\s+row\s+level\s+security\b/i;
@@ -452,12 +458,12 @@ for (const file of files) {
     }
   }
 
-  if (createPolicyPattern.test(content) && file !== rlsPolicyFile) {
-    fail(`${file} violates rule: CREATE POLICY is allowed only in ${rlsPolicyFile}.`);
+  if (createPolicyPattern.test(content) && !rlsPolicyFiles.has(file)) {
+    fail(`${file} violates rule: CREATE POLICY is allowed only in approved RLS policy files.`);
   }
 
-  if (enableRlsPattern.test(content) && file !== rlsPolicyFile) {
-    fail(`${file} violates rule: ENABLE ROW LEVEL SECURITY is allowed only in ${rlsPolicyFile}.`);
+  if (enableRlsPattern.test(content) && !rlsPolicyFiles.has(file)) {
+    fail(`${file} violates rule: ENABLE ROW LEVEL SECURITY is allowed only in approved RLS policy files.`);
   }
 
 
@@ -908,7 +914,7 @@ requireCondition(foundSponsoredCampaignStatusEnum && foundSponsoredCampaignsTabl
 
 
 const helpersContent = readFileSync(`${dir}/${helperFunctionFile}`, 'utf8');
-const rlsContent = readFileSync(`${dir}/${rlsPolicyFile}`, 'utf8');
+const rlsContent = readFileSync(`${dir}/${catalogRlsPolicyFile}`, 'utf8');
 
 const requiredHelperPatterns = [
   /create\s+or\s+replace\s+function\s+public\.current_profile_id\s*\(/i,
@@ -946,6 +952,28 @@ const requiredRlsPatterns = [
 for (const pattern of requiredRlsPatterns) {
   requireCondition(pattern.test(rlsContent), `0032_rls_public_catalog_read_policies.sql missing required pattern: ${pattern}`);
 }
+
+
+const profilesRlsContent = readFileSync(`${dir}/${profilesRlsPolicyFile}`, 'utf8');
+
+const requiredProfilesRlsPatterns = [
+  /alter\s+table\s+public\.profiles\s+enable\s+row\s+level\s+security/i,
+  /create\s+policy\s+profiles_select_own/i,
+  /create\s+policy\s+profiles_select_platform_admin/i,
+  /create\s+policy[\s\S]*profiles_select_own[\s\S]*on\s+public\.profiles[\s\S]*for\s+select[\s\S]*to\s+authenticated/i,
+  /create\s+policy[\s\S]*profiles_select_own[\s\S]*using\s*\([\s\S]*auth_user_id\s*=\s*auth\.uid\s*\(\s*\)[\s\S]*deleted_at\s+is\s+null[\s\S]*\)/i,
+  /create\s+policy[\s\S]*profiles_select_platform_admin[\s\S]*on\s+public\.profiles[\s\S]*for\s+select[\s\S]*to\s+authenticated/i,
+  /create\s+policy[\s\S]*profiles_select_platform_admin[\s\S]*using\s*\([\s\S]*public\.is_platform_admin\s*\(\s*\)\s*=\s*true[\s\S]*deleted_at\s+is\s+null[\s\S]*\)/i
+];
+
+for (const pattern of requiredProfilesRlsPatterns) {
+  requireCondition(pattern.test(profilesRlsContent), `0033_profiles_rls.sql missing required pattern: ${pattern}`);
+}
+
+requireCondition(!/\bto\s+anon\b/i.test(profilesRlsContent), '0033_profiles_rls.sql must not include TO anon.');
+requireCondition(!/\bfor\s+insert\b/i.test(profilesRlsContent), '0033_profiles_rls.sql must not include FOR INSERT policies.');
+requireCondition(!/\bfor\s+update\b/i.test(profilesRlsContent), '0033_profiles_rls.sql must not include FOR UPDATE policies.');
+requireCondition(!/\bfor\s+delete\b/i.test(profilesRlsContent), '0033_profiles_rls.sql must not include FOR DELETE policies.');
 
 console.log(`Phase ${PHASE} migration validation passed.`);
 console.log(`Validated files: ${required.join(', ')}`);

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
-const PHASE = '2.6B';
+const PHASE = '2.6C';
 
 const required = [
   '0001_extensions.sql',
@@ -20,7 +20,9 @@ const required = [
   '0014_doctor_schedule_exceptions.sql',
   '0015_appointment_slots.sql',
   '0016_patient_contacts.sql',
-  '0017_appointments.sql'
+  '0017_appointments.sql',
+  '0018_appointment_status_history.sql',
+  '0019_appointment_cancellations.sql'
 ];
 
 const dir = 'supabase/migrations';
@@ -188,6 +190,22 @@ let foundAppointmentsTimeWindowCheck = false;
 let foundAppointmentsStatusUsage = false;
 let foundAppointmentsTimezoneDefault = false;
 let foundAppointmentsUpdatedAtTrigger = false;
+let foundAppointmentStatusHistoryTable = false;
+let foundAppointmentStatusHistoryAppointmentRef = false;
+let foundAppointmentStatusHistoryChangedByProfileRef = false;
+let foundAppointmentStatusHistoryFromStatusUsage = false;
+let foundAppointmentStatusHistoryToStatusUsage = false;
+let foundAppointmentStatusHistoryCreatedAt = false;
+
+let foundAppointmentCancellationActorEnum = false;
+let foundAppointmentCancellationReasonEnum = false;
+let foundAppointmentCancellationsTable = false;
+let foundAppointmentCancellationsAppointmentRef = false;
+let foundAppointmentCancellationsProfileRef = false;
+let foundAppointmentCancellationsActorUsage = false;
+let foundAppointmentCancellationsReasonUsage = false;
+let foundAppointmentCancellationsCancelledAt = false;
+let foundAppointmentCancellationsUpdatedAtTrigger = false;
 
 try {
   if (!statSync(dir).isDirectory()) throw new Error(`${dir} is not a directory`);
@@ -431,6 +449,22 @@ for (const file of files) {
   if (/\bstatus\s+appointment_status\s+not\s+null\s+default\s+'requested'/i.test(content)) foundAppointmentsStatusUsage = true;
   if (/\btimezone\s+text\s+not\s+null\s+default\s+'Asia\/Muscat'/i.test(content)) foundAppointmentsTimezoneDefault = true;
   if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.appointments\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) foundAppointmentsUpdatedAtTrigger = true;
+  if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.appointment_status_history\b/i.test(content)) foundAppointmentStatusHistoryTable = true;
+  if (/\bappointment_id\s+uuid\s+not\s+null\s+references\s+public\.appointments\s*\(\s*id\s*\)/i.test(content)) foundAppointmentStatusHistoryAppointmentRef = true;
+  if (/\bchanged_by_profile_id\s+uuid\s+null\s+references\s+public\.profiles\s*\(\s*id\s*\)/i.test(content)) foundAppointmentStatusHistoryChangedByProfileRef = true;
+  if (/\bfrom_status\s+appointment_status\s+null\b/i.test(content)) foundAppointmentStatusHistoryFromStatusUsage = true;
+  if (/\bto_status\s+appointment_status\s+not\s+null\b/i.test(content)) foundAppointmentStatusHistoryToStatusUsage = true;
+  if (/\bcreated_at\s+timestamptz\s+not\s+null\s+default\s+now\s*\(\s*\)/i.test(content)) foundAppointmentStatusHistoryCreatedAt = true;
+
+  if (file === '0019_appointment_cancellations.sql' && /create\s+type\s+appointment_cancellation_actor\s+as\s+enum/i.test(content)) foundAppointmentCancellationActorEnum = true;
+  if (file === '0019_appointment_cancellations.sql' && /create\s+type\s+appointment_cancellation_reason\s+as\s+enum/i.test(content)) foundAppointmentCancellationReasonEnum = true;
+  if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.appointment_cancellations\b/i.test(content)) foundAppointmentCancellationsTable = true;
+  if (/\bappointment_id\s+uuid\s+not\s+null\s+references\s+public\.appointments\s*\(\s*id\s*\)/i.test(content)) foundAppointmentCancellationsAppointmentRef = true;
+  if (/\bcancelled_by_profile_id\s+uuid\s+null\s+references\s+public\.profiles\s*\(\s*id\s*\)/i.test(content)) foundAppointmentCancellationsProfileRef = true;
+  if (/\bcancelled_by_actor\s+appointment_cancellation_actor\s+not\s+null\s+default\s+'unknown'/i.test(content)) foundAppointmentCancellationsActorUsage = true;
+  if (/\bcancellation_reason\s+appointment_cancellation_reason\s+not\s+null\s+default\s+'other'/i.test(content)) foundAppointmentCancellationsReasonUsage = true;
+  if (/\bcancelled_at\s+timestamptz\s+not\s+null\s+default\s+now\s*\(\s*\)/i.test(content)) foundAppointmentCancellationsCancelledAt = true;
+  if (/\bcreate\s+trigger\b[\s\S]*\bbefore\s+update\s+on\s+public\.appointment_cancellations\b[\s\S]*\bexecute\s+function\s+public\.set_updated_at\s*\(\s*\)/i.test(content)) foundAppointmentCancellationsUpdatedAtTrigger = true;
 
 
   if (/\bcreate\s+table\s+(if\s+not\s+exists\s+)?public\.doctor_practice_locations\b/i.test(content)) foundDoctorPracticeLocationsTable = true;
@@ -518,6 +552,16 @@ if (!foundAppointmentsSlotRef || !foundAppointmentsPatientContactRef || !foundAp
 if (!foundAppointmentsSlotDateNotNull || !foundAppointmentsStartTime || !foundAppointmentsEndTime || !foundAppointmentsTimeWindowCheck) { console.error(`ERROR: Phase ${PHASE} requires appointments slot_date/start_time/end_time with safe end_time > start_time check.`); process.exit(1); }
 if (!foundAppointmentsStatusUsage || !foundAppointmentsTimezoneDefault) { console.error(`ERROR: Phase ${PHASE} requires appointments appointment_status enum default and timezone default 'Asia/Muscat'.`); process.exit(1); }
 if (!foundAppointmentsUpdatedAtTrigger) { console.error(`ERROR: Phase ${PHASE} requires appointments BEFORE UPDATE trigger using public.set_updated_at().`); process.exit(1); }
+if (!foundAppointmentStatusHistoryTable) { console.error(`ERROR: Phase ${PHASE} requires CREATE TABLE public.appointment_status_history in 0018_appointment_status_history.sql.`); process.exit(1); }
+if (!foundAppointmentStatusHistoryAppointmentRef || !foundAppointmentStatusHistoryChangedByProfileRef) { console.error(`ERROR: Phase ${PHASE} requires appointment_status_history references to public.appointments(id) and public.profiles(id).`); process.exit(1); }
+if (!foundAppointmentStatusHistoryFromStatusUsage || !foundAppointmentStatusHistoryToStatusUsage) { console.error(`ERROR: Phase ${PHASE} requires appointment_status_history from_status/to_status to use appointment_status enum.`); process.exit(1); }
+if (!foundAppointmentStatusHistoryCreatedAt) { console.error(`ERROR: Phase ${PHASE} requires appointment_status_history.created_at timestamptz not null default now().`); process.exit(1); }
+if (!foundAppointmentCancellationActorEnum || !foundAppointmentCancellationReasonEnum) { console.error(`ERROR: Phase ${PHASE} requires create type appointment_cancellation_actor and appointment_cancellation_reason as enum in 0019_appointment_cancellations.sql.`); process.exit(1); }
+if (!foundAppointmentCancellationsTable) { console.error(`ERROR: Phase ${PHASE} requires CREATE TABLE public.appointment_cancellations in 0019_appointment_cancellations.sql.`); process.exit(1); }
+if (!foundAppointmentCancellationsAppointmentRef || !foundAppointmentCancellationsProfileRef) { console.error(`ERROR: Phase ${PHASE} requires appointment_cancellations references to public.appointments(id) and public.profiles(id).`); process.exit(1); }
+if (!foundAppointmentCancellationsActorUsage || !foundAppointmentCancellationsReasonUsage) { console.error(`ERROR: Phase ${PHASE} requires appointment_cancellations enum usage for cancelled_by_actor and cancellation_reason.`); process.exit(1); }
+if (!foundAppointmentCancellationsCancelledAt) { console.error(`ERROR: Phase ${PHASE} requires appointment_cancellations.cancelled_at timestamptz not null default now().`); process.exit(1); }
+if (!foundAppointmentCancellationsUpdatedAtTrigger) { console.error(`ERROR: Phase ${PHASE} requires appointment_cancellations BEFORE UPDATE trigger using public.set_updated_at().`); process.exit(1); }
 
 
 

@@ -158,6 +158,7 @@ function mapPublicProviderLocationSummary(
     cityNameAr: city?.name_ar ?? null,
     countryNameEn: country?.name_en ?? null,
     countryNameAr: country?.name_ar ?? null,
+    mapUrl: location.map_url,
     isPrimary: location.is_primary,
     sortOrder: location.sort_order
   };
@@ -220,7 +221,16 @@ type PublicPracticeCenterRow = PublicCenterBaseRow & Pick<CenterRow, 'verificati
 
 type PublicCenterLocationLookupRow = Pick<
   CenterLocationRow,
-  'id' | 'center_id' | 'name_en' | 'name_ar' | 'area_id' | 'city_id' | 'country_id' | 'is_primary' | 'sort_order'
+  | 'id'
+  | 'center_id'
+  | 'name_en'
+  | 'name_ar'
+  | 'area_id'
+  | 'city_id'
+  | 'country_id'
+  | 'is_primary'
+  | 'sort_order'
+  | 'map_url'
 >;
 
 function mapSpecialtyRow(row: PublicSpecialtyRow): PublicDoctorDetailSpecialtySummary {
@@ -420,7 +430,7 @@ async function listPublicDoctorPracticeLocations(
 
   const { data: centerLocations, error: centerLocationsError } = await supabase
     .from('center_locations')
-    .select('id,center_id,name_en,name_ar,area_id,city_id,country_id,is_primary,sort_order')
+    .select('id,center_id,name_en,name_ar,area_id,city_id,country_id,is_primary,sort_order,map_url')
     .in('center_id', centerIds)
     .order('is_primary', { ascending: false })
     .order('sort_order', { ascending: true });
@@ -536,7 +546,7 @@ async function getPublicCenterLocations(
 
   const { data, error } = await supabase
     .from('center_locations')
-    .select('id,center_id,name_en,name_ar,area_id,city_id,country_id,is_primary,sort_order')
+    .select('id,center_id,name_en,name_ar,area_id,city_id,country_id,is_primary,sort_order,map_url')
     .eq('center_id', centerId)
     .order('is_primary', { ascending: false })
     .order('sort_order', { ascending: true })

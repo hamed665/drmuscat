@@ -1,3 +1,5 @@
+import type { Database } from '@/lib/supabase/types';
+
 export type PublicCatalogLocale = 'en' | 'ar';
 
 export type PublicCatalogCountry = 'om';
@@ -28,15 +30,22 @@ export type PublicDiscoveryCategory = {
   label: string;
 };
 
+export type CenterType = Database['public']['Enums']['center_type'];
+export type CountryCode = Database['public']['Enums']['country_code'];
+export type DoctorGender = Database['public']['Enums']['doctor_gender'];
+export type DoctorTitle = Database['public']['Enums']['doctor_title'];
+
 export type PublicCenterSummary = {
   id: string;
   slug: string;
   nameEn: string;
   nameAr: string | null;
-  centerType: string;
+  centerType: CenterType;
   descriptionEn: string | null;
   descriptionAr: string | null;
-  defaultCountry: string;
+  shortDescriptionEn: string | null;
+  shortDescriptionAr: string | null;
+  defaultCountry: CountryCode;
 };
 
 export type PublicDoctorSummary = {
@@ -44,10 +53,10 @@ export type PublicDoctorSummary = {
   slug: string;
   fullNameEn: string;
   fullNameAr: string | null;
-  titleEn: string | null;
-  titleAr: string | null;
-  gender: string | null;
-  defaultCountry: string;
+  titleEn: DoctorTitle;
+  titleAr: DoctorTitle;
+  gender: DoctorGender;
+  defaultCountry: CountryCode;
 };
 
 export type PublicServiceSummary = {
@@ -75,3 +84,27 @@ export type PublicCatalogSearchResult = {
   services: PublicServiceSummary[];
   areas: PublicGeoAreaSummary[];
 };
+
+export type PublicListOptions = {
+  limit?: number;
+};
+
+export type PublicCenterListOptions = PublicListOptions & {
+  country?: CountryCode;
+  centerType?: CenterType;
+};
+
+export type PublicDoctorListOptions = PublicListOptions & {
+  country?: CountryCode;
+};
+
+export type PublicServiceListOptions = PublicListOptions & {
+  categoryId?: string;
+};
+
+export type PublicGeoAreaListOptions = PublicListOptions & {
+  countryId?: string;
+  cityId?: string;
+};
+
+export type PublicSearchOptions = PublicListOptions;

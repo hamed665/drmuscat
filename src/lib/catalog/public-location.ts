@@ -1,5 +1,18 @@
 import type { PublicCatalogLocale, PublicProviderLocationSummary } from './public-types';
 
+export function getPublicDirectionsUrl(location: PublicProviderLocationSummary | null): string | null {
+  const rawMapUrl = location?.mapUrl?.trim();
+  if (!rawMapUrl) return null;
+
+  try {
+    const parsedUrl = new URL(rawMapUrl);
+    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') return null;
+    return parsedUrl.toString();
+  } catch {
+    return null;
+  }
+}
+
 export function getPreferredPublicLocationName(
   locale: PublicCatalogLocale,
   en: string | null,

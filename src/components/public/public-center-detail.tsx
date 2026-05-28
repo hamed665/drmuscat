@@ -28,6 +28,8 @@ type CenterDetailCopy = {
   noServices: string;
   noDoctors: string;
   noLocation: string;
+  directionsLabel: string;
+  directionsAriaLabel: string;
 };
 
 const copyByLocale: Record<PublicCatalogLocale, CenterDetailCopy> = {
@@ -50,7 +52,9 @@ const copyByLocale: Record<PublicCatalogLocale, CenterDetailCopy> = {
       'This public profile is for healthcare discovery only. It is not medical advice, diagnosis, emergency guidance, or a guarantee of provider availability.',
     noServices: 'No public services are connected to this profile yet.',
     noDoctors: 'No public doctors are connected to this profile yet.',
-    noLocation: 'General location details are not available yet.'
+    noLocation: 'General location details are not available yet.',
+    directionsLabel: 'Open in Maps',
+    directionsAriaLabel: 'Open this location in maps'
   },
   ar: {
     aboutTitle: 'عن هذا المركز',
@@ -71,7 +75,9 @@ const copyByLocale: Record<PublicCatalogLocale, CenterDetailCopy> = {
       'هذا الملف العام مخصص لاكتشاف خدمات الرعاية الصحية فقط. ولا يعد نصيحة طبية أو تشخيصاً أو إرشاداً للطوارئ أو ضماناً لتوفر مقدم الخدمة.',
     noServices: 'لا توجد خدمات عامة مرتبطة بهذا الملف حتى الآن.',
     noDoctors: 'لا يوجد أطباء عامون مرتبطون بهذا الملف حتى الآن.',
-    noLocation: 'تفاصيل الموقع العامة غير متاحة بعد.'
+    noLocation: 'تفاصيل الموقع العامة غير متاحة بعد.',
+    directionsLabel: 'فتح في الخرائط',
+    directionsAriaLabel: 'فتح هذا الموقع في الخرائط'
   }
 };
 
@@ -112,6 +118,8 @@ export function PublicCenterDetail({ locale, center }: PublicCenterDetailProps) 
         description={copy.locationDescription}
         locations={center.locations}
         emptyLabel={copy.noLocation}
+        directionsLabel={copy.directionsLabel}
+        directionsAriaLabel={() => copy.directionsAriaLabel}
       />
 
       <PublicCenterDetailSection title={copy.servicesTitle} description={copy.servicesDescription}>

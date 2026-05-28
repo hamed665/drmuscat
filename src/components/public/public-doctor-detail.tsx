@@ -1,4 +1,4 @@
-import { formatPublicLocationSummary } from '@/lib/catalog/public-location';
+import { formatPublicLocationSummary, getPublicDirectionsUrl } from '@/lib/catalog/public-location';
 import type { PublicCatalogLocale, PublicDoctorDetail } from '@/lib/catalog/public-types';
 import { publicCenterDetailRoute } from '@/lib/routes/public';
 
@@ -32,6 +32,8 @@ type DoctorDetailCopy = {
   noPracticeLocations: string;
   noLocation: string;
   centerProfileLabel: string;
+  directionsLabel: string;
+  practiceDirectionsAriaLabel: string;
 };
 
 const copyByLocale: Record<PublicCatalogLocale, DoctorDetailCopy> = {
@@ -69,7 +71,9 @@ const copyByLocale: Record<PublicCatalogLocale, DoctorDetailCopy> = {
     noServices: 'No public services are connected to this doctor profile yet.',
     noPracticeLocations: 'No public practice locations are connected to this doctor profile yet.',
     noLocation: 'General location details are not available yet.',
-    centerProfileLabel: 'View center profile'
+    centerProfileLabel: 'View center profile',
+    directionsLabel: 'Open in Maps',
+    practiceDirectionsAriaLabel: 'Open this practice location in maps'
   },
   ar: {
     aboutTitle: 'عن هذا الطبيب',
@@ -105,7 +109,9 @@ const copyByLocale: Record<PublicCatalogLocale, DoctorDetailCopy> = {
     noServices: 'لا توجد خدمات عامة مرتبطة بملف هذا الطبيب حتى الآن.',
     noPracticeLocations: 'لا توجد مواقع ممارسة عامة مرتبطة بملف هذا الطبيب حتى الآن.',
     noLocation: 'تفاصيل الموقع العامة غير متاحة بعد.',
-    centerProfileLabel: 'عرض ملف المركز'
+    centerProfileLabel: 'عرض ملف المركز',
+    directionsLabel: 'فتح في الخرائط',
+    practiceDirectionsAriaLabel: 'فتح موقع الممارسة في الخرائط'
   }
 };
 
@@ -205,6 +211,7 @@ export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) 
               const specialtyName = practiceLocation.primarySpecialty
                 ? preferredText(locale, practiceLocation.primarySpecialty.nameEn, practiceLocation.primarySpecialty.nameAr) ?? practiceLocation.primarySpecialty.nameEn
                 : null;
+              const directionsUrl = getPublicDirectionsUrl(practiceLocation.location);
 
               return (
                 <li key={practiceLocation.id} className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-4">
@@ -213,12 +220,25 @@ export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) 
                     <p>{locationText ?? copy.noLocation}</p>
                     {specialtyName ? <p>{specialtyName}</p> : null}
                   </div>
-                  <a
-                    href={publicCenterDetailRoute(locale, doctor.defaultCountry, practiceLocation.center.slug)}
-                    className="mt-4 inline-flex text-xs font-semibold text-emerald-800 underline-offset-4 hover:underline"
-                  >
-                    {copy.centerProfileLabel}
-                  </a>
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    {directionsUrl ? (
+                      <a
+                        href={directionsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={copy.practiceDirectionsAriaLabel}
+                        className="inline-flex w-fit rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                      >
+                        {copy.directionsLabel}
+                      </a>
+                    ) : null}
+                    <a
+                      href={publicCenterDetailRoute(locale, doctor.defaultCountry, practiceLocation.center.slug)}
+                      className="inline-flex text-xs font-semibold text-emerald-800 underline-offset-4 hover:underline"
+                    >
+                      {copy.centerProfileLabel}
+                    </a>
+                  </div>
                 </li>
               );
             })}

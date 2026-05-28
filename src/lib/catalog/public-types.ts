@@ -119,6 +119,7 @@ export type PublicProviderLocationSummary = {
   cityNameAr: string | null;
   countryNameEn: string | null;
   countryNameAr: string | null;
+  mapUrl: string | null;
   isPrimary: boolean;
   sortOrder: number;
 };

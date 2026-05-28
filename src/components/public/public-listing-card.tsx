@@ -31,12 +31,24 @@ function preferredText(locale: PublicCatalogLocale, en: string | null, ar: strin
   return en ?? ar;
 }
 
-function formatCenterType(value: string): string {
+function formatNeutralLabel(value: string): string {
   return value
     .split('_')
     .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1).toLowerCase())
     .join(' ');
 }
+
+const cardClassName =
+  'h-full rounded-2xl border border-slate-200/70 bg-white/75 p-5 shadow-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md';
+
+const titleClassName = 'text-base font-semibold leading-7 text-slate-950';
+
+const tagClassName =
+  'mt-3 inline-flex w-fit rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-800';
+
+const descriptionClassName = 'mt-4 text-sm leading-6 text-slate-600';
+
+const comingSoonClassName = 'mt-5 text-xs font-medium text-slate-500';
 
 export function PublicListingCard(props: PublicListingCardProps) {
   if (props.variant === 'center') {
@@ -46,11 +58,11 @@ export function PublicListingCard(props: PublicListingCardProps) {
       preferredText(props.locale, props.item.descriptionEn, props.item.descriptionAr);
 
     return (
-      <article className="public-listing-card">
-        <h3 className="public-listing-card__title">{name}</h3>
-        <p className="public-listing-card__tag">{formatCenterType(props.item.centerType)}</p>
-        {description ? <p className="public-listing-card__description">{description}</p> : null}
-        <p className="public-listing-card__coming-soon">{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
+      <article className={cardClassName}>
+        <h3 className={titleClassName}>{name}</h3>
+        <p className={tagClassName}>{formatNeutralLabel(props.item.centerType)}</p>
+        {description ? <p className={descriptionClassName}>{description}</p> : null}
+        <p className={comingSoonClassName}>{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
       </article>
     );
   }
@@ -59,10 +71,10 @@ export function PublicListingCard(props: PublicListingCardProps) {
     const name = preferredText(props.locale, props.item.fullNameEn, props.item.fullNameAr) ?? props.item.fullNameEn;
 
     return (
-      <article className="public-listing-card">
-        <h3 className="public-listing-card__title">{name}</h3>
-        <p className="public-listing-card__tag">{formatCenterType(props.item.titleEn)}</p>
-        <p className="public-listing-card__coming-soon">{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
+      <article className={cardClassName}>
+        <h3 className={titleClassName}>{name}</h3>
+        <p className={tagClassName}>{formatNeutralLabel(props.item.titleEn)}</p>
+        <p className={comingSoonClassName}>{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
       </article>
     );
   }
@@ -71,10 +83,10 @@ export function PublicListingCard(props: PublicListingCardProps) {
   const serviceDescription = preferredText(props.locale, props.item.descriptionEn, props.item.descriptionAr);
 
   return (
-    <article className="public-listing-card">
-      <h3 className="public-listing-card__title">{serviceName}</h3>
-      {serviceDescription ? <p className="public-listing-card__description">{serviceDescription}</p> : null}
-      <p className="public-listing-card__coming-soon">{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
+    <article className={cardClassName}>
+      <h3 className={titleClassName}>{serviceName}</h3>
+      {serviceDescription ? <p className={descriptionClassName}>{serviceDescription}</p> : null}
+      <p className={comingSoonClassName}>{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
     </article>
   );
 }

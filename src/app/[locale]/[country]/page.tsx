@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { HomeCategoryPreview } from '@/components/home/home-category-preview';
 import { HomeHero } from '@/components/home/home-hero';
 import { HomeTrustStrip } from '@/components/home/home-trust-strip';
+import { publicDiscoveryRoute } from '@/lib/routes/public';
 import {
   isSupportedCountry,
   isSupportedLocale,
@@ -42,21 +43,21 @@ const homeCopyByLocale: Record<SupportedLocale, HomeCopy> = {
   en: {
     metadataTitle: 'DrMuscat Oman | Healthcare Discovery Foundation',
     metadataDescription:
-      'Find trusted healthcare in Oman, faster. DrMuscat is building a bilingual healthcare discovery foundation for patients and providers across Oman.',
+      'Find healthcare options in Oman, faster. DrMuscat is building a bilingual healthcare discovery foundation for patients and providers across Oman.',
     hero: {
       announcement: 'Oman-first bilingual healthcare discovery',
-      title: 'Find trusted healthcare in Oman, faster.',
+      title: 'Find healthcare options in Oman, faster.',
       subtitle:
         'DrMuscat is building a bilingual healthcare discovery experience for patients and providers across Oman.',
-      findCare: 'Find care',
-      forClinics: 'For clinics',
+      findCare: 'Search healthcare',
+      forClinics: 'Explore centers',
       note: 'Richer provider profiles and discovery tools are rolling out in upcoming phases.',
       chips: ['Doctors', 'Clinics', 'Pharmacies', 'Labs']
     },
     trust: [
       'Bilingual experience designed for English and Arabic users',
       'Oman-first healthcare discovery with GCC-ready foundations',
-      'Built for future verified provider data workflows',
+      'Built for future structured provider data workflows',
       'SEO-ready visibility architecture for healthcare providers'
     ],
     categories: {
@@ -98,15 +99,15 @@ const homeCopyByLocale: Record<SupportedLocale, HomeCopy> = {
       announcement: 'منصة عُمانية لاكتشاف الرعاية الصحية بثنائية اللغة',
       title: 'اكتشف الرعاية الصحية في عُمان بسهولة أكبر.',
       subtitle: 'يبني DrMuscat تجربة ثنائية اللغة لاكتشاف مقدمي الرعاية الصحية للمرضى والجهات الطبية في عُمان.',
-      findCare: 'ابحث عن رعاية',
-      forClinics: 'للعيادات',
+      findCare: 'ابحث عن الرعاية الصحية',
+      forClinics: 'استكشف المراكز',
       note: 'سيتم إطلاق ملفات مقدمي الرعاية وميزات اكتشاف أكثر تفصيلاً في المراحل القادمة.',
       chips: ['الأطباء', 'العيادات', 'الصيدليات', 'المختبرات']
     },
     trust: [
       'تجربة ثنائية اللغة مصممة للمستخدمين بالعربية والإنجليزية',
       'اكتشاف رعاية صحية يركز على عُمان مع جاهزية للتوسع الخليجي',
-      'مبنية لدعم تدفقات بيانات مقدمي الخدمة الموثقة مستقبلاً',
+      'مبنية لدعم تدفقات بيانات مقدمي الخدمة المنظمة مستقبلاً',
       'أساس ظهور رقمي متوافق مع متطلبات SEO لمقدمي الرعاية الصحية'
     ],
     categories: {
@@ -171,15 +172,33 @@ export default async function LocaleCountryHome({ params }: { params: Promise<Pa
   const safeCountry = country as SupportedCountry;
   const dir = localeDirection(safeLocale);
   const copy = homeCopyByLocale[safeLocale];
+  const categorySlugByKey = {
+    doctors: 'doctors',
+    clinics: 'centers',
+    pharmacies: 'pharmacies',
+    laboratories: 'labs'
+  } as const;
 
   return (
     <div className="home-foundation" dir={dir} data-country={safeCountry} data-locale={safeLocale}>
-      <HomeHero copy={copy.hero} dir={dir} />
+      <HomeHero
+        copy={copy.hero}
+        dir={dir}
+        primaryHref={publicDiscoveryRoute(safeLocale, safeCountry, 'search')}
+        secondaryHref={publicDiscoveryRoute(safeLocale, safeCountry, 'centers')}
+      />
       <HomeTrustStrip items={copy.trust} dir={dir} />
       <HomeCategoryPreview
         title={copy.categories.title}
         subtitle={copy.categories.subtitle}
-        categories={copy.categories.items}
+        categories={copy.categories.items.map((item) => ({
+          ...item,
+          href: publicDiscoveryRoute(
+            safeLocale,
+            safeCountry,
+            categorySlugByKey[item.key as keyof typeof categorySlugByKey] ?? 'search'
+          )
+        }))}
         dir={dir}
       />
     </div>

@@ -1,84 +1,77 @@
-# Phase 4.3B — Public Catalog Query Contracts
+# Phase 4.3D — Public Catalog Live SELECT Query Layer
 
 ## Scope
 
-This phase provides a minimal TypeScript **contract-only** query layer for future public discovery pages.
+This phase upgrades the Phase 4.3B contract-only layer into a live, server-safe, **SELECT-only** query layer for public catalog read use cases.
 
-Included:
+Implemented files:
 
 - `src/lib/catalog/public-types.ts`
 - `src/lib/catalog/public-queries.ts`
 - this document
 
-Excluded:
+## What is implemented in Phase 4.3D
 
-- live SELECT query execution
-- UI integration
-- route/page wiring
-- API routes
-- auth/session logic
-- schema/migration changes
-- seed data
-- generated database types
+- Live SELECT query implementations for confirmed public catalog tables.
+- Generated Supabase `Database` types are used for table/enum typing.
+- Query execution uses `createSupabaseServerClient()` (anon key path).
+- Conservative column selection (summary-only, non-sensitive fields).
+- Safe query limits with default `20` and max `50`.
+- Search input normalization/sanitization is applied before search execution.
+- Search query length is capped to a safe maximum before SQL filter construction.
+- Typed result wrappers with explicit `ok / data / emptyReason / error` behavior.
+- Generic public error responses (no raw Supabase errors exposed).
 
-## Confirmed schema inspected
+## Confirmed public catalog tables used
 
-The contract design is based only on confirmed migrations and policy files:
+- `public.centers`
+- `public.doctors`
+- `public.services`
+- `public.geo_areas`
 
-- `public.centers` (`0006_centers.sql`)
-- `public.doctors` (`0010_doctors.sql`)
-- `public.services` and `public.service_categories` (`0005_taxonomy.sql`)
-- `public.geo_areas`, `public.geo_countries`, `public.geo_cities` (`0004_geo.sql`)
-- `public.center_locations` (`0007_center_locations.sql`)
-- `public.center_services` (`0008_center_services.sql`)
-- `public.doctor_services` (`0012_doctor_services.sql`)
+## Public RLS posture
 
-## Public RLS confirmation
-
-Public SELECT RLS policies are confirmed in:
+Public read access continues to rely on Supabase RLS policies in:
 
 - `0032_rls_public_catalog_read_policies.sql`
+
+RLS remains the enforcement layer for public SELECT eligibility.
 
 ## Implemented query functions
 
 - `listPublicDiscoveryCategories()`
-  - returns static route-level concepts: doctors, centers, pharmacies, labs, services
-- `listPublicCenters()`
-  - contract placeholder, returns empty with `query_not_implemented`
-- `listPublicDoctors()`
-  - contract placeholder, returns empty with `query_not_implemented`
-- `listPublicServices()`
-  - contract placeholder, returns empty with `query_not_implemented`
-- `listPublicGeoAreas()`
-  - contract placeholder, returns empty with `query_not_implemented`
-- `searchPublicCatalog()`
-  - grouped contract placeholder, returns empty with `query_not_implemented`
+  - static route-level discovery categories: doctors, centers, pharmacies, labs, services.
+- `listPublicCenters(options?)`
+  - live SELECT from `public.centers` with optional safe filters (`default_country`, `center_type`).
+- `listPublicDoctors(options?)`
+  - live SELECT from `public.doctors` with optional safe filter (`default_country`).
+- `listPublicServices(options?)`
+  - live SELECT from `public.services` with optional safe filter (`category_id`).
+- `listPublicGeoAreas(options?)`
+  - live SELECT from `public.geo_areas` with optional safe filters (`country_id`, `city_id`).
+- `searchPublicCatalog(query, options?)`
+  - grouped SELECT searches across centers/doctors/services/areas.
+  - query is normalized/sanitized before applying `ilike` filters.
+  - query length is capped before `ilike` filter construction.
+  - returns `search_query_too_short` when normalized query length is `< 2`.
 
-## Why live SELECT is deferred
+## Explicit exclusions retained
 
-Generated Supabase DB types are not available yet (current `Database` is a placeholder), so table-safe typed querying cannot be implemented without risky type bypass patterns.
+- No UI/page integration yet.
+- No API routes or server actions.
+- No auth/session logic.
+- No schema/migration/seed changes.
+- No write operations (`INSERT/UPDATE/DELETE/UPSERT`).
+- No RPC usage in this phase.
+- No service role usage.
+- No fake data.
+- No ratings/reviews/review counts.
+- No availability/open-now/live status fields.
+- No insurance, pricing, sponsored/premium ranking logic.
+- No verification/MOH/license claims.
+- No phone or WhatsApp exposure.
 
-To preserve TypeScript safety in this phase:
+## Pharmacies and labs note
 
-- no `table as never`
-- no arbitrary table/column string query helper
-- no weakening of global DB types
-
-Live SELECT implementations are deferred to the approved generated DB types phase.
-
-## Deferred items
-
-Deferred to future phases:
-
-- generated Supabase DB types (`db:types`)
-- strict typed live SELECT query implementations for confirmed public tables
-- richer server-side search ranking/filtering strategy
-- UI-layer integration in public pages
-
-## Safety constraints enforced
-
-- no fake data rows
-- no reviews/ratings/availability/insurance/pricing/verification claims
-- no service role usage
-- no write operations
-- no sensitive/private table access outside confirmed public catalog scope
+`pharmacies` and `labs` remain route-level discovery categories in this phase.
+No direct schema-backed subtype listing is introduced unless future approved phases define and validate that shape safely.

@@ -210,3 +210,76 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+
+.public-page-shell {
+  display: grid;
+  gap: clamp(1rem, 2.4vw, 1.5rem);
+  width: min(100%, 84rem);
+  margin-inline: auto;
+  padding: clamp(1rem, 3vw, 2rem);
+  padding-block-end: clamp(2rem, 4vw, 3rem);
+}
+
+.public-route-hero,
+.public-coming-soon,
+.public-discovery-grid {
+  border-radius: var(--dm-radius-lg);
+  border: 1px solid var(--dm-border);
+  background: var(--dm-surface-glass);
+  box-shadow: var(--dm-shadow-sm);
+}
+
+.public-route-hero__inner,
+.public-coming-soon,
+.public-discovery-grid {
+  padding: clamp(1rem, 2.8vw, 1.6rem);
+}
+
+.public-route-hero__badge {
+  margin: 0;
+  display: inline-flex;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(79, 209, 255, 0.14);
+  border: 1px solid rgba(14, 116, 144, 0.24);
+  color: #0d5e75;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.public-route-hero__title,
+.public-coming-soon__heading,
+.public-discovery-grid__title {
+  margin: 0;
+  color: var(--dm-text);
+  letter-spacing: -0.01em;
+}
+
+.public-route-hero__title { font-size: clamp(1.55rem, 4.8vw, 2.35rem); line-height: 1.15; margin-top: 0.8rem; }
+.public-route-hero__description,
+.public-coming-soon__body { margin: 0.7rem 0 0; color: var(--dm-text-soft); max-width: 62ch; }
+.public-route-hero__actions { margin-top: 0.9rem; display: flex; flex-wrap: wrap; gap: 0.7rem; }
+
+.public-discovery-grid__list {
+  list-style: none;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.public-discovery-grid__item {
+  border: 1px solid var(--dm-border);
+  background: var(--dm-surface);
+  border-radius: var(--dm-radius-md);
+  padding: 0.75rem 0.9rem;
+  color: var(--dm-text);
+  font-weight: 500;
+}
+
+@media (min-width: 820px) {
+  .public-page-shell { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .public-route-hero { grid-column: 1 / -1; }
+  .public-discovery-grid__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

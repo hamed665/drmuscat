@@ -27,7 +27,7 @@ const copyByLocale: Record<SupportedLocale, RouteCopy> = {
     description: 'Search is being prepared for structured provider data workflows in upcoming phases.',
     badge: 'Public discovery route',
     panelHeading: 'Provider data preparation in progress',
-    panelBody: 'Search is being prepared for verified provider data workflows in upcoming phases.',
+    panelBody: 'Search is being prepared for structured provider data workflows in upcoming phases.',
     gridTitle: 'Planned route structure',
     gridItems: ['Bilingual route foundation', 'SEO-safe metadata baseline', 'Responsive public page skeleton']
   },

@@ -1,5 +1,5 @@
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 type HomeHeroCopy = {
   announcement: string;
@@ -14,9 +14,11 @@ type HomeHeroCopy = {
 type HomeHeroProps = {
   copy: HomeHeroCopy;
   dir: 'ltr' | 'rtl';
+  primaryHref: string;
+  secondaryHref: string;
 };
 
-export function HomeHero({ copy, dir }: HomeHeroProps) {
+export function HomeHero({ copy, dir, primaryHref, secondaryHref }: HomeHeroProps) {
   return (
     <section className="home-hero hero-aura" dir={dir} aria-labelledby="home-hero-title">
       <div className="home-hero__content glass-soft">
@@ -26,12 +28,15 @@ export function HomeHero({ copy, dir }: HomeHeroProps) {
         </h1>
         <p className="home-hero__subtitle">{copy.subtitle}</p>
         <div className="home-hero__actions" aria-label="Primary actions">
-          <Button variant="primary" size="lg" type="button" className="home-hero__cta home-hero__cta--primary">
+          <Link href={primaryHref} className="ui-button ui-button--primary ui-button--lg home-hero__cta home-hero__cta--primary">
             {copy.findCare}
-          </Button>
-          <Button variant="secondary" size="lg" type="button" className="home-hero__cta home-hero__cta--secondary">
+          </Link>
+          <Link
+            href={secondaryHref}
+            className="ui-button ui-button--secondary ui-button--lg home-hero__cta home-hero__cta--secondary"
+          >
             {copy.forClinics}
-          </Button>
+          </Link>
         </div>
         <p className="home-hero__note">{copy.note}</p>
       </div>

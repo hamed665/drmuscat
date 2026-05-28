@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 type HomeCategoryPreviewProps = {
   title: string;
   subtitle: string;
@@ -6,6 +8,7 @@ type HomeCategoryPreviewProps = {
     label: string;
     description: string;
     accentClass: string;
+    href?: string;
   }[];
   dir: 'ltr' | 'rtl';
 };
@@ -18,13 +21,32 @@ export function HomeCategoryPreview({ title, subtitle, categories, dir }: HomeCa
         <p>{subtitle}</p>
       </div>
       <div className="home-categories__grid">
-        {categories.map((category) => (
-          <article key={category.key} className={`home-categories__card glass-soft ${category.accentClass}`}>
-            <span className="home-categories__icon" aria-hidden="true" />
-            <h3>{category.label}</h3>
-            <p>{category.description}</p>
-          </article>
-        ))}
+        {categories.map((category) => {
+          const href = category.href;
+
+          if (!href) {
+            return (
+              <article key={category.key} className={`home-categories__card glass-soft ${category.accentClass}`}>
+                <span className="home-categories__icon" aria-hidden="true" />
+                <h3>{category.label}</h3>
+                <p>{category.description}</p>
+              </article>
+            );
+          }
+
+          return (
+            <Link
+              key={category.key}
+              href={href}
+              className={`home-categories__card glass-soft ${category.accentClass}`}
+              aria-label={category.label}
+            >
+              <span className="home-categories__icon" aria-hidden="true" />
+              <h3>{category.label}</h3>
+              <p>{category.description}</p>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

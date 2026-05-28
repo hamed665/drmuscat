@@ -2,7 +2,7 @@
 
 ## Scope
 
-This phase adds a minimal TypeScript query-contract layer for future public healthcare discovery pages.
+This phase provides a minimal TypeScript **contract-only** query layer for future public discovery pages.
 
 Included:
 
@@ -12,6 +12,7 @@ Included:
 
 Excluded:
 
+- live SELECT query execution
 - UI integration
 - route/page wiring
 - API routes
@@ -22,7 +23,7 @@ Excluded:
 
 ## Confirmed schema inspected
 
-The contract implementation is based only on confirmed migrations and policy files:
+The contract design is based only on confirmed migrations and policy files:
 
 - `public.centers` (`0006_centers.sql`)
 - `public.doctors` (`0010_doctors.sql`)
@@ -38,30 +39,40 @@ Public SELECT RLS policies are confirmed in:
 
 - `0032_rls_public_catalog_read_policies.sql`
 
-This phase relies on anon-key + RLS enforcement and does not bypass it.
-
 ## Implemented query functions
 
 - `listPublicDiscoveryCategories()`
-  - returns route-level concepts: doctors, centers, pharmacies, labs, services
+  - returns static route-level concepts: doctors, centers, pharmacies, labs, services
 - `listPublicCenters()`
-  - minimal public fields from `public.centers`
+  - contract placeholder, returns empty with `query_not_implemented`
 - `listPublicDoctors()`
-  - minimal public fields from `public.doctors`
+  - contract placeholder, returns empty with `query_not_implemented`
 - `listPublicServices()`
-  - minimal public fields from `public.services`
+  - contract placeholder, returns empty with `query_not_implemented`
 - `listPublicGeoAreas()`
-  - minimal public fields from `public.geo_areas`
-- `searchPublicCatalog(query)`
-  - grouped, empty-safe search contract across confirmed entities
+  - contract placeholder, returns empty with `query_not_implemented`
+- `searchPublicCatalog()`
+  - grouped contract placeholder, returns empty with `query_not_implemented`
+
+## Why live SELECT is deferred
+
+Generated Supabase DB types are not available yet (current `Database` is a placeholder), so table-safe typed querying cannot be implemented without risky type bypass patterns.
+
+To preserve TypeScript safety in this phase:
+
+- no `table as never`
+- no arbitrary table/column string query helper
+- no weakening of global DB types
+
+Live SELECT implementations are deferred to the approved generated DB types phase.
 
 ## Deferred items
 
 Deferred to future phases:
 
 - generated Supabase DB types (`db:types`)
+- strict typed live SELECT query implementations for confirmed public tables
 - richer server-side search ranking/filtering strategy
-- joins across services/categories/locations with pagination and sort contracts
 - UI-layer integration in public pages
 
 ## Safety constraints enforced
@@ -69,5 +80,5 @@ Deferred to future phases:
 - no fake data rows
 - no reviews/ratings/availability/insurance/pricing/verification claims
 - no service role usage
-- no write operations (SELECT-only query contract behavior)
+- no write operations
 - no sensitive/private table access outside confirmed public catalog scope

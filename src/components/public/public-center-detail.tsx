@@ -21,6 +21,7 @@ type CenterDetailCopy = {
   locationTitle: string;
   locationDescription: string;
   contactTitle: string;
+  galleryTitle: string;
   verificationTitle: string;
   verificationVerified: string;
   verificationPlaceholder: string;
@@ -46,12 +47,13 @@ const copyByLocale: Record<PublicCatalogLocale, CenterDetailCopy> = {
     locationTitle: 'Location overview',
     locationDescription: 'Only public branch labels and general area, city, and country information are shown in this phase.',
     contactTitle: 'Contact this center',
+    galleryTitle: 'Gallery',
     verificationTitle: 'Profile verification',
     verificationVerified: 'This public profile is marked as verified in DrMuscat records. This is not a license or MOH approval claim.',
     verificationPlaceholder: 'License and verification details will be added after the provider verification foundation is complete.',
     futureTitle: 'Future profile sections',
     futureDescription: 'These areas are reserved for later approved phases and are not active yet.',
-    futureSlots: ['Gallery', 'Video', 'Reviews', 'Premium profile'],
+    futureSlots: ['Video', 'Reviews', 'Premium profile'],
     disclaimerTitle: 'Medical safety note',
     disclaimerBody:
       'This public profile is for healthcare discovery only. It is not medical advice, diagnosis, emergency guidance, or a guarantee of provider availability.',
@@ -70,12 +72,13 @@ const copyByLocale: Record<PublicCatalogLocale, CenterDetailCopy> = {
     locationTitle: 'نظرة عامة على الموقع',
     locationDescription: 'تظهر في هذه المرحلة أسماء الفروع العامة ومعلومات عامة فقط عن المنطقة والمدينة والدولة.',
     contactTitle: 'التواصل مع المركز',
+    galleryTitle: 'المعرض',
     verificationTitle: 'توثيق الملف',
     verificationVerified: 'هذا الملف العام محدد كملف موثق في سجلات DrMuscat. هذا ليس ادعاءً بترخيص أو اعتماد من وزارة الصحة.',
     verificationPlaceholder: 'ستضاف تفاصيل الترخيص والتوثيق بعد اكتمال أساس توثيق مقدمي الخدمة.',
     futureTitle: 'أقسام الملف المستقبلية',
     futureDescription: 'هذه المساحات محجوزة لمراحل لاحقة معتمدة وليست مفعلة حالياً.',
-    futureSlots: ['المعرض', 'الفيديو', 'المراجعات', 'الملف المميز'],
+    futureSlots: ['الفيديو', 'المراجعات', 'الملف المميز'],
     disclaimerTitle: 'ملاحظة السلامة الطبية',
     disclaimerBody:
       'هذا الملف العام مخصص لاكتشاف خدمات الرعاية الصحية فقط. ولا يعد نصيحة طبية أو تشخيصاً أو إرشاداً للطوارئ أو ضماناً لتوفر مقدم الخدمة.',
@@ -145,6 +148,28 @@ export function PublicCenterDetail({ locale, center }: PublicCenterDetailProps) 
         directionsAriaLabel={() => copy.directionsAriaLabel}
         renderLocationActions={(location) => <PublicContactActions actions={location.contactActions} locale={locale} />}
       />
+
+      {center.galleryImages.length > 0 ? (
+        <PublicCenterDetailSection title={copy.galleryTitle}>
+          <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" role="list">
+            {center.galleryImages.map((image) => (
+              <li key={image.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm">
+                <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                  <img
+                    src={image.url}
+                    alt={image.altText}
+                    width={image.width ?? undefined}
+                    height={image.height ?? undefined}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </PublicCenterDetailSection>
+      ) : null}
 
       <PublicCenterDetailSection title={copy.servicesTitle} description={copy.servicesDescription}>
         {center.services.length > 0 ? (

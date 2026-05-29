@@ -5,6 +5,21 @@ export type PublicCatalogLocale = 'en' | 'ar';
 
 export type PublicCatalogCountry = 'om';
 
+export type PublicMediaUsageKind = 'logo' | 'cover' | 'profile' | 'gallery' | 'thumbnail';
+
+export type PublicMediaImage = {
+  id: string;
+  url: string;
+  altText: string;
+  caption: string | null;
+  width: number | null;
+  height: number | null;
+  usageKind: PublicMediaUsageKind;
+  isPrimary: boolean;
+  isFeatured: boolean;
+  sortOrder: number;
+};
+
 export type PublicCatalogSlug = 'doctors' | 'centers' | 'pharmacies' | 'labs' | 'services' | 'search';
 
 export type PublicCatalogEmptyReason =
@@ -142,6 +157,9 @@ export type PublicCenterDetail = PublicCenterSummary & {
   services: PublicCenterDetailServiceSummary[];
   doctors: PublicCenterDetailDoctorSummary[];
   contactActions: PublicContactAction[];
+  galleryImages: PublicMediaImage[];
+  logoImage: PublicMediaImage | null;
+  coverImage: PublicMediaImage | null;
 };
 
 export type PublicDoctorPracticeLocationSummary = {
@@ -161,6 +179,7 @@ export type PublicDoctorDetail = PublicDoctorSummary & {
   bioEn: string | null;
   bioAr: string | null;
   profileImageUrl: string | null;
+  profileImage: PublicMediaImage | null;
   yearsExperience: number | null;
   verificationStatus: VerificationStatus;
   primarySpecialty: PublicDoctorDetailSpecialtySummary | null;
@@ -187,6 +206,7 @@ export type PublicCenterListOptions = PublicListOptions & {
 export type PublicCenterDetailOptions = {
   slug: string;
   country?: CountryCode;
+  locale?: PublicCatalogLocale;
   servicesLimit?: number;
   doctorsLimit?: number;
 };
@@ -198,6 +218,7 @@ export type PublicDoctorListOptions = PublicListOptions & {
 export type PublicDoctorDetailOptions = {
   slug: string;
   country?: CountryCode;
+  locale?: PublicCatalogLocale;
   servicesLimit?: number;
   practiceLocationsLimit?: number;
 };

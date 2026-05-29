@@ -1,3 +1,5 @@
+import { buildPublicContactActions } from './public-contact';
+
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/types';
 
@@ -104,7 +106,18 @@ function mapCenterRow(row: PublicCenterBaseRow): PublicCenterSummary {
   };
 }
 
-type PublicCenterDetailRow = PublicCenterBaseRow & Pick<CenterRow, 'verification_status'>;
+type PublicCenterContactRow = Pick<
+  CenterRow,
+  | 'primary_phone'
+  | 'secondary_phone'
+  | 'whatsapp_phone'
+  | 'public_primary_phone_visible'
+  | 'public_secondary_phone_visible'
+  | 'public_whatsapp_phone_visible'
+  | 'contact_review_status'
+>;
+
+type PublicCenterDetailRow = PublicCenterBaseRow & Pick<CenterRow, 'verification_status'> & PublicCenterContactRow;
 
 function mapCenterDetailRow(
   row: PublicCenterDetailRow,
@@ -118,7 +131,17 @@ function mapCenterDetailRow(
     location: locations[0] ?? null,
     locations,
     services,
-    doctors
+    doctors,
+    contactActions: buildPublicContactActions({
+      contactReviewStatus: row.contact_review_status,
+      country: row.default_country,
+      primaryPhone: row.primary_phone,
+      secondaryPhone: row.secondary_phone,
+      whatsappPhone: row.whatsapp_phone,
+      publicPrimaryPhoneVisible: row.public_primary_phone_visible,
+      publicSecondaryPhoneVisible: row.public_secondary_phone_visible,
+      publicWhatsappPhoneVisible: row.public_whatsapp_phone_visible
+    })
   };
 }
 
@@ -146,7 +169,7 @@ function mapPublicProviderLocationSummary(
   location: PublicCenterLocationLookupRow,
   area: Pick<GeoAreaRow, 'name_en' | 'name_ar'> | null,
   city: Pick<GeoCityRow, 'name_en' | 'name_ar'> | null,
-  country: Pick<GeoCountryRow, 'name_en' | 'name_ar'> | null
+  country: Pick<GeoCountryRow, 'name_en' | 'name_ar' | 'code'> | null
 ): PublicProviderLocationSummary {
   return {
     id: location.id,
@@ -160,7 +183,17 @@ function mapPublicProviderLocationSummary(
     countryNameAr: country?.name_ar ?? null,
     mapUrl: location.map_url,
     isPrimary: location.is_primary,
-    sortOrder: location.sort_order
+    sortOrder: location.sort_order,
+    contactActions: buildPublicContactActions({
+      contactReviewStatus: location.contact_review_status,
+      country: country?.code ?? null,
+      primaryPhone: location.primary_phone,
+      secondaryPhone: location.secondary_phone,
+      whatsappPhone: location.whatsapp_phone,
+      publicPrimaryPhoneVisible: location.public_primary_phone_visible,
+      publicSecondaryPhoneVisible: location.public_secondary_phone_visible,
+      publicWhatsappPhoneVisible: location.public_whatsapp_phone_visible
+    })
   };
 }
 
@@ -217,7 +250,7 @@ type PublicDoctorPracticeLocationRow = Pick<
   'id' | 'center_id' | 'center_location_id' | 'primary_specialty_id'
 >;
 
-type PublicPracticeCenterRow = PublicCenterBaseRow & Pick<CenterRow, 'verification_status'>;
+type PublicPracticeCenterRow = PublicCenterBaseRow & Pick<CenterRow, 'verification_status'> & PublicCenterContactRow;
 
 type PublicCenterLocationLookupRow = Pick<
   CenterLocationRow,
@@ -231,6 +264,13 @@ type PublicCenterLocationLookupRow = Pick<
   | 'is_primary'
   | 'sort_order'
   | 'map_url'
+  | 'primary_phone'
+  | 'secondary_phone'
+  | 'whatsapp_phone'
+  | 'public_primary_phone_visible'
+  | 'public_secondary_phone_visible'
+  | 'public_whatsapp_phone_visible'
+  | 'contact_review_status'
 >;
 
 function mapSpecialtyRow(row: PublicSpecialtyRow): PublicDoctorDetailSpecialtySummary {
@@ -362,7 +402,7 @@ async function getPublicLocationSummariesByLocation(
 
   const areasById = new Map<string, Pick<GeoAreaRow, 'name_en' | 'name_ar'>>();
   const citiesById = new Map<string, Pick<GeoCityRow, 'name_en' | 'name_ar'>>();
-  const countriesById = new Map<string, Pick<GeoCountryRow, 'name_en' | 'name_ar'>>();
+  const countriesById = new Map<string, Pick<GeoCountryRow, 'name_en' | 'name_ar' | 'code'>>();
 
   if (areaIds.length > 0) {
     const { data, error } = await supabase.from('geo_areas').select('id,name_en,name_ar').in('id', areaIds);
@@ -374,7 +414,7 @@ async function getPublicLocationSummariesByLocation(
   if (citiesError) return { locationsById, error: true };
   for (const city of cities ?? []) citiesById.set(city.id, city);
 
-  const { data: countries, error: countriesError } = await supabase.from('geo_countries').select('id,name_en,name_ar').in('id', countryIds);
+  const { data: countries, error: countriesError } = await supabase.from('geo_countries').select('id,name_en,name_ar,code').in('id', countryIds);
   if (countriesError) return { locationsById, error: true };
   for (const country of countries ?? []) countriesById.set(country.id, country);
 
@@ -419,7 +459,7 @@ async function listPublicDoctorPracticeLocations(
   const { data: centers, error: centersError } = await supabase
     .from('centers')
     .select(
-      'id,slug,name_en,name_ar,center_type,description_en,description_ar,short_description_en,short_description_ar,default_country,verification_status'
+      'id,slug,name_en,name_ar,center_type,description_en,description_ar,short_description_en,short_description_ar,default_country,verification_status,primary_phone,secondary_phone,whatsapp_phone,public_primary_phone_visible,public_secondary_phone_visible,public_whatsapp_phone_visible,contact_review_status'
     )
     .in('id', centerIds);
 
@@ -430,7 +470,7 @@ async function listPublicDoctorPracticeLocations(
 
   const { data: centerLocations, error: centerLocationsError } = await supabase
     .from('center_locations')
-    .select('id,center_id,name_en,name_ar,area_id,city_id,country_id,is_primary,sort_order,map_url')
+    .select('id,center_id,name_en,name_ar,area_id,city_id,country_id,is_primary,sort_order,map_url,primary_phone,secondary_phone,whatsapp_phone,public_primary_phone_visible,public_secondary_phone_visible,public_whatsapp_phone_visible,contact_review_status')
     .in('center_id', centerIds)
     .order('is_primary', { ascending: false })
     .order('sort_order', { ascending: true });
@@ -479,7 +519,22 @@ async function listPublicDoctorPracticeLocations(
             verificationStatus: center.verification_status
           },
           primarySpecialty: row.primary_specialty_id ? specialtiesResult.specialtiesById.get(row.primary_specialty_id) ?? null : null,
-          location: selectedLocation ? locationResult.locationsById.get(selectedLocation.id) ?? null : null
+          location: selectedLocation ? locationResult.locationsById.get(selectedLocation.id) ?? null : null,
+          contactActions: (() => {
+            const locationActions = selectedLocation ? locationResult.locationsById.get(selectedLocation.id)?.contactActions ?? [] : [];
+            if (locationActions.length > 0) return locationActions;
+
+            return buildPublicContactActions({
+              contactReviewStatus: center.contact_review_status,
+              country: center.default_country,
+              primaryPhone: center.primary_phone,
+              secondaryPhone: center.secondary_phone,
+              whatsappPhone: center.whatsapp_phone,
+              publicPrimaryPhoneVisible: center.public_primary_phone_visible,
+              publicSecondaryPhoneVisible: center.public_secondary_phone_visible,
+              publicWhatsappPhoneVisible: center.public_whatsapp_phone_visible
+            });
+          })()
         }
       ];
     }),
@@ -546,7 +601,7 @@ async function getPublicCenterLocations(
 
   const { data, error } = await supabase
     .from('center_locations')
-    .select('id,center_id,name_en,name_ar,area_id,city_id,country_id,is_primary,sort_order,map_url')
+    .select('id,center_id,name_en,name_ar,area_id,city_id,country_id,is_primary,sort_order,map_url,primary_phone,secondary_phone,whatsapp_phone,public_primary_phone_visible,public_secondary_phone_visible,public_whatsapp_phone_visible,contact_review_status')
     .eq('center_id', centerId)
     .order('is_primary', { ascending: false })
     .order('sort_order', { ascending: true })
@@ -642,7 +697,7 @@ export async function getPublicCenterBySlug(
   let query = supabase
     .from('centers')
     .select(
-      'id,slug,name_en,name_ar,center_type,description_en,description_ar,short_description_en,short_description_ar,default_country,verification_status'
+      'id,slug,name_en,name_ar,center_type,description_en,description_ar,short_description_en,short_description_ar,default_country,verification_status,primary_phone,secondary_phone,whatsapp_phone,public_primary_phone_visible,public_secondary_phone_visible,public_whatsapp_phone_visible,contact_review_status'
     )
     .eq('slug', options.slug)
     .limit(1);

@@ -2,6 +2,7 @@ import { formatPublicLocationSummary } from '@/lib/catalog/public-location';
 import type { PublicCenterDetail, PublicCatalogLocale } from '@/lib/catalog/public-types';
 
 import { PublicCenterDetailSection } from './public-center-detail-section';
+import { PublicContactActions } from './public-contact-actions';
 import { PublicLocationSection } from './public-location-section';
 
 type PublicCenterDetailProps = {
@@ -17,6 +18,7 @@ type CenterDetailCopy = {
   doctorsDescription: string;
   locationTitle: string;
   locationDescription: string;
+  contactTitle: string;
   verificationTitle: string;
   verificationVerified: string;
   verificationPlaceholder: string;
@@ -41,12 +43,13 @@ const copyByLocale: Record<PublicCatalogLocale, CenterDetailCopy> = {
     doctorsDescription: 'A limited read-only preview of public doctor profiles connected to this center.',
     locationTitle: 'Location overview',
     locationDescription: 'Only public branch labels and general area, city, and country information are shown in this phase.',
+    contactTitle: 'Contact this center',
     verificationTitle: 'Profile verification',
     verificationVerified: 'This public profile is marked as verified in DrMuscat records. This is not a license or MOH approval claim.',
     verificationPlaceholder: 'License and verification details will be added after the provider verification foundation is complete.',
     futureTitle: 'Future profile sections',
     futureDescription: 'These areas are reserved for later approved phases and are not active yet.',
-    futureSlots: ['Gallery', 'Video', 'Contact', 'WhatsApp', 'Directions', 'Reviews', 'Premium profile', 'Callback request'],
+    futureSlots: ['Gallery', 'Video', 'Reviews', 'Premium profile'],
     disclaimerTitle: 'Medical safety note',
     disclaimerBody:
       'This public profile is for healthcare discovery only. It is not medical advice, diagnosis, emergency guidance, or a guarantee of provider availability.',
@@ -64,12 +67,13 @@ const copyByLocale: Record<PublicCatalogLocale, CenterDetailCopy> = {
     doctorsDescription: 'عرض محدود للقراءة فقط لملفات الأطباء العامة المرتبطة بهذا المركز.',
     locationTitle: 'نظرة عامة على الموقع',
     locationDescription: 'تظهر في هذه المرحلة أسماء الفروع العامة ومعلومات عامة فقط عن المنطقة والمدينة والدولة.',
+    contactTitle: 'التواصل مع المركز',
     verificationTitle: 'توثيق الملف',
     verificationVerified: 'هذا الملف العام محدد كملف موثق في سجلات DrMuscat. هذا ليس ادعاءً بترخيص أو اعتماد من وزارة الصحة.',
     verificationPlaceholder: 'ستضاف تفاصيل الترخيص والتوثيق بعد اكتمال أساس توثيق مقدمي الخدمة.',
     futureTitle: 'أقسام الملف المستقبلية',
     futureDescription: 'هذه المساحات محجوزة لمراحل لاحقة معتمدة وليست مفعلة حالياً.',
-    futureSlots: ['المعرض', 'الفيديو', 'التواصل', 'واتساب', 'الاتجاهات', 'المراجعات', 'الملف المميز', 'طلب معاودة الاتصال'],
+    futureSlots: ['المعرض', 'الفيديو', 'المراجعات', 'الملف المميز'],
     disclaimerTitle: 'ملاحظة السلامة الطبية',
     disclaimerBody:
       'هذا الملف العام مخصص لاكتشاف خدمات الرعاية الصحية فقط. ولا يعد نصيحة طبية أو تشخيصاً أو إرشاداً للطوارئ أو ضماناً لتوفر مقدم الخدمة.',
@@ -112,6 +116,12 @@ export function PublicCenterDetail({ locale, center }: PublicCenterDetailProps) 
         {description ? <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700">{description}</p> : null}
       </PublicCenterDetailSection>
 
+      {center.contactActions.length > 0 ? (
+        <PublicCenterDetailSection title={copy.contactTitle}>
+          <PublicContactActions actions={center.contactActions} locale={locale} />
+        </PublicCenterDetailSection>
+      ) : null}
+
       <PublicLocationSection
         locale={locale}
         title={copy.locationTitle}
@@ -120,6 +130,7 @@ export function PublicCenterDetail({ locale, center }: PublicCenterDetailProps) 
         emptyLabel={copy.noLocation}
         directionsLabel={copy.directionsLabel}
         directionsAriaLabel={() => copy.directionsAriaLabel}
+        renderLocationActions={(location) => <PublicContactActions actions={location.contactActions} locale={locale} />}
       />
 
       <PublicCenterDetailSection title={copy.servicesTitle} description={copy.servicesDescription}>

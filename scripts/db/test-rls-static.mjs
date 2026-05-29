@@ -24,6 +24,7 @@ const REQUIRED_FILES = [
   '0043_legal_consent_audit_access_helpers.sql',
   '0044_legal_consent_audit_rls.sql',
   '0046_callback_request_foundation.sql',
+  '0047_provider_license_verification_foundation.sql',
 ];
 
 const APPROVED_POLICY_FILES = new Set([
@@ -35,6 +36,7 @@ const APPROVED_POLICY_FILES = new Set([
   '0042_monetization_sponsored_rls.sql',
   '0044_legal_consent_audit_rls.sql',
   '0046_callback_request_foundation.sql',
+  '0047_provider_license_verification_foundation.sql',
 ]);
 
 const HELPER_FILES = new Set([
@@ -94,6 +96,7 @@ const ALLOWED_ANON_POLICIES = new Set([
   'subscription_plans_select_public_active',
   'sponsored_placements_select_public_active',
   'legal_documents_select_public_active',
+  'provider_license_records_public_select_anon',
 ]);
 
 function fail(message) {
@@ -209,6 +212,60 @@ assert(
 assert(
   !/create\s+policy[\s\S]*?on\s+public\.callback_requests[\s\S]*?for\s+select/i.test(callbackRequestFoundationContent),
   'callback_requests must not have any public SELECT policy in this phase',
+);
+
+
+const providerLicenseRecordsContent = contentsByFile.get('0047_provider_license_verification_foundation.sql') ?? '';
+assert(
+  /alter\s+table\s+public\.provider_license_records\s+enable\s+row\s+level\s+security/i.test(providerLicenseRecordsContent),
+  'provider_license_records must have RLS enabled in 0047_provider_license_verification_foundation.sql',
+);
+
+for (const policyName of [
+  'provider_license_records_public_select_anon',
+  'provider_license_records_public_select_authenticated',
+]) {
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}\\s+on\\s+public\\.provider_license_records[\\s\\S]*?for\\s+select`, 'i').test(providerLicenseRecordsContent),
+    `provider_license_records missing SELECT policy: ${policyName}`,
+  );
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}[\\s\\S]*?public_license_visible\\s*=\\s*true`, 'i').test(providerLicenseRecordsContent),
+    `${policyName} must require public_license_visible = true`,
+  );
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}[\\s\\S]*?license_review_status\\s*=\\s*'approved'`, 'i').test(providerLicenseRecordsContent),
+    `${policyName} must require license_review_status = 'approved'`,
+  );
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}[\\s\\S]*?license_number\\s+is\\s+not\\s+null[\\s\\S]*?btrim\\s*\\(\\s*license_number\\s*\\)\\s*<>\\s*''`, 'i').test(providerLicenseRecordsContent),
+    `${policyName} must require a non-empty license_number`,
+  );
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}[\\s\\S]*?from\\s+public\\.centers\\s+as\\s+c[\\s\\S]*?c\\.deleted_at\\s+is\\s+null[\\s\\S]*?c\\.is_active\\s*=\\s*true[\\s\\S]*?c\\.status\\s*=\\s*'active'`, 'i').test(providerLicenseRecordsContent),
+    `${policyName} must require linked centers to be public active`,
+  );
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}[\\s\\S]*?from\\s+public\\.doctors\\s+as\\s+d[\\s\\S]*?d\\.deleted_at\\s+is\\s+null[\\s\\S]*?d\\.is_active\\s*=\\s*true[\\s\\S]*?d\\.status\\s*=\\s*'active'`, 'i').test(providerLicenseRecordsContent),
+    `${policyName} must require linked doctors to be public active`,
+  );
+}
+
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.provider_license_records[\s\S]*?for\s+(insert|update|delete)/i.test(providerLicenseRecordsContent),
+  'provider_license_records must not have INSERT/UPDATE/DELETE policies',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.provider_license_records[\s\S]*?to\s+anon[\s\S]*?for\s+(insert|update|delete)/i.test(providerLicenseRecordsContent),
+  'provider_license_records must not grant anon write policies',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.provider_license_records[\s\S]*?to\s+authenticated[\s\S]*?for\s+(insert|update|delete)/i.test(providerLicenseRecordsContent),
+  'provider_license_records must not grant authenticated write policies',
+);
+assert(
+  !/create\s+policy(?!\s+provider_license_records_public_select_anon|\s+provider_license_records_public_select_authenticated)[\s\S]*?on\s+public\.provider_license_records[\s\S]*?for\s+select/i.test(providerLicenseRecordsContent),
+  'provider_license_records must not include broad or unexpected SELECT policies',
 );
 
 console.log('✅ RLS static harness checks passed for required Phase 3 policy/helper migration rules.');

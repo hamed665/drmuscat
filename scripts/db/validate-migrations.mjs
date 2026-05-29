@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
-const PHASE = '4.6D-1';
+const PHASE = '4.6E-1';
 
 const required = [
   '0001_extensions.sql',
@@ -49,7 +49,8 @@ const required = [
   '0043_legal_consent_audit_access_helpers.sql',
   '0044_legal_consent_audit_rls.sql',
   '0045_contact_visibility_foundation.sql',
-  '0046_callback_request_foundation.sql'
+  '0046_callback_request_foundation.sql',
+  '0047_provider_license_verification_foundation.sql'
 ];
 
 const dir = 'supabase/migrations';
@@ -135,7 +136,8 @@ const rlsPolicyFiles = new Set([
   '0040_reviews_reports_media_private_rls.sql',
   '0042_monetization_sponsored_rls.sql',
   '0044_legal_consent_audit_rls.sql',
-  '0046_callback_request_foundation.sql'
+  '0046_callback_request_foundation.sql',
+  '0047_provider_license_verification_foundation.sql'
 ]);
 const catalogRlsPolicyFile = '0032_rls_public_catalog_read_policies.sql';
 const profilesRlsPolicyFile = '0033_profiles_rls.sql';
@@ -155,6 +157,7 @@ const legalConsentAuditRlsFile = '0044_legal_consent_audit_rls.sql';
 
 const contactVisibilityFoundationFile = '0045_contact_visibility_foundation.sql';
 const callbackRequestFoundationFile = '0046_callback_request_foundation.sql';
+const providerLicenseVerificationFoundationFile = '0047_provider_license_verification_foundation.sql';
 const createPolicyPattern = /\bcreate\s+policy\b/i;
 const enableRlsPattern = /\benable\s+row\s+level\s+security\b/i;
 
@@ -1398,13 +1401,98 @@ for (const forbidden of [
   /\bbooking\b/i,
   /\bpayment\b/i,
   /\bai\b/i,
-  /\breviews?\b/i,
+  /reviews?\/comments/i,
   /\bratings?\b/i,
   /\bemergency\b/i,
   /online\s+consultation/i,
   /direct\s+doctor\s+chat/i,
 ]) {
   requireCondition(!forbidden.test(callbackRequestFoundationContent), `0046_callback_request_foundation.sql contains forbidden pattern: ${forbidden}`);
+}
+
+
+const providerLicenseVerificationFoundationContent = readFileSync(`${dir}/${providerLicenseVerificationFoundationFile}`, 'utf8');
+
+for (const pattern of [
+  /create\s+table\s+if\s+not\s+exists\s+public\.provider_license_records/i,
+  /id\s+uuid\s+primary\s+key\s+default\s+gen_random_uuid\s*\(\s*\)/i,
+  /entity_type\s+text\s+not\s+null/i,
+  /center_id\s+uuid\s+null\s+references\s+public\.centers\s*\(\s*id\s*\)/i,
+  /doctor_id\s+uuid\s+null\s+references\s+public\.doctors\s*\(\s*id\s*\)/i,
+  /license_number\s+text\s+null/i,
+  /license_authority\s+text\s+null/i,
+  /license_country\s+public\.country_code\s+not\s+null\s+default\s+'om'/i,
+  /license_status\s+text\s+not\s+null\s+default\s+'not_provided'/i,
+  /license_review_status\s+text\s+not\s+null\s+default\s+'not_reviewed'/i,
+  /license_reviewed_at\s+timestamptz\s+null/i,
+  /public_license_visible\s+boolean\s+not\s+null\s+default\s+false/i,
+  /metadata\s+jsonb\s+not\s+null\s+default\s+'\{\}'::jsonb/i,
+  /created_at\s+timestamptz\s+not\s+null\s+default\s+now\s*\(\s*\)/i,
+  /updated_at\s+timestamptz\s+not\s+null\s+default\s+now\s*\(\s*\)/i,
+  /deleted_at\s+timestamptz\s+null/i,
+  /provider_license_records_entity_type_check[\s\S]*?entity_type\s+in\s*\(\s*'center'\s*,\s*'doctor'\s*\)/i,
+  /provider_license_records_entity_target_check[\s\S]*?entity_type\s*=\s*'center'[\s\S]*?center_id\s+is\s+not\s+null[\s\S]*?doctor_id\s+is\s+null[\s\S]*?entity_type\s*=\s*'doctor'[\s\S]*?doctor_id\s+is\s+not\s+null[\s\S]*?center_id\s+is\s+null/i,
+  /provider_license_records_license_status_check[\s\S]*?license_status\s+in\s*\(\s*'not_provided'\s*,\s*'provided'\s*,\s*'expired'\s*,\s*'suspended'\s*,\s*'unknown'\s*\)/i,
+  /provider_license_records_license_review_status_check[\s\S]*?license_review_status\s+in\s*\(\s*'not_reviewed'\s*,\s*'pending'\s*,\s*'approved'\s*,\s*'rejected'\s*\)/i,
+  /provider_license_records_license_number_length_check[\s\S]*?license_number\s+is\s+null\s+or\s+char_length\s*\(\s*btrim\s*\(\s*license_number\s*\)\s*\)\s+between\s+3\s+and\s+80/i,
+  /provider_license_records_license_number_safe_text_check[\s\S]*?license_number\s+!~\*\s*'<\[\^>\]\+>'[\s\S]*?license_number\s+~\s+'\^\[A-Za-z0-9 [\s\S]*?\]\+\$'/i,
+  /provider_license_records_license_authority_length_check[\s\S]*?license_authority\s+is\s+null\s+or\s+char_length\s*\(\s*btrim\s*\(\s*license_authority\s*\)\s*\)\s+between\s+2\s+and\s+120/i,
+  /provider_license_records_license_authority_plain_text_check[\s\S]*?license_authority\s+is\s+null\s+or\s+license_authority\s+!~\*\s*'<\[\^>\]\+>'/i,
+  /provider_license_records_public_visible_requires_approval_check[\s\S]*?public_license_visible\s*=\s*false[\s\S]*?license_review_status\s*=\s*'approved'[\s\S]*?license_number\s+is\s+not\s+null[\s\S]*?btrim\s*\(\s*license_number\s*\)\s*<>\s*''/i,
+  /provider_license_records_reviewed_at_status_check[\s\S]*?license_reviewed_at\s+is\s+null\s+or\s+license_review_status\s+in\s*\(\s*'approved'\s*,\s*'rejected'\s*\)/i,
+  /create\s+index\s+if\s+not\s+exists\s+provider_license_records_center_id_idx\s+on\s+public\.provider_license_records\s*\(\s*center_id\s*\)[\s\S]*?where\s+center_id\s+is\s+not\s+null/i,
+  /create\s+index\s+if\s+not\s+exists\s+provider_license_records_doctor_id_idx\s+on\s+public\.provider_license_records\s*\(\s*doctor_id\s*\)[\s\S]*?where\s+doctor_id\s+is\s+not\s+null/i,
+  /create\s+index\s+if\s+not\s+exists\s+provider_license_records_public_center_idx\s+on\s+public\.provider_license_records\s*\(\s*center_id\s*,\s*license_review_status\s*,\s*public_license_visible\s*\)[\s\S]*?where\s+deleted_at\s+is\s+null\s+and\s+center_id\s+is\s+not\s+null/i,
+  /create\s+index\s+if\s+not\s+exists\s+provider_license_records_public_doctor_idx\s+on\s+public\.provider_license_records\s*\(\s*doctor_id\s*,\s*license_review_status\s*,\s*public_license_visible\s*\)[\s\S]*?where\s+deleted_at\s+is\s+null\s+and\s+doctor_id\s+is\s+not\s+null/i,
+  /create\s+index\s+if\s+not\s+exists\s+provider_license_records_deleted_at_idx\s+on\s+public\.provider_license_records\s*\(\s*deleted_at\s*\)[\s\S]*?where\s+deleted_at\s+is\s+not\s+null/i,
+  /create\s+index\s+if\s+not\s+exists\s+provider_license_records_license_review_status_idx\s+on\s+public\.provider_license_records\s*\(\s*license_review_status\s*\)[\s\S]*?where\s+deleted_at\s+is\s+null/i,
+  /create\s+index\s+if\s+not\s+exists\s+provider_license_records_public_visible_idx\s+on\s+public\.provider_license_records\s*\(\s*public_license_visible\s*\)[\s\S]*?where\s+deleted_at\s+is\s+null/i,
+  /create\s+unique\s+index\s+if\s+not\s+exists\s+provider_license_records_one_active_center_license_idx\s+on\s+public\.provider_license_records\s*\(\s*center_id\s*\)[\s\S]*?where\s+center_id\s+is\s+not\s+null\s+and\s+deleted_at\s+is\s+null/i,
+  /create\s+unique\s+index\s+if\s+not\s+exists\s+provider_license_records_one_active_doctor_license_idx\s+on\s+public\.provider_license_records\s*\(\s*doctor_id\s*\)[\s\S]*?where\s+doctor_id\s+is\s+not\s+null\s+and\s+deleted_at\s+is\s+null/i,
+  /create\s+trigger\s+trg_provider_license_records_set_updated_at[\s\S]*?execute\s+function\s+public\.set_updated_at\s*\(\s*\)/i,
+  /alter\s+table\s+public\.provider_license_records\s+enable\s+row\s+level\s+security/i,
+  /create\s+policy\s+provider_license_records_public_select_anon/i,
+  /create\s+policy\s+provider_license_records_public_select_authenticated/i,
+  /public_license_visible\s*=\s*true/i,
+  /license_review_status\s*=\s*'approved'/i,
+  /license_number\s+is\s+not\s+null/i,
+  /btrim\s*\(\s*license_number\s*\)\s*<>\s*''/i,
+  /from\s+public\.centers\s+as\s+c[\s\S]*?c\.deleted_at\s+is\s+null[\s\S]*?c\.is_active\s*=\s*true[\s\S]*?c\.status\s*=\s*'active'/i,
+  /from\s+public\.doctors\s+as\s+d[\s\S]*?d\.deleted_at\s+is\s+null[\s\S]*?d\.is_active\s*=\s*true[\s\S]*?d\.status\s*=\s*'active'/i,
+]) {
+  requireCondition(pattern.test(providerLicenseVerificationFoundationContent), `0047_provider_license_verification_foundation.sql missing required pattern: ${pattern}`);
+}
+
+for (const forbidden of [
+  /\binsert\s+into\b/i,
+  /\bdrop\b/i,
+  /license_document_url/i,
+  /license_expiry_date/i,
+  /license_verified_by/i,
+  /license_reviewed_by/i,
+  /reviewer/i,
+  /admin_id/i,
+  /admin\s+id/i,
+  /moh\s+badge/i,
+  /government\s+verification/i,
+  /official\s+endorsement/i,
+  /\bbest\b/i,
+  /\btop\b/i,
+  /most\s+trusted/i,
+  /\bbooking\b/i,
+  /\bpayment\b/i,
+  /\bai\b/i,
+  /reviews?\/comments/i,
+  /\bratings?\b/i,
+  /seed\s+rows?/i,
+  /admin\s+dashboard/i,
+  /provider\s+dashboard/i,
+  /file\s+upload/i,
+  /for\s+insert/i,
+  /for\s+update/i,
+  /for\s+delete/i,
+]) {
+  requireCondition(!forbidden.test(providerLicenseVerificationFoundationContent), `0047_provider_license_verification_foundation.sql contains forbidden pattern: ${forbidden}`);
 }
 
 console.log(`Phase ${PHASE} migration validation passed.`);

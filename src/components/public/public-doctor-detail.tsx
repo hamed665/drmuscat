@@ -3,6 +3,7 @@ import type { PublicCatalogLocale, PublicDoctorDetail } from '@/lib/catalog/publ
 import { publicCenterDetailRoute } from '@/lib/routes/public';
 
 import { PublicCenterDetailSection } from './public-center-detail-section';
+import { PublicContactActions } from './public-contact-actions';
 
 type PublicDoctorDetailProps = {
   locale: PublicCatalogLocale;
@@ -50,16 +51,12 @@ const copyByLocale: Record<PublicCatalogLocale, DoctorDetailCopy> = {
     futureTitle: 'Future doctor profile sections',
     futureDescription: 'These areas are reserved for later approved phases and are not active yet.',
     futureSlots: [
-      'Contact',
-      'WhatsApp',
       'Directions',
-      'Booking',
       'Reviews',
       'Ratings',
       'Media/gallery',
       'Video',
-      'Premium profile',
-      'Online consultation'
+      'Premium profile'
     ],
     disclaimerTitle: 'Medical safety note',
     disclaimerBody:
@@ -88,16 +85,12 @@ const copyByLocale: Record<PublicCatalogLocale, DoctorDetailCopy> = {
     futureTitle: 'أقسام ملف الطبيب المستقبلية',
     futureDescription: 'هذه المساحات محجوزة لمراحل لاحقة معتمدة وليست مفعلة حالياً.',
     futureSlots: [
-      'التواصل',
-      'واتساب',
       'الاتجاهات',
-      'الحجز',
       'المراجعات',
       'التقييمات',
       'المعرض',
       'الفيديو',
-      'الملف المميز',
-      'الاستشارة عن بعد'
+      'الملف المميز'
     ],
     disclaimerTitle: 'ملاحظة السلامة الطبية',
     disclaimerBody:
@@ -221,6 +214,7 @@ export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) 
                     {specialtyName ? <p>{specialtyName}</p> : null}
                   </div>
                   <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <PublicContactActions actions={practiceLocation.contactActions} locale={locale} />
                     {directionsUrl ? (
                       <a
                         href={directionsUrl}

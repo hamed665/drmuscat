@@ -18,6 +18,7 @@ type PublicLocationSectionProps = {
   directionsLabel?: string;
   directionsAriaLabel?: (locationLabel: string) => string;
   renderLocationMeta?: (location: PublicProviderLocationSummary) => ReactNode;
+  renderLocationActions?: (location: PublicProviderLocationSummary) => ReactNode;
 };
 
 export function PublicLocationSection({
@@ -28,7 +29,8 @@ export function PublicLocationSection({
   emptyLabel,
   directionsLabel,
   directionsAriaLabel,
-  renderLocationMeta
+  renderLocationMeta,
+  renderLocationActions
 }: PublicLocationSectionProps) {
   return (
     <PublicCenterDetailSection title={title} description={description}>
@@ -46,13 +48,14 @@ export function PublicLocationSection({
                 <p className={locationName ? 'mt-2 text-sm leading-6 text-slate-600' : 'text-sm leading-6 text-slate-600'}>
                   {geoLine ?? emptyLabel}
                 </p>
+                {renderLocationActions ? <div className="mt-4">{renderLocationActions(location)}</div> : null}
                 {directionsLabel && directionsUrl ? (
                   <a
                     href={directionsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={directionsAriaLabel ? directionsAriaLabel(locationLabel) : directionsLabel}
-                    className="mt-4 inline-flex w-fit rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                    className={(renderLocationActions ? 'mt-3' : 'mt-4') + ' inline-flex w-fit rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2'}
                   >
                     {directionsLabel}
                   </a>

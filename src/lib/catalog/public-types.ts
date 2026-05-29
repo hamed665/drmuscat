@@ -1,3 +1,4 @@
+import type { PublicContactAction } from './public-contact';
 import type { Database } from '@/lib/supabase/types';
 
 export type PublicCatalogLocale = 'en' | 'ar';
@@ -122,6 +123,7 @@ export type PublicProviderLocationSummary = {
   mapUrl: string | null;
   isPrimary: boolean;
   sortOrder: number;
+  contactActions: PublicContactAction[];
 };
 
 export type PublicCenterDetailLocationSummary = PublicProviderLocationSummary;
@@ -132,6 +134,7 @@ export type PublicCenterDetail = PublicCenterSummary & {
   locations: PublicProviderLocationSummary[];
   services: PublicCenterDetailServiceSummary[];
   doctors: PublicCenterDetailDoctorSummary[];
+  contactActions: PublicContactAction[];
 };
 
 export type PublicDoctorPracticeLocationSummary = {
@@ -141,6 +144,7 @@ export type PublicDoctorPracticeLocationSummary = {
   };
   primarySpecialty: PublicDoctorDetailSpecialtySummary | null;
   location: PublicProviderLocationSummary | null;
+  contactActions: PublicContactAction[];
 };
 
 export type PublicDoctorDetail = PublicDoctorSummary & {

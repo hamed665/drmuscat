@@ -5,6 +5,7 @@ import { publicCenterDetailRoute } from '@/lib/routes/public';
 import { PublicCallbackRequestForm } from './public-callback-request-form';
 import { PublicCenterDetailSection } from './public-center-detail-section';
 import { PublicContactActions } from './public-contact-actions';
+import { PublicLicenseInfoCard } from './public-license-info-card';
 
 type PublicDoctorDetailProps = {
   locale: PublicCatalogLocale;
@@ -174,6 +175,11 @@ export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) 
             </div>
           ) : null}
         </dl>
+        {doctor.licenseInfo ? (
+          <div className="mt-4">
+            <PublicLicenseInfoCard locale={locale} licenseInfo={doctor.licenseInfo} variant="doctor" />
+          </div>
+        ) : null}
       </PublicCenterDetailSection>
 
       <PublicCenterDetailSection title={copy.servicesTitle} description={copy.servicesDescription}>

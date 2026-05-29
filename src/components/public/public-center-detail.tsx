@@ -5,6 +5,7 @@ import { PublicCallbackRequestForm } from './public-callback-request-form';
 import { PublicCenterDetailSection } from './public-center-detail-section';
 import { PublicContactActions } from './public-contact-actions';
 import { PublicLocationSection } from './public-location-section';
+import { PublicLicenseInfoCard } from './public-license-info-card';
 
 type PublicCenterDetailProps = {
   locale: PublicCatalogLocale;
@@ -188,6 +189,11 @@ export function PublicCenterDetail({ locale, center }: PublicCenterDetailProps) 
         <p className="text-sm leading-6 text-slate-700">
           {center.verificationStatus === 'verified' ? copy.verificationVerified : copy.verificationPlaceholder}
         </p>
+        {center.licenseInfo ? (
+          <div className="mt-4">
+            <PublicLicenseInfoCard locale={locale} licenseInfo={center.licenseInfo} variant="center" />
+          </div>
+        ) : null}
       </PublicCenterDetailSection>
 
       <PublicCenterDetailSection title={copy.futureTitle} description={copy.futureDescription}>

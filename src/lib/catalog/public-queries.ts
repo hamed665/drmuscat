@@ -1,4 +1,5 @@
 import { buildPublicContactActions } from './public-contact';
+import { buildPublicMediaImage, getAllowedPublicImageMimeTypes, type PublicMediaInput } from './public-media';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/types';
@@ -6,6 +7,7 @@ import type { Database } from '@/lib/supabase/types';
 import type {
   PublicCatalogQueryError,
   PublicCatalogQueryResult,
+  PublicCatalogLocale,
   PublicCatalogSearchResult,
   PublicCenterDetail,
   PublicCenterDetailDoctorSummary,
@@ -24,6 +26,7 @@ import type {
   PublicGeoAreaListOptions,
   PublicGeoAreaSummary,
   PublicLicenseInfo,
+  PublicMediaImage,
   PublicProviderLocationSummary,
   PublicSearchOptions,
   PublicServiceListOptions,
@@ -35,6 +38,8 @@ const MAX_LIMIT = 50;
 const MAX_SEARCH_QUERY_LENGTH = 64;
 const HTML_LIKE_TAG_PATTERN = /<[^>]+>/;
 const SAFE_LICENSE_NUMBER_PATTERN = /^[A-Za-z0-9 .\-/]+$/;
+const CENTER_MEDIA_QUERY_LIMIT = 24;
+const CENTER_GALLERY_IMAGE_LIMIT = 8;
 
 type CenterRow = Database['public']['Tables']['centers']['Row'];
 type CenterLocationRow = Database['public']['Tables']['center_locations']['Row'];
@@ -48,6 +53,35 @@ type SpecialtyRow = Database['public']['Tables']['specialties']['Row'];
 type GeoAreaRow = Database['public']['Tables']['geo_areas']['Row'];
 type GeoCityRow = Database['public']['Tables']['geo_cities']['Row'];
 type GeoCountryRow = Database['public']['Tables']['geo_countries']['Row'];
+type EntityMediaRow = Database['public']['Tables']['entity_media']['Row'];
+type MediaAssetRow = Database['public']['Tables']['media_assets']['Row'];
+
+type PublicMediaAssetLookupRow = Pick<MediaAssetRow, 'id' | 'public_url' | 'mime_type' | 'width' | 'height'>;
+
+type PublicEntityMediaLookupRow = Pick<
+  EntityMediaRow,
+  | 'id'
+  | 'usage_kind'
+  | 'alt_text_en'
+  | 'alt_text_ar'
+  | 'caption_en'
+  | 'caption_ar'
+  | 'is_primary'
+  | 'is_featured'
+  | 'sort_order'
+> & {
+  media_assets: PublicMediaAssetLookupRow | PublicMediaAssetLookupRow[] | null;
+};
+
+type PublicCenterMediaResult = {
+  galleryImages: PublicMediaImage[];
+  logoImage: PublicMediaImage | null;
+  coverImage: PublicMediaImage | null;
+};
+
+type PublicDoctorMediaResult = {
+  profileImage: PublicMediaImage | null;
+};
 
 type PublicLicenseRecordLookupRow = Pick<
   ProviderLicenseRecordRow,
@@ -166,6 +200,125 @@ async function getPublicLicenseInfoForEntity(
   };
 }
 
+
+function normalizePublicCatalogLocale(locale: PublicCatalogLocale | undefined): PublicCatalogLocale {
+  return locale === 'ar' ? 'ar' : 'en';
+}
+
+function createEmptyCenterMediaResult(): PublicCenterMediaResult {
+  return {
+    galleryImages: [],
+    logoImage: null,
+    coverImage: null
+  };
+}
+
+function createEmptyDoctorMediaResult(): PublicDoctorMediaResult {
+  return { profileImage: null };
+}
+
+function mapEntityMediaLookupRow(row: PublicEntityMediaLookupRow): PublicMediaInput {
+  return {
+    id: row.id,
+    usage_kind: row.usage_kind,
+    alt_text_en: row.alt_text_en,
+    alt_text_ar: row.alt_text_ar,
+    caption_en: row.caption_en,
+    caption_ar: row.caption_ar,
+    is_primary: row.is_primary,
+    is_featured: row.is_featured,
+    sort_order: row.sort_order,
+    media_assets: row.media_assets
+  };
+}
+
+async function getPublicCenterMedia(
+  centerId: string,
+  locale: PublicCatalogLocale
+): Promise<{ media: PublicCenterMediaResult; error: boolean }> {
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('entity_media')
+    .select(
+      'id,usage_kind,alt_text_en,alt_text_ar,caption_en,caption_ar,is_primary,is_featured,sort_order,media_assets!inner(id,public_url,mime_type,width,height)'
+    )
+    .eq('entity_type', 'center')
+    .eq('entity_id', centerId)
+    .is('deleted_at', null)
+    .eq('public_media_visible', true)
+    .eq('media_review_status', 'approved')
+    .in('usage_kind', ['logo', 'cover', 'gallery', 'thumbnail'])
+    .is('media_assets.deleted_at', null)
+    .eq('media_assets.status', 'approved')
+    .not('media_assets.public_url', 'is', null)
+    .in('media_assets.mime_type', getAllowedPublicImageMimeTypes())
+    .order('is_featured', { ascending: false })
+    .order('is_primary', { ascending: false })
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+    .limit(CENTER_MEDIA_QUERY_LIMIT);
+
+  if (error) return { media: createEmptyCenterMediaResult(), error: true };
+
+  const media = createEmptyCenterMediaResult();
+
+  for (const row of (data ?? []) as PublicEntityMediaLookupRow[]) {
+    const image = buildPublicMediaImage(mapEntityMediaLookupRow(row), locale, 'center');
+    if (!image) continue;
+
+    if (image.usageKind === 'logo' && !media.logoImage) {
+      media.logoImage = image;
+      continue;
+    }
+
+    if (image.usageKind === 'cover' && !media.coverImage) {
+      media.coverImage = image;
+      continue;
+    }
+
+    if ((image.usageKind === 'gallery' || image.usageKind === 'thumbnail') && media.galleryImages.length < CENTER_GALLERY_IMAGE_LIMIT) {
+      media.galleryImages.push(image);
+    }
+  }
+
+  return { media, error: false };
+}
+
+async function getPublicDoctorMedia(
+  doctorId: string,
+  locale: PublicCatalogLocale
+): Promise<{ media: PublicDoctorMediaResult; error: boolean }> {
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('entity_media')
+    .select(
+      'id,usage_kind,alt_text_en,alt_text_ar,caption_en,caption_ar,is_primary,is_featured,sort_order,media_assets!inner(id,public_url,mime_type,width,height)'
+    )
+    .eq('entity_type', 'doctor')
+    .eq('entity_id', doctorId)
+    .is('deleted_at', null)
+    .eq('public_media_visible', true)
+    .eq('media_review_status', 'approved')
+    .in('usage_kind', ['profile', 'thumbnail'])
+    .is('media_assets.deleted_at', null)
+    .eq('media_assets.status', 'approved')
+    .not('media_assets.public_url', 'is', null)
+    .in('media_assets.mime_type', getAllowedPublicImageMimeTypes())
+    .order('is_primary', { ascending: false })
+    .order('is_featured', { ascending: false })
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+    .limit(1);
+
+  if (error) return { media: createEmptyDoctorMediaResult(), error: true };
+
+  const profileImage = ((data ?? []) as PublicEntityMediaLookupRow[])
+    .map((row) => buildPublicMediaImage(mapEntityMediaLookupRow(row), locale, 'doctor'))
+    .find((image): image is PublicMediaImage => Boolean(image)) ?? null;
+
+  return { media: { profileImage }, error: false };
+}
+
 function createDiscoveryCategories(): PublicDiscoveryCategory[] {
   return [
     { slug: 'doctors', label: 'Doctors' },
@@ -211,7 +364,8 @@ function mapCenterDetailRow(
   licenseInfo: PublicLicenseInfo | null,
   locations: PublicProviderLocationSummary[],
   services: PublicCenterDetailServiceSummary[],
-  doctors: PublicCenterDetailDoctorSummary[]
+  doctors: PublicCenterDetailDoctorSummary[],
+  media: PublicCenterMediaResult
 ): PublicCenterDetail {
   return {
     ...mapCenterRow(row),
@@ -221,6 +375,9 @@ function mapCenterDetailRow(
     locations,
     services,
     doctors,
+    galleryImages: media.galleryImages,
+    logoImage: media.logoImage,
+    coverImage: media.coverImage,
     contactActions: buildPublicContactActions({
       contactReviewStatus: row.contact_review_status,
       country: row.default_country,
@@ -393,7 +550,8 @@ function mapDoctorDetailRow(
   primarySpecialty: PublicDoctorDetailSpecialtySummary | null,
   licenseInfo: PublicLicenseInfo | null,
   services: PublicDoctorDetailServiceSummary[],
-  practiceLocations: PublicDoctorPracticeLocationSummary[]
+  practiceLocations: PublicDoctorPracticeLocationSummary[],
+  media: PublicDoctorMediaResult
 ): PublicDoctorDetail {
   return {
     ...mapDoctorRow(row),
@@ -403,6 +561,7 @@ function mapDoctorDetailRow(
     bioEn: row.bio_en,
     bioAr: row.bio_ar,
     profileImageUrl: row.profile_image_url,
+    profileImage: media.profileImage,
     yearsExperience: row.years_experience,
     verificationStatus: row.verification_status,
     primarySpecialty,
@@ -784,6 +943,7 @@ export async function getPublicCenterBySlug(
   const servicesLimit = clampLimit(options.servicesLimit ?? 6);
   const doctorsLimit = clampLimit(options.doctorsLimit ?? 6);
   const locationsLimit = clampLimit(6);
+  const locale = normalizePublicCatalogLocale(options.locale);
 
   let query = supabase
     .from('centers')
@@ -799,19 +959,27 @@ export async function getPublicCenterBySlug(
   if (error) return createErrorResult(null);
   if (!center) return createSuccessResult(null, 'no_rows');
 
-  const [locationsResult, servicesResult, doctorsResult, licenseResult] = await Promise.all([
+  const [locationsResult, servicesResult, doctorsResult, licenseResult, mediaResult] = await Promise.all([
     getPublicCenterLocations(center.id, locationsLimit),
     listPublicCenterServices(center.id, servicesLimit),
     listPublicCenterDoctors(center.id, doctorsLimit),
-    getPublicLicenseInfoForEntity({ entityType: 'center', entityId: center.id })
+    getPublicLicenseInfoForEntity({ entityType: 'center', entityId: center.id }),
+    getPublicCenterMedia(center.id, locale)
   ]);
 
-  if (locationsResult.error || servicesResult.error || doctorsResult.error || licenseResult.error) {
+  if (locationsResult.error || servicesResult.error || doctorsResult.error || licenseResult.error || mediaResult.error) {
     return createErrorResult(null);
   }
 
   return createSuccessResult(
-    mapCenterDetailRow(center, licenseResult.licenseInfo, locationsResult.locations, servicesResult.services, doctorsResult.doctors)
+    mapCenterDetailRow(
+      center,
+      licenseResult.licenseInfo,
+      locationsResult.locations,
+      servicesResult.services,
+      doctorsResult.doctors,
+      mediaResult.media
+    )
   );
 }
 
@@ -842,6 +1010,7 @@ export async function getPublicDoctorBySlug(
   const supabase = createSupabaseServerClient();
   const servicesLimit = clampLimit(options.servicesLimit ?? 6);
   const practiceLocationsLimit = clampLimit(options.practiceLocationsLimit ?? 6);
+  const locale = normalizePublicCatalogLocale(options.locale);
 
   let query = supabase
     .from('doctors')
@@ -857,14 +1026,15 @@ export async function getPublicDoctorBySlug(
   if (error) return createErrorResult(null);
   if (!doctor) return createSuccessResult(null, 'no_rows');
 
-  const [primarySpecialtyResult, servicesResult, practiceLocationsResult, licenseResult] = await Promise.all([
+  const [primarySpecialtyResult, servicesResult, practiceLocationsResult, licenseResult, mediaResult] = await Promise.all([
     getPublicSpecialtiesByIds(doctor.primary_specialty_id ? [doctor.primary_specialty_id] : []),
     listPublicDoctorServices(doctor.id, servicesLimit),
     listPublicDoctorPracticeLocations(doctor.id, practiceLocationsLimit),
-    getPublicLicenseInfoForEntity({ entityType: 'doctor', entityId: doctor.id })
+    getPublicLicenseInfoForEntity({ entityType: 'doctor', entityId: doctor.id }),
+    getPublicDoctorMedia(doctor.id, locale)
   ]);
 
-  if (primarySpecialtyResult.error || servicesResult.error || practiceLocationsResult.error || licenseResult.error) {
+  if (primarySpecialtyResult.error || servicesResult.error || practiceLocationsResult.error || licenseResult.error || mediaResult.error) {
     return createErrorResult(null);
   }
 
@@ -874,7 +1044,8 @@ export async function getPublicDoctorBySlug(
       doctor.primary_specialty_id ? primarySpecialtyResult.specialtiesById.get(doctor.primary_specialty_id) ?? null : null,
       licenseResult.licenseInfo,
       servicesResult.services,
-      practiceLocationsResult.practiceLocations
+      practiceLocationsResult.practiceLocations,
+      mediaResult.media
     )
   );
 }

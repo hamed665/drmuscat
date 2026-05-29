@@ -2391,6 +2391,75 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_license_records: {
+        Row: {
+          center_id: string | null
+          created_at: string
+          deleted_at: string | null
+          doctor_id: string | null
+          entity_type: string
+          id: string
+          license_authority: string | null
+          license_country: Database["public"]["Enums"]["country_code"]
+          license_number: string | null
+          license_review_status: string
+          license_reviewed_at: string | null
+          license_status: string
+          metadata: Json
+          public_license_visible: boolean
+          updated_at: string
+        }
+        Insert: {
+          center_id?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          doctor_id?: string | null
+          entity_type: string
+          id?: string
+          license_authority?: string | null
+          license_country?: Database["public"]["Enums"]["country_code"]
+          license_number?: string | null
+          license_review_status?: string
+          license_reviewed_at?: string | null
+          license_status?: string
+          metadata?: Json
+          public_license_visible?: boolean
+          updated_at?: string
+        }
+        Update: {
+          center_id?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          doctor_id?: string | null
+          entity_type?: string
+          id?: string
+          license_authority?: string | null
+          license_country?: Database["public"]["Enums"]["country_code"]
+          license_number?: string | null
+          license_review_status?: string
+          license_reviewed_at?: string | null
+          license_status?: string
+          metadata?: Json
+          public_license_visible?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_license_records_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_license_records_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       review_reports: {
         Row: {
           created_at: string

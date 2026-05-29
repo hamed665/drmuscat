@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
-const PHASE = '4.6F-1';
+const PHASE = '4.6F-2';
 
 const required = [
   '0001_extensions.sql',
@@ -51,7 +51,8 @@ const required = [
   '0045_contact_visibility_foundation.sql',
   '0046_callback_request_foundation.sql',
   '0047_provider_license_verification_foundation.sql',
-  '0048_media_public_visibility_hardening.sql'
+  '0048_media_public_visibility_hardening.sql',
+  '0049_media_public_rls_hardening.sql'
 ];
 
 const dir = 'supabase/migrations';
@@ -138,7 +139,8 @@ const rlsPolicyFiles = new Set([
   '0042_monetization_sponsored_rls.sql',
   '0044_legal_consent_audit_rls.sql',
   '0046_callback_request_foundation.sql',
-  '0047_provider_license_verification_foundation.sql'
+  '0047_provider_license_verification_foundation.sql',
+  '0049_media_public_rls_hardening.sql'
 ]);
 const catalogRlsPolicyFile = '0032_rls_public_catalog_read_policies.sql';
 const profilesRlsPolicyFile = '0033_profiles_rls.sql';
@@ -160,6 +162,7 @@ const contactVisibilityFoundationFile = '0045_contact_visibility_foundation.sql'
 const callbackRequestFoundationFile = '0046_callback_request_foundation.sql';
 const providerLicenseVerificationFoundationFile = '0047_provider_license_verification_foundation.sql';
 const mediaPublicVisibilityHardeningFile = '0048_media_public_visibility_hardening.sql';
+const mediaPublicRlsHardeningFile = '0049_media_public_rls_hardening.sql';
 const createPolicyPattern = /\bcreate\s+policy\b/i;
 const enableRlsPattern = /\benable\s+row\s+level\s+security\b/i;
 
@@ -1543,6 +1546,58 @@ for (const forbidden of [
   /seed\s+rows?/i,
 ]) {
   requireCondition(!forbidden.test(mediaPublicVisibilityHardeningContent), `0048_media_public_visibility_hardening.sql contains forbidden pattern: ${forbidden}`);
+}
+
+
+const mediaPublicRlsHardeningContent = readFileSync(`${dir}/${mediaPublicRlsHardeningFile}`, 'utf8');
+
+for (const pattern of [
+  /alter\s+policy\s+entity_media_public_select\s+on\s+public\.entity_media/i,
+  /to\s+anon\s*,\s*authenticated/i,
+  /deleted_at\s+is\s+null/i,
+  /public_media_visible\s*=\s*true/i,
+  /media_review_status\s*=\s*'approved'/i,
+  /entity_type\s+in\s*\(\s*'center'\s*,\s*'doctor'\s*\)/i,
+  /usage_kind\s+in\s*\([\s\S]*'logo'[\s\S]*'cover'[\s\S]*'profile'[\s\S]*'gallery'[\s\S]*'thumbnail'[\s\S]*\)/i,
+  /from\s+public\.media_assets/i,
+  /media_assets\.id\s*=\s*entity_media\.media_asset_id/i,
+  /media_assets\.deleted_at\s+is\s+null/i,
+  /media_assets\.status\s*=\s*'approved'/i,
+  /media_assets\.mime_type\s+in\s*\([\s\S]*'image\/jpeg'[\s\S]*'image\/png'[\s\S]*'image\/webp'[\s\S]*'image\/avif'[\s\S]*\)/i,
+]) {
+  requireCondition(pattern.test(mediaPublicRlsHardeningContent), `0049_media_public_rls_hardening.sql missing required pattern: ${pattern}`);
+}
+
+for (const forbidden of [
+  /\bcreate\s+table\b/i,
+  /\balter\s+table\b[\s\S]*\badd\s+column\b/i,
+  /\binsert\s+into\b/i,
+  /seed\s+data/i,
+  /seed\s+rows?/i,
+  /storage\s+bucket/i,
+  /create\s+bucket/i,
+  /\bupload\b/i,
+  /signed\s+upload/i,
+  /'certificate'/i,
+  /'document'/i,
+  /'before_after'/i,
+  /\bvideo\b/i,
+  /\bpayment\b/i,
+  /\bbooking\b/i,
+  /\bai\b/i,
+  /reviews?\/comments?\s+ui/i,
+  /\bratings?\b/i,
+  /admin\s+dashboard/i,
+  /provider\s+dashboard/i,
+  /new\s+dependency/i,
+  /next\/image/i,
+  /public\s+ui/i,
+  /component\s+changes/i,
+  /for\s+insert/i,
+  /for\s+update/i,
+  /for\s+delete/i,
+]) {
+  requireCondition(!forbidden.test(mediaPublicRlsHardeningContent), `0049_media_public_rls_hardening.sql contains forbidden pattern: ${forbidden}`);
 }
 
 console.log(`Phase ${PHASE} migration validation passed.`);

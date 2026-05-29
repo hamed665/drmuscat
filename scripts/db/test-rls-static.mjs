@@ -26,6 +26,7 @@ const REQUIRED_FILES = [
   '0046_callback_request_foundation.sql',
   '0047_provider_license_verification_foundation.sql',
   '0048_media_public_visibility_hardening.sql',
+  '0049_media_public_rls_hardening.sql',
 ];
 
 const APPROVED_POLICY_FILES = new Set([
@@ -38,6 +39,7 @@ const APPROVED_POLICY_FILES = new Set([
   '0044_legal_consent_audit_rls.sql',
   '0046_callback_request_foundation.sql',
   '0047_provider_license_verification_foundation.sql',
+  '0049_media_public_rls_hardening.sql',
 ]);
 
 const HELPER_FILES = new Set([
@@ -184,6 +186,80 @@ for (const p of policyStatements) {
   }
 }
 
+
+
+const mediaPublicRlsHardeningContent = contentsByFile.get('0049_media_public_rls_hardening.sql') ?? '';
+assert(
+  /alter\s+policy\s+entity_media_public_select\s+on\s+public\.entity_media/i.test(mediaPublicRlsHardeningContent),
+  '0049 must alter the existing entity_media_public_select policy on public.entity_media',
+);
+assert(
+  /to\s+anon\s*,\s*authenticated/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media public policy must remain scoped to anon and authenticated public reads',
+);
+assert(
+  /deleted_at\s+is\s+null/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must require entity_media.deleted_at IS NULL',
+);
+assert(
+  /public_media_visible\s*=\s*true/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must require public_media_visible = true',
+);
+assert(
+  /media_review_status\s*=\s*'approved'/i.test(mediaPublicRlsHardeningContent),
+  "0049 entity_media policy must require media_review_status = 'approved'",
+);
+assert(
+  /entity_type\s+in\s*\(\s*'center'\s*,\s*'doctor'\s*\)/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must only allow center and doctor entity types',
+);
+assert(
+  /usage_kind\s+in\s*\([\s\S]*'logo'[\s\S]*'cover'[\s\S]*'profile'[\s\S]*'gallery'[\s\S]*'thumbnail'[\s\S]*\)/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must allow only logo, cover, profile, gallery, and thumbnail usage kinds',
+);
+for (const forbiddenUsageKind of ['certificate', 'document', 'before_after']) {
+  assert(
+    !new RegExp(`usage_kind\\s+in\\s*\\([\\s\\S]*'${forbiddenUsageKind}'`, 'i').test(mediaPublicRlsHardeningContent),
+    `0049 entity_media policy must not publicly allow usage kind: ${forbiddenUsageKind}`,
+  );
+}
+assert(
+  /from\s+public\.media_assets/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must check linked public.media_assets rows',
+);
+assert(
+  /media_assets\.id\s*=\s*entity_media\.media_asset_id/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must link media_assets.id to entity_media.media_asset_id',
+);
+assert(
+  /media_assets\.deleted_at\s+is\s+null/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must require linked media_assets.deleted_at IS NULL',
+);
+assert(
+  /media_assets\.status\s*=\s*'approved'/i.test(mediaPublicRlsHardeningContent),
+  "0049 entity_media policy must require linked media_assets.status = 'approved'",
+);
+assert(
+  /media_assets\.mime_type\s+in\s*\([\s\S]*'image\/jpeg'[\s\S]*'image\/png'[\s\S]*'image\/webp'[\s\S]*'image\/avif'[\s\S]*\)/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must require the approved public image MIME allowlist',
+);
+assert(
+  !/on\s+public\.(entity_media|media_assets)[\s\S]*?for\s+(insert|update|delete)/i.test(mediaPublicRlsHardeningContent),
+  '0049 must not add INSERT/UPDATE/DELETE policies for entity_media or media_assets',
+);
+assert(
+  !/to\s+anon[\s\S]*?for\s+(insert|update|delete)/i.test(mediaPublicRlsHardeningContent)
+    && !/for\s+(insert|update|delete)[\s\S]*?to\s+anon/i.test(mediaPublicRlsHardeningContent),
+  '0049 must not grant anon INSERT/UPDATE/DELETE',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.entity_media[\s\S]*?to\s+anon[\s\S]*?using\s*\(\s*deleted_at\s+is\s+null\s*\)/i.test(mediaPublicRlsHardeningContent),
+  '0049 must not introduce a broad entity_media public SELECT policy',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.media_assets[\s\S]*?for\s+(insert|update|delete)/i.test(mediaPublicRlsHardeningContent),
+  '0049 must not add media_assets write policies',
+);
 
 const callbackRequestFoundationContent = contentsByFile.get('0046_callback_request_foundation.sql') ?? '';
 assert(

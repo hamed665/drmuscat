@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ProviderOnboardingLeadForm } from '@/components/public/provider-onboarding-lead-form';
 import { publicDiscoveryRoute } from '@/lib/routes/public';
 import type { SupportedCountry, SupportedLocale } from '@/lib/i18n/config';
 
@@ -49,7 +50,7 @@ const copyByLocale: Record<SupportedLocale, ProviderPlansCopy> = {
     heroDescription:
       'Build an SEO-friendly public profile for your center or clinic, show services, doctors, location, approved media, and safe contact options as DrMuscat rolls out provider tools.',
     primaryCta: 'Request provider onboarding',
-    primaryCtaNote: 'Manual onboarding is planned for providers. This page does not submit a form or activate a plan.',
+    primaryCtaNote: 'Use the onboarding request form below. Submitting a request does not activate a plan or confirm approval.',
     secondaryCta: 'View public center listings',
     valueTitle: 'A safer path to provider visibility',
     valueDescription:
@@ -139,7 +140,7 @@ const copyByLocale: Record<SupportedLocale, ProviderPlansCopy> = {
     heroDescription:
       'أنشئ ملفاً عاماً مناسباً لمحركات البحث لمركزك أو عيادتك، واعرض الخدمات والأطباء والموقع والوسائط المعتمدة وخيارات التواصل الآمنة مع تطور أدوات مقدمي الخدمة في DrMuscat.',
     primaryCta: 'طلب الانضمام كمقدم خدمة',
-    primaryCtaNote: 'سيتم التعامل مع انضمام مقدمي الخدمة يدوياً. هذه الصفحة لا ترسل نموذجاً ولا تفعّل أي خطة.',
+    primaryCtaNote: 'استخدم نموذج طلب الانضمام أدناه. إرسال الطلب لا يفعّل أي خطة ولا يؤكد الموافقة.',
     secondaryCta: 'عرض قوائم المراكز',
     valueTitle: 'مسار أكثر أماناً لظهور مقدمي الخدمة',
     valueDescription:
@@ -238,9 +239,12 @@ export function PublicProviderPlans({ locale, country, dir }: ProviderPlansProps
             <h1 className="mt-6 max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">{copy.heroTitle}</h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-slate-100 sm:text-lg">{copy.heroDescription}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <span className="inline-flex w-full items-center justify-center rounded-full bg-emerald-400 px-5 py-3 text-sm font-bold text-emerald-950 shadow-lg shadow-emerald-950/20 sm:w-auto">
+              <a
+                href="#provider-onboarding-form"
+                className="inline-flex w-full items-center justify-center rounded-full bg-emerald-400 px-5 py-3 text-sm font-bold text-emerald-950 shadow-lg shadow-emerald-950/20 transition hover:bg-emerald-300 sm:w-auto"
+              >
                 {copy.primaryCta}
-              </span>
+              </a>
               <Link
                 href={centerListingsHref}
                 className="inline-flex w-full items-center justify-center rounded-full border border-white/25 bg-white/10 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/15 sm:w-auto"
@@ -336,21 +340,28 @@ export function PublicProviderPlans({ locale, country, dir }: ProviderPlansProps
       </section>
 
       <section className={`${sectionClassName} pt-0`}>
-        <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm sm:p-8">
-          <h2 className="text-2xl font-bold text-emerald-950">{copy.safetyTitle}</h2>
-          <p className="mt-4 text-sm leading-7 text-emerald-900 sm:text-base">{copy.safetyNote}</p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <span className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-5 py-3 text-sm font-bold text-white shadow-sm sm:w-auto">
-              {copy.primaryCta}
-            </span>
-            <Link
-              href={centerListingsHref}
-              className="inline-flex w-full items-center justify-center rounded-full border border-emerald-200 bg-white px-5 py-3 text-sm font-bold text-emerald-900 transition hover:bg-emerald-100 sm:w-auto"
-            >
-              {copy.secondaryCta}
-            </Link>
+        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+          <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm sm:p-8">
+            <h2 className="text-2xl font-bold text-emerald-950">{copy.safetyTitle}</h2>
+            <p className="mt-4 text-sm leading-7 text-emerald-900 sm:text-base">{copy.safetyNote}</p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center lg:flex-col lg:items-stretch xl:flex-row xl:items-center">
+              <a
+                href="#provider-onboarding-form"
+                className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-800 sm:w-auto lg:w-full xl:w-auto"
+              >
+                {copy.primaryCta}
+              </a>
+              <Link
+                href={centerListingsHref}
+                className="inline-flex w-full items-center justify-center rounded-full border border-emerald-200 bg-white px-5 py-3 text-sm font-bold text-emerald-900 transition hover:bg-emerald-100 sm:w-auto lg:w-full xl:w-auto"
+              >
+                {copy.secondaryCta}
+              </Link>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-emerald-900">{copy.primaryCtaNote}</p>
           </div>
-          <p className="mt-4 text-sm leading-6 text-emerald-900">{copy.primaryCtaNote}</p>
+
+          <ProviderOnboardingLeadForm locale={locale} />
         </div>
       </section>
     </main>

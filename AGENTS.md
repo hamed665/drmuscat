@@ -2,11 +2,53 @@
 
 You are working on the DrMuscat platform.
 
-Before doing any implementation, read:
+Before doing any implementation, read the required agent read order below.
 
-- master specs in `docs/master-spec/`
-- current root `README.md`
-- current root `AGENTS.md`
+## Required agent read order
+
+Before planning or implementing any future task, agents must read the following files in this order.
+
+### A. Root guardrails
+
+1. `AGENTS.md`
+2. `README.md`
+
+### B. Current project state
+
+3. `docs/project-state/CURRENT_STATE.md`
+4. `docs/project-state/V10_4_PHASE_ALIGNMENT_MATRIX.md`
+
+### C. Canonical V10.4 architecture
+
+5. `docs/master-spec/58_CODEX_PHASED_BUILD_MASTER_PLAN.md`
+6. `docs/master-spec/66_PHASE_LOCKS_AND_ALLOWED_FILE_CHANGES.md`
+7. `docs/master-spec/08_IMPLEMENTATION_TASKS_AND_PHASES.md`
+8. `docs/master-spec/67_DATABASE_MIGRATION_PROTOCOL.md`
+9. `docs/master-spec/68_TESTING_AND_VALIDATION_GATE.md`
+10. `docs/master-spec/69_ERROR_HANDLING_AND_STOP_RULES.md`
+11. `docs/master-spec/70_AGENT_OUTPUT_REPORT_TEMPLATE.md`
+12. `docs/master-spec/72_SECURITY_RLS_AND_SECRET_HANDLING_PROTOCOL.md`
+13. `docs/master-spec/73_SEO_BUILD_VALIDATION_PROTOCOL.md`
+14. `docs/master-spec/76_HUMAN_APPROVAL_CHECKPOINTS.md`
+
+### D. V10.5 addendums
+
+15. `docs/addendums/V10_5_BUSINESS_GROWTH_REVENUE_ADDENDUM.md`
+16. `docs/addendums/V10_5_SEO_AI_SEARCH_EXPANSION_ADDENDUM.md`
+17. `docs/addendums/V10_5_MONETIZATION_SALES_REFERRAL_ADDENDUM.md`
+
+Future tasks must still use the four-axis mapping model:
+
+- Execution Phase
+- Lock Scope
+- Product Module
+- Subphase ID
+
+V10.5 addendums are documentation-only and do not authorize implementation.
+
+If there is any conflict between files, the stricter guardrail wins. If interpretation is unclear, STOP rather than guessing and report the blocker.
+
+Old informal phase labels such as `Phase 5.20`, `Phase 5.26`, and `Phase 5.27` must not be used as canonical task identifiers.
 
 Use `PHASED_BUILD_ONLY` mode.
 

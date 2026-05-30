@@ -188,8 +188,8 @@ const checks = [
     ),
   },
   {
-    name: "approved service-area route scaffold does not exist yet",
-    pass: !existsSync(
+    name: "approved SEO-D2C2 service-area route scaffold exists",
+    pass: existsSync(
       resolve(
         projectRoot,
         "src/app/[locale]/[country]/services/[serviceSlug]/[areaSlug]/page.tsx",
@@ -334,6 +334,9 @@ const seoD2bAreaPageSource = readSourceIfExists(
 const seoD2c1ServicePageSource = readSourceIfExists(
   "src/app/[locale]/[country]/services/[serviceSlug]/page.tsx",
 );
+const seoD2c2ServiceAreaPageSource = readSourceIfExists(
+  "src/app/[locale]/[country]/services/[serviceSlug]/[areaSlug]/page.tsx",
+);
 const adminProviderOnboardingLeadsSource = readSourceIfExists(
   "src/server/admin/provider-onboarding-leads.ts",
 );
@@ -438,6 +441,49 @@ checks.push({
   pass:
     typeof seoD2c1ServicePageSource === "string" &&
     !sourceImportsForbiddenLandingPageData(seoD2c1ServicePageSource),
+});
+
+
+checks.push({
+  name: "SEO-D2C2 service-area scaffold route is not included in sitemap",
+  pass:
+    typeof sitemapSource === "string" &&
+    !/services\/[`'$"{[]|services.*serviceSlug.*areaSlug|services\/\[serviceSlug\]\/\[areaSlug\]/.test(
+      sitemapSource,
+    ),
+});
+
+checks.push({
+  name: "SEO-D2C2 service-area scaffold file does not emit schema output",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    !sourceIncludesSchemaOutput(seoD2c2ServiceAreaPageSource),
+});
+
+checks.push({
+  name: "SEO-D2C2 service-area scaffold file does not import keyword seed data",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    !sourceImportsKeywordSeedData(seoD2c2ServiceAreaPageSource),
+});
+
+checks.push({
+  name: "SEO-D2C2 service-area scaffold file does not import private admin/provider or service-role data",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    !sourceImportsForbiddenLandingPageData(seoD2c2ServiceAreaPageSource),
+});
+
+checks.push({
+  name: "SEO-D2C2 service-area scaffold validates locale/country and fails closed",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    /notFound/.test(seoD2c2ServiceAreaPageSource) &&
+    /isSupportedLocale/.test(seoD2c2ServiceAreaPageSource) &&
+    /isSupportedCountry/.test(seoD2c2ServiceAreaPageSource) &&
+    !/generateMetadata|generateStaticParams|PublicPageShell|listPublic|getPublic|searchPublicCatalog|schema\.org|application\/ld\+json|jsonLd|structuredData|StructuredData/.test(
+      seoD2c2ServiceAreaPageSource,
+    ),
 });
 
 checks.push({

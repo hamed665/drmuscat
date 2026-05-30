@@ -33,6 +33,34 @@ const sourceImportsAdminProviderOnboardingLeads = (source) =>
     source,
   );
 
+const sourceImportsKeywordSeedData = (source) =>
+  /from\s+["'](?:@\/data\/seo\/drmuscat-keyword-seed\.json|\.\.?\/.*data\/seo\/drmuscat-keyword-seed\.json)["']/.test(
+    source,
+  ) ||
+  /import\(\s*["'](?:@\/data\/seo\/drmuscat-keyword-seed\.json|\.\.?\/.*data\/seo\/drmuscat-keyword-seed\.json)["']\s*\)/.test(
+    source,
+  ) ||
+  /require\(\s*["'](?:@\/data\/seo\/drmuscat-keyword-seed\.json|\.\.?\/.*data\/seo\/drmuscat-keyword-seed\.json)["']\s*\)/.test(
+    source,
+  );
+
+const sourceImportsForbiddenLandingPageData = (source) =>
+  sourceIncludesForbiddenServiceRoleImport(source) ||
+  /from\s+["'](?:@\/(?:server\/admin|components\/admin|lib\/permissions\/admin|server\/provider|components\/provider|lib\/provider)|\.\.?\/.*(?:server\/admin|components\/admin|lib\/permissions\/admin|server\/provider|components\/provider|lib\/provider))["']/.test(
+    source,
+  ) ||
+  /import\(\s*["'](?:@\/(?:server\/admin|components\/admin|lib\/permissions\/admin|server\/provider|components\/provider|lib\/provider)|\.\.?\/.*(?:server\/admin|components\/admin|lib\/permissions\/admin|server\/provider|components\/provider|lib\/provider))["']\s*\)/.test(
+    source,
+  ) ||
+  /require\(\s*["'](?:@\/(?:server\/admin|components\/admin|lib\/permissions\/admin|server\/provider|components\/provider|lib\/provider)|\.\.?\/.*(?:server\/admin|components\/admin|lib\/permissions\/admin|server\/provider|components\/provider|lib\/provider))["']\s*\)/.test(
+    source,
+  );
+
+const sourceIncludesSchemaOutput = (source) =>
+  /schema\.org|application\/ld\+json|jsonLd|structuredData|StructuredData/.test(
+    source,
+  );
+
 const sourceIsClientComponent = (source) =>
   /^\s*["']use client["'];?/m.test(source);
 
@@ -103,6 +131,24 @@ const checks = [
     ),
   },
   {
+    name: "approved SEO-D2A specialty route scaffold exists",
+    pass: existsSync(
+      resolve(
+        projectRoot,
+        "src/app/[locale]/[country]/centers/[specialtySlug]/page.tsx",
+      ),
+    ),
+  },
+  {
+    name: "approved SEO-D2A specialty-area route scaffold exists",
+    pass: existsSync(
+      resolve(
+        projectRoot,
+        "src/app/[locale]/[country]/centers/[specialtySlug]/[areaSlug]/page.tsx",
+      ),
+    ),
+  },
+  {
     name: "plural doctor detail entity route does not exist",
     pass: !existsSync(
       resolve(
@@ -114,6 +160,27 @@ const checks = [
   {
     name: "src/app/[locale]/centers route does not exist",
     pass: !existsSync(resolve(projectRoot, "src/app/[locale]/centers")),
+  },
+  {
+    name: "src/app/[locale]/services route does not exist",
+    pass: !existsSync(resolve(projectRoot, "src/app/[locale]/services")),
+  },
+  {
+    name: "src/app/[locale]/areas route does not exist",
+    pass: !existsSync(resolve(projectRoot, "src/app/[locale]/areas")),
+  },
+  {
+    name: "article routes do not exist",
+    pass: !existsSync(
+      resolve(projectRoot, "src/app/[locale]/[country]/articles"),
+    ),
+  },
+  {
+    name: "branded hospital and clinic route directories do not exist",
+    pass: ["hospital", "hospitals", "clinic", "clinics"].every(
+      (slug) =>
+        !existsSync(resolve(projectRoot, `src/app/[locale]/[country]/${slug}`)),
+    ),
   },
   {
     name: "src/app/fa route does not exist",
@@ -228,10 +295,58 @@ const adminProviderOnboardingLeadDetailSource = readSourceIfExists(
   "src/components/admin/provider-onboarding-lead-detail.tsx",
 );
 const sitemapSource = readSourceIfExists("src/app/sitemap.ts");
+const seoD2aSpecialtyPageSource = readSourceIfExists(
+  "src/app/[locale]/[country]/centers/[specialtySlug]/page.tsx",
+);
+const seoD2aSpecialtyAreaPageSource = readSourceIfExists(
+  "src/app/[locale]/[country]/centers/[specialtySlug]/[areaSlug]/page.tsx",
+);
 const adminProviderOnboardingLeadsSource = readSourceIfExists(
   "src/server/admin/provider-onboarding-leads.ts",
 );
 const sourceFiles = collectSourceFiles("src");
+
+checks.push({
+  name: "SEO-D2A scaffold routes are not included in sitemap",
+  pass:
+    typeof sitemapSource === "string" &&
+    !/specialtySlug|areaSlug|centers\/\$\{|centers\/\[specialtySlug\]/.test(
+      sitemapSource,
+    ),
+});
+
+checks.push({
+  name: "SEO-D2A scaffold files do not emit schema output",
+  pass:
+    typeof seoD2aSpecialtyPageSource === "string" &&
+    typeof seoD2aSpecialtyAreaPageSource === "string" &&
+    ![
+      seoD2aSpecialtyPageSource,
+      seoD2aSpecialtyAreaPageSource,
+    ].some(sourceIncludesSchemaOutput),
+});
+
+checks.push({
+  name: "SEO-D2A scaffold files do not import keyword seed data",
+  pass:
+    typeof seoD2aSpecialtyPageSource === "string" &&
+    typeof seoD2aSpecialtyAreaPageSource === "string" &&
+    ![
+      seoD2aSpecialtyPageSource,
+      seoD2aSpecialtyAreaPageSource,
+    ].some(sourceImportsKeywordSeedData),
+});
+
+checks.push({
+  name: "SEO-D2A scaffold files do not import private admin/provider or service-role data",
+  pass:
+    typeof seoD2aSpecialtyPageSource === "string" &&
+    typeof seoD2aSpecialtyAreaPageSource === "string" &&
+    ![
+      seoD2aSpecialtyPageSource,
+      seoD2aSpecialtyAreaPageSource,
+    ].some(sourceImportsForbiddenLandingPageData),
+});
 
 checks.push({
   name: "session-aware auth helper uses @supabase/ssr server client",

@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { extname, relative, resolve } from "node:path";
 
 const projectRoot = process.cwd();
 
@@ -21,6 +21,49 @@ const sourceIncludesForbiddenServiceRoleImport = (source) =>
   /require\(\s*["'](?:@\/lib\/supabase\/service-role|\.\.?\/.*supabase\/service-role)["']\s*\)/.test(
     source,
   );
+
+const sourceImportsAdminProviderOnboardingLeads = (source) =>
+  /from\s+["'](?:@\/server\/admin\/provider-onboarding-leads|\.\.?\/.*server\/admin\/provider-onboarding-leads)["']/.test(
+    source,
+  ) ||
+  /import\(\s*["'](?:@\/server\/admin\/provider-onboarding-leads|\.\.?\/.*server\/admin\/provider-onboarding-leads)["']\s*\)/.test(
+    source,
+  ) ||
+  /require\(\s*["'](?:@\/server\/admin\/provider-onboarding-leads|\.\.?\/.*server\/admin\/provider-onboarding-leads)["']\s*\)/.test(
+    source,
+  );
+
+const sourceIsClientComponent = (source) =>
+  /^\s*["']use client["'];?/m.test(source);
+
+const collectSourceFiles = (relativeDirectory) => {
+  const root = resolve(projectRoot, relativeDirectory);
+  if (!existsSync(root)) return [];
+
+  const files = [];
+  const visit = (directory) => {
+    for (const entry of readdirSync(directory)) {
+      if (entry === "node_modules" || entry === ".next" || entry === ".git") {
+        continue;
+      }
+
+      const absolutePath = resolve(directory, entry);
+      const stats = statSync(absolutePath);
+
+      if (stats.isDirectory()) {
+        visit(absolutePath);
+        continue;
+      }
+
+      if ([".ts", ".tsx", ".js", ".jsx", ".mjs"].includes(extname(entry))) {
+        files.push(absolutePath);
+      }
+    }
+  };
+
+  visit(root);
+  return files;
+};
 
 const checks = [
   {
@@ -116,7 +159,7 @@ const extractConstArray = (source, variableName) => {
 
   return match[1]
     .split(",")
-    .map((item) => item.trim().replace(/^['\"]|['\"]$/g, ""))
+    .map((item) => item.trim().replace(/^['"]|['"]$/g, ""))
     .filter(Boolean);
 };
 
@@ -133,6 +176,10 @@ const adminShellSource = readSourceIfExists(
   "src/components/admin/admin-shell.tsx",
 );
 const sitemapSource = readSourceIfExists("src/app/sitemap.ts");
+const adminProviderOnboardingLeadsSource = readSourceIfExists(
+  "src/server/admin/provider-onboarding-leads.ts",
+);
+const sourceFiles = collectSourceFiles("src");
 
 checks.push({
   name: "session-aware auth helper uses @supabase/ssr server client",
@@ -185,6 +232,46 @@ checks.push({
       adminPageSource,
       adminShellSource,
     ].some(sourceIncludesForbiddenServiceRoleImport),
+});
+
+checks.push({
+  name: "admin provider onboarding lead read helper uses admin guard and service-role",
+  pass:
+    typeof adminProviderOnboardingLeadsSource === "string" &&
+    /import\s+\{\s*requirePlatformAdmin\s*\}\s+from\s+["']@\/lib\/permissions\/admin["']/.test(
+      adminProviderOnboardingLeadsSource,
+    ) &&
+    /import\s+\{\s*createSupabaseServiceRoleClient\s*\}\s+from\s+["']@\/lib\/supabase\/service-role["']/.test(
+      adminProviderOnboardingLeadsSource,
+    ) &&
+    /await\s+requirePlatformAdmin\s*\(\s*\)\s*;[\s\S]*createSupabaseServiceRoleClient\s*\(/.test(
+      adminProviderOnboardingLeadsSource,
+    ),
+});
+
+checks.push({
+  name: "admin provider onboarding lead read helper is the server-admin service-role importer",
+  pass: sourceFiles.every((absolutePath) => {
+    const relativePath = relative(projectRoot, absolutePath);
+    const source = readFileSync(absolutePath, "utf8");
+
+    return (
+      !sourceImportsAdminProviderOnboardingLeads(source) ||
+      relativePath.startsWith("src/server/admin/")
+    );
+  }),
+});
+
+checks.push({
+  name: "client components do not import admin provider onboarding lead read helper",
+  pass: sourceFiles.every((absolutePath) => {
+    const source = readFileSync(absolutePath, "utf8");
+
+    return (
+      !sourceIsClientComponent(source) ||
+      !sourceImportsAdminProviderOnboardingLeads(source)
+    );
+  }),
 });
 
 checks.push({

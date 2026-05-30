@@ -146,6 +146,15 @@ const checks = [
     ),
   },
   {
+    name: "admin provider onboarding lead detail route exists",
+    pass: existsSync(
+      resolve(
+        projectRoot,
+        "src/app/admin/provider-onboarding-leads/[leadId]/page.tsx",
+      ),
+    ),
+  },
+  {
     name: "localized provider onboarding lead admin routes do not exist",
     pass:
       !existsSync(
@@ -212,6 +221,12 @@ const adminProviderOnboardingLeadsPageSource = readSourceIfExists(
 const adminProviderOnboardingLeadsListSource = readSourceIfExists(
   "src/components/admin/provider-onboarding-leads-list.tsx",
 );
+const adminProviderOnboardingLeadDetailPageSource = readSourceIfExists(
+  "src/app/admin/provider-onboarding-leads/[leadId]/page.tsx",
+);
+const adminProviderOnboardingLeadDetailSource = readSourceIfExists(
+  "src/components/admin/provider-onboarding-lead-detail.tsx",
+);
 const sitemapSource = readSourceIfExists("src/app/sitemap.ts");
 const adminProviderOnboardingLeadsSource = readSourceIfExists(
   "src/server/admin/provider-onboarding-leads.ts",
@@ -272,9 +287,13 @@ checks.push({
   pass:
     typeof adminProviderOnboardingLeadsPageSource === "string" &&
     typeof adminProviderOnboardingLeadsListSource === "string" &&
+    typeof adminProviderOnboardingLeadDetailPageSource === "string" &&
+    typeof adminProviderOnboardingLeadDetailSource === "string" &&
     ![
       adminProviderOnboardingLeadsPageSource,
       adminProviderOnboardingLeadsListSource,
+      adminProviderOnboardingLeadDetailPageSource,
+      adminProviderOnboardingLeadDetailSource,
     ].some(sourceIncludesForbiddenServiceRoleImport),
 });
 
@@ -284,6 +303,40 @@ checks.push({
     typeof adminProviderOnboardingLeadsListSource === "string" &&
     !sourceIsClientComponent(adminProviderOnboardingLeadsListSource) &&
     !sourceImportsAdminProviderOnboardingLeads(
+      adminProviderOnboardingLeadsListSource,
+    ),
+});
+
+checks.push({
+  name: "admin provider onboarding lead detail page imports detail read helper",
+  pass:
+    typeof adminProviderOnboardingLeadDetailPageSource === "string" &&
+    /getAdminProviderOnboardingLeadById/.test(
+      adminProviderOnboardingLeadDetailPageSource,
+    ) &&
+    sourceImportsAdminProviderOnboardingLeads(
+      adminProviderOnboardingLeadDetailPageSource,
+    ),
+});
+
+checks.push({
+  name: "admin provider onboarding lead detail component remains server-only presentation",
+  pass:
+    typeof adminProviderOnboardingLeadDetailSource === "string" &&
+    !sourceIsClientComponent(adminProviderOnboardingLeadDetailSource) &&
+    !sourceImportsAdminProviderOnboardingLeads(
+      adminProviderOnboardingLeadDetailSource,
+    ),
+});
+
+checks.push({
+  name: "admin provider onboarding lead list links to detail route",
+  pass:
+    typeof adminProviderOnboardingLeadsListSource === "string" &&
+    /`\/admin\/provider-onboarding-leads\/\$\{leadId\}`/.test(
+      adminProviderOnboardingLeadsListSource,
+    ) &&
+    /href=\{buildLeadDetailHref\(lead\.id\)\}/.test(
       adminProviderOnboardingLeadsListSource,
     ),
 });
@@ -308,6 +361,24 @@ checks.push({
       resolve(projectRoot, "src/app/admin/provider-onboarding-leads/[id]"),
     ) &&
     !existsSync(
+      resolve(
+        projectRoot,
+        "src/app/admin/provider-onboarding-leads/[leadId]/actions.ts",
+      ),
+    ) &&
+    !existsSync(
+      resolve(
+        projectRoot,
+        "src/app/admin/provider-onboarding-leads/[leadId]/action.ts",
+      ),
+    ) &&
+    !existsSync(
+      resolve(
+        projectRoot,
+        "src/app/admin/provider-onboarding-leads/[leadId]/route.ts",
+      ),
+    ) &&
+    !existsSync(
       resolve(projectRoot, "src/app/api/admin/provider-onboarding-leads"),
     ) &&
     !existsSync(
@@ -318,8 +389,31 @@ checks.push({
     ) &&
     typeof adminProviderOnboardingLeadsPageSource === "string" &&
     typeof adminProviderOnboardingLeadsListSource === "string" &&
+    typeof adminProviderOnboardingLeadDetailPageSource === "string" &&
+    typeof adminProviderOnboardingLeadDetailSource === "string" &&
     !/["']use server["']/.test(adminProviderOnboardingLeadsPageSource) &&
-    !/["']use server["']/.test(adminProviderOnboardingLeadsListSource),
+    !/["']use server["']/.test(adminProviderOnboardingLeadsListSource) &&
+    !/["']use server["']/.test(adminProviderOnboardingLeadDetailPageSource) &&
+    !/["']use server["']/.test(adminProviderOnboardingLeadDetailSource),
+});
+
+checks.push({
+  name: "admin provider onboarding lead UI does not implement status updates",
+  pass:
+    typeof adminProviderOnboardingLeadsPageSource === "string" &&
+    typeof adminProviderOnboardingLeadsListSource === "string" &&
+    typeof adminProviderOnboardingLeadDetailPageSource === "string" &&
+    typeof adminProviderOnboardingLeadDetailSource === "string" &&
+    ![
+      adminProviderOnboardingLeadsPageSource,
+      adminProviderOnboardingLeadsListSource,
+      adminProviderOnboardingLeadDetailPageSource,
+      adminProviderOnboardingLeadDetailSource,
+    ].some((source) =>
+      /updateProviderOnboardingLeadStatus|setProviderOnboardingLeadStatus|statusAction|statusUpdate|updateStatus|mutate\s*\(/.test(
+        source,
+      ),
+    ),
 });
 
 checks.push({
@@ -363,7 +457,8 @@ checks.push({
     return (
       !sourceImportsAdminProviderOnboardingLeads(source) ||
       relativePath.startsWith("src/server/admin/") ||
-      relativePath === "src/app/admin/provider-onboarding-leads/page.tsx"
+      relativePath === "src/app/admin/provider-onboarding-leads/page.tsx" ||
+      relativePath === "src/app/admin/provider-onboarding-leads/[leadId]/page.tsx"
     );
   }),
 });

@@ -122,6 +122,10 @@ function locationLabel(areaText: string | null, cityText: string | null): string
   return parts.length > 0 ? parts.join(" / ") : "—";
 }
 
+function buildLeadDetailHref(leadId: string): string {
+  return `/admin/provider-onboarding-leads/${leadId}`;
+}
+
 function buildPageHref(filters: ProviderLeadFilters, page: number): string {
   const params = new URLSearchParams();
 
@@ -210,6 +214,13 @@ function LeadCard({ lead }: { lead: ProviderLeadListItem }) {
           {lead.messagePreview ?? "No message provided."}
         </p>
       </div>
+
+      <Link
+        href={buildLeadDetailHref(lead.id)}
+        className="mt-4 inline-flex w-full items-center justify-center rounded-2xl border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-800 transition hover:border-cyan-300 hover:bg-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 sm:w-auto"
+      >
+        View details
+      </Link>
     </article>
   );
 }
@@ -373,6 +384,7 @@ export function ProviderOnboardingLeadsList({
                   <th scope="col" className="px-4 py-3 font-semibold">Priority</th>
                   <th scope="col" className="px-4 py-3 font-semibold">Message preview</th>
                   <th scope="col" className="px-4 py-3 font-semibold">Source</th>
+                  <th scope="col" className="px-4 py-3 font-semibold">Detail</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -397,6 +409,14 @@ export function ProviderOnboardingLeadsList({
                       {lead.messagePreview ?? "No message provided."}
                     </td>
                     <td className="px-4 py-4">{formatLabel(lead.requestSource)}</td>
+                    <td className="whitespace-nowrap px-4 py-4">
+                      <Link
+                        href={buildLeadDetailHref(lead.id)}
+                        className="inline-flex rounded-2xl border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-xs font-semibold text-cyan-800 transition hover:border-cyan-300 hover:bg-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                      >
+                        Open
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -172,7 +172,7 @@ Future implementation must remain explicitly phase-approved and narrowly scoped.
 
 ## Agent workflow reminder
 
-Agents must read `AGENTS.md` before doing any work.
+Agents must read `AGENTS.md` before doing any work. `AGENTS.md` contains the required future-agent read order for root guardrails, current project state, canonical V10.4 architecture files, and V10.5 documentation-only addendums.
 
 ## Phase 3.0C — TypeScript Safety Baseline
 

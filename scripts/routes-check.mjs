@@ -227,8 +227,31 @@ const selectedServiceLandingForbiddenRouteConfigPatterns = [
   /\bcache\s*\(/,
 ];
 
+const selectedServiceAreaLandingRoutePath =
+  "src/app/[locale]/[country]/services/[serviceSlug]/[areaSlug]/page.tsx";
+
+const selectedServiceAreaLandingAllowedIntegrationTokens = new Set([
+  "public-landing-page-queries",
+  "getServiceAreaLandingGateData",
+]);
+
+const selectedServiceAreaLandingForbiddenHelperNames = [
+  "getSpecialtyLandingGateData",
+  "getSpecialtyAreaLandingGateData",
+  "getAreaLandingGateData",
+  "getServiceLandingGateData",
+];
+
+const selectedServiceAreaLandingForbiddenReturnPatterns = [
+  ...selectedServiceLandingForbiddenReturnPatterns,
+  /return\s+areaSlug\b/,
+];
+
 const isSelectedServiceLandingRouteFile = (absolutePath) =>
   relative(projectRoot, absolutePath) === selectedServiceLandingRoutePath;
+
+const isSelectedServiceAreaLandingRouteFile = (absolutePath) =>
+  relative(projectRoot, absolutePath) === selectedServiceAreaLandingRoutePath;
 
 const requiredPublicLandingPageQuerySkeletonTokens = [
   "ok: false",
@@ -710,12 +733,19 @@ for (const integrationToken of [
   ...publicLandingPageQueryHelperNames,
 ]) {
   checks.push({
-    name: `src/app route files do not reference public landing query skeleton token outside selected service route: ${integrationToken}`,
+    name: `src/app route files do not reference public landing query skeleton token outside selected service/service-area routes: ${integrationToken}`,
     pass: collectSourceFiles("src/app").every((absolutePath) => {
       const source = readFileSync(absolutePath, "utf8");
       if (
         isSelectedServiceLandingRouteFile(absolutePath) &&
         selectedServiceLandingAllowedIntegrationTokens.has(integrationToken)
+      ) {
+        return true;
+      }
+
+      if (
+        isSelectedServiceAreaLandingRouteFile(absolutePath) &&
+        selectedServiceAreaLandingAllowedIntegrationTokens.has(integrationToken)
       ) {
         return true;
       }
@@ -726,10 +756,13 @@ for (const integrationToken of [
 }
 
 checks.push({
-  name: "src/app route files do not import or reference the landing page gate helper outside selected service route",
+  name: "src/app route files do not import or reference the landing page gate helper outside selected service/service-area routes",
   pass: collectSourceFiles("src/app").every((absolutePath) => {
     const source = readFileSync(absolutePath, "utf8");
-    if (isSelectedServiceLandingRouteFile(absolutePath)) {
+    if (
+      isSelectedServiceLandingRouteFile(absolutePath) ||
+      isSelectedServiceAreaLandingRouteFile(absolutePath)
+    ) {
       return true;
     }
 
@@ -806,6 +839,78 @@ checks.push({
     typeof seoD2c1ServicePageSource === "string" &&
     selectedServiceLandingForbiddenRouteConfigPatterns.every(
       (pattern) => !pattern.test(seoD2c1ServicePageSource),
+    ),
+});
+
+checks.push({
+  name: "selected SEO-D3F2 service-area route uses only approved fail-closed landing gate integration",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    /getServiceAreaLandingGateData/.test(seoD2c2ServiceAreaPageSource) &&
+    /decideLandingPageGate/.test(seoD2c2ServiceAreaPageSource) &&
+    /notFound\s*\(\s*\)/.test(seoD2c2ServiceAreaPageSource) &&
+    /landing-page-indexability/.test(seoD2c2ServiceAreaPageSource) &&
+    /public-landing-page-queries/.test(seoD2c2ServiceAreaPageSource),
+});
+
+checks.push({
+  name: "selected SEO-D3F2 service-area route does not reference non-selected landing gate helpers",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    selectedServiceAreaLandingForbiddenHelperNames.every(
+      (helperName) => !seoD2c2ServiceAreaPageSource.includes(helperName),
+    ),
+});
+
+checks.push({
+  name: "selected SEO-D3F2 service-area route has no forbidden runtime, SEO, crawler, private, monetization, or content tokens",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    selectedServiceLandingForbiddenTokens.every(
+      (token) => !seoD2c2ServiceAreaPageSource.includes(token),
+    ),
+});
+
+checks.push({
+  name: "selected SEO-D3F2 service-area route ends with final unconditional notFound call",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    /notFound\s*\(\s*\)\s*;\s*}\s*$/.test(seoD2c2ServiceAreaPageSource),
+});
+
+checks.push({
+  name: "selected SEO-D3F2 service-area route has no forbidden return escape hatches",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    selectedServiceAreaLandingForbiddenReturnPatterns.every(
+      (pattern) => !pattern.test(seoD2c2ServiceAreaPageSource),
+    ),
+});
+
+checks.push({
+  name: "selected SEO-D3F2 service-area route has no obvious JSX or public landing content rendering",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    selectedServiceLandingForbiddenContentPatterns.every(
+      (pattern) => !pattern.test(seoD2c2ServiceAreaPageSource),
+    ),
+});
+
+checks.push({
+  name: "selected SEO-D3F2 service-area route has no React rendering or runtime expansion patterns",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    selectedServiceLandingForbiddenRuntimePatterns.every(
+      (pattern) => !pattern.test(seoD2c2ServiceAreaPageSource),
+    ),
+});
+
+checks.push({
+  name: "selected SEO-D3F2 service-area route has no route config or cache expansion patterns",
+  pass:
+    typeof seoD2c2ServiceAreaPageSource === "string" &&
+    selectedServiceLandingForbiddenRouteConfigPatterns.every(
+      (pattern) => !pattern.test(seoD2c2ServiceAreaPageSource),
     ),
 });
 

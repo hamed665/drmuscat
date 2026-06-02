@@ -9,6 +9,7 @@ type HomeHeroCopy = {
   forClinics: string;
   note: string;
   chips: readonly string[];
+  highlights: readonly string[];
 };
 
 type HomeHeroProps = {
@@ -22,11 +23,13 @@ export function HomeHero({ copy, dir, primaryHref, secondaryHref }: HomeHeroProp
   return (
     <section className="home-hero hero-aura" dir={dir} aria-labelledby="home-hero-title">
       <div className="home-hero__content glass-soft">
-        <Badge variant="trust">{copy.announcement}</Badge>
-        <h1 id="home-hero-title" className="home-hero__title">
-          {copy.title}
-        </h1>
-        <p className="home-hero__subtitle">{copy.subtitle}</p>
+        <div className="home-hero__headline">
+          <Badge variant="trust">{copy.announcement}</Badge>
+          <h1 id="home-hero-title" className="home-hero__title">
+            {copy.title}
+          </h1>
+          <p className="home-hero__subtitle">{copy.subtitle}</p>
+        </div>
         <div className="home-hero__actions" aria-label="Primary actions">
           <Link href={primaryHref} className="ui-button ui-button--primary ui-button--lg home-hero__cta home-hero__cta--primary">
             {copy.findCare}
@@ -38,6 +41,11 @@ export function HomeHero({ copy, dir, primaryHref, secondaryHref }: HomeHeroProp
             {copy.forClinics}
           </Link>
         </div>
+        <ul className="home-hero__highlights" aria-label="Homepage discovery principles">
+          {copy.highlights.map((highlight) => (
+            <li key={highlight}>{highlight}</li>
+          ))}
+        </ul>
         <p className="home-hero__note">{copy.note}</p>
       </div>
 
@@ -65,6 +73,15 @@ export function HomeHero({ copy, dir, primaryHref, secondaryHref }: HomeHeroProp
             <circle cx="102" cy="220" r="3.5" />
             <circle cx="316" cy="236" r="3.5" />
           </svg>
+
+          <div className="hero-visual-card hero-visual-card--primary">
+            <span className="hero-visual-card__line" />
+            <span className="hero-visual-card__line hero-visual-card__line--short" />
+          </div>
+          <div className="hero-visual-card hero-visual-card--secondary">
+            <span className="hero-visual-card__dot" />
+            <span className="hero-visual-card__line" />
+          </div>
 
           {copy.chips.map((chip, index) => (
             <span key={chip} className={`hero-chip hero-chip--${index + 1}`}>

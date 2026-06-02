@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 type HomeCategoryPreviewProps = {
+  eyebrow: string;
   title: string;
   subtitle: string;
   categories: readonly {
@@ -13,37 +14,41 @@ type HomeCategoryPreviewProps = {
   dir: 'ltr' | 'rtl';
 };
 
-export function HomeCategoryPreview({ title, subtitle, categories, dir }: HomeCategoryPreviewProps) {
+export function HomeCategoryPreview({ eyebrow, title, subtitle, categories, dir }: HomeCategoryPreviewProps) {
   return (
     <section className="home-categories" dir={dir} aria-labelledby="home-categories-title">
-      <div className="home-categories__head">
+      <div className="home-section-head home-categories__head">
+        <p className="home-section-eyebrow">{eyebrow}</p>
         <h2 id="home-categories-title">{title}</h2>
         <p>{subtitle}</p>
       </div>
       <div className="home-categories__grid">
         {categories.map((category) => {
-          const href = category.href;
-
-          if (!href) {
-            return (
-              <article key={category.key} className={`home-categories__card glass-soft ${category.accentClass}`}>
-                <span className="home-categories__icon" aria-hidden="true" />
+          const className = `home-categories__card glass-soft ${category.accentClass}`;
+          const content = (
+            <>
+              <span className="home-categories__icon" aria-hidden="true" />
+              <span className="home-categories__label-row">
                 <h3>{category.label}</h3>
-                <p>{category.description}</p>
+                <span className="home-categories__arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </span>
+              <p>{category.description}</p>
+            </>
+          );
+
+          if (!category.href) {
+            return (
+              <article key={category.key} className={className}>
+                {content}
               </article>
             );
           }
 
           return (
-            <Link
-              key={category.key}
-              href={href}
-              className={`home-categories__card glass-soft ${category.accentClass}`}
-              aria-label={category.label}
-            >
-              <span className="home-categories__icon" aria-hidden="true" />
-              <h3>{category.label}</h3>
-              <p>{category.description}</p>
+            <Link key={category.key} href={category.href} className={className} aria-label={category.label}>
+              {content}
             </Link>
           );
         })}

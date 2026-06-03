@@ -14,14 +14,23 @@ type HomeHeroCopy = {
   highlights: readonly string[];
 };
 
+type HomeHeroSearchCopy = {
+  primaryLabel: string;
+  serviceLabel: string;
+  serviceValue: string;
+  locationLabel: string;
+  locationValue: string;
+};
+
 type HomeHeroProps = {
   copy: HomeHeroCopy;
+  search: HomeHeroSearchCopy;
   dir: 'ltr' | 'rtl';
   primaryHref: string;
   secondaryHref: string;
 };
 
-export function HomeHero({ copy, dir, primaryHref, secondaryHref }: HomeHeroProps) {
+export function HomeHero({ copy, search, dir, primaryHref, secondaryHref }: HomeHeroProps) {
   return (
     <section className="home-hero" dir={dir} aria-labelledby="home-hero-title">
       <div className="home-hero__content">
@@ -31,6 +40,21 @@ export function HomeHero({ copy, dir, primaryHref, secondaryHref }: HomeHeroProp
             {copy.title}
           </h1>
           <p className="home-hero__subtitle">{copy.subtitle}</p>
+        </div>
+
+        <div className="home-hero__searchrail" role="search" aria-label={search.primaryLabel}>
+          <div className="home-hero__search-field">
+            <span className="home-hero__search-label">{search.serviceLabel}</span>
+            <span className="home-hero__search-value">{search.serviceValue}</span>
+          </div>
+          <div className="home-hero__search-field">
+            <span className="home-hero__search-label">{search.locationLabel}</span>
+            <span className="home-hero__search-value">{search.locationValue}</span>
+          </div>
+          <Link href={primaryHref} className="home-hero__search-button">
+            <span className="home-search-panel__glass-icon" aria-hidden="true" />
+            <span>{search.primaryLabel}</span>
+          </Link>
         </div>
 
         <div className="home-hero__actions" aria-label={copy.actionsLabel}>

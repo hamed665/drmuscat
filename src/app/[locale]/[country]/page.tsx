@@ -109,9 +109,9 @@ const homeCopyByLocale: Record<SupportedLocale, HomeCopy> = {
     },
     search: {
       eyebrow: 'Search entry',
-      title: 'Start with a simple care search',
+      title: 'Quick discovery paths',
       description:
-        'A static discovery entry shaped like the prototype search rail. It links only to approved public routes and does not run autocomplete or tracking.',
+        'Use approved public paths for the next step. The visual search rail above stays static and does not run autocomplete or tracking.',
       primaryLabel: 'Open search',
       serviceLabel: 'Care or service',
       serviceValue: 'Doctor, clinic, pharmacy, lab or service',
@@ -237,9 +237,9 @@ const homeCopyByLocale: Record<SupportedLocale, HomeCopy> = {
     },
     search: {
       eyebrow: 'مدخل البحث',
-      title: 'ابدأ ببحث رعاية بسيط',
+      title: 'مسارات اكتشاف سريعة',
       description:
-        'مدخل اكتشاف ثابت مستوحى من نموذج البحث في التصميم. يربط فقط بالمسارات العامة المعتمدة دون اقتراحات تلقائية أو تتبع.',
+        'استخدم المسارات العامة المعتمدة للخطوة التالية. يبقى شريط البحث أعلاه ثابتاً دون اقتراحات تلقائية أو تتبع.',
       primaryLabel: 'افتح البحث',
       serviceLabel: 'الرعاية أو الخدمة',
       serviceValue: 'طبيب أو مركز أو صيدلية أو مختبر أو خدمة',
@@ -393,7 +393,7 @@ export default async function LocaleCountryHome({ params }: { params: Promise<Pa
 
   return (
     <div className="home-foundation" dir={dir} data-country={safeCountry} data-locale={safeLocale}>
-      <HomeHero copy={copy.hero} dir={dir} primaryHref={searchHref} secondaryHref={providerHref} />
+      <HomeHero copy={copy.hero} search={copy.search} dir={dir} primaryHref={searchHref} secondaryHref={providerHref} />
 
       <section className="home-search-panel" dir={dir} aria-labelledby="home-search-title">
         <div className="home-section-head home-search-panel__intro">

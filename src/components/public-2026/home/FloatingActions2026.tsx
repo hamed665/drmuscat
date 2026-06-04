@@ -37,12 +37,7 @@ export function FloatingActions2026({ locale, copy }: FloatingActions2026Props) 
             <div className="grid gap-3">
               <h2>{copy.whatsappTitle}</h2>
               <p>{copy.whatsappBody}</p>
-              <a
-                href="https://wa.me/?text=DrMuscat%20support%20preview"
-                target="_blank"
-                rel="noreferrer"
-                className="dm2026-floating-link dm2026-floating-link--whatsapp"
-              >
+              <a href="https://wa.me/" target="_blank" rel="noreferrer" className="dm2026-floating-link dm2026-floating-link--whatsapp">
                 {copy.whatsappCta}
               </a>
             </div>
@@ -50,7 +45,7 @@ export function FloatingActions2026({ locale, copy }: FloatingActions2026Props) 
             <form className="grid gap-3" onSubmit={(event) => event.preventDefault()}>
               <h2>{copy.aiTitle}</h2>
               <p>{copy.aiBody}</p>
-              <textarea className="dm2026-floating-textarea" rows={3} placeholder={copy.aiPlaceholder} />
+              <textarea className="dm2026-floating-textarea" rows={3} placeholder={copy.aiPlaceholder} disabled />
               <div className="flex flex-wrap gap-2">
                 <button type="submit" className="dm2026-floating-link dm2026-floating-link--primary">{copy.send}</button>
                 <button type="button" className="dm2026-floating-link" onClick={() => setOpenPanel(null)}>{copy.close}</button>
@@ -61,10 +56,12 @@ export function FloatingActions2026({ locale, copy }: FloatingActions2026Props) 
         </section>
       ) : null}
 
-      <button type="button" className="dm2026-floating-button dm2026-floating-button--whatsapp" onClick={() => setOpenPanel(openPanel === 'whatsapp' ? null : 'whatsapp')} aria-expanded={openPanel === 'whatsapp'}>
+      <button type="button" className="dm2026-floating-button dm2026-floating-button--whatsapp" onClick={() => setOpenPanel(openPanel === 'whatsapp' ? null : 'whatsapp')} aria-expanded={openPanel === 'whatsapp'} aria-label={copy.whatsapp}>
+        <span aria-hidden="true">☘</span>
         {copy.whatsapp}
       </button>
-      <button type="button" className="dm2026-floating-button dm2026-floating-button--ai" onClick={() => setOpenPanel(openPanel === 'ai' ? null : 'ai')} aria-expanded={openPanel === 'ai'}>
+      <button type="button" className="dm2026-floating-button dm2026-floating-button--ai" onClick={() => setOpenPanel(openPanel === 'ai' ? null : 'ai')} aria-expanded={openPanel === 'ai'} aria-label={copy.ai}>
+        <span aria-hidden="true">✦</span>
         {copy.ai}
       </button>
     </div>

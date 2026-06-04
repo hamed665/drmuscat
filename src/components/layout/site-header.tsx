@@ -60,7 +60,7 @@ const navCopy: Record<
   ar: {
     ariaLabel: 'التنقل العام الرئيسي',
     brand: 'دكتور مسقط',
-    secondaryBrand: 'رعاية عُمان',
+    secondaryBrand: 'رعاية صحية في عُمان',
     home: 'الرئيسية',
     doctors: 'الأطباء',
     centers: 'المراكز',

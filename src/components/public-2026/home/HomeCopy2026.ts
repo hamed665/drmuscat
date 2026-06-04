@@ -255,7 +255,7 @@ export const home2026CopyByLocale: Record<SupportedLocale, Home2026Copy> = {
       cta: 'For Providers',
       note: 'No payment gateway, AI chat, backend search, or provider dashboard feature is added here.'
     },
-    floating: { whatsapp: 'WhatsApp help', ai: 'AI assistant preview', whatsappTitle: 'WhatsApp support', whatsappBody: 'WhatsApp support is a frontend preview in this phase. Use this panel as a safe contact placeholder until final support details are approved.', whatsappCta: 'Open WhatsApp placeholder', aiTitle: 'DrMuscat AI assistant', aiBody: 'Ask about finding doctors, clinics, pharmacies, labs, areas, or listing your center.', aiPlaceholder: 'Type your question…', send: 'Send', close: 'Close', disclaimer: 'General discovery help only, not medical advice.' }
+    floating: { whatsapp: 'WhatsApp help', ai: 'AI assistant', whatsappTitle: 'WhatsApp support preview', whatsappBody: 'WhatsApp support preview — real number will be connected later.', whatsappCta: 'Open WhatsApp placeholder', aiTitle: 'DrMuscat AI assistant', aiBody: 'Ask about finding doctors, clinics, pharmacies, labs, areas, or articles.', aiPlaceholder: 'Preview only — type is disabled', send: 'Send', close: 'Close', disclaimer: 'General discovery help only, not medical advice.' }
   },
   ar: {
     metadataTitle: 'DrMuscat عُمان | أساس اكتشاف الرعاية الصحية',
@@ -396,6 +396,6 @@ export const home2026CopyByLocale: Record<SupportedLocale, Home2026Copy> = {
       cta: 'لمقدمي الرعاية',
       note: 'لا تتم إضافة بوابة دفع أو دردشة ذكاء اصطناعي أو بحث خلفي أو لوحة مقدمي خدمة هنا.'
     },
-    floating: { whatsapp: 'مساعدة واتساب', ai: 'معاينة المساعد الذكي', whatsappTitle: 'دعم واتساب', whatsappBody: 'دعم واتساب هو معاينة واجهة فقط في هذه المرحلة. استخدم هذه اللوحة كبديل آمن حتى اعتماد تفاصيل الدعم النهائية.', whatsappCta: 'فتح معاينة واتساب', aiTitle: 'مساعد دكتور مسقط الذكي', aiBody: 'اسأل عن العثور على أطباء أو عيادات أو صيدليات أو مختبرات أو مناطق أو إدراج مركزك.', aiPlaceholder: 'اكتب سؤالك…', send: 'إرسال', close: 'إغلاق', disclaimer: 'مساعدة عامة للاكتشاف فقط وليست نصيحة طبية.' }
+    floating: { whatsapp: 'مساعدة واتساب', ai: 'مساعد الذكاء', whatsappTitle: 'معاينة دعم واتساب', whatsappBody: 'معاينة دعم واتساب — سيتم ربط الرقم الحقيقي لاحقًا.', whatsappCta: 'فتح معاينة واتساب', aiTitle: 'مساعد دكتور مسقط', aiBody: 'اسأل عن العثور على أطباء أو عيادات أو صيدليات أو مختبرات أو مناطق أو مقالات.', aiPlaceholder: 'معاينة فقط — الكتابة معطلة', send: 'إرسال', close: 'إغلاق', disclaimer: 'مساعدة عامة للاكتشاف فقط وليست نصيحة طبية.' }
   }
 };

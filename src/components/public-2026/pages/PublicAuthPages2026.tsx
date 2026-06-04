@@ -24,6 +24,7 @@ const authCopy = {
     registerTitle: 'Create your DrMuscat account',
     registerLead: 'Choose the role that best matches how you will use DrMuscat. Admin roles are not publicly self-selectable.',
     roleLabel: 'Role',
+    roleHelp: 'Admin and super-admin access is not publicly self-selectable.',
     locationTitle: 'Location preference',
     name: 'Full name',
     email: 'Email or phone',
@@ -57,7 +58,8 @@ const authCopy = {
     submit: 'معاينة تسجيل الدخول',
     registerTitle: 'أنشئ حسابك في دكتور مسقط',
     registerLead: 'اختر الدور الأقرب لطريقة استخدامك لدكتور مسقط. أدوار الإدارة غير متاحة للاختيار العام.',
-    roleLabel: 'الدور',
+    roleLabel: 'نوع الحساب',
+    roleHelp: 'لا يمكن اختيار أدوار الإدارة أو الإدارة العليا من التسجيل العام.',
     locationTitle: 'تفضيل الموقع',
     name: 'الاسم الكامل',
     email: 'البريد الإلكتروني أو الهاتف',
@@ -74,8 +76,8 @@ const authCopy = {
       'عيادة / مركز طبي',
       'صيدلية',
       'مختبر',
-      'مقدم عافية / تجميل / بيطري / خدمات أخرى',
-      'مسوق / شريك مبيعات',
+      'تجميل / عافية / بيطرة / مقدم آخر',
+      'مسوّق / شريك مبيعات',
     ],
   },
 } as const satisfies Record<SupportedLocale, Record<string, string | readonly string[]>>;
@@ -137,6 +139,7 @@ export function RegisterPage2026({ locale, country }: PublicAuthPageProps) {
           </div>
           <fieldset className="dm2026-role-grid">
             <legend>{copy.roleLabel}</legend>
+            <p className="dm2026-role-help">{copy.roleHelp}</p>
             {(copy.roles as readonly string[]).map((role) => (
               <label key={role}>
                 <input type="radio" name="role" />

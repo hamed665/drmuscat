@@ -18,22 +18,34 @@ type FeaturedCentersCarousel2026Props = {
 export function FeaturedCentersCarousel2026({ locale, country, copy, actions }: FeaturedCentersCarousel2026Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(() =>
+    typeof window === 'undefined' ? false : window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
   const dir = localeDirection(locale);
   const providers = copy.providers;
-  const visibleProviders = useMemo(
-    () => [0, 1, 2].map((offset) => providers[(activeIndex + offset) % providers.length]!),
+  const activeProvider = providers[activeIndex] ?? providers[0]!;
+  const previewProviders = useMemo(
+    () => [1, 2, 3].map((offset) => providers[(activeIndex + offset) % providers.length]!),
     [activeIndex, providers]
   );
 
   useEffect(() => {
-    if (isPaused) return undefined;
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const onChange = () => setReducedMotion(mediaQuery.matches);
+    mediaQuery.addEventListener('change', onChange);
+    return () => mediaQuery.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    if (isPaused || reducedMotion) return undefined;
 
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % providers.length);
     }, 4200);
 
     return () => window.clearInterval(timer);
-  }, [isPaused, providers.length]);
+  }, [isPaused, providers.length, reducedMotion]);
 
   const goToPrevious = () => {
     setActiveIndex((current) => (current - 1 + providers.length) % providers.length);
@@ -45,7 +57,7 @@ export function FeaturedCentersCarousel2026({ locale, country, copy, actions }: 
 
   return (
     <section
-      className="dm2026-carousel py-10 sm:py-12"
+      className="dm2026-carousel py-9 sm:py-11"
       aria-labelledby="dm2026-carousel-title"
       aria-roledescription="carousel"
       aria-label={copy.pauseLabel}
@@ -67,37 +79,48 @@ export function FeaturedCentersCarousel2026({ locale, country, copy, actions }: 
         </div>
       </div>
 
-      <div className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {visibleProviders.map((provider, index) => (
-          <article key={`${provider.name}-${activeIndex}-${index}`} className="dm2026-carousel-card">
-            <div className="dm2026-carousel-card__cover">
-              <span>{copy.sampleLabel}</span>
+      <div className="dm2026-carousel-stage mt-7">
+        <article className="dm2026-carousel-card dm2026-carousel-card--active" aria-live="polite">
+          <div className="dm2026-carousel-card__cover dm2026-carousel-card__cover--active">
+            <span>{copy.sampleLabel}</span>
+          </div>
+          <div className="dm2026-carousel-card__body">
+            <div>
+              <p className="dm2026-carousel-category">{activeProvider.category}</p>
+              <h3>{activeProvider.name}</h3>
+              <p className="dm2026-carousel-location">{activeProvider.location}</p>
+              <p className="dm2026-carousel-hours">{activeProvider.hours}</p>
+              <p className="dm2026-carousel-description">{activeProvider.description}</p>
             </div>
-            <div className="grid flex-1 gap-4 p-5">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.12em] text-dm-accent-gold">{provider.category}</p>
-                <h3 className="mt-2 text-xl font-bold tracking-tight text-dm-text">{provider.name}</h3>
-                <p className="mt-2 text-sm font-semibold text-dm-brand-strong">{provider.location}</p>
-                <p className="mt-1 text-sm text-dm-text-muted">{provider.hours}</p>
-                <p className="mt-3 text-sm leading-6 text-dm-text-soft">{provider.description}</p>
-              </div>
-              <div className="dm2026-carousel-actions">
-                <Link href={publicDiscoveryRoute(locale, country, provider.route)} className="dm2026-carousel-action dm2026-carousel-action--profile">
-                  {actions.viewProfile}
-                </Link>
-                <button type="button" className="dm2026-carousel-action dm2026-carousel-action--whatsapp" aria-label={`${actions.whatsapp} — ${provider.name}`}>
-                  {actions.whatsapp}
-                </button>
-                <button type="button" className="dm2026-carousel-action" aria-label={`${actions.call} — ${provider.name}`}>
-                  {actions.call}
-                </button>
-                <button type="button" className="dm2026-carousel-action" aria-label={`${actions.directions} — ${provider.name}`}>
-                  {actions.directions}
-                </button>
-              </div>
+            <div className="dm2026-carousel-actions" aria-label={activeProvider.name}>
+              <Link href={publicDiscoveryRoute(locale, country, activeProvider.route)} className="dm2026-carousel-action dm2026-carousel-action--profile">
+                {actions.viewProfile}
+              </Link>
+              <button type="button" className="dm2026-carousel-action dm2026-carousel-action--whatsapp" aria-label={`${actions.whatsapp} — ${activeProvider.name}`}>
+                {actions.whatsapp}
+              </button>
+              <button type="button" className="dm2026-carousel-action" aria-label={`${actions.call} — ${activeProvider.name}`}>
+                {actions.call}
+              </button>
+              <button type="button" className="dm2026-carousel-action" aria-label={`${actions.directions} — ${activeProvider.name}`}>
+                {actions.directions}
+              </button>
             </div>
-          </article>
-        ))}
+          </div>
+        </article>
+
+        <div className="dm2026-carousel-preview-list" aria-label={copy.pauseLabel}>
+          {previewProviders.map((provider, index) => {
+            const providerIndex = (activeIndex + index + 1) % providers.length;
+            return (
+              <button key={`${provider.name}-${providerIndex}`} type="button" className="dm2026-carousel-preview" onClick={() => setActiveIndex(providerIndex)}>
+                <span>{provider.category}</span>
+                <strong>{provider.name}</strong>
+                <small>{provider.location}</small>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="mt-5 flex justify-center gap-2" role="tablist" aria-label={copy.pauseLabel}>

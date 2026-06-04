@@ -61,7 +61,10 @@ const articlesCopy = {
     updated: 'Updated June 2026',
     toc: 'On this page',
     sections: ['Search by need', 'Choose city and area', 'Contact providers safely'],
-    relatedProviders: 'Related discovery links',
+    faqTitle: 'FAQ',
+    faq: ['Is this medical advice?', 'Can I use this to compare areas?', 'Are comments published immediately?'],
+    relatedArticles: 'Related articles',
+    relatedProviders: 'Related providers and discovery links',
     comments: 'Comments are moderated before public display. No reviews are published from this placeholder.',
     video: 'Video placeholder',
   },
@@ -74,7 +77,10 @@ const articlesCopy = {
     updated: 'تم التحديث في يونيو 2026',
     toc: 'في هذه الصفحة',
     sections: ['البحث حسب الحاجة', 'اختيار المدينة والمنطقة', 'التواصل مع مقدمي الرعاية بأمان'],
-    relatedProviders: 'روابط اكتشاف ذات صلة',
+    faqTitle: 'الأسئلة الشائعة',
+    faq: ['هل هذه نصيحة طبية؟', 'هل يمكنني استخدام هذا لمقارنة المناطق؟', 'هل تُنشر التعليقات فورًا؟'],
+    relatedArticles: 'مقالات ذات صلة',
+    relatedProviders: 'مقدمو رعاية وروابط اكتشاف ذات صلة',
     comments: 'تتم مراجعة التعليقات قبل عرضها للعامة. لا تُنشر مراجعات من هذا العنصر التمهيدي.',
     video: 'موضع فيديو تمهيدي',
   },
@@ -136,6 +142,14 @@ export function ArticleDetailPage2026({ locale, country, slug }: ArticleDetailPa
             <p>{copy.lead}</p>
           </section>
         ))}
+        <section className="dm2026-related-box">
+          <h2>{copy.faqTitle}</h2>
+          <ul>{copy.faq.map((item) => <li key={item}>{item}</li>)}</ul>
+        </section>
+        <section className="dm2026-related-box">
+          <h2>{copy.relatedArticles}</h2>
+          <Link href={publicArticleDetailRoute(locale, country, articleSamples[locale][1]?.slug ?? 'health-guide')}>{articleSamples[locale][1]?.title ?? copy.title}</Link>
+        </section>
         <section className="dm2026-related-box">
           <h2>{copy.relatedProviders}</h2>
           <Link href={publicDiscoveryRoute(locale, country, 'search')}>{locale === 'ar' ? 'ابدأ البحث' : 'Start searching'}</Link>

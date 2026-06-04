@@ -7,13 +7,18 @@ import type { SupportedLocale } from '@/lib/i18n/config';
 
 type LanguageSwitchProps = {
   locale: SupportedLocale;
-  label: string;
-  ariaLabel: string;
+  label?: string;
+  ariaLabel?: string;
   className?: string;
 };
 
-function getEquivalentLocalePath(pathname: string | null, locale: SupportedLocale) {
-  const targetLocale: SupportedLocale = locale === 'ar' ? 'en' : 'ar';
+function getDetectedLocale(pathname: string | null, fallbackLocale: SupportedLocale): SupportedLocale {
+  const firstSegment = pathname?.split('/').filter(Boolean)[0];
+  return firstSegment === 'ar' || firstSegment === 'en' ? firstSegment : fallbackLocale;
+}
+
+function getEquivalentLocalePath(pathname: string | null, currentLocale: SupportedLocale) {
+  const targetLocale: SupportedLocale = currentLocale === 'ar' ? 'en' : 'ar';
   const fallback = `/${targetLocale}/om`;
 
   if (!pathname) {
@@ -29,14 +34,17 @@ function getEquivalentLocalePath(pathname: string | null, locale: SupportedLocal
   return fallback;
 }
 
-export function LanguageSwitch({ locale, label, ariaLabel, className = 'site-header__locale-link' }: LanguageSwitchProps) {
+export function LanguageSwitch({ locale, className = 'site-header__locale-link' }: LanguageSwitchProps) {
   const pathname = usePathname();
-  const href = getEquivalentLocalePath(pathname, locale);
-  const targetLocale = locale === 'ar' ? 'en' : 'ar';
+  const currentLocale = getDetectedLocale(pathname, locale);
+  const href = getEquivalentLocalePath(pathname, currentLocale);
+  const targetLocale: SupportedLocale = currentLocale === 'ar' ? 'en' : 'ar';
+  const switchLabel = currentLocale === 'ar' ? 'English' : 'العربية';
+  const switchAriaLabel = currentLocale === 'ar' ? 'Switch language to English' : 'Switch language to Arabic';
 
   return (
-    <Link className={className} href={href} hrefLang={targetLocale} aria-label={ariaLabel}>
-      {label}
+    <Link className={className} href={href} hrefLang={targetLocale} aria-label={switchAriaLabel}>
+      {switchLabel}
     </Link>
   );
 }

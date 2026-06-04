@@ -4,7 +4,7 @@ import type { SupportedLocale } from '@/lib/i18n/config';
 export const DRMUSCAT_SUPPORT_WHATSAPP = '000000000000';
 
 const supportMessages: Record<SupportedLocale, string> = {
-  en: 'Hello DrMuscat, I have a question.',
+  en: 'Hi DrMuscat, I have a question.',
   ar: 'مرحباً دكتور مسقط، لدي سؤال.',
 };
 

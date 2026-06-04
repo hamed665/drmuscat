@@ -1,369 +1,134 @@
+'use client';
+
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
+
 import { ProviderOnboardingLeadForm } from '@/components/public/provider-onboarding-lead-form';
-import { publicDiscoveryRoute } from '@/lib/routes/public';
 import type { SupportedCountry, SupportedLocale } from '@/lib/i18n/config';
+import { publicDiscoveryRoute, publicRegisterRoute, publicSignInRoute } from '@/lib/routes/public';
 
-type ProviderPlansProps = {
-  locale: SupportedLocale;
-  country: SupportedCountry;
-  dir: 'ltr' | 'rtl';
+type ProviderPlansProps = { locale: SupportedLocale; country: SupportedCountry; dir: 'ltr' | 'rtl' };
+type BillingPeriod = 3 | 6 | 12;
+type PlanKey = 'basic' | 'plus' | 'premium' | 'enterprise';
+type PriceMap = Record<BillingPeriod, number>;
+type Plan = { key: PlanKey; name: string; purpose: string; cta: string; prices: PriceMap; features: readonly string[]; note: string; badge?: string };
+type AddOn = { name: string; launch: number; normal: number; description: string };
+type ComparisonRow = { label: string; values: readonly string[] };
+
+type Copy = {
+  eyebrow: string; heroTitle: string; heroBody: string; seePlans: string; onboardingCta: string; heroNote: string;
+  pricingTitle: string; pricingBody: string; billingLabel: string; months: string; standard: string; save10: string; save18: string; free: string; omr: string; selected: string;
+  plans: readonly Plan[]; comparisonTitle: string; comparisonBody: string; feature: string; comparisonRows: readonly ComparisonRow[];
+  addonsTitle: string; addonsBody: string; launchPrice: string; normalPrice: string; days: string; sponsoredNote: string; addons: readonly AddOn[]; learnAddons: string;
+  trustTitle: string; trustItems: readonly string[];
+  journeyTitle: string; journeyBody: string; steps: readonly string[]; summaryTitle: string; selectedPlan: string; billingPeriod: string; total: string; flowType: string; freeFlow: string; paidFlow: string; checkoutTitle: string; checkoutNotice: string; basicCheckout: string; paidCheckout: string; checkoutFeedback: string;
+  dashboardTitle: string; dashboardBody: string; dashboardItems: readonly string[]; dashboardNote: string;
+  faqTitle: string; faqs: readonly { q: string; a: string }[];
+  finalTitle: string; finalBody: string; signIn: string; createAccount: string; viewCenters: string;
 };
 
-type ProviderPlan = {
-  name: string;
-  purpose: string;
-  features: readonly string[];
-  note?: string;
+const prices: Record<PlanKey, PriceMap> = {
+  basic: { 3: 0, 6: 0, 12: 0 }, plus: { 3: 25, 6: 45, 12: 82 }, premium: { 3: 65, 6: 117, 12: 213 }, enterprise: { 3: 160, 6: 288, 12: 525 },
 };
 
-type ComparisonRow = {
-  label: string;
-  values: readonly string[];
-};
-
-type ProviderPlansCopy = {
-  eyebrow: string;
-  heroTitle: string;
-  heroDescription: string;
-  primaryCta: string;
-  primaryCtaNote: string;
-  secondaryCta: string;
-  valueTitle: string;
-  valueDescription: string;
-  valueBullets: readonly string[];
-  plansTitle: string;
-  plansDescription: string;
-  plans: readonly ProviderPlan[];
-  comparisonTitle: string;
-  comparisonDescription: string;
-  comparisonColumns: readonly string[];
-  comparisonRows: readonly ComparisonRow[];
-  laterLabel: string;
-  safetyTitle: string;
-  safetyNote: string;
-};
-
-const copyByLocale: Record<SupportedLocale, ProviderPlansCopy> = {
+const copyByLocale: Record<SupportedLocale, Copy> = {
   en: {
-    eyebrow: 'Provider plans for Oman',
-    heroTitle: 'Grow your healthcare visibility in Oman with DrMuscat.',
-    heroDescription:
-      'Build an SEO-friendly public profile for your center or clinic, show services, doctors, location, approved media, and safe contact options as DrMuscat rolls out provider tools.',
-    primaryCta: 'Request provider onboarding',
-    primaryCtaNote: 'Use the onboarding request form below. Submitting a request does not activate a plan or confirm approval.',
-    secondaryCta: 'View public center listings',
-    valueTitle: 'A safer path to provider visibility',
-    valueDescription:
-      'DrMuscat is preparing provider listing options that support public discovery while keeping healthcare claims clear, reviewed, and responsible.',
-    valueBullets: [
-      'SEO-friendly public profile for your center or clinic.',
-      'Show center details, services, doctors, and location.',
-      'Add approved gallery, logo, and cover media.',
-      'Use contact and callback options where public visibility rules allow.',
-      'Prepare for future premium and sponsored visibility without medical quality claims.'
-    ],
-    plansTitle: 'Simple listing options for centers and clinics',
-    plansDescription:
-      'Plans are presented as static product guidance in this phase. Pricing, activation, and entitlements are not live yet.',
+    eyebrow: 'Provider plans for Oman', heroTitle: 'Build a stronger healthcare presence with DrMuscat.', heroBody: 'Choose a clear listing plan, prepare your provider profile, and request onboarding for a reviewed public presence in Oman.', seePlans: 'See plans', onboardingCta: 'Request provider onboarding', heroNote: 'DrMuscat is a healthcare discovery platform. Paid plans do not guarantee medical superiority, government approval, or automatic public listing.',
+    pricingTitle: 'Choose the right plan for your provider', pricingBody: 'Select a billing period to see exact pricing. Basic stays free; paid plans include clearer profile, growth, and content support.', billingLabel: 'Billing period', months: 'months', standard: 'Standard price', save10: 'Save 10%', save18: 'Save 18%', free: 'Free', omr: 'OMR', selected: 'Selected',
     plans: [
-      {
-        name: 'Basic',
-        purpose: 'Basic public listing foundation.',
-        features: [
-          'Basic center profile',
-          'Category and area',
-          'Limited description',
-          'Basic services',
-          'Public discovery presence when approved'
-        ]
-      },
-      {
-        name: 'Plus',
-        purpose: 'Richer profile for active centers.',
-        features: [
-          'Enhanced profile content',
-          'Services and location/maps',
-          'Approved gallery/logo/cover media',
-          'Contact and callback options where approved',
-          'Profile completeness support'
-        ]
-      },
-      {
-        name: 'Premium',
-        purpose: 'Richer visibility package.',
-        features: [
-          'Premium-looking profile presentation',
-          'More complete profile media',
-          'Eligibility for future featured placements where implemented',
-          'Future analytics/content options'
-        ],
-        note: 'Featured placements are future eligible placements where implemented, not active priority ranking.'
-      },
-      {
-        name: 'Sponsored',
-        purpose: 'Campaign-based visibility.',
-        features: [
-          'Clearly labeled sponsored placements',
-          'Future campaign start/end controls',
-          'Future impressions/clicks reporting',
-          'Future homepage/category/search placements where implemented'
-        ],
-        note: 'Sponsored placement is paid visibility, not medical quality ranking.'
-      }
+      { key: 'basic', name: 'Basic', purpose: 'Free public listing foundation.', cta: 'Start free listing', prices: prices.basic, badge: 'Free', features: ['Basic public center profile', 'Center name, category, city and area', 'Short description and basic services', 'Phone or WhatsApp contact', 'Basic opening hours', 'Public discovery after approval', 'Advertising add-ons after approval'], note: 'No professional logo, cover, gallery, offers, badge, analytics, AI article, subdomain, custom domain, or priority support.' },
+      { key: 'plus', name: 'Plus', purpose: 'Enhanced profile for active centers.', cta: 'Choose Plus', prices: prices.plus, features: ['Everything in Basic', 'Detailed profile description', 'Logo and cover image', 'Gallery up to 6 images', 'Detailed services and map section', 'WhatsApp, call and social links', '1 active offer', 'Profile completeness support'], note: 'No Premium badge, monthly analytics, AI article, subdomain, custom domain, or priority support.' },
+      { key: 'premium', name: 'Premium', purpose: 'Growth profile with SEO support.', cta: 'Choose Premium', prices: prices.premium, badge: 'Most popular', features: ['Everything in Plus', 'Premium profile presentation', 'Verified / Premium badge after approval', 'Gallery up to 15 images', 'Up to 5 active offers', 'Lead inquiry and callback options', 'Monthly basic analytics', '1 human-edited AI-assisted SEO article per month', '10% advertising add-on discount'], note: 'Article allowance: 3, 6, or 12 articles for the selected period.' },
+      { key: 'enterprise', name: 'Enterprise', purpose: 'For hospitals, multi-branch clinics, labs, and healthcare groups.', cta: 'Choose Enterprise', prices: prices.enterprise, badge: 'Larger providers', features: ['Everything in Premium', 'Multi-branch and department support', 'Custom domain support', 'Dedicated profile and SEO strategy', '4 human-edited AI-assisted SEO articles per month', 'Dedicated onboarding and campaign planning', 'Priority support and account manager', 'Custom landing pages after approval', '20% advertising add-on discount'], note: 'Article allowance: 12, 24, or 48 articles for the selected period.' },
     ],
-    comparisonTitle: 'Feature comparison',
-    comparisonDescription:
-      'This comparison explains planned listing value without enabling checkout, subscription activation, or entitlement enforcement.',
-    comparisonColumns: ['Basic', 'Plus', 'Premium', 'Sponsored'],
+    comparisonTitle: 'Compare plan features', comparisonBody: 'A practical view of the profile, growth, content, and support included in each plan.', feature: 'Feature',
     comparisonRows: [
-      { label: 'Public profile page', values: ['Included', 'Included', 'Included', 'Included'] },
-      { label: 'Center details and descriptions', values: ['Basic', 'Enhanced', 'Enhanced', 'Campaign-linked'] },
-      { label: 'Services list', values: ['Basic', 'Enhanced', 'Enhanced', 'Campaign-linked'] },
-      { label: 'Location and directions', values: ['Basic', 'Included', 'Included', 'Campaign-linked'] },
-      { label: 'Logo/cover/gallery support', values: ['Limited', 'Approved media', 'More complete media', 'Campaign media later'] },
-      { label: 'Contact actions where approved', values: ['Rules-based', 'Rules-based', 'Rules-based', 'Rules-based'] },
-      { label: 'Callback requests where approved contact exists', values: ['Not planned', 'Where approved', 'Where approved', 'Where approved'] },
-      { label: 'Profile completeness guidance', values: ['Not planned', 'Included', 'Included', 'Included'] },
-      { label: 'Future featured eligibility', values: ['No', 'No', 'Where implemented', 'Campaign-specific'] },
-      { label: 'Clearly labeled sponsored placements', values: ['No', 'No', 'No', 'Where implemented'] },
-      { label: 'Analytics later', values: ['Later', 'Later', 'Later', 'Later'] },
-      { label: 'AI FAQ assistant later', values: ['Later', 'Later', 'Later', 'Later'] }
+      { label: 'Public profile page', values: ['Included', 'Included', 'Included', 'Included'] }, { label: 'Full profile description', values: ['Basic', 'Enhanced', 'Enhanced', 'Custom'] }, { label: 'Services list', values: ['Basic', 'Enhanced', 'Enhanced', 'Custom'] }, { label: 'Phone / WhatsApp CTA', values: ['Included', 'Included', 'Included', 'Included'] }, { label: 'Map / directions', values: ['Basic', 'Included', 'Included', 'Included'] }, { label: 'Logo / cover image', values: ['Not included', 'Included', 'Included', 'Included'] }, { label: 'Gallery', values: ['Not included', 'Up to 6', 'Up to 15', 'Custom'] }, { label: 'Active offers', values: ['Not included', '1', 'Up to 5', 'Custom'] }, { label: 'Premium / verified badge', values: ['Not included', 'Not included', 'After approval', 'After approval'] }, { label: 'Lead inquiry / callback', values: ['Not included', 'Not included', 'Included', 'Advanced later'] }, { label: 'Monthly analytics', values: ['Not included', 'Not included', 'Basic', 'Advanced later'] }, { label: 'DrMuscat dedicated URL', values: ['Not included', 'Not included', 'Included', 'Included'] }, { label: 'Custom domain support', values: ['Not included', 'Not included', 'Not included', 'Included'] }, { label: 'AI-assisted SEO articles', values: ['Not included', 'Not included', '1 / month', '4 / month'] }, { label: 'Article human editing', values: ['Not included', 'Not included', 'Included', 'Included'] }, { label: 'Priority support', values: ['Not included', 'Not included', 'Included', 'Included'] }, { label: 'Multi-branch support', values: ['Not included', 'Not included', 'Not included', 'Included'] }, { label: 'Advertising discount', values: ['Add-on', 'Add-on', '10%', '20%'] },
     ],
-    laterLabel: 'Later',
-    safetyTitle: 'Important safety note',
-    safetyNote:
-      'DrMuscat is a healthcare discovery platform. Paid plans do not mean medical quality ranking, government approval, or clinical endorsement. Sponsored or featured placements, when available, must be clearly labeled and do not represent medical superiority.'
+    addonsTitle: 'Advertising add-ons', addonsBody: 'Optional paid visibility tools for approved providers. These are separate from subscription plans.', launchPrice: 'Launch price', normalPrice: 'Normal price', days: '30 days', sponsoredNote: 'Sponsored placement is paid visibility, not medical quality ranking.', learnAddons: 'Select for checkout preview',
+    addons: [
+      { name: 'Homepage Featured Card', launch: 30, normal: 50, description: 'Clearly labeled featured card visibility on the homepage.' }, { name: 'Homepage Top Sponsored Slot', launch: 60, normal: 90, description: 'Clearly labeled sponsored homepage placement.' }, { name: 'Category Featured Placement', launch: 20, normal: 35, description: 'Featured visibility within an approved category.' }, { name: 'Area Featured Placement', launch: 15, normal: 25, description: 'Featured visibility within an approved area.' },
+    ],
+    trustTitle: 'Trust and safety principles', trustItems: ['Public profiles are reviewed before display.', 'Paid plans do not guarantee medical superiority or government approval.', 'Sponsored visibility is clearly labeled.', 'AI-assisted content is reviewed before publishing where applicable.'],
+    journeyTitle: 'Onboarding and checkout preview', journeyBody: 'Your selected plan and billing period stay connected to the onboarding request. Payment is not collected on this page.', steps: ['Select plan', 'Select billing period', 'Share provider details', 'Review summary', 'Request checkout link', 'Pending review confirmation'], summaryTitle: 'Your selection', selectedPlan: 'Selected plan', billingPeriod: 'Billing period', total: 'Plan total', flowType: 'Flow', freeFlow: 'Free listing review — no payment required', paidFlow: 'Paid plan — checkout link requested after review', checkoutTitle: 'Checkout preview', checkoutNotice: 'Online payment is coming soon. For now, DrMuscat will contact approved providers with payment instructions or a checkout link.', basicCheckout: 'Submit free listing request', paidCheckout: 'Request checkout link', checkoutFeedback: 'Checkout preview saved in this page. Submit the onboarding request so the DrMuscat team can review it.',
+    dashboardTitle: 'Provider billing dashboard preview', dashboardBody: 'A future self-serve billing area can show plan status, renewal information, upgrades, add-ons, and invoices after approved billing phases.', dashboardItems: ['Current plan and billing duration', 'Pending payment or pending review status', 'Upgrade and billing cycle options', 'Available and active advertising add-ons', 'Invoices and billing history when supported'], dashboardNote: 'This is a frontend information architecture preview, not an active provider dashboard or billing system.',
+    faqTitle: 'Provider FAQ', faqs: [
+      { q: 'Can I start with the free plan?', a: 'Yes. Basic is a free listing request path, subject to review before public display.' }, { q: 'Does a paid plan mean better medical ranking?', a: 'No. Paid plans support profile presentation and growth tools, not medical quality ranking.' }, { q: 'Can I upgrade later?', a: 'The product is designed to support later upgrades once provider billing is available.' }, { q: 'How does payment work?', a: 'Online payment is not active yet. Approved providers will receive payment instructions or a checkout link later.' }, { q: 'Can I use my own domain?', a: 'Custom domain support is intended for Enterprise providers after approval.' }, { q: 'How do AI-assisted articles work?', a: 'Where included, topics are suggested and AI-assisted drafts are human-edited before publishing.' }, { q: 'Are sponsored placements labeled?', a: 'Yes. Sponsored placements must be clearly labeled and are not medical quality ranking.' },
+    ],
+    finalTitle: 'Ready to prepare your provider profile?', finalBody: 'Choose a plan, submit an onboarding request, or sign in when provider account tools are available.', signIn: 'Sign in', createAccount: 'Create account', viewCenters: 'View public centers',
   },
   ar: {
-    eyebrow: 'خطط مقدمي الخدمة في عُمان',
-    heroTitle: 'نمِّ ظهور مركزك الصحي في عُمان مع DrMuscat.',
-    heroDescription:
-      'أنشئ ملفاً عاماً مناسباً لمحركات البحث لمركزك أو عيادتك، واعرض الخدمات والأطباء والموقع والوسائط المعتمدة وخيارات التواصل الآمنة مع تطور أدوات مقدمي الخدمة في DrMuscat.',
-    primaryCta: 'طلب الانضمام كمقدم خدمة',
-    primaryCtaNote: 'استخدم نموذج طلب الانضمام أدناه. إرسال الطلب لا يفعّل أي خطة ولا يؤكد الموافقة.',
-    secondaryCta: 'عرض قوائم المراكز',
-    valueTitle: 'مسار أكثر أماناً لظهور مقدمي الخدمة',
-    valueDescription:
-      'تعمل DrMuscat على إعداد خيارات ظهور لمقدمي الخدمة تدعم الاكتشاف العام مع الحفاظ على وضوح الادعاءات الصحية ومسؤوليتها.',
-    valueBullets: [
-      'ملف عام مناسب لمحركات البحث لمركزك أو عيادتك.',
-      'عرض بيانات المركز والخدمات والأطباء والموقع.',
-      'إضافة الصور والشعار وصورة الغلاف المعتمدة.',
-      'استخدام خيارات التواصل وطلب الاتصال عند السماح بها وفق قواعد الظهور العامة.',
-      'الاستعداد لخيارات ظهور مميزة أو ممولة مستقبلاً دون ادعاءات جودة طبية.'
-    ],
-    plansTitle: 'خيارات ظهور مبسطة للمراكز والعيادات',
-    plansDescription:
-      'تُعرض الخطط هنا كإرشاد تسويقي ثابت في هذه المرحلة. الأسعار والتفعيل والاستحقاقات ليست مفعّلة بعد.',
+    eyebrow: 'خطط مقدمي الرعاية في عُمان', heroTitle: 'ابنِ حضوراً أقوى لمقدم الرعاية مع دكتور مسقط.', heroBody: 'اختر خطة واضحة لملفك، وجهّز بيانات مقدم الرعاية، واطلب الانضمام لحضور عام تتم مراجعته في عُمان.', seePlans: 'عرض الخطط', onboardingCta: 'طلب انضمام مقدم رعاية', heroNote: 'دكتور مسقط منصة لاكتشاف الرعاية الصحية. الخطط المدفوعة لا تضمن تفوقاً طبياً أو اعتماداً حكومياً أو عرضاً عاماً تلقائياً.',
+    pricingTitle: 'اختر الخطة المناسبة لمقدم الرعاية', pricingBody: 'اختر مدة الفوترة لعرض السعر الدقيق. تبقى Basic مجانية، وتضيف الخطط المدفوعة دعماً أوضح للملف والنمو والمحتوى.', billingLabel: 'مدة الفوترة', months: 'أشهر', standard: 'السعر القياسي', save10: 'وفر 10٪', save18: 'وفر 18٪', free: 'مجاني', omr: 'ر.ع.', selected: 'محددة',
     plans: [
-      {
-        name: 'الأساسية',
-        purpose: 'أساس للقائمة العامة الأساسية.',
-        features: ['ملف مركز أساسي', 'الفئة والمنطقة', 'وصف محدود', 'خدمات أساسية', 'ظهور في الاكتشاف العام عند الاعتماد']
-      },
-      {
-        name: 'بلس',
-        purpose: 'ملف أكثر ثراءً للمراكز النشطة.',
-        features: [
-          'محتوى ملف محسّن',
-          'الخدمات والموقع/الخرائط',
-          'صور وشعار وغلاف معتمدة',
-          'خيارات التواصل وطلب الاتصال عند الاعتماد',
-          'دعم اكتمال الملف'
-        ]
-      },
-      {
-        name: 'المميزة',
-        purpose: 'حزمة ظهور أكثر ثراءً.',
-        features: [
-          'عرض ملف بمظهر مميز',
-          'وسائط ملف أكثر اكتمالاً',
-          'أهلية لظهور مميز مستقبلي حيث يتم تنفيذه',
-          'خيارات تحليلات ومحتوى مستقبلية'
-        ],
-        note: 'الظهور المميز يعني أهلية مستقبلية حيث يتم التنفيذ، وليس ترتيباً ذا أولوية مفعّلاً حالياً.'
-      },
-      {
-        name: 'الممولة',
-        purpose: 'ظهور قائم على الحملات.',
-        features: [
-          'مواضع ظهور ممولة موضحة بوضوح',
-          'تحكم مستقبلي في بداية ونهاية الحملة',
-          'تقارير مستقبلية للظهور والنقرات',
-          'مواضع مستقبلية في الرئيسية/الفئات/البحث حيث يتم التنفيذ'
-        ],
-        note: 'الظهور الممول هو ظهور مدفوع، وليس تصنيفاً للجودة الطبية.'
-      }
+      { key: 'basic', name: 'Basic', purpose: 'أساس مجاني للظهور العام.', cta: 'ابدأ الإدراج المجاني', prices: prices.basic, badge: 'مجاني', features: ['ملف عام أساسي للمركز', 'الاسم والقسم والمدينة والمنطقة', 'وصف مختصر وخدمات أساسية', 'تواصل هاتفي أو واتساب', 'ساعات عمل أساسية', 'ظهور عام بعد المراجعة', 'إضافات إعلانية بعد الموافقة'], note: 'لا يشمل شعاراً احترافياً أو غلافاً أو معرضاً أو عروضاً أو شارة أو تحليلات أو مقال ذكاء اصطناعي أو نطاقاً أو دعماً ذا أولوية.' },
+      { key: 'plus', name: 'Plus', purpose: 'ملف محسّن للمراكز النشطة.', cta: 'اختر Plus', prices: prices.plus, features: ['كل ما في Basic', 'وصف تفصيلي للملف', 'شعار وصورة غلاف', 'معرض حتى 6 صور', 'خدمات تفصيلية وقسم للموقع', 'واتساب واتصال وروابط اجتماعية', 'عرض نشط واحد', 'دعم اكتمال الملف'], note: 'لا يشمل شارة Premium أو تحليلات شهرية أو مقال ذكاء اصطناعي أو نطاقاً أو دعماً ذا أولوية.' },
+      { key: 'premium', name: 'Premium', purpose: 'ملف نمو مع دعم لمحركات البحث.', cta: 'اختر Premium', prices: prices.premium, badge: 'الأكثر طلباً', features: ['كل ما في Plus', 'عرض احترافي للملف', 'شارة موثق / Premium بعد الموافقة', 'معرض حتى 15 صورة', 'حتى 5 عروض نشطة', 'زر استفسار وخيار طلب اتصال', 'تحليلات شهرية أساسية', 'مقال SEO بمساعدة الذكاء الاصطناعي ومراجعة بشرية شهرياً', 'خصم 10٪ على الإضافات الإعلانية'], note: 'رصيد المقالات: 3 أو 6 أو 12 مقالاً حسب المدة المختارة.' },
+      { key: 'enterprise', name: 'Enterprise', purpose: 'للمستشفيات والمراكز متعددة الفروع والمختبرات والمجموعات الصحية.', cta: 'اختر Enterprise', prices: prices.enterprise, badge: 'لمقدمي الرعاية الأكبر', features: ['كل ما في Premium', 'دعم الفروع والأقسام المتعددة', 'دعم نطاق مخصص', 'استراتيجية مخصصة للملف وSEO', '4 مقالات SEO بمساعدة الذكاء الاصطناعي ومراجعة بشرية شهرياً', 'انضمام مخصص وتخطيط حملات', 'دعم ذو أولوية ومدير حساب', 'صفحات هبوط مخصصة بعد الموافقة', 'خصم 20٪ على الإضافات الإعلانية'], note: 'رصيد المقالات: 12 أو 24 أو 48 مقالاً حسب المدة المختارة.' },
     ],
-    comparisonTitle: 'مقارنة الميزات',
-    comparisonDescription:
-      'توضح هذه المقارنة قيمة الظهور المخطط لها دون تفعيل الدفع أو الاشتراكات أو الاستحقاقات.',
-    comparisonColumns: ['الأساسية', 'بلس', 'المميزة', 'الممولة'],
+    comparisonTitle: 'مقارنة مزايا الخطط', comparisonBody: 'نظرة عملية على الملف والنمو والمحتوى والدعم المتاح في كل خطة.', feature: 'الميزة',
     comparisonRows: [
-      { label: 'صفحة ملف عامة', values: ['متضمن', 'متضمن', 'متضمن', 'متضمن'] },
-      { label: 'بيانات المركز والأوصاف', values: ['أساسي', 'محسّن', 'محسّن', 'مرتبط بالحملة'] },
-      { label: 'قائمة الخدمات', values: ['أساسي', 'محسّن', 'محسّن', 'مرتبط بالحملة'] },
-      { label: 'الموقع والاتجاهات', values: ['أساسي', 'متضمن', 'متضمن', 'مرتبط بالحملة'] },
-      { label: 'دعم الشعار/الغلاف/الصور', values: ['محدود', 'وسائط معتمدة', 'وسائط أكثر اكتمالاً', 'وسائط حملة لاحقاً'] },
-      { label: 'إجراءات التواصل عند الاعتماد', values: ['حسب القواعد', 'حسب القواعد', 'حسب القواعد', 'حسب القواعد'] },
-      { label: 'طلبات الاتصال عند توفر تواصل معتمد', values: ['غير مخطط', 'عند الاعتماد', 'عند الاعتماد', 'عند الاعتماد'] },
-      { label: 'إرشاد اكتمال الملف', values: ['غير مخطط', 'متضمن', 'متضمن', 'متضمن'] },
-      { label: 'أهلية الظهور المميز مستقبلاً', values: ['لا', 'لا', 'حيث يتم التنفيذ', 'خاص بالحملة'] },
-      { label: 'مواضع ممولة موضحة بوضوح', values: ['لا', 'لا', 'لا', 'حيث يتم التنفيذ'] },
-      { label: 'التحليلات لاحقاً', values: ['لاحقاً', 'لاحقاً', 'لاحقاً', 'لاحقاً'] },
-      { label: 'مساعد أسئلة AI لاحقاً', values: ['لاحقاً', 'لاحقاً', 'لاحقاً', 'لاحقاً'] }
+      { label: 'صفحة ملف عامة', values: ['مشمول', 'مشمول', 'مشمول', 'مشمول'] }, { label: 'وصف كامل للملف', values: ['أساسي', 'محسّن', 'محسّن', 'مخصص'] }, { label: 'قائمة الخدمات', values: ['أساسية', 'محسّنة', 'محسّنة', 'مخصصة'] }, { label: 'زر الهاتف / واتساب', values: ['مشمول', 'مشمول', 'مشمول', 'مشمول'] }, { label: 'الخريطة / الاتجاهات', values: ['أساسي', 'مشمول', 'مشمول', 'مشمول'] }, { label: 'الشعار / صورة الغلاف', values: ['غير مشمول', 'مشمول', 'مشمول', 'مشمول'] }, { label: 'المعرض', values: ['غير مشمول', 'حتى 6', 'حتى 15', 'مخصص'] }, { label: 'العروض النشطة', values: ['غير مشمول', '1', 'حتى 5', 'مخصص'] }, { label: 'شارة Premium / موثق', values: ['غير مشمول', 'غير مشمول', 'بعد الموافقة', 'بعد الموافقة'] }, { label: 'الاستفسارات / طلب الاتصال', values: ['غير مشمول', 'غير مشمول', 'مشمول', 'متقدم لاحقاً'] }, { label: 'التحليلات الشهرية', values: ['غير مشمول', 'غير مشمول', 'أساسية', 'متقدمة لاحقاً'] }, { label: 'رابط مخصص من دكتور مسقط', values: ['غير مشمول', 'غير مشمول', 'مشمول', 'مشمول'] }, { label: 'دعم نطاق مخصص', values: ['غير مشمول', 'غير مشمول', 'غير مشمول', 'مشمول'] }, { label: 'مقالات SEO بمساعدة الذكاء', values: ['غير مشمول', 'غير مشمول', '1 / شهر', '4 / شهر'] }, { label: 'مراجعة بشرية للمقالات', values: ['غير مشمول', 'غير مشمول', 'مشمول', 'مشمول'] }, { label: 'دعم ذو أولوية', values: ['غير مشمول', 'غير مشمول', 'مشمول', 'مشمول'] }, { label: 'دعم الفروع المتعددة', values: ['غير مشمول', 'غير مشمول', 'غير مشمول', 'مشمول'] }, { label: 'خصم الإعلانات', values: ['إضافة', 'إضافة', '10٪', '20٪'] },
     ],
-    laterLabel: 'لاحقاً',
-    safetyTitle: 'ملاحظة أمان مهمة',
-    safetyNote:
-      'DrMuscat منصة لاكتشاف خدمات الرعاية الصحية. الخطط المدفوعة لا تعني تصنيفاً للجودة الطبية أو اعتماداً حكومياً أو توصية علاجية. أي ظهور ممول أو مميز عند توفره يجب أن يكون موضحاً ولا يعني تفوقاً طبياً.'
-  }
+    addonsTitle: 'الإضافات الإعلانية', addonsBody: 'أدوات ظهور مدفوعة اختيارية لمقدمي الرعاية المعتمدين، وهي منفصلة عن خطط الاشتراك.', launchPrice: 'سعر الإطلاق', normalPrice: 'السعر المعتاد', days: '30 يوماً', sponsoredNote: 'الموضع الإعلاني هو ظهور مدفوع، وليس تصنيفاً لجودة الرعاية الطبية.', learnAddons: 'اختر لمعاينة الدفع',
+    addons: [
+      { name: 'بطاقة مميزة في الرئيسية', launch: 30, normal: 50, description: 'ظهور كبطاقة مميزة تحمل توضيحاً مناسباً في الصفحة الرئيسية.' }, { name: 'موضع إعلاني علوي في الرئيسية', launch: 60, normal: 90, description: 'موضع إعلاني واضح في أعلى الصفحة الرئيسية.' }, { name: 'موضع مميز داخل القسم', launch: 20, normal: 35, description: 'ظهور مميز داخل قسم معتمد.' }, { name: 'موضع مميز داخل المنطقة', launch: 15, normal: 25, description: 'ظهور مميز داخل منطقة معتمدة.' },
+    ],
+    trustTitle: 'مبادئ الثقة والسلامة', trustItems: ['تتم مراجعة الملفات العامة قبل عرضها.', 'الخطط المدفوعة لا تضمن تفوقاً طبياً أو اعتماداً حكومياً.', 'يتم توضيح الظهور الإعلاني بوضوح.', 'تتم مراجعة المحتوى بمساعدة الذكاء الاصطناعي قبل النشر عند تطبيقه.'],
+    journeyTitle: 'معاينة الانضمام والدفع', journeyBody: 'تبقى الخطة والمدة المختارتان مرتبطتين بطلب الانضمام. لا يتم تحصيل الدفع في هذه الصفحة.', steps: ['اختر الخطة', 'اختر مدة الفوترة', 'شارك بيانات مقدم الرعاية', 'راجع الملخص', 'اطلب رابط الدفع', 'تأكيد انتظار المراجعة'], summaryTitle: 'اختيارك', selectedPlan: 'الخطة المختارة', billingPeriod: 'مدة الفوترة', total: 'إجمالي الخطة', flowType: 'المسار', freeFlow: 'مراجعة إدراج مجانية — لا يتطلب دفعاً', paidFlow: 'خطة مدفوعة — يتم طلب رابط الدفع بعد المراجعة', checkoutTitle: 'معاينة الدفع', checkoutNotice: 'الدفع الإلكتروني قريباً. حالياً سيتواصل فريق دكتور مسقط مع مقدمي الرعاية المعتمدين لإرسال تعليمات الدفع أو رابط الدفع.', basicCheckout: 'إرسال طلب الإدراج المجاني', paidCheckout: 'طلب رابط الدفع', checkoutFeedback: 'تم حفظ معاينة الدفع في هذه الصفحة. أرسل طلب الانضمام ليتمكن فريق دكتور مسقط من مراجعته.',
+    dashboardTitle: 'معاينة لوحة فوترة مقدم الرعاية', dashboardBody: 'يمكن لمنطقة الفوترة الذاتية المستقبلية عرض حالة الخطة والتجديد والترقيات والإضافات والفواتير بعد اعتماد مراحل الفوترة.', dashboardItems: ['الخطة الحالية ومدة الفوترة', 'حالة انتظار الدفع أو المراجعة', 'خيارات الترقية وتغيير دورة الفوترة', 'الإضافات الإعلانية المتاحة والنشطة', 'الفواتير وسجل الفوترة عند دعمهما'], dashboardNote: 'هذه معاينة لبنية المعلومات فقط وليست لوحة مقدم رعاية أو نظام فوترة نشطاً.',
+    faqTitle: 'الأسئلة الشائعة لمقدمي الرعاية', faqs: [
+      { q: 'هل يمكنني البدء بالخطة المجانية؟', a: 'نعم. Basic هي مسار طلب إدراج مجاني يخضع للمراجعة قبل العرض العام.' }, { q: 'هل تعني الخطة المدفوعة ترتيباً طبياً أفضل؟', a: 'لا. تدعم الخطط المدفوعة عرض الملف وأدوات النمو، وليست تصنيفاً لجودة الرعاية.' }, { q: 'هل يمكنني الترقية لاحقاً؟', a: 'تم تصميم المنتج لدعم الترقيات لاحقاً عند توفر فوترة مقدمي الرعاية.' }, { q: 'كيف يعمل الدفع؟', a: 'الدفع الإلكتروني غير نشط حالياً. سيتلقى مقدمو الرعاية المعتمدون تعليمات الدفع أو رابط الدفع لاحقاً.' }, { q: 'هل يمكنني استخدام نطاقي الخاص؟', a: 'دعم النطاق المخصص مخصص لخطة Enterprise بعد الموافقة.' }, { q: 'كيف تعمل المقالات بمساعدة الذكاء الاصطناعي؟', a: 'عند شمولها، يتم اقتراح المواضيع وتحرير المسودات بمراجعة بشرية قبل النشر.' }, { q: 'هل يتم توضيح المواضع الإعلانية؟', a: 'نعم. يجب توضيح المواضع الإعلانية، وهي ليست تصنيفاً لجودة الرعاية.' },
+    ],
+    finalTitle: 'هل أنت جاهز لتجهيز ملف مقدم الرعاية؟', finalBody: 'اختر خطة أو أرسل طلب الانضمام أو سجّل الدخول عند توفر أدوات حساب مقدم الرعاية.', signIn: 'تسجيل الدخول', createAccount: 'إنشاء حساب', viewCenters: 'عرض المراكز العامة',
+  },
 };
-
-const sectionClassName = 'mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8';
-const cardClassName = 'rounded-3xl border border-slate-200/80 bg-white/85 p-6 shadow-sm';
 
 export function PublicProviderPlans({ locale, country, dir }: ProviderPlansProps) {
   const copy = copyByLocale[locale];
+  const [period, setPeriod] = useState<BillingPeriod>(12);
+  const [selectedPlanKey, setSelectedPlanKey] = useState<PlanKey>('premium');
+  const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
+  const [checkoutFeedback, setCheckoutFeedback] = useState(false);
+  const selectedPlan = copy.plans.find((plan) => plan.key === selectedPlanKey) ?? copy.plans[0]!;
+  const selectedPrice = selectedPlan.prices[period];
+  const savings = period === 6 ? copy.save10 : period === 12 ? copy.save18 : copy.standard;
   const centerListingsHref = publicDiscoveryRoute(locale, country, 'centers');
 
+  const choosePlan = (key: PlanKey) => {
+    setSelectedPlanKey(key);
+    setCheckoutFeedback(false);
+    document.getElementById('provider-onboarding-flow')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const addOnTotal = useMemo(() => copy.addons.filter((item) => selectedAddOns.includes(item.name)).reduce((sum, item) => sum + item.launch, 0), [copy.addons, selectedAddOns]);
+
   return (
-    <main className="bg-slate-50 text-slate-950" dir={dir}>
-      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-slate-950 to-cyan-950 text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.25),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.2),transparent_35%)]" />
-        <div className="relative mx-auto grid w-full max-w-6xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:py-20">
-          <div>
-            <p className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-sm backdrop-blur">
-              {copy.eyebrow}
-            </p>
-            <h1 className="mt-6 max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">{copy.heroTitle}</h1>
-            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-100 sm:text-lg">{copy.heroDescription}</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <a
-                href="#provider-onboarding-form"
-                className="inline-flex w-full items-center justify-center rounded-full bg-emerald-400 px-5 py-3 text-sm font-bold text-emerald-950 shadow-lg shadow-emerald-950/20 transition hover:bg-emerald-300 sm:w-auto"
-              >
-                {copy.primaryCta}
-              </a>
-              <Link
-                href={centerListingsHref}
-                className="inline-flex w-full items-center justify-center rounded-full border border-white/25 bg-white/10 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/15 sm:w-auto"
-              >
-                {copy.secondaryCta}
-              </Link>
-            </div>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-slate-200">{copy.primaryCtaNote}</p>
-          </div>
-          <aside className="rounded-3xl border border-white/15 bg-white/10 p-6 shadow-2xl shadow-slate-950/20 backdrop-blur">
-            <h2 className="text-xl font-bold text-white">{copy.valueTitle}</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-100">{copy.valueDescription}</p>
-            <ul className="mt-6 space-y-3">
-              {copy.valueBullets.map((bullet) => (
-                <li key={bullet} className="flex gap-3 text-sm leading-6 text-slate-50">
-                  <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-300 text-xs font-black text-emerald-950">
-                    ✓
-                  </span>
-                  <span>{bullet}</span>
-                </li>
-              ))}
-            </ul>
-          </aside>
+    <main className="provider2026-page bg-slate-50/70" dir={dir}>
+      <section className="bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.22),transparent_42%),linear-gradient(135deg,#052e2b,#0f766e)] px-4 py-14 text-white sm:py-20">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+          <div><p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-200">{copy.eyebrow}</p><h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">{copy.heroTitle}</h1><p className="mt-5 max-w-3xl text-base leading-8 text-emerald-50 sm:text-lg">{copy.heroBody}</p><div className="mt-7 flex flex-wrap gap-3"><a href="#provider-plans" className="rounded-full bg-white px-6 py-3 text-sm font-bold text-emerald-900 shadow-lg">{copy.seePlans}</a><a href="#provider-onboarding-flow" className="rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white">{copy.onboardingCta}</a></div><p className="mt-5 max-w-3xl text-sm leading-7 text-emerald-100">{copy.heroNote}</p></div>
+          <aside className="rounded-3xl border border-white/15 bg-white/10 p-6 backdrop-blur"><h2 className="text-xl font-bold">{copy.trustTitle}</h2><ul className="mt-5 space-y-3">{copy.trustItems.map((item) => <li key={item} className="flex gap-3 text-sm leading-6 text-emerald-50"><span className="font-black text-emerald-300">✓</span>{item}</li>)}</ul></aside>
         </div>
       </section>
 
-      <section className={sectionClassName}>
-        <div className="max-w-3xl">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-700">{copy.eyebrow}</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">{copy.plansTitle}</h2>
-          <p className="mt-4 text-base leading-7 text-slate-600">{copy.plansDescription}</p>
-        </div>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {copy.plans.map((plan) => (
-            <article key={plan.name} className={`${cardClassName} flex h-full flex-col`}>
-              <h3 className="text-xl font-bold text-slate-950">{plan.name}</h3>
-              <p className="mt-3 text-sm font-semibold leading-6 text-emerald-800">{plan.purpose}</p>
-              <ul className="mt-5 flex-1 space-y-3">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex gap-3 text-sm leading-6 text-slate-600">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              {plan.note ? (
-                <p className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium leading-5 text-amber-900">
-                  {plan.note}
-                </p>
-              ) : null}
-            </article>
-          ))}
-        </div>
+      <section id="provider-plans" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-14 sm:py-18">
+        <div className="mx-auto max-w-3xl text-center"><h2 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">{copy.pricingTitle}</h2><p className="mt-4 text-base leading-7 text-slate-600">{copy.pricingBody}</p></div>
+        <div className="mx-auto mt-8 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm" aria-label={copy.billingLabel}>{([3, 6, 12] as const).map((value) => <button key={value} type="button" onClick={() => setPeriod(value)} aria-pressed={period === value} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${period === value ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-600 hover:bg-emerald-50'}`}>{value} {copy.months}<span className="ms-2 text-xs opacity-80">{value === 6 ? copy.save10 : value === 12 ? copy.save18 : copy.standard}</span></button>)}</div>
+        <div className="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-4">{copy.plans.map((plan) => { const active = selectedPlanKey === plan.key; const price = plan.prices[period]; return <article key={plan.key} className={`relative flex h-full flex-col rounded-3xl border bg-white p-6 shadow-sm transition ${active ? 'border-emerald-500 ring-2 ring-emerald-100' : 'border-slate-200'} ${plan.key === 'premium' ? 'xl:-translate-y-2 xl:shadow-xl' : ''}`}>{plan.badge ? <span className="mb-4 w-fit rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900">{plan.badge}</span> : null}<div className="flex items-start justify-between gap-3"><h3 className="text-2xl font-bold text-slate-950">{plan.name}</h3>{active ? <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-800">{copy.selected}</span> : null}</div><p className="mt-3 min-h-12 text-sm font-semibold leading-6 text-emerald-800">{plan.purpose}</p><div className="mt-5"><p className="text-3xl font-black text-slate-950">{price === 0 ? copy.free : `${price} ${copy.omr}`}</p><p className="mt-1 text-xs font-semibold text-slate-500">{price === 0 ? copy.free : `${period} ${copy.months} · ${savings}`}</p></div><ul className="mt-6 flex-1 space-y-2.5">{plan.features.map((feature) => <li key={feature} className="flex gap-2.5 text-sm leading-6 text-slate-600"><span className="text-emerald-600">✓</span><span>{feature}</span></li>)}</ul><p className="mt-5 rounded-2xl bg-slate-50 p-3 text-xs leading-5 text-slate-500">{plan.note}</p><button type="button" onClick={() => choosePlan(plan.key)} className={`mt-5 min-h-11 rounded-full px-4 py-2.5 text-sm font-bold ${active ? 'bg-emerald-800 text-white' : 'border border-emerald-200 bg-emerald-50 text-emerald-900'}`}>{plan.cta}</button></article>; })}</div>
       </section>
 
-      <section className={sectionClassName}>
-        <div className={cardClassName}>
-          <div className="max-w-3xl">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">{copy.comparisonTitle}</h2>
-            <p className="mt-4 text-base leading-7 text-slate-600">{copy.comparisonDescription}</p>
-          </div>
-          <div className="mt-8 overflow-x-auto">
-            <table className="w-full min-w-[760px] border-separate border-spacing-0 text-start text-sm">
-              <thead>
-                <tr>
-                  <th className="sticky left-0 bg-white/95 px-4 py-3 text-start font-bold text-slate-900 rtl:left-auto rtl:right-0">
-                    {copy.comparisonTitle}
-                  </th>
-                  {copy.comparisonColumns.map((column) => (
-                    <th key={column} className="px-4 py-3 text-start font-bold text-slate-900">
-                      {column}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {copy.comparisonRows.map((row) => (
-                  <tr key={row.label} className="border-t border-slate-100">
-                    <th className="sticky left-0 border-t border-slate-100 bg-white/95 px-4 py-4 text-start font-semibold text-slate-800 rtl:left-auto rtl:right-0">
-                      {row.label}
-                    </th>
-                    {row.values.map((value, index) => (
-                      <td key={`${row.label}-${copy.comparisonColumns[index]}`} className="border-t border-slate-100 px-4 py-4 text-slate-600">
-                        {value}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
+      <section className="mx-auto max-w-7xl px-4 py-10"><div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8"><h2 className="text-3xl font-bold text-slate-950">{copy.comparisonTitle}</h2><p className="mt-3 text-slate-600">{copy.comparisonBody}</p><div className="mt-7 overflow-x-auto rounded-2xl border border-slate-200"><table className="min-w-[900px] w-full text-sm"><thead className="bg-slate-50"><tr><th className="sticky start-0 bg-slate-50 px-4 py-4 text-start font-bold text-slate-900">{copy.feature}</th>{copy.plans.map((plan) => <th key={plan.key} className="px-4 py-4 text-start font-bold text-slate-900">{plan.name}</th>)}</tr></thead><tbody>{copy.comparisonRows.map((row) => <tr key={row.label}>{<th className="sticky start-0 border-t border-slate-100 bg-white px-4 py-3 text-start font-semibold text-slate-800">{row.label}</th>}{row.values.map((value, index) => <td key={`${row.label}-${index}`} className="border-t border-slate-100 px-4 py-3 text-slate-600">{value}</td>)}</tr>)}</tbody></table></div></div></section>
 
-      <section className={`${sectionClassName} pt-0`}>
-        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-          <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm sm:p-8">
-            <h2 className="text-2xl font-bold text-emerald-950">{copy.safetyTitle}</h2>
-            <p className="mt-4 text-sm leading-7 text-emerald-900 sm:text-base">{copy.safetyNote}</p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center lg:flex-col lg:items-stretch xl:flex-row xl:items-center">
-              <a
-                href="#provider-onboarding-form"
-                className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-800 sm:w-auto lg:w-full xl:w-auto"
-              >
-                {copy.primaryCta}
-              </a>
-              <Link
-                href={centerListingsHref}
-                className="inline-flex w-full items-center justify-center rounded-full border border-emerald-200 bg-white px-5 py-3 text-sm font-bold text-emerald-900 transition hover:bg-emerald-100 sm:w-auto lg:w-full xl:w-auto"
-              >
-                {copy.secondaryCta}
-              </Link>
-            </div>
-            <p className="mt-4 text-sm leading-6 text-emerald-900">{copy.primaryCtaNote}</p>
-          </div>
+      <section className="mx-auto max-w-7xl px-4 py-12"><div className="max-w-3xl"><h2 className="text-3xl font-bold text-slate-950 sm:text-4xl">{copy.addonsTitle}</h2><p className="mt-3 text-slate-600">{copy.addonsBody}</p></div><div className="mt-7 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">{copy.addons.map((item) => { const active = selectedAddOns.includes(item.name); return <article key={item.name} className={`rounded-3xl border bg-white p-5 shadow-sm ${active ? 'border-amber-400 ring-2 ring-amber-100' : 'border-slate-200'}`}><span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900">Sponsored</span><h3 className="mt-4 text-xl font-bold text-slate-950">{item.name}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p><p className="mt-5 text-2xl font-black text-slate-950">{item.launch} {copy.omr}</p><p className="text-xs font-semibold text-slate-500">{copy.launchPrice} · {copy.days}</p><p className="mt-2 text-xs text-slate-400 line-through">{copy.normalPrice}: {item.normal} {copy.omr}</p><button type="button" onClick={() => setSelectedAddOns((current) => current.includes(item.name) ? current.filter((name) => name !== item.name) : [...current, item.name])} className="mt-5 rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-950">{copy.learnAddons}</button></article>; })}</div><p className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-950">{copy.sponsoredNote}</p></section>
 
-          <ProviderOnboardingLeadForm locale={locale} />
-        </div>
-      </section>
+      <section id="provider-onboarding-flow" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-14"><div className="max-w-3xl"><h2 className="text-3xl font-bold text-slate-950 sm:text-4xl">{copy.journeyTitle}</h2><p className="mt-3 text-slate-600">{copy.journeyBody}</p></div><ol className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">{copy.steps.map((step, index) => <li key={step} className="rounded-2xl border border-slate-200 bg-white p-4 text-sm font-bold text-slate-700 shadow-sm"><span className="mb-2 block text-xs font-black text-emerald-700">{index + 1}</span>{step}</li>)}</ol><div className="mt-8 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start"><aside className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm lg:sticky lg:top-24"><h3 className="text-2xl font-bold text-emerald-950">{copy.summaryTitle}</h3><dl className="mt-5 grid gap-3 text-sm"><div className="flex justify-between gap-4"><dt className="text-emerald-800">{copy.selectedPlan}</dt><dd className="font-bold text-emerald-950">{selectedPlan.name}</dd></div><div className="flex justify-between gap-4"><dt className="text-emerald-800">{copy.billingPeriod}</dt><dd className="font-bold text-emerald-950">{period} {copy.months}</dd></div><div className="flex justify-between gap-4"><dt className="text-emerald-800">{copy.total}</dt><dd className="font-bold text-emerald-950">{selectedPrice === 0 ? copy.free : `${selectedPrice} ${copy.omr}`}</dd></div><div className="flex justify-between gap-4"><dt className="text-emerald-800">{copy.flowType}</dt><dd className="max-w-[60%] text-end font-bold text-emerald-950">{selectedPrice === 0 ? copy.freeFlow : copy.paidFlow}</dd></div>{addOnTotal > 0 ? <div className="flex justify-between gap-4"><dt className="text-emerald-800">{copy.addonsTitle}</dt><dd className="font-bold text-emerald-950">{addOnTotal} {copy.omr}</dd></div> : null}</dl><div className="mt-6 rounded-2xl border border-emerald-200 bg-white p-4"><h4 className="font-bold text-emerald-950">{copy.checkoutTitle}</h4><p className="mt-2 text-sm leading-6 text-emerald-800">{copy.checkoutNotice}</p><button type="button" onClick={() => setCheckoutFeedback(true)} className="mt-4 w-full rounded-full bg-emerald-800 px-4 py-3 text-sm font-bold text-white">{selectedPrice === 0 ? copy.basicCheckout : copy.paidCheckout}</button>{checkoutFeedback ? <p className="mt-3 text-xs font-semibold leading-5 text-emerald-700" role="status">{copy.checkoutFeedback}</p> : null}</div></aside><ProviderOnboardingLeadForm locale={locale} selectedPlan={selectedPlan.name} selectedBillingPeriod={`${period} ${copy.months}`} selectedPrice={selectedPrice === 0 ? copy.free : `${selectedPrice} ${copy.omr}`} isPaidPlan={selectedPrice > 0} /></div></section>
+
+      <section className="mx-auto max-w-7xl px-4 py-12"><div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"><h2 className="text-3xl font-bold text-slate-950">{copy.dashboardTitle}</h2><p className="mt-3 max-w-3xl text-slate-600">{copy.dashboardBody}</p><div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">{copy.dashboardItems.map((item) => <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-700">{item}</div>)}</div><p className="mt-5 text-xs leading-6 text-slate-500">{copy.dashboardNote}</p></div></section>
+
+      <section className="mx-auto max-w-7xl px-4 py-12"><h2 className="text-3xl font-bold text-slate-950">{copy.faqTitle}</h2><div className="mt-6 grid gap-4 md:grid-cols-2">{copy.faqs.map((faq) => <details key={faq.q} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><summary className="cursor-pointer font-bold text-slate-900">{faq.q}</summary><p className="mt-3 text-sm leading-7 text-slate-600">{faq.a}</p></details>)}</div></section>
+
+      <section className="mx-auto max-w-7xl px-4 pb-16"><div className="rounded-3xl bg-slate-950 p-7 text-white sm:p-10"><h2 className="text-3xl font-bold">{copy.finalTitle}</h2><p className="mt-3 max-w-2xl text-slate-300">{copy.finalBody}</p><div className="mt-6 flex flex-wrap gap-3"><Link href={publicSignInRoute(locale, country)} className="rounded-full bg-white px-5 py-3 text-sm font-bold text-slate-950">{copy.signIn}</Link><Link href={publicRegisterRoute(locale, country)} className="rounded-full border border-white/25 px-5 py-3 text-sm font-bold text-white">{copy.createAccount}</Link><Link href={centerListingsHref} className="rounded-full border border-white/25 px-5 py-3 text-sm font-bold text-white">{copy.viewCenters}</Link></div></div></section>
     </main>
   );
 }

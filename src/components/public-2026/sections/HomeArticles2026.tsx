@@ -6,11 +6,12 @@ type HomeArticles2026Props = { copy: Home2026Copy['articles'] };
 
 export function HomeArticles2026({ copy }: HomeArticles2026Props) {
   return (
-    <section className="dm2026-articles py-10" aria-labelledby="dm2026-articles-title">
+    <section className="dm2026-articles py-12" aria-labelledby="dm2026-articles-title">
       <SectionHeader2026 id="dm2026-articles-title" eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.subtitle} centered />
-      <div className="mt-8 grid gap-4 md:grid-cols-3">
+      <div className="mt-8 grid gap-5 md:grid-cols-3">
         {copy.cards.map((card) => <ArticleCard2026 key={card.title} {...card} />)}
       </div>
+      <p className="mx-auto mt-5 max-w-3xl text-center text-sm leading-6 text-dm-text-muted">{copy.disclaimer}</p>
     </section>
   );
 }

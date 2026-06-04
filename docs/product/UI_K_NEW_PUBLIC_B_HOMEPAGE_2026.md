@@ -117,3 +117,18 @@ No backend, API route, auth, payment, Supabase, migration, generated type, seed,
 ## Next recommended phase
 
 `UI-K-NEW-PUBLIC-C — Public header/footer replacement or homepage shell refinement`
+
+## FIX01 correction notes
+
+`UI-K-NEW-PUBLIC-B-FIX01` corrected the first 2026 homepage implementation to better match the Claude Design reference while keeping production guardrails:
+
+- Header localization was corrected so English shows `DrMuscat` and Arabic shows `دكتور مسقط` as the visible primary wordmark.
+- Header navigation labels are locale-specific and compact in both English and Arabic.
+- Footer was adjusted to a dark premium, bilingual-safe structure with Discover, For Providers, Support, and About columns, without adding unapproved route files.
+- Homepage typography and `dm2026-*` styling were refined with project tokens and local font stacks only; no remote font loading or package changes were introduced.
+- The search hero was strengthened to a large central Claude-style rounded card with dominant search input, clean selectors, chips, and grouped suggestions.
+- The location selector now uses strict Country → City → Area behavior, with Oman active and other countries marked coming soon.
+- Featured preview cards now show visible View profile, WhatsApp, Call, and Directions action UI without inventing real phone numbers, WhatsApp links, ratings, reviews, or provider counts.
+- Category, area, and article cards were made more polished and public-safe while routing only to existing approved discovery routes.
+
+No backend, database, Supabase, RLS, sitemap, robots, llms, route-check, package, lockfile, or generated database type files were changed in FIX01.

@@ -13,8 +13,9 @@ export function SearchQuickLinks2026({ locale, country, copy }: SearchQuickLinks
           <Link
             key={chip.slug}
             href={publicDiscoveryRoute(locale, country, chip.slug)}
-            className="dm2026-chip shrink-0 rounded-full border border-dm-border bg-white/90 px-4 py-2 text-sm font-bold text-dm-brand-strong shadow-dm-sm transition hover:bg-dm-bg-soft"
+            className="dm2026-chip inline-flex min-h-10 shrink-0 items-center rounded-full border border-dm-border bg-white px-4 py-2 text-sm font-bold text-dm-brand-strong shadow-dm-sm transition hover:-translate-y-0.5 hover:bg-dm-bg-soft"
           >
+            <span className="me-2 h-2 w-2 rounded-full bg-dm-accent-gold" aria-hidden="true" />
             {chip.label}
           </Link>
         ))}

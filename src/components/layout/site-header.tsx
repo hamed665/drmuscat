@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { headers } from 'next/headers';
-import { Logo } from '@/components/brand/logo';
 import { Container } from '@/components/ui/container';
 import { isSupportedLocale, localeDirection, SupportedLocale } from '@/lib/i18n/config';
 import { homeRoute, publicDiscoveryRoute, publicProviderRoute } from '@/lib/routes/public';
@@ -9,6 +8,8 @@ const navCopy: Record<
   SupportedLocale,
   {
     ariaLabel: string;
+    brand: string;
+    secondaryBrand: string;
     home: string;
     doctors: string;
     centers: string;
@@ -19,10 +20,13 @@ const navCopy: Record<
     forProviders: string;
     switchLabel: string;
     brandLabel: string;
+    localeSwitch: string;
   }
 > = {
   en: {
     ariaLabel: 'Primary public navigation',
+    brand: 'DrMuscat',
+    secondaryBrand: 'Oman healthcare',
     home: 'Home',
     doctors: 'Doctors',
     centers: 'Centers',
@@ -32,10 +36,13 @@ const navCopy: Record<
     search: 'Search',
     forProviders: 'For Providers',
     switchLabel: 'Switch language to Arabic',
-    brandLabel: 'DrMuscat home'
+    brandLabel: 'DrMuscat home',
+    localeSwitch: 'العربية'
   },
   ar: {
     ariaLabel: 'التنقل العام الرئيسي',
+    brand: 'دكتور مسقط',
+    secondaryBrand: 'رعاية عُمان',
     home: 'الرئيسية',
     doctors: 'الأطباء',
     centers: 'المراكز',
@@ -45,7 +52,8 @@ const navCopy: Record<
     search: 'البحث',
     forProviders: 'لمقدمي الرعاية',
     switchLabel: 'تبديل اللغة إلى الإنجليزية',
-    brandLabel: 'الرئيسية DrMuscat'
+    brandLabel: 'الرئيسية دكتور مسقط',
+    localeSwitch: 'English'
   }
 };
 
@@ -71,7 +79,11 @@ export async function SiteHeader() {
     <header className="site-header site-header--premium" role="banner" dir={dir}>
       <Container className="site-header__inner">
         <Link href={homeHref} className="site-header__brand" aria-label={copy.brandLabel}>
-          <Logo />
+          <span className="dm-logo__mark" aria-hidden="true">DM</span>
+          <span className="site-header__wordmark-wrap">
+            <span className="dm-logo__wordmark">{copy.brand}</span>
+            <span className="site-header__brand-subtitle">{copy.secondaryBrand}</span>
+          </span>
         </Link>
         <nav aria-label={copy.ariaLabel} className="site-header__nav">
           <ul>
@@ -84,7 +96,7 @@ export async function SiteHeader() {
         </nav>
         <div className="site-header__locale" aria-label={copy.switchLabel}>
           <Link href={switchHref} className="site-header__locale-switch" hrefLang={safeLocale === 'en' ? 'ar' : 'en'}>
-            <span>{safeLocale === 'en' ? 'العربية' : 'English'}</span>
+            <span>{copy.localeSwitch}</span>
           </Link>
         </div>
       </Container>

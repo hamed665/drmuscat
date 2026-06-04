@@ -1,9 +1,12 @@
 import type { SupportedLocale } from '@/lib/i18n/config';
 import type { PublicDiscoverySlug } from '@/lib/routes/public';
 
+export type CategoryTone2026 = 'teal' | 'mint' | 'gold' | 'aqua' | 'soft';
+
 export type Home2026Copy = {
   metadataTitle: string;
   metadataDescription: string;
+  brand: string;
   hero: {
     eyebrow: string;
     title: string;
@@ -24,19 +27,28 @@ export type Home2026Copy = {
     countryHelp: string;
     comingSoon: string;
     allAreas: string;
+    unavailableCity: string;
+    unavailableArea: string;
   };
   trustBar: readonly string[];
+  actions: {
+    viewProfile: string;
+    whatsapp: string;
+    call: string;
+    directions: string;
+    unavailable: string;
+  };
   featured: {
     eyebrow: string;
     title: string;
     subtitle: string;
-    cards: readonly { title: string; description: string; label: string; slug: PublicDiscoverySlug }[];
+    cards: readonly { title: string; specialty: string; description: string; slug: PublicDiscoverySlug }[];
   };
   categories: {
     eyebrow: string;
     title: string;
     subtitle: string;
-    cards: readonly { title: string; description: string; slug: PublicDiscoverySlug; tone: 'teal' | 'mint' | 'gold' | 'blue' }[];
+    cards: readonly { title: string; description: string; slug: PublicDiscoverySlug; tone: CategoryTone2026 }[];
   };
   areas: {
     eyebrow: string;
@@ -49,7 +61,8 @@ export type Home2026Copy = {
     eyebrow: string;
     title: string;
     subtitle: string;
-    cards: readonly { title: string; description: string; label: string }[];
+    disclaimer: string;
+    cards: readonly { category: string; title: string; description: string; readTime: string }[];
   };
   safety: {
     eyebrow: string;
@@ -70,6 +83,10 @@ export type Home2026Copy = {
     cta: string;
     note: string;
   };
+  floating: {
+    whatsapp: string;
+    ai: string;
+  };
 };
 
 export const home2026CopyByLocale: Record<SupportedLocale, Home2026Copy> = {
@@ -77,15 +94,16 @@ export const home2026CopyByLocale: Record<SupportedLocale, Home2026Copy> = {
     metadataTitle: 'DrMuscat Oman | Healthcare Discovery Foundation',
     metadataDescription:
       'Find healthcare options in Oman, faster. DrMuscat is building a bilingual healthcare discovery foundation for patients and providers across Oman.',
+    brand: 'DrMuscat',
     hero: {
       eyebrow: 'Oman-first healthcare discovery',
       title: 'Find trusted healthcare in Oman.',
-      subtitle: 'Search doctors, clinics, pharmacies, labs, pet clinics, dental, beauty and wellness in Oman.',
-      searchLabel: 'Search healthcare services',
-      searchPlaceholder: 'Search doctors, clinics, services, areas or guides',
+      subtitle: 'Search doctors, clinics, pharmacies, labs, pet clinics, dental, beauty and wellness in one calm Oman-focused place.',
+      searchLabel: 'What care are you looking for?',
+      searchPlaceholder: 'Search doctors, clinics, services, areas or health guides',
       searchButton: 'Search',
-      locationLabel: 'Choose location',
-      suggestionTitle: 'Explore suggestions',
+      locationLabel: 'Choose your location',
+      suggestionTitle: 'Suggested discovery paths',
       quickLinksLabel: 'Quick categories',
       chips: [
         { label: 'Doctors', slug: 'doctors' },
@@ -96,65 +114,83 @@ export const home2026CopyByLocale: Record<SupportedLocale, Home2026Copy> = {
       ],
       suggestionGroups: [
         { title: 'Categories', items: ['Doctors', 'Clinics', 'Pharmacies'] },
-        { title: 'Providers', items: ['Public profile previews coming soon'] },
+        { title: 'Providers', items: ['Reviewed listings', 'Clinic profiles'] },
         { title: 'Services', items: ['Dental', 'Beauty and wellness', 'Diagnostics'] },
         { title: 'Areas', items: ['Muscat', 'Seeb', 'Bausher'] },
-        { title: 'Articles', items: ['Health guides preview'] }
+        { title: 'Articles', items: ['Health guides', 'Care checklists'] }
       ]
     },
     location: {
       country: 'Country',
       city: 'City',
       area: 'Area',
-      countryHelp: 'Oman is active. Other countries are marked coming soon.',
-      comingSoon: 'Coming soon',
-      allAreas: 'All areas'
+      countryHelp: 'Oman is active. Other countries are coming soon.',
+      comingSoon: 'coming soon',
+      allAreas: 'All areas',
+      unavailableCity: 'Cities coming soon',
+      unavailableArea: 'Areas coming soon'
     },
-    trustBar: ['Bilingual English and Arabic', 'No fake ratings or review counts', 'SEO-safe public discovery'],
+    trustBar: ['Clear bilingual discovery', 'Listings reviewed before display', 'No fake ratings or review counts'],
+    actions: {
+      viewProfile: 'View profile',
+      whatsapp: 'WhatsApp',
+      call: 'Call',
+      directions: 'Directions',
+      unavailable: 'Contact actions preview only'
+    },
     featured: {
-      eyebrow: 'Featured providers preview',
-      title: 'Provider visibility is being prepared carefully',
-      subtitle: 'Real featured provider cards will appear only after approved profile, review, and data phases are connected.',
+      eyebrow: 'Explore trusted care across Oman',
+      title: 'Featured healthcare pathways',
+      subtitle: 'Polished provider previews show the future contact flow without inventing ratings, review counts, or phone numbers.',
       cards: [
-        { title: 'Doctors', description: 'Explore the approved doctor discovery route without fake rankings.', label: 'Explore doctors', slug: 'doctors' },
-        { title: 'Clinics and centers', description: 'Browse clinic and center discovery while richer profiles are prepared.', label: 'Explore centers', slug: 'centers' },
-        { title: 'Pharmacies and labs', description: 'Use approved public discovery routes for pharmacy and lab categories.', label: 'Explore services', slug: 'services' }
+        { title: 'Doctor profiles', specialty: 'Doctors', description: 'Browse doctor discovery with clear profile and contact actions when listings are reviewed.', slug: 'doctors' },
+        { title: 'Clinics and centers', specialty: 'Centers', description: 'Explore clinic and center profiles for healthcare, dental, beauty, and wellness discovery.', slug: 'centers' },
+        { title: 'Pharmacies, labs and services', specialty: 'Care services', description: 'Find approved discovery routes for everyday healthcare services across Oman.', slug: 'services' }
       ]
     },
     categories: {
-      eyebrow: 'Browse by category',
+      eyebrow: 'Browse healthcare by category',
       title: 'Start with the type of care you need',
-      subtitle: 'Clean category paths link only to existing approved public routes.',
+      subtitle: 'Soft category cards route only to approved public discovery pages.',
       cards: [
-        { title: 'Doctors', description: 'Specialty-first discovery for doctor profiles.', slug: 'doctors', tone: 'teal' },
-        { title: 'Clinics', description: 'Clinic and medical center discovery.', slug: 'centers', tone: 'mint' },
-        { title: 'Pharmacies', description: 'Public pharmacy discovery route.', slug: 'pharmacies', tone: 'gold' },
-        { title: 'Labs', description: 'Laboratory discovery route for diagnostics surfaces.', slug: 'labs', tone: 'blue' },
-        { title: 'Services', description: 'Browse healthcare, dental, beauty and wellness services.', slug: 'services', tone: 'teal' },
-        { title: 'Search', description: 'Open the approved public search route.', slug: 'search', tone: 'mint' }
+        { title: 'Doctors', description: 'Medical specialist discovery.', slug: 'doctors', tone: 'teal' },
+        { title: 'Clinics', description: 'Clinics and medical centers.', slug: 'centers', tone: 'mint' },
+        { title: 'Pharmacies', description: 'Pharmacy discovery.', slug: 'pharmacies', tone: 'gold' },
+        { title: 'Labs', description: 'Laboratory discovery.', slug: 'labs', tone: 'aqua' },
+        { title: 'Dental', description: 'Dental care services.', slug: 'services', tone: 'soft' },
+        { title: 'Beauty clinics', description: 'Beauty and aesthetic care.', slug: 'services', tone: 'gold' },
+        { title: 'Wellness', description: 'Wellness and preventive care.', slug: 'services', tone: 'mint' },
+        { title: 'Physiotherapy', description: 'Rehab and movement care.', slug: 'services', tone: 'teal' },
+        { title: 'Nutrition', description: 'Nutrition and lifestyle care.', slug: 'services', tone: 'soft' },
+        { title: 'Eye clinics', description: 'Eye care discovery.', slug: 'services', tone: 'aqua' },
+        { title: 'Dermatology', description: 'Skin care services.', slug: 'services', tone: 'gold' },
+        { title: 'Pediatrics', description: 'Child healthcare discovery.', slug: 'doctors', tone: 'mint' },
+        { title: 'Women’s health', description: 'Women-focused care.', slug: 'services', tone: 'teal' },
+        { title: 'Pet clinics', description: 'Veterinary clinic discovery.', slug: 'services', tone: 'soft' }
       ]
     },
     areas: {
-      eyebrow: 'Browse by area',
-      title: 'Explore familiar Oman areas',
-      subtitle: 'Area cards are navigation prompts only and do not claim provider coverage or counts.',
-      exploreLabel: 'Explore',
-      areas: ['Muscat', 'Seeb', 'Bausher', 'Muttrah', 'Sohar', 'Salalah']
+      eyebrow: 'Find care by area',
+      title: 'Browse care around familiar places',
+      subtitle: 'Area cards are calm navigation prompts and do not claim provider coverage or counts.',
+      exploreLabel: 'Explore area',
+      areas: ['Muscat', 'Al Khuwair', 'Qurum', 'Azaiba', 'Seeb', 'Sohar', 'Salalah', 'Nizwa']
     },
     articles: {
-      eyebrow: 'Health guides / Articles',
-      title: 'Helpful guides will stay below search',
-      subtitle: 'Article previews are honest placeholders until approved editorial content is connected.',
+      eyebrow: 'Health guides from DrMuscat',
+      title: 'Learn before you choose care',
+      subtitle: 'Simple education and discovery guides will sit below search so care discovery remains the main action.',
+      disclaimer: 'Guides are for general education only and do not replace professional medical advice.',
       cards: [
-        { title: 'Choosing a clinic in Oman', description: 'Preview guide placeholder for future approved editorial content.', label: 'Preview' },
-        { title: 'Preparing for a lab visit', description: 'Preview guide placeholder with no medical advice or claims.', label: 'Preview' },
-        { title: 'Dental and wellness discovery', description: 'Preview guide placeholder for safe public education content.', label: 'Preview' }
+        { category: 'Guide', title: 'How to choose a clinic in Oman', description: 'A practical discovery checklist for comparing public clinic information safely.', readTime: '4 min read' },
+        { category: 'Checklist', title: 'Preparing for a lab visit', description: 'General questions to consider before visiting a laboratory or diagnostic provider.', readTime: '3 min read' },
+        { category: 'Explainer', title: 'Dental, beauty and wellness discovery', description: 'Understand how to review service information without relying on unsupported claims.', readTime: '5 min read' }
       ]
     },
     safety: {
-      eyebrow: 'Trust and safety',
-      title: 'Designed for careful public healthcare discovery',
-      subtitle: 'DrMuscat organizes public-facing healthcare information without replacing professional consultation.',
+      eyebrow: 'Clear, bilingual healthcare discovery for Oman',
+      title: 'Built for public trust without unsafe claims',
+      subtitle: 'DrMuscat organizes public-facing healthcare information while keeping clinical decisions with qualified professionals.',
       points: ['No diagnosis or guaranteed outcomes', 'No fake ratings, reviews, or provider counts', 'No private data exposed on the homepage']
     },
     faq: {
@@ -163,31 +199,33 @@ export const home2026CopyByLocale: Record<SupportedLocale, Home2026Copy> = {
       items: [
         { question: 'Can I book an appointment here?', answer: 'Not in this phase. The homepage links to approved public discovery routes only.' },
         { question: 'Are ratings shown?', answer: 'No. Ratings and reviews are not shown unless a future approved data and moderation phase supports them.' },
-        { question: 'Which countries are active?', answer: 'Oman is active. UAE, Saudi Arabia, Qatar, Bahrain, Kuwait and Iran are marked coming soon.' }
+        { question: 'Which countries are active?', answer: 'Oman is active. United Arab Emirates, Saudi Arabia, Qatar, Bahrain, Kuwait and Iran are coming soon.' }
       ]
     },
     disclaimer: 'DrMuscat is a public healthcare discovery platform. It is not a substitute for medical advice, emergency care, diagnosis, or treatment.',
     providerCta: {
       eyebrow: 'For providers',
       title: 'Prepare a clearer public presence for your clinic or center.',
-      subtitle: 'Providers can learn about future onboarding without payments, dashboards, or claim approvals being added in this phase.',
-      cta: 'For providers',
+      subtitle: 'Clinics and centers can learn about the future onboarding direction for reviewed public profiles in Oman.',
+      cta: 'For Providers',
       note: 'No payment gateway, AI chat, backend search, or provider dashboard feature is added here.'
-    }
+    },
+    floating: { whatsapp: 'WhatsApp help', ai: 'AI chat preview' }
   },
   ar: {
     metadataTitle: 'DrMuscat عُمان | أساس اكتشاف الرعاية الصحية',
     metadataDescription:
       'اعثر على خيارات الرعاية الصحية في عُمان بسرعة أكبر. يبني DrMuscat أساساً ثنائي اللغة لاكتشاف الرعاية الصحية للمرضى ومقدمي الخدمة في عُمان.',
+    brand: 'دكتور مسقط',
     hero: {
       eyebrow: 'اكتشاف الرعاية الصحية في عُمان أولاً',
-      title: 'ابحث عن رعاية صحية موثوقة في عُمان',
-      subtitle: 'ابحث عن أطباء، عيادات، صيدليات، مختبرات، عيادات بيطرية، أسنان، تجميل وعناية في عُمان',
-      searchLabel: 'ابحث في خدمات الرعاية الصحية',
-      searchPlaceholder: 'ابحث عن أطباء، عيادات، خدمات، مناطق أو أدلة',
+      title: 'ابحث عن رعاية صحية موثوقة في عُمان.',
+      subtitle: 'ابحث عن أطباء، عيادات، صيدليات، مختبرات، عيادات بيطرية، أسنان، تجميل وعناية في مكان واحد هادئ ومخصص لعُمان.',
+      searchLabel: 'ما نوع الرعاية التي تبحث عنها؟',
+      searchPlaceholder: 'ابحث عن أطباء، عيادات، خدمات، مناطق أو أدلة صحية',
       searchButton: 'بحث',
-      locationLabel: 'اختر الموقع',
-      suggestionTitle: 'اقتراحات للتصفح',
+      locationLabel: 'اختر موقعك',
+      suggestionTitle: 'مسارات مقترحة للاكتشاف',
       quickLinksLabel: 'فئات سريعة',
       chips: [
         { label: 'الأطباء', slug: 'doctors' },
@@ -198,65 +236,83 @@ export const home2026CopyByLocale: Record<SupportedLocale, Home2026Copy> = {
       ],
       suggestionGroups: [
         { title: 'الفئات', items: ['الأطباء', 'العيادات', 'الصيدليات'] },
-        { title: 'مقدمو الخدمة', items: ['معاينات الملفات العامة قريباً'] },
+        { title: 'مقدمو الرعاية', items: ['قوائم تتم مراجعتها', 'ملفات العيادات'] },
         { title: 'الخدمات', items: ['الأسنان', 'التجميل والعناية', 'الفحوصات'] },
         { title: 'المناطق', items: ['مسقط', 'السيب', 'بوشر'] },
-        { title: 'المقالات', items: ['معاينة أدلة صحية'] }
+        { title: 'المقالات', items: ['أدلة صحية', 'قوائم تحقق'] }
       ]
     },
     location: {
       country: 'الدولة',
       city: 'المدينة',
       area: 'المنطقة',
-      countryHelp: 'عُمان متاحة حالياً. الدول الأخرى موضحة كقريبة الإطلاق.',
+      countryHelp: 'عُمان متاحة حالياً. الدول الأخرى قريبة الإطلاق.',
       comingSoon: 'قريباً',
-      allAreas: 'كل المناطق'
+      allAreas: 'كل المناطق',
+      unavailableCity: 'المدن قريباً',
+      unavailableArea: 'المناطق قريباً'
     },
-    trustBar: ['العربية والإنجليزية', 'دون تقييمات أو أعداد مراجعات وهمية', 'اكتشاف عام آمن للسيو'],
+    trustBar: ['دليل واضح بثنائية اللغة', 'تتم مراجعة القوائم قبل عرضها', 'دون تقييمات أو أعداد مراجعات وهمية'],
+    actions: {
+      viewProfile: 'عرض الملف',
+      whatsapp: 'واتساب',
+      call: 'اتصال',
+      directions: 'الاتجاهات',
+      unavailable: 'إجراءات التواصل للمعاينة فقط'
+    },
     featured: {
-      eyebrow: 'معاينة مقدمي الخدمة',
-      title: 'يتم تجهيز ظهور مقدمي الخدمة بعناية',
-      subtitle: 'ستظهر البطاقات المميزة الحقيقية فقط بعد ربط مراحل الملفات والمراجعة والبيانات المعتمدة.',
+      eyebrow: 'استكشف الرعاية الصحية في عُمان',
+      title: 'مسارات رعاية مميزة',
+      subtitle: 'تعرض بطاقات المعاينة شكل التواصل المستقبلي دون اختراع تقييمات أو أعداد مراجعات أو أرقام هواتف.',
       cards: [
-        { title: 'الأطباء', description: 'استكشف مسار الأطباء المعتمد دون ترتيب وهمي.', label: 'تصفح الأطباء', slug: 'doctors' },
-        { title: 'العيادات والمراكز', description: 'تصفح العيادات والمراكز بينما يتم إعداد ملفات أعمق.', label: 'تصفح المراكز', slug: 'centers' },
-        { title: 'الصيدليات والمختبرات', description: 'استخدم مسارات الاكتشاف العامة المعتمدة للفئات الحالية.', label: 'تصفح الخدمات', slug: 'services' }
+        { title: 'ملفات الأطباء', specialty: 'الأطباء', description: 'تصفح اكتشاف الأطباء مع إجراءات ملف وتواصل واضحة عند مراجعة القوائم.', slug: 'doctors' },
+        { title: 'العيادات والمراكز', specialty: 'المراكز', description: 'استكشف ملفات العيادات والمراكز للصحة والأسنان والتجميل والعناية.', slug: 'centers' },
+        { title: 'الصيدليات والمختبرات والخدمات', specialty: 'خدمات الرعاية', description: 'اعثر على مسارات اكتشاف معتمدة لخدمات الرعاية اليومية في عُمان.', slug: 'services' }
       ]
     },
     categories: {
-      eyebrow: 'تصفح حسب الفئة',
+      eyebrow: 'تصفح حسب القسم',
       title: 'ابدأ بنوع الرعاية التي تحتاجها',
-      subtitle: 'روابط الفئات النظيفة تذهب فقط إلى المسارات العامة المعتمدة حالياً.',
+      subtitle: 'بطاقات هادئة تربط فقط بالمسارات العامة المعتمدة.',
       cards: [
-        { title: 'الأطباء', description: 'اكتشاف الأطباء حسب التخصص.', slug: 'doctors', tone: 'teal' },
-        { title: 'العيادات', description: 'اكتشاف العيادات والمراكز الطبية.', slug: 'centers', tone: 'mint' },
-        { title: 'الصيدليات', description: 'مسار اكتشاف الصيدليات العام.', slug: 'pharmacies', tone: 'gold' },
-        { title: 'المختبرات', description: 'مسار المختبرات لواجهات الفحوصات.', slug: 'labs', tone: 'blue' },
-        { title: 'الخدمات', description: 'تصفح خدمات الصحة والأسنان والتجميل والعناية.', slug: 'services', tone: 'teal' },
-        { title: 'البحث', description: 'افتح مسار البحث العام المعتمد.', slug: 'search', tone: 'mint' }
+        { title: 'الأطباء', description: 'اكتشاف الأطباء والتخصصات.', slug: 'doctors', tone: 'teal' },
+        { title: 'العيادات والمراكز', description: 'العيادات والمراكز الطبية.', slug: 'centers', tone: 'mint' },
+        { title: 'الصيدليات', description: 'اكتشاف الصيدليات.', slug: 'pharmacies', tone: 'gold' },
+        { title: 'المختبرات', description: 'اكتشاف المختبرات.', slug: 'labs', tone: 'aqua' },
+        { title: 'الأسنان', description: 'خدمات رعاية الأسنان.', slug: 'services', tone: 'soft' },
+        { title: 'عيادات التجميل', description: 'رعاية التجميل والعناية.', slug: 'services', tone: 'gold' },
+        { title: 'العناية والصحة', description: 'العافية والرعاية الوقائية.', slug: 'services', tone: 'mint' },
+        { title: 'العلاج الطبيعي', description: 'رعاية الحركة والتأهيل.', slug: 'services', tone: 'teal' },
+        { title: 'التغذية', description: 'التغذية ونمط الحياة.', slug: 'services', tone: 'soft' },
+        { title: 'عيادات العيون', description: 'اكتشاف رعاية العيون.', slug: 'services', tone: 'aqua' },
+        { title: 'الجلدية', description: 'خدمات العناية بالبشرة.', slug: 'services', tone: 'gold' },
+        { title: 'طب الأطفال', description: 'اكتشاف رعاية الأطفال.', slug: 'doctors', tone: 'mint' },
+        { title: 'صحة المرأة', description: 'رعاية موجهة للمرأة.', slug: 'services', tone: 'teal' },
+        { title: 'العيادات البيطرية', description: 'اكتشاف العيادات البيطرية.', slug: 'services', tone: 'soft' }
       ]
     },
     areas: {
-      eyebrow: 'تصفح حسب المنطقة',
-      title: 'استكشف مناطق مألوفة في عُمان',
-      subtitle: 'بطاقات المناطق إشارات تنقل فقط ولا تعرض تغطية أو أعداد مقدمي خدمة.',
-      exploreLabel: 'استكشف',
-      areas: ['مسقط', 'السيب', 'بوشر', 'مطرح', 'صحار', 'صلالة']
+      eyebrow: 'ابحث حسب المنطقة',
+      title: 'تصفح الرعاية حول أماكن مألوفة',
+      subtitle: 'بطاقات المناطق إشارات تنقل هادئة ولا تدعي تغطية أو أعداد مقدمي خدمة.',
+      exploreLabel: 'استكشف المنطقة',
+      areas: ['مسقط', 'الخوير', 'القرم', 'العذيبة', 'السيب', 'صحار', 'صلالة', 'نزوى']
     },
     articles: {
-      eyebrow: 'أدلة صحية / مقالات',
-      title: 'تبقى الأدلة المفيدة أسفل البحث',
-      subtitle: 'معاينات المقالات صادقة حتى يتم ربط محتوى تحريري معتمد.',
+      eyebrow: 'أدلة صحية من دكتور مسقط',
+      title: 'تعرّف قبل اختيار الرعاية',
+      subtitle: 'تبقى الأدلة التعليمية أسفل البحث حتى يظل اكتشاف الرعاية هو الإجراء الرئيسي.',
+      disclaimer: 'الأدلة للتثقيف العام فقط ولا تستبدل الاستشارة الطبية المتخصصة.',
       cards: [
-        { title: 'اختيار عيادة في عُمان', description: 'معاينة دليل لمحتوى تحريري معتمد مستقبلاً.', label: 'معاينة' },
-        { title: 'الاستعداد لزيارة مختبر', description: 'معاينة دليل دون نصيحة أو ادعاء طبي.', label: 'معاينة' },
-        { title: 'اكتشاف الأسنان والعناية', description: 'معاينة دليل لتثقيف عام آمن مستقبلاً.', label: 'معاينة' }
+        { category: 'دليل', title: 'كيف تختار عيادة في عُمان', description: 'قائمة تحقق عامة لمقارنة معلومات العيادات المنشورة بأمان.', readTime: '٤ دقائق قراءة' },
+        { category: 'قائمة تحقق', title: 'الاستعداد لزيارة مختبر', description: 'أسئلة عامة يمكن التفكير فيها قبل زيارة مختبر أو مزود فحوصات.', readTime: '٣ دقائق قراءة' },
+        { category: 'شرح', title: 'اكتشاف الأسنان والتجميل والعناية', description: 'طريقة مراجعة معلومات الخدمات دون الاعتماد على ادعاءات غير مدعومة.', readTime: '٥ دقائق قراءة' }
       ]
     },
     safety: {
-      eyebrow: 'الثقة والسلامة',
-      title: 'مصممة لاكتشاف الرعاية العامة بعناية',
-      subtitle: 'ينظم DrMuscat معلومات الرعاية الصحية العامة دون أن يستبدل الاستشارة المهنية.',
+      eyebrow: 'دليل واضح وثنائي اللغة للرعاية الصحية في عُمان',
+      title: 'مصمم للثقة العامة دون ادعاءات غير آمنة',
+      subtitle: 'ينظم دكتور مسقط معلومات الرعاية الصحية العامة مع بقاء القرارات الطبية لدى المختصين المؤهلين.',
       points: ['لا تشخيص أو نتائج مضمونة', 'لا تقييمات أو مراجعات أو أعداد وهمية', 'لا بيانات خاصة على الصفحة الرئيسية']
     },
     faq: {
@@ -265,16 +321,17 @@ export const home2026CopyByLocale: Record<SupportedLocale, Home2026Copy> = {
       items: [
         { question: 'هل يمكنني حجز موعد هنا؟', answer: 'ليس في هذه المرحلة. الصفحة الرئيسية تربط فقط بالمسارات العامة المعتمدة.' },
         { question: 'هل تظهر تقييمات؟', answer: 'لا. لا تظهر التقييمات والمراجعات إلا إذا دعمتها مرحلة بيانات ومراجعة معتمدة مستقبلاً.' },
-        { question: 'ما الدول المتاحة؟', answer: 'عُمان متاحة حالياً. الإمارات والسعودية وقطر والبحرين والكويت وإيران موضحة كقريبة الإطلاق.' }
+        { question: 'ما الدول المتاحة؟', answer: 'عُمان متاحة حالياً. الإمارات والسعودية وقطر والبحرين والكويت وإيران قريبة الإطلاق.' }
       ]
     },
-    disclaimer: 'DrMuscat منصة عامة لاكتشاف الرعاية الصحية. ليست بديلاً عن النصيحة الطبية أو الطوارئ أو التشخيص أو العلاج.',
+    disclaimer: 'دكتور مسقط منصة عامة لاكتشاف الرعاية الصحية. ليست بديلاً عن النصيحة الطبية أو الطوارئ أو التشخيص أو العلاج.',
     providerCta: {
       eyebrow: 'لمقدمي الرعاية',
       title: 'جهّز حضوراً عاماً أوضح لعيادتك أو مركزك.',
-      subtitle: 'يمكن لمقدمي الخدمة التعرف على مسار الانضمام المستقبلي دون إضافة مدفوعات أو لوحات تحكم أو اعتماد مطالبات في هذه المرحلة.',
+      subtitle: 'يمكن للعيادات والمراكز التعرف على اتجاه الانضمام المستقبلي لملفات عامة تتم مراجعتها في عُمان.',
       cta: 'لمقدمي الرعاية',
       note: 'لا تتم إضافة بوابة دفع أو دردشة ذكاء اصطناعي أو بحث خلفي أو لوحة مقدمي خدمة هنا.'
-    }
+    },
+    floating: { whatsapp: 'مساعدة واتساب', ai: 'معاينة الذكاء' }
   }
 };

@@ -12,7 +12,7 @@ export function BrowseAreas2026({ locale, country, copy }: BrowseAreas2026Props)
   return (
     <section className="dm2026-areas py-10" aria-labelledby="dm2026-areas-title">
       <SectionHeader2026 id="dm2026-areas-title" eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.subtitle} />
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {copy.areas.map((area) => <AreaCard2026 key={area} title={area} href={searchHref} label={copy.exploreLabel} />)}
       </div>
     </section>

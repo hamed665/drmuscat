@@ -10,7 +10,7 @@ export function BrowseCategories2026({ locale, country, copy }: BrowseCategories
   return (
     <section className="dm2026-categories py-10" aria-labelledby="dm2026-categories-title">
       <SectionHeader2026 id="dm2026-categories-title" eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.subtitle} centered />
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {copy.cards.map((card) => (
           <CategoryCard2026 key={card.slug} {...card} href={publicDiscoveryRoute(locale, country, card.slug)} />
         ))}

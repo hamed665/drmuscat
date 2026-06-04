@@ -20,13 +20,14 @@ export function HomePage2026({ locale, country }: HomePage2026Props) {
   const copy = home2026CopyByLocale[locale];
   const dir = localeDirection(locale);
   const providerHref = publicProviderRoute(locale, country);
+  const floatingSideClass = dir === 'rtl' ? 'left-4' : 'right-4';
 
   return (
-    <main className="dm2026-home min-w-0 overflow-x-hidden" dir={dir} data-country={country} data-locale={locale}>
+    <main className="dm2026-home relative min-w-0 overflow-x-hidden" dir={dir} data-country={country} data-locale={locale}>
       <Container2026>
         <HomeHeroSearch2026 locale={locale} country={country} copy={copy} />
         <HomeTrustBar2026 items={copy.trustBar} />
-        <FeaturedProviders2026 locale={locale} country={country} copy={copy.featured} />
+        <FeaturedProviders2026 locale={locale} country={country} copy={copy.featured} actions={copy.actions} />
         <BrowseCategories2026 locale={locale} country={country} copy={copy.categories} />
         <BrowseAreas2026 locale={locale} country={country} copy={copy.areas} />
         <HomeArticles2026 copy={copy.articles} />
@@ -47,6 +48,10 @@ export function HomePage2026({ locale, country }: HomePage2026Props) {
         </section>
         <PublicDisclaimer2026>{copy.disclaimer}</PublicDisclaimer2026>
       </Container2026>
+      <div className={`dm2026-floating fixed bottom-4 z-30 grid gap-2 ${floatingSideClass}`} aria-label={copy.floating.whatsapp}>
+        <button type="button" className="rounded-full bg-[#1FA458] px-4 py-2 text-xs font-bold text-white shadow-dm-md">{copy.floating.whatsapp}</button>
+        <button type="button" className="rounded-full border border-dm-border bg-white/95 px-4 py-2 text-xs font-bold text-dm-brand-strong shadow-dm-sm">{copy.floating.ai}</button>
+      </div>
     </main>
   );
 }

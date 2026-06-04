@@ -1,10 +1,20 @@
 'use client';
 
-import { FormEvent, useId, useState } from 'react';
+import { FormEvent, useId, useMemo, useState } from 'react';
 import type { SupportedLocale } from '@/lib/i18n/config';
+import {
+  countryOptions2026,
+  getAreaOptionsForCity2026,
+  getDefaultOmanCity2026,
+  omanCityOptions2026,
+} from '@/components/public-2026/location/location-options-2026';
 
 type ProviderOnboardingLeadFormProps = {
   locale: SupportedLocale;
+  selectedPlan?: string;
+  selectedBillingPeriod?: string;
+  selectedPrice?: string;
+  isPaidPlan?: boolean;
 };
 
 type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'validation_error' | 'unavailable';
@@ -18,14 +28,23 @@ type LeadFormCopy = {
   title: string;
   description: string;
   requiredHint: string;
+  selectionTitle: string;
+  selectedPlanLabel: string;
+  selectedPeriodLabel: string;
+  selectedPriceLabel: string;
+  freeSubmit: string;
+  paidSubmit: string;
+  authorization: string;
   centerName: string;
   contactName: string;
   phone: string;
   email: string;
   whatsapp: string;
   providerType: string;
+  country: string;
   areaText: string;
   cityText: string;
+  allAreas: string;
   preferredLanguage: string;
   message: string;
   optional: string;
@@ -45,14 +64,23 @@ const copyByLocale: Record<SupportedLocale, LeadFormCopy> = {
     title: 'Request provider onboarding',
     description: 'Share your center details so the DrMuscat team can review the request and contact you about provider onboarding.',
     requiredHint: 'Required fields are marked with *.',
+    selectionTitle: 'Selected plan summary',
+    selectedPlanLabel: 'Plan',
+    selectedPeriodLabel: 'Billing period',
+    selectedPriceLabel: 'Price',
+    freeSubmit: 'Request free listing review',
+    paidSubmit: 'Request checkout link',
+    authorization: 'I confirm I am authorized to request or claim this listing.',
     centerName: 'Center or clinic name',
     contactName: 'Contact person name',
     phone: 'Phone number',
     email: 'Email address',
     whatsapp: 'WhatsApp number',
     providerType: 'Provider type',
+    country: 'Country',
     areaText: 'Area',
     cityText: 'City',
+    allAreas: 'All areas',
     preferredLanguage: 'Preferred language',
     message: 'Message',
     optional: 'optional',
@@ -65,13 +93,17 @@ const copyByLocale: Record<SupportedLocale, LeadFormCopy> = {
     safetyNote:
       'Submitting this request does not activate a plan, create a public profile, or confirm approval. DrMuscat may contact you about provider onboarding.',
     providerTypes: [
-      { value: 'clinic', label: 'Clinic' },
-      { value: 'medical_center', label: 'Medical center' },
-      { value: 'dental_clinic', label: 'Dental clinic' },
+      { value: 'medical_center', label: 'Clinic / medical center' },
+      { value: 'other', label: 'Doctor' },
       { value: 'pharmacy', label: 'Pharmacy' },
-      { value: 'lab', label: 'Lab' },
-      { value: 'wellness', label: 'Wellness' },
-      { value: 'other', label: 'Other' }
+      { value: 'lab', label: 'Laboratory' },
+      { value: 'dental_clinic', label: 'Dental clinic' },
+      { value: 'wellness', label: 'Beauty clinic' },
+      { value: 'wellness', label: 'Wellness provider' },
+      { value: 'other', label: 'Physiotherapy' },
+      { value: 'other', label: 'Nutrition' },
+      { value: 'other', label: 'Veterinary / pet clinic' },
+      { value: 'other', label: 'Other healthcare-related provider' }
     ],
     languageOptions: ['English', 'Arabic', 'Both', 'Other']
   },
@@ -79,14 +111,23 @@ const copyByLocale: Record<SupportedLocale, LeadFormCopy> = {
     title: 'طلب الانضمام كمقدم خدمة',
     description: 'شارك بيانات مركزك حتى يتمكن فريق DrMuscat من مراجعة الطلب والتواصل معك بخصوص انضمام مقدمي الخدمة.',
     requiredHint: 'الحقول المطلوبة موضحة بعلامة *.',
+    selectionTitle: 'ملخص الخطة المختارة',
+    selectedPlanLabel: 'الخطة',
+    selectedPeriodLabel: 'مدة الفوترة',
+    selectedPriceLabel: 'السعر',
+    freeSubmit: 'طلب مراجعة الإدراج المجاني',
+    paidSubmit: 'طلب رابط الدفع',
+    authorization: 'أؤكد أنني مخول بطلب هذا الإدراج أو المطالبة به.',
     centerName: 'اسم المركز أو العيادة',
     contactName: 'اسم مسؤول التواصل',
     phone: 'رقم الهاتف',
     email: 'البريد الإلكتروني',
     whatsapp: 'رقم واتساب',
     providerType: 'نوع مقدم الخدمة',
+    country: 'الدولة',
     areaText: 'المنطقة',
     cityText: 'المدينة',
+    allAreas: 'كل المناطق',
     preferredLanguage: 'لغة التواصل المفضلة',
     message: 'رسالة',
     optional: 'اختياري',
@@ -99,13 +140,17 @@ const copyByLocale: Record<SupportedLocale, LeadFormCopy> = {
     safetyNote:
       'إرسال هذا الطلب لا يفعّل أي خطة ولا ينشئ ملفاً عاماً ولا يؤكد الموافقة. قد يتواصل معك DrMuscat بخصوص انضمام مقدمي الخدمة.',
     providerTypes: [
-      { value: 'clinic', label: 'عيادة' },
-      { value: 'medical_center', label: 'مركز طبي' },
-      { value: 'dental_clinic', label: 'عيادة أسنان' },
+      { value: 'medical_center', label: 'عيادة / مركز طبي' },
+      { value: 'other', label: 'طبيب' },
       { value: 'pharmacy', label: 'صيدلية' },
       { value: 'lab', label: 'مختبر' },
-      { value: 'wellness', label: 'عافية' },
-      { value: 'other', label: 'أخرى' }
+      { value: 'dental_clinic', label: 'عيادة أسنان' },
+      { value: 'wellness', label: 'عيادة تجميل' },
+      { value: 'wellness', label: 'مقدم عافية' },
+      { value: 'other', label: 'علاج طبيعي' },
+      { value: 'other', label: 'تغذية' },
+      { value: 'other', label: 'عيادة بيطرية / حيوانات أليفة' },
+      { value: 'other', label: 'مقدم رعاية صحية آخر' }
     ],
     languageOptions: ['English', 'Arabic', 'Both', 'Other']
   }
@@ -115,10 +160,15 @@ const fieldClassName =
   'mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:bg-slate-100';
 const labelClassName = 'text-sm font-bold text-slate-900';
 
-export function ProviderOnboardingLeadForm({ locale }: ProviderOnboardingLeadFormProps) {
+export function ProviderOnboardingLeadForm({ locale, selectedPlan, selectedBillingPeriod, selectedPrice, isPaidPlan = false }: ProviderOnboardingLeadFormProps) {
   const copy = copyByLocale[locale];
   const idPrefix = useId();
   const [status, setStatus] = useState<SubmissionStatus>('idle');
+  const [city, setCity] = useState<string>(getDefaultOmanCity2026());
+  const [area, setArea] = useState<string>('');
+  const countries = countryOptions2026[locale];
+  const cities = omanCityOptions2026[locale];
+  const areaOptions = useMemo(() => getAreaOptionsForCity2026(locale, city), [city, locale]);
 
   const isSubmitting = status === 'submitting';
   const statusMessage =
@@ -165,6 +215,8 @@ export function ProviderOnboardingLeadForm({ locale }: ProviderOnboardingLeadFor
 
       if (response.status === 202) {
         form.reset();
+        setCity(getDefaultOmanCity2026());
+        setArea('');
         setStatus('success');
         return;
       }
@@ -188,9 +240,23 @@ export function ProviderOnboardingLeadForm({ locale }: ProviderOnboardingLeadFor
         <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">{copy.requiredHint}</p>
       </div>
 
+      {selectedPlan ? (
+        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+          <p className="text-sm font-bold text-emerald-950">{copy.selectionTitle}</p>
+          <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
+            <div><dt className="text-emerald-700">{copy.selectedPlanLabel}</dt><dd className="font-bold text-emerald-950">{selectedPlan}</dd></div>
+            <div><dt className="text-emerald-700">{copy.selectedPeriodLabel}</dt><dd className="font-bold text-emerald-950">{selectedBillingPeriod}</dd></div>
+            <div><dt className="text-emerald-700">{copy.selectedPriceLabel}</dt><dd className="font-bold text-emerald-950">{selectedPrice}</dd></div>
+          </dl>
+        </div>
+      ) : null}
+
       <form className="mt-6 space-y-5" onSubmit={handleSubmit} noValidate={false}>
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="countryCode" value="om" />
+        <input type="hidden" name="selectedPlan" value={selectedPlan ?? ''} />
+        <input type="hidden" name="selectedBillingPeriod" value={selectedBillingPeriod ?? ''} />
+        <input type="hidden" name="selectedPrice" value={selectedPrice ?? ''} />
         <input type="text" name="honeypot" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
 
         <div className="grid gap-5 sm:grid-cols-2">
@@ -233,11 +299,45 @@ export function ProviderOnboardingLeadForm({ locale }: ProviderOnboardingLeadFor
             <label className={labelClassName} htmlFor={`${idPrefix}-provider-type`}>
               {copy.providerType} <span className="font-medium text-slate-500">({copy.optional})</span>
             </label>
-            <select id={`${idPrefix}-provider-type`} name="providerType" defaultValue="other" className={fieldClassName} disabled={isSubmitting}>
+            <select id={`${idPrefix}-provider-type`} name="providerType" defaultValue="medical_center" className={fieldClassName} disabled={isSubmitting}>
               {copy.providerTypes.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option key={option.label} value={option.value}>
                   {option.label}
                 </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClassName} htmlFor={`${idPrefix}-country`}>
+              {copy.country}
+            </label>
+            <select id={`${idPrefix}-country`} defaultValue="om" className={fieldClassName} disabled={isSubmitting}>
+              {countries.map((option) => (
+                <option key={option.code} value={option.code} disabled={!option.active}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClassName} htmlFor={`${idPrefix}-city-text`}>
+              {copy.cityText} <span className="font-medium text-slate-500">({copy.optional})</span>
+            </label>
+            <select
+              id={`${idPrefix}-city-text`}
+              name="cityText"
+              value={city}
+              className={fieldClassName}
+              disabled={isSubmitting}
+              onChange={(event) => {
+                setCity(event.target.value);
+                setArea('');
+              }}
+            >
+              {cities.map((option) => (
+                <option key={option.label} value={option.value}>{option.label}</option>
               ))}
             </select>
           </div>
@@ -246,14 +346,12 @@ export function ProviderOnboardingLeadForm({ locale }: ProviderOnboardingLeadFor
             <label className={labelClassName} htmlFor={`${idPrefix}-area-text`}>
               {copy.areaText} <span className="font-medium text-slate-500">({copy.optional})</span>
             </label>
-            <input id={`${idPrefix}-area-text`} name="areaText" type="text" maxLength={120} className={fieldClassName} disabled={isSubmitting} />
-          </div>
-
-          <div>
-            <label className={labelClassName} htmlFor={`${idPrefix}-city-text`}>
-              {copy.cityText} <span className="font-medium text-slate-500">({copy.optional})</span>
-            </label>
-            <input id={`${idPrefix}-city-text`} name="cityText" type="text" maxLength={120} className={fieldClassName} disabled={isSubmitting} />
+            <select id={`${idPrefix}-area-text`} name="areaText" value={area} className={fieldClassName} disabled={isSubmitting} onChange={(event) => setArea(event.target.value)}>
+              <option value="">{copy.allAreas}</option>
+              {areaOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
           </div>
 
           <div className="sm:col-span-2">
@@ -288,7 +386,7 @@ export function ProviderOnboardingLeadForm({ locale }: ProviderOnboardingLeadFor
               disabled={isSubmitting}
               className="mt-1 h-4 w-4 rounded border-emerald-300 text-emerald-700 focus:ring-emerald-500"
             />
-            <span>{copy.consent}</span>
+            <span>{copy.authorization}</span>
           </label>
           <p className="mt-3 text-xs leading-6 text-emerald-900">{copy.safetyNote}</p>
         </div>
@@ -306,7 +404,7 @@ export function ProviderOnboardingLeadForm({ locale }: ProviderOnboardingLeadFor
           disabled={isSubmitting}
           className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-800 focus:outline-none focus:ring-4 focus:ring-emerald-200 disabled:cursor-not-allowed disabled:bg-slate-400 sm:w-auto"
         >
-          {isSubmitting ? copy.submitting : copy.submit}
+          {isSubmitting ? copy.submitting : isPaidPlan ? copy.paidSubmit : copy.freeSubmit}
         </button>
       </form>
     </div>

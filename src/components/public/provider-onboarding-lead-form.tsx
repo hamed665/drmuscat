@@ -1,7 +1,13 @@
 'use client';
 
-import { FormEvent, useId, useState } from 'react';
+import { FormEvent, useId, useMemo, useState } from 'react';
 import type { SupportedLocale } from '@/lib/i18n/config';
+import {
+  countryOptions2026,
+  getAreaOptionsForCity2026,
+  getDefaultOmanCity2026,
+  omanCityOptions2026,
+} from '@/components/public-2026/location/location-options-2026';
 
 type ProviderOnboardingLeadFormProps = {
   locale: SupportedLocale;
@@ -24,8 +30,10 @@ type LeadFormCopy = {
   email: string;
   whatsapp: string;
   providerType: string;
+  country: string;
   areaText: string;
   cityText: string;
+  allAreas: string;
   preferredLanguage: string;
   message: string;
   optional: string;
@@ -51,8 +59,10 @@ const copyByLocale: Record<SupportedLocale, LeadFormCopy> = {
     email: 'Email address',
     whatsapp: 'WhatsApp number',
     providerType: 'Provider type',
+    country: 'Country',
     areaText: 'Area',
     cityText: 'City',
+    allAreas: 'All areas',
     preferredLanguage: 'Preferred language',
     message: 'Message',
     optional: 'optional',
@@ -85,8 +95,10 @@ const copyByLocale: Record<SupportedLocale, LeadFormCopy> = {
     email: 'البريد الإلكتروني',
     whatsapp: 'رقم واتساب',
     providerType: 'نوع مقدم الخدمة',
+    country: 'الدولة',
     areaText: 'المنطقة',
     cityText: 'المدينة',
+    allAreas: 'كل المناطق',
     preferredLanguage: 'لغة التواصل المفضلة',
     message: 'رسالة',
     optional: 'اختياري',
@@ -119,6 +131,11 @@ export function ProviderOnboardingLeadForm({ locale }: ProviderOnboardingLeadFor
   const copy = copyByLocale[locale];
   const idPrefix = useId();
   const [status, setStatus] = useState<SubmissionStatus>('idle');
+  const [city, setCity] = useState<string>(getDefaultOmanCity2026());
+  const [area, setArea] = useState<string>('');
+  const countries = countryOptions2026[locale];
+  const cities = omanCityOptions2026[locale];
+  const areaOptions = useMemo(() => getAreaOptionsForCity2026(locale, city), [city, locale]);
 
   const isSubmitting = status === 'submitting';
   const statusMessage =
@@ -165,6 +182,8 @@ export function ProviderOnboardingLeadForm({ locale }: ProviderOnboardingLeadFor
 
       if (response.status === 202) {
         form.reset();
+        setCity(getDefaultOmanCity2026());
+        setArea('');
         setStatus('success');
         return;
       }
@@ -243,17 +262,49 @@ export function ProviderOnboardingLeadForm({ locale }: ProviderOnboardingLeadFor
           </div>
 
           <div>
-            <label className={labelClassName} htmlFor={`${idPrefix}-area-text`}>
-              {copy.areaText} <span className="font-medium text-slate-500">({copy.optional})</span>
+            <label className={labelClassName} htmlFor={`${idPrefix}-country`}>
+              {copy.country}
             </label>
-            <input id={`${idPrefix}-area-text`} name="areaText" type="text" maxLength={120} className={fieldClassName} disabled={isSubmitting} />
+            <select id={`${idPrefix}-country`} defaultValue="om" className={fieldClassName} disabled={isSubmitting}>
+              {countries.map((option) => (
+                <option key={option.code} value={option.code} disabled={!option.active}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
             <label className={labelClassName} htmlFor={`${idPrefix}-city-text`}>
               {copy.cityText} <span className="font-medium text-slate-500">({copy.optional})</span>
             </label>
-            <input id={`${idPrefix}-city-text`} name="cityText" type="text" maxLength={120} className={fieldClassName} disabled={isSubmitting} />
+            <select
+              id={`${idPrefix}-city-text`}
+              name="cityText"
+              value={city}
+              className={fieldClassName}
+              disabled={isSubmitting}
+              onChange={(event) => {
+                setCity(event.target.value);
+                setArea('');
+              }}
+            >
+              {cities.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClassName} htmlFor={`${idPrefix}-area-text`}>
+              {copy.areaText} <span className="font-medium text-slate-500">({copy.optional})</span>
+            </label>
+            <select id={`${idPrefix}-area-text`} name="areaText" value={area} className={fieldClassName} disabled={isSubmitting} onChange={(event) => setArea(event.target.value)}>
+              <option value="">{copy.allAreas}</option>
+              {areaOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
           </div>
 
           <div className="sm:col-span-2">

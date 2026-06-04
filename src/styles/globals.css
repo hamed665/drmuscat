@@ -2140,3 +2140,18 @@ body {
   }
 }
 /* PUBLIC SUPPORT ACTIONS ROUTING FIX END */
+
+
+/* UI-K-155-FIXUP-A START */
+.dm2026-carousel-contact-notice {
+  margin: 0;
+  border: 1px solid rgba(14, 110, 100, 0.16);
+  border-radius: 0.9rem;
+  background: var(--dm-bg-soft);
+  padding: 0.65rem 0.8rem;
+  color: var(--dm-brand-strong);
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.5;
+}
+/* UI-K-155-FIXUP-A END */

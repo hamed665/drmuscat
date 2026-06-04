@@ -18,6 +18,7 @@ type FeaturedCentersCarousel2026Props = {
 export function FeaturedCentersCarousel2026({ locale, country, copy, actions }: FeaturedCentersCarousel2026Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [contactNotice, setContactNotice] = useState<string | null>(null);
   const [reducedMotion, setReducedMotion] = useState(() =>
     typeof window === 'undefined' ? false : window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
@@ -42,17 +43,27 @@ export function FeaturedCentersCarousel2026({ locale, country, copy, actions }: 
 
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % providers.length);
+      setContactNotice(null);
     }, 4200);
 
     return () => window.clearInterval(timer);
   }, [isPaused, providers.length, reducedMotion]);
 
+  const selectProvider = (nextIndex: number) => {
+    setActiveIndex(nextIndex);
+    setContactNotice(null);
+  };
+
   const goToPrevious = () => {
-    setActiveIndex((current) => (current - 1 + providers.length) % providers.length);
+    selectProvider((activeIndex - 1 + providers.length) % providers.length);
   };
 
   const goToNext = () => {
-    setActiveIndex((current) => (current + 1) % providers.length);
+    selectProvider((activeIndex + 1) % providers.length);
+  };
+
+  const showContactPreview = (action: string) => {
+    setContactNotice(`${action}: ${actions.unavailable}`);
   };
 
   return (
@@ -96,16 +107,17 @@ export function FeaturedCentersCarousel2026({ locale, country, copy, actions }: 
               <Link href={publicDiscoveryRoute(locale, country, activeProvider.route)} className="dm2026-carousel-action dm2026-carousel-action--profile">
                 {actions.viewProfile}
               </Link>
-              <button type="button" className="dm2026-carousel-action dm2026-carousel-action--whatsapp" aria-label={`${actions.whatsapp} — ${activeProvider.name}`}>
+              <button type="button" className="dm2026-carousel-action dm2026-carousel-action--whatsapp" aria-label={`${actions.whatsapp} — ${activeProvider.name}`} onClick={() => showContactPreview(actions.whatsapp)}>
                 {actions.whatsapp}
               </button>
-              <button type="button" className="dm2026-carousel-action" aria-label={`${actions.call} — ${activeProvider.name}`}>
+              <button type="button" className="dm2026-carousel-action" aria-label={`${actions.call} — ${activeProvider.name}`} onClick={() => showContactPreview(actions.call)}>
                 {actions.call}
               </button>
-              <button type="button" className="dm2026-carousel-action" aria-label={`${actions.directions} — ${activeProvider.name}`}>
+              <button type="button" className="dm2026-carousel-action" aria-label={`${actions.directions} — ${activeProvider.name}`} onClick={() => showContactPreview(actions.directions)}>
                 {actions.directions}
               </button>
             </div>
+            {contactNotice ? <p className="dm2026-carousel-contact-notice" role="status">{contactNotice}</p> : null}
           </div>
         </article>
 
@@ -113,7 +125,7 @@ export function FeaturedCentersCarousel2026({ locale, country, copy, actions }: 
           {previewProviders.map((provider, index) => {
             const providerIndex = (activeIndex + index + 1) % providers.length;
             return (
-              <button key={`${provider.name}-${providerIndex}`} type="button" className="dm2026-carousel-preview" onClick={() => setActiveIndex(providerIndex)}>
+              <button key={`${provider.name}-${providerIndex}`} type="button" className="dm2026-carousel-preview" onClick={() => selectProvider(providerIndex)}>
                 <span>{provider.category}</span>
                 <strong>{provider.name}</strong>
                 <small>{provider.location}</small>
@@ -131,7 +143,7 @@ export function FeaturedCentersCarousel2026({ locale, country, copy, actions }: 
             className={`dm2026-carousel-dot${index === activeIndex ? ' dm2026-carousel-dot--active' : ''}`}
             aria-label={`${copy.sampleLabel}: ${provider.name}`}
             aria-current={index === activeIndex ? 'true' : undefined}
-            onClick={() => setActiveIndex(index)}
+            onClick={() => selectProvider(index)}
           />
         ))}
       </div>

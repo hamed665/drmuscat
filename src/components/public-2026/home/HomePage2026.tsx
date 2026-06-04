@@ -23,7 +23,7 @@ export function HomePage2026({ locale, country }: HomePage2026Props) {
   const providerHref = publicProviderRoute(locale, country);
 
   return (
-    <main className="dm2026-home relative min-w-0 overflow-x-hidden" dir={dir} data-country={country} data-locale={locale}>
+    <main className="dm2026-home relative min-w-0" dir={dir} data-country={country} data-locale={locale}>
       <Container2026>
         <HomeHeroSearch2026 locale={locale} country={country} copy={copy} />
         <FeaturedCentersCarousel2026 locale={locale} country={country} copy={copy.carousel} actions={copy.actions} />

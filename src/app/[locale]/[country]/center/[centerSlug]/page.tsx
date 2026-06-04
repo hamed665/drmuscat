@@ -1,16 +1,20 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { PublicCenterDetail } from '@/components/public/public-center-detail';
-import { PublicListingError } from '@/components/public/public-listing-error';
-import { PublicPageShell } from '@/components/public/public-page-shell';
-import { getPublicCenterBySlug } from '@/lib/catalog/public-queries';
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { PublicCenterDetail } from "@/components/public/public-center-detail";
+import {
+  ProfilePreviewPage2026,
+  profilePreviewKindForCenterSlug2026,
+} from "@/components/public-2026/pages/ProfilePreviewPage2026";
+import { PublicListingError } from "@/components/public/public-listing-error";
+import { PublicPageShell } from "@/components/public/public-page-shell";
+import { getPublicCenterBySlug } from "@/lib/catalog/public-queries";
 import {
   isSupportedCountry,
   isSupportedLocale,
   localeDirection,
-  type SupportedLocale
-} from '@/lib/i18n/config';
-import { buildLocalizedMetadata } from '@/lib/seo/metadata';
+  type SupportedLocale,
+} from "@/lib/i18n/config";
+import { buildLocalizedMetadata } from "@/lib/seo/metadata";
 
 type Params = { locale: string; country: string; centerSlug: string };
 
@@ -22,31 +26,56 @@ type RouteCopy = {
 
 const copyByLocale: Record<SupportedLocale, RouteCopy> = {
   en: {
-    badge: 'Public center profile',
-    fallbackTitle: 'Medical Center Profile | DrMuscat',
-    fallbackDescription: 'View public medical center information in Oman on DrMuscat.'
+    badge: "Public center profile",
+    fallbackTitle: "Medical Center Profile | DrMuscat",
+    fallbackDescription:
+      "View public medical center information in Oman on DrMuscat.",
   },
   ar: {
-    badge: 'ملف مركز عام',
-    fallbackTitle: 'ملف مركز طبي | DrMuscat',
-    fallbackDescription: 'اطلع على معلومات عامة عن المراكز الطبية في عُمان عبر DrMuscat.'
-  }
+    badge: "ملف مركز عام",
+    fallbackTitle: "ملف مركز طبي | DrMuscat",
+    fallbackDescription:
+      "اطلع على معلومات عامة عن المراكز الطبية في عُمان عبر DrMuscat.",
+  },
 };
 
-function preferredText(locale: SupportedLocale, en: string | null, ar: string | null): string | null {
-  if (locale === 'ar') return ar ?? en;
+function preferredText(
+  locale: SupportedLocale,
+  en: string | null,
+  ar: string | null,
+): string | null {
+  if (locale === "ar") return ar ?? en;
   return en ?? ar;
 }
 
 function metadataTitle(locale: SupportedLocale, name: string): string {
-  return locale === 'ar' ? `${name} | DrMuscat` : `${name} | DrMuscat`;
+  return locale === "ar" ? `${name} | DrMuscat` : `${name} | DrMuscat`;
 }
 
-export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<Params>;
+}): Promise<Metadata> {
   const { locale, country, centerSlug } = await params;
   if (!isSupportedLocale(locale) || !isSupportedCountry(country)) return {};
 
   const copy = copyByLocale[locale];
+  const previewKind = profilePreviewKindForCenterSlug2026(centerSlug);
+
+  if (previewKind) {
+    return buildLocalizedMetadata({
+      locale,
+      country,
+      pathname: `/center/${centerSlug}`,
+      title:
+        locale === "ar"
+          ? `معاينة ملف مقدم رعاية | DrMuscat`
+          : `Provider profile preview | DrMuscat`,
+      description: copy.fallbackDescription,
+    });
+  }
+
   const result = await getPublicCenterBySlug({ slug: centerSlug, country });
 
   if (!result.ok || !result.data) {
@@ -55,14 +84,24 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
       country,
       pathname: `/center/${centerSlug}`,
       title: copy.fallbackTitle,
-      description: copy.fallbackDescription
+      description: copy.fallbackDescription,
     });
   }
 
-  const centerName = preferredText(locale, result.data.nameEn, result.data.nameAr) ?? result.data.nameEn;
+  const centerName =
+    preferredText(locale, result.data.nameEn, result.data.nameAr) ??
+    result.data.nameEn;
   const description =
-    preferredText(locale, result.data.shortDescriptionEn, result.data.shortDescriptionAr) ??
-    preferredText(locale, result.data.descriptionEn, result.data.descriptionAr) ??
+    preferredText(
+      locale,
+      result.data.shortDescriptionEn,
+      result.data.shortDescriptionAr,
+    ) ??
+    preferredText(
+      locale,
+      result.data.descriptionEn,
+      result.data.descriptionAr,
+    ) ??
     copy.fallbackDescription;
 
   return buildLocalizedMetadata({
@@ -70,15 +109,44 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     country,
     pathname: `/center/${centerSlug}`,
     title: metadataTitle(locale, centerName),
-    description
+    description,
   });
 }
 
-export default async function PublicCenterDetailPage({ params }: { params: Promise<Params> }) {
+export default async function PublicCenterDetailPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
   const { locale, country, centerSlug } = await params;
   if (!isSupportedLocale(locale) || !isSupportedCountry(country)) notFound();
 
   const copy = copyByLocale[locale];
+  const previewKind = profilePreviewKindForCenterSlug2026(centerSlug);
+
+  if (previewKind) {
+    return (
+      <PublicPageShell
+        dir={localeDirection(locale)}
+        heroBadge={copy.badge}
+        heroTitle={
+          locale === "ar"
+            ? "معاينة ملف مقدم رعاية"
+            : "Provider profile preview"
+        }
+        heroDescription={copy.fallbackDescription}
+        content={
+          <ProfilePreviewPage2026
+            locale={locale}
+            country={country}
+            kind={previewKind}
+            slug={centerSlug}
+          />
+        }
+      />
+    );
+  }
+
   const result = await getPublicCenterBySlug({ slug: centerSlug, country });
 
   if (!result.ok) {
@@ -93,12 +161,24 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
     );
   }
 
-  if (!result.data) notFound();
+  if (!result.data) {
+    notFound();
+  }
 
-  const centerName = preferredText(locale, result.data.nameEn, result.data.nameAr) ?? result.data.nameEn;
+  const centerName =
+    preferredText(locale, result.data.nameEn, result.data.nameAr) ??
+    result.data.nameEn;
   const description =
-    preferredText(locale, result.data.shortDescriptionEn, result.data.shortDescriptionAr) ??
-    preferredText(locale, result.data.descriptionEn, result.data.descriptionAr) ??
+    preferredText(
+      locale,
+      result.data.shortDescriptionEn,
+      result.data.shortDescriptionAr,
+    ) ??
+    preferredText(
+      locale,
+      result.data.descriptionEn,
+      result.data.descriptionAr,
+    ) ??
     copy.fallbackDescription;
 
   return (

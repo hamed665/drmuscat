@@ -15,7 +15,9 @@ import {
   homeRoute,
   publicArticleDetailRoute,
   publicArticlesRoute,
+  publicCenterDetailRoute,
   publicDiscoveryRoute,
+  publicDoctorDetailRoute,
   publicListYourCenterRoute,
   publicProviderRoute,
 } from "@/lib/routes/public";
@@ -1553,31 +1555,49 @@ function mergeCopy(locale: SupportedLocale, kind: DiscoveryKind): PageCopy {
   return { ...common[locale], ...pages[kind][locale] } as PageCopy;
 }
 
-function ButtonPreview({
-  children,
-  onClick,
-  tone = "secondary",
-}: {
-  children: ReactNode;
-  onClick: () => void;
-  tone?: "primary" | "secondary" | "whatsapp";
-}) {
-  const toneClass =
-    tone === "primary"
-      ? "bg-teal-700 text-white hover:bg-teal-800"
-      : tone === "whatsapp"
-        ? "bg-emerald-600 text-white hover:bg-emerald-700"
-        : "border border-slate-200 bg-white text-slate-700 hover:border-teal-200 hover:bg-teal-50";
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full px-4 py-2 text-sm font-semibold shadow-sm transition ${toneClass}`}
-    >
-      {children}
-    </button>
-  );
+function profileHrefForCard(
+  locale: SupportedLocale,
+  country: SupportedCountry,
+  kind: DiscoveryKind,
+  index: number,
+) {
+  const slugs: Record<DiscoveryKind, readonly string[]> = {
+    doctors: [
+      "doctor-profile-preview",
+      "pediatrics-profile-preview",
+      "dental-doctor-preview",
+      "physiotherapy-profile-preview",
+    ],
+    centers: [
+      "medical-center-preview",
+      "dental-clinic-preview",
+      "wellness-provider-preview",
+      "pet-clinic-preview",
+    ],
+    pharmacies: [
+      "pharmacy-preview",
+      "delivery-pharmacy-preview",
+      "wellness-pharmacy-preview",
+      "24-hour-label-preview",
+    ],
+    labs: [
+      "medical-lab-preview",
+      "home-sample-preview",
+      "diagnostic-center-preview",
+      "lab-package-preview",
+    ],
+    services: ["dental-care", "lab-tests", "pharmacy-services", "pet-care"],
+    search: [
+      "doctor-profile-preview",
+      "medical-center-preview",
+      "pharmacy-preview",
+      "lab-tests",
+    ],
+  };
+  const slug = slugs[kind][index] ?? slugs[kind][0] ?? "medical-center-preview";
+  if (kind === "doctors" || (kind === "search" && index === 0))
+    return publicDoctorDetailRoute(locale, country, slug);
+  return publicCenterDetailRoute(locale, country, slug);
 }
 
 export function DiscoveryPage2026({
@@ -1837,31 +1857,39 @@ export function DiscoveryPage2026({
                             <span>{copy.reviewsModerated}</span>
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap lg:max-w-48 lg:justify-end">
-                          <ButtonPreview
-                            onClick={() => setActionNotice(copy.actionNotice)}
-                            tone="primary"
+                        <div className="grid gap-2 sm:grid-cols-2 lg:w-56 lg:grid-cols-2 lg:self-center">
+                          <Link
+                            href={profileHrefForCard(
+                              locale,
+                              country,
+                              kind,
+                              index,
+                            )}
+                            className="col-span-2 min-h-11 rounded-full bg-teal-800 px-4 py-3 text-center text-sm font-black text-white shadow-sm transition hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
                           >
                             {copy.view}
-                          </ButtonPreview>
-                          <a
-                            href={supportHref}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="rounded-full bg-emerald-600 px-4 py-2 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => setActionNotice(copy.actionNotice)}
+                            className="min-h-11 rounded-full bg-emerald-600 px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
                           >
                             {copy.whatsapp}
-                          </a>
-                          <ButtonPreview
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => setActionNotice(copy.actionNotice)}
+                            className="min-h-11 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:border-teal-200 hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
                           >
                             {copy.call}
-                          </ButtonPreview>
-                          <ButtonPreview
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => setActionNotice(copy.actionNotice)}
+                            className="col-span-2 min-h-11 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:border-teal-200 hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
                           >
                             {copy.directions}
-                          </ButtonPreview>
+                          </button>
                         </div>
                       </div>
                     </article>

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./dm2026-foundation.css";
 
 /* DrMuscat 2026 UI kit foundation tokens. Keep these aliases stable for current production CSS. */
 :root {

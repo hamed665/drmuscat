@@ -1201,7 +1201,7 @@ body {
 
 /* UI-K-ALIGN-FIX-PUBLIC-PAGES-BLOCKERS-A START */
 :root {
-  --dm2026-arabic-stack: 'Tajawal', 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Segoe UI', Tahoma, Arial, sans-serif;
+  --dm2026-arabic-stack: var(--dm-font-arabic);
 }
 
 [dir='rtl'] body,
@@ -1571,7 +1571,7 @@ body {
 
 /* UI-K-153 START */
 :root {
-  --dm2026-arabic-stack: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Tajawal', system-ui, sans-serif;
+  --dm2026-arabic-stack: var(--dm-font-arabic);
 }
 
 [dir='rtl'] .site-header,
@@ -1587,18 +1587,18 @@ body {
 [dir='rtl'] .site-header__action-link,
 [dir='rtl'] .site-header__locale-switch {
   font-family: var(--dm2026-arabic-stack);
-  font-size: 0.88rem;
-  font-weight: 750;
+  font-size: 0.9rem;
+  font-weight: 650;
   letter-spacing: 0;
   line-height: 1.45;
 }
 
 [dir='rtl'] .dm2026-hero h1 {
-  max-width: 13ch;
+  max-width: 16ch;
   font-family: var(--dm2026-arabic-stack);
-  font-size: clamp(2.15rem, 4vw, 3rem) !important;
-  font-weight: 720;
-  letter-spacing: -0.018em;
+  font-size: clamp(2.3rem, 4vw, 3.4rem) !important;
+  font-weight: 700;
+  letter-spacing: 0;
   line-height: 1.3;
 }
 

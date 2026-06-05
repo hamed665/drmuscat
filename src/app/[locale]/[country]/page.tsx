@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { HomePage2026HeaderHero } from '@/components/home/HomePage2026HeaderHero';
 import { HomeCategoryPreview } from '@/components/home/home-category-preview';
-import { HomeHero } from '@/components/home/home-hero';
 import { HomeTrustStrip } from '@/components/home/home-trust-strip';
 import { publicDiscoveryRoute, publicProviderRoute } from '@/lib/routes/public';
 import {
@@ -381,32 +381,7 @@ export default async function LocaleCountryHome({ params }: { params: Promise<Pa
 
   return (
     <div className="home-foundation" dir={dir} data-country={safeCountry} data-locale={safeLocale}>
-      <HomeHero copy={copy.hero} dir={dir} primaryHref={searchHref} secondaryHref={providerHref} />
-
-      <section className="home-search-panel glass-soft" dir={dir} aria-labelledby="home-search-title">
-        <div className="home-section-head home-search-panel__intro">
-          <p className="home-section-eyebrow">{copy.search.eyebrow}</p>
-          <h2 id="home-search-title">{copy.search.title}</h2>
-          <p>{copy.search.description}</p>
-        </div>
-        <div className="home-search-panel__surface" aria-label={copy.search.quickLinksLabel}>
-          <Link href={searchHref} className="home-search-panel__main-link">
-            <span className="home-search-panel__glass-icon" aria-hidden="true" />
-            <span>{copy.search.primaryLabel}</span>
-          </Link>
-          <div className="home-search-panel__quick-links">
-            {copy.search.quickLinks.map((link) => (
-              <Link
-                key={link.key}
-                href={publicDiscoveryRoute(safeLocale, safeCountry, discoverySlugByKey[link.key])}
-                className="home-search-panel__quick-link"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HomePage2026HeaderHero locale={safeLocale} country={safeCountry} dir={dir} />
 
       <HomeCategoryPreview
         eyebrow={copy.categories.eyebrow}

@@ -13,6 +13,7 @@ import { Button2026 } from '@/components/public-2026/ui/Button2026';
 import { Container2026 } from '@/components/public-2026/ui/Container2026';
 import { HomeHeroSearch2026 } from '@/components/public-2026/home/HomeHeroSearch2026';
 import { HomeTrustBar2026 } from '@/components/public-2026/home/HomeTrustBar2026';
+import { DrMuscatStoriesRail2026 } from '@/components/public-2026/stories/DrMuscatStoriesRail2026';
 import { home2026CopyByLocale } from '@/components/public-2026/home/HomeCopy2026';
 
 type HomePage2026Props = { locale: SupportedLocale; country: SupportedCountry };
@@ -26,6 +27,7 @@ export function HomePage2026({ locale, country }: HomePage2026Props) {
     <main className="dm2026-home relative min-w-0" dir={dir} data-country={country} data-locale={locale}>
       <Container2026>
         <HomeHeroSearch2026 locale={locale} country={country} copy={copy} />
+        <DrMuscatStoriesRail2026 locale={locale} country={country} />
         <FeaturedCentersCarousel2026 locale={locale} country={country} copy={copy.carousel} actions={copy.actions} />
         <BrowseCategories2026 locale={locale} country={country} copy={copy.categories} />
         <BrowseAreas2026 locale={locale} country={country} copy={copy.areas} />

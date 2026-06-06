@@ -298,3 +298,97 @@ FIX01 does not change:
 ### Merge readiness recommendation
 
 Merge readiness is recommended after validation passes and browser QA confirms that `/en/om` and `/ar/om` show a compact premium board directly below Smart Search, with the action dock and right-side offer card visible and no horizontal overflow.
+
+## 17. FIX02 — Locked DrMuscat 2026 Design System Alignment
+
+### Confirmed no new fonts
+
+FIX02 does not add font imports, Google Fonts, remote fonts, new `font-family` declarations, or new typography tokens. The Featured Board inherits the existing DrMuscat 2026 typography from the app body.
+
+### Confirmed typography inherits approved DrMuscat 2026 system
+
+The approved Smart Search typography inherits from `body`, which uses `var(--dm-font-sans)` for LTR and `var(--dm-font-arabic)` under RTL. The rebuilt Featured Board follows that same inheritance model and only uses existing type-size tokens such as `--dm-type-h3`, `--dm-type-small`, `--dm-type-caption`, and `--dm-type-micro`.
+
+### Confirmed no legacy template style reuse
+
+The rebuilt CSS is scoped to `.dm2026-featured-board*` and consumes existing DrMuscat 2026 primitives/tokens such as:
+
+- `.dm2026-container`
+- `.dm2026-glass`
+- `.dm2026-card-glass`
+- `.dm2026-card-soft`
+- `.dm2026-badge`
+- `.dm2026-button`
+- `--dm-color-*`, `--dm-radius-*`, `--dm-shadow-*`, `--dm-motion-*`, and `--dm-focus-ring`
+
+No legacy homepage/template classes or new visual system classes were introduced.
+
+### Confirmed dynamic rotating preview architecture
+
+FIX02 replaces the narrow four-category model with an 8-entry static preview inventory. Each inventory item includes:
+
+- `id`
+- localized `providerKind`
+- localized `title`
+- localized `subtitle`
+- localized `city`
+- localized `area`
+- localized `chips`
+- localized `visibilityContext`
+- localized `offerContext`
+
+This structure is intentionally local/static and can scale to a larger future provider visibility inventory without changing routes, APIs, database schema, or Supabase access.
+
+### Confirmed no hardcoded inventory dependency
+
+The rail now represents flexible preview inventory rather than assuming only clinic, specialist, lab, or pharmacy placements exist. Safe preview entries include clinic, specialist, lab, pharmacy, wellness, pet clinic, dental center, and medical service preview surfaces.
+
+### Confirmed action buttons are preview-safe
+
+The action dock continues to use real `<button type="button">` elements for:
+
+- View Profile / عرض الملف
+- Directions / الاتجاهات
+- Call / اتصال
+- WhatsApp / واتساب
+
+No fake hrefs, maps, `tel:`, WhatsApp links, profile URLs, phone numbers, prices, discounts, ratings, review counts, provider names, or availability claims were added. The `aria-label` and `title` values explain that actions appear after provider approval.
+
+### Confirmed DB/Supabase/RLS/SEO untouched
+
+FIX02 does not change database schema, migrations, Supabase files, RLS policies, API routes, route helpers, i18n config, sitemap, robots, `llms.txt`, metadata, package files, or route-check scripts.
+
+### Validation results
+
+Required FIX02 validation commands:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+Observed FIX02 outcomes in this implementation pass:
+
+- `git status --short`: showed only the three approved FIX02 files changed.
+- `pnpm lint`: passed with pre-existing warnings only.
+- `pnpm typecheck`: passed.
+- `pnpm build`: passed.
+- `pnpm routes:check`: passed.
+- Local render smoke check: `/en/om` and `/ar/om` returned the FIX02 board copy from `next start`.
+- Screenshot capture warning: no Chromium/Playwright browser binary is available in this container, and adding one would require an unapproved dependency/tooling change.
+
+### Manual QA notes
+
+Manual browser QA should confirm:
+
+- `/en/om` and `/ar/om` inherit the same typography feel as the approved Smart Search.
+- The board reads as one DrMuscat 2026 glass module, not a separate template.
+- The action dock is visible and polished on desktop/laptop.
+- Mobile keeps a 2x2 action dock and a contained horizontal rail.
+- Arabic text remains controlled, readable, and free of negative letter spacing.
+- Search, header, language switch, and hamburger behavior remain untouched.
+
+### Merge readiness recommendation
+
+Merge readiness is recommended after validation passes and visual QA confirms the Featured Board feels like a natural monetization-ready continuation of the approved Smart Search section while preserving static-safe preview content and all forbidden-area boundaries.

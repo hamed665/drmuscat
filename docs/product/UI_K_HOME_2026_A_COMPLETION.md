@@ -624,3 +624,22 @@ No database, Supabase, RLS, API, auth, payment, sitemap, robots, llms, package, 
 ### Merge-readiness recommendation
 
 PR #157 remains scoped to `UI-K-HOME-2026-A — Premium Homepage Top Shell + Smart Search`; the visible language switch now derives from the actual pathname while the broader root layout locale architecture can be handled separately if needed.
+
+## 27. Final pre-merge proxy convention check
+
+### Proxy convention decision
+
+- Next `16.2.7` recognizes both root `proxy.ts` and `src/proxy.ts`, but keeping both files is redundant for a single global request-bound locale header source.
+- This repository keeps application code under `src/`, and `src/proxy.ts` already existed as the project proxy entry before the temporary root proxy workaround.
+- The final pre-merge state therefore keeps only `src/proxy.ts` and removes the redundant root `proxy.ts`.
+- `src/proxy.ts` now carries the accepted locale/country request-header behavior: parse pathname segments, forward `x-drmuscat-locale` for `en`/`ar`, forward `x-drmuscat-country` when present, and return `NextResponse.next` without redirects or rewrites.
+
+### Scope preserved
+
+- No UI, Smart Search, CSS, routes, database, Supabase, API, sitemap, robots, llms, package, lockfile or route-check files were changed in this final proxy convention cleanup.
+- The visible language switch remains pathname-based through `HeaderLanguageSwitch`.
+
+### Validation results
+
+- `pnpm lint`, `pnpm typecheck`, `pnpm build`, and `pnpm routes:check` passed after removing root `proxy.ts` and keeping `src/proxy.ts` as the single proxy source.
+- Final merge readiness: ready from the proxy-convention perspective, with one Next 16 proxy entrypoint under `src/proxy.ts` and no duplicate root proxy file.

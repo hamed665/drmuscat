@@ -515,3 +515,37 @@ Required FIX04 validation commands:
 ### Manual QA notes
 
 Manual QA should confirm that `/en/om` and `/ar/om` show a compact premium board below Smart Search, that the two-image mock photo composition rotates smoothly without jarring motion, that actions remain visible on desktop, that mobile stacks cleanly, and that Arabic/RTL layout remains controlled with no horizontal overflow.
+
+## 20. FIX05 — Compact Premium Photo Balance Pass
+
+### FIX05 summary
+
+FIX05 keeps the Featured Provider Preview section in the same approved layout and tightens the existing mock-photo treatment so it feels calmer, more premium, and less gallery-like. No homepage, header, Smart Search, typography, locale, route, SEO, database, Supabase, API, package, or lockfile changes were made.
+
+### Visual refinements
+
+- Shortened visible trust/profile/offer labels to reduce internal product language.
+- Kept the two-image provider photo composition but made it more compact and balanced so the provider details and action dock remain visible.
+- Adjusted the photo surface to use one larger image tile and one narrower secondary tile without an empty side row.
+- Added a subtle glass blur to the photo shell and softened the internal overlay treatment.
+- Preserved mobile stacking, RTL behavior, and reduced-motion handling.
+
+### Safety confirmations
+
+The section remains UI-only and static-safe. It uses CSS-only mock photo surfaces and localized mock labels, with no real provider photos, external assets, real data dependencies, fake phone numbers, fake directions links, fake WhatsApp links, booking promises, prices, discounts, availability, or medical guarantees.
+
+### Validation results
+
+Required FIX05 validation commands:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+- `git status --short`: showed only the three approved FIX05 files changed.
+- `pnpm lint`: passed with pre-existing warnings only.
+- `pnpm typecheck`: passed.
+- `pnpm build`: passed.
+- `pnpm routes:check`: passed.

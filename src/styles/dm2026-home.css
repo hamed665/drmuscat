@@ -1589,10 +1589,10 @@
 
 .dm2026-featured-board__photos {
   position: relative;
-  min-block-size: clamp(13.2rem, 17vw, 16.4rem);
+  min-block-size: clamp(12.8rem, 16vw, 15.4rem);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(5.4rem, 0.42fr);
-  grid-template-rows: minmax(0, 1fr) minmax(0, 0.72fr);
+  grid-template-columns: minmax(0, 1fr) minmax(5.8rem, 0.44fr);
+  grid-template-rows: minmax(0, 1fr);
   gap: var(--dm-space-2);
   grid-row: span 5;
   overflow: hidden;
@@ -1603,6 +1603,7 @@
     var(--dm-color-surface-glass);
   padding: var(--dm-space-2);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78), var(--dm-shadow-sm);
+  backdrop-filter: blur(14px);
 }
 
 .dm2026-featured-board__photos::before {
@@ -1648,9 +1649,11 @@
 
 .dm2026-featured-board__photo::after {
   inset: auto var(--dm-space-2) var(--dm-space-2) var(--dm-space-2);
-  block-size: 32%;
+  block-size: 34%;
   border-radius: var(--dm-radius-md);
-  background: linear-gradient(180deg, transparent, rgba(7, 48, 44, 0.16));
+  background:
+    linear-gradient(180deg, transparent, rgba(7, 48, 44, 0.16)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 58%);
 }
 
 .dm2026-featured-board__photo span {
@@ -1665,7 +1668,7 @@
 }
 
 .dm2026-featured-board__photo--main {
-  grid-row: 1 / -1;
+  min-block-size: 0;
 }
 
 .dm2026-featured-board__photo--side {
@@ -2157,7 +2160,7 @@
   }
 
   .dm2026-featured-board__photos {
-    min-block-size: 15rem;
+    min-block-size: 14rem;
   }
 
   .dm2026-featured-board__rating {

@@ -503,3 +503,41 @@ No database, Supabase, RLS, API, auth, payment, sitemap, robots, llms, package, 
 ### Merge-readiness recommendation
 
 PR #157 remains scoped to `UI-K-HOME-2026-A — Premium Homepage Top Shell + Smart Search`; the header locale source is now fixed at the request boundary and remaining navigation/i18n polish should continue in a future PR.
+
+## 24. FIX15B — Root middleware locale header source
+
+### Root cause found
+
+- `RootLayout`, `AppShell` and `SiteHeader` depend on `x-drmuscat-locale` for the active global locale.
+- There was no root `middleware.ts` or `src/middleware.ts` file setting this request header, while the header language switch depends on that value for correct first render.
+- `/ar/om` could therefore still reach the global header as `en` when the request locale header was unavailable.
+
+### Locale source fix
+
+- Added root-level `middleware.ts` as the explicit locale header source requested for PR #157.
+- The middleware parses pathname segments without redirecting, rewriting or changing URLs.
+- `/en/om...` forwards `x-drmuscat-locale: en` and `x-drmuscat-country: om`.
+- `/ar/om...` forwards `x-drmuscat-locale: ar` and `x-drmuscat-country: om`.
+- No new locales, countries, route helpers, route config, sitemap or robots changes were added.
+
+### Header status
+
+- `SiteHeader` continues to derive the visible language switch from the resolved server locale.
+- `/en/om` renders `العربية` targeting `/ar/om`.
+- `/ar/om` renders `English` targeting `/en/om`.
+- The accepted mobile menu close behavior and hamburger icon were not redesigned.
+
+### Validation result
+
+- `git status --short` showed only root `middleware.ts` and this completion report changed for FIX15B before commit.
+- `pnpm lint`, `pnpm typecheck`, `pnpm build`, and `pnpm routes:check` passed during FIX15B.
+- Built-page HTML/source checks for `/en/om` and `/ar/om` passed, confirming exact language switch labels/hrefs, mobile menu markers, Smart Search render marker, and absence of deferred lower-section markers.
+- Forbidden-area checks passed and confirmed only this documentation file and root `middleware.ts` were changed in FIX15B.
+
+### Forbidden files untouched
+
+No database, Supabase, RLS, API, auth, payment, sitemap, robots, llms, package, lockfile, route helper, i18n config, route-check, migration, footer, route page, lower homepage section file or search logic was changed in FIX15B.
+
+### Merge-readiness recommendation
+
+PR #157 remains scoped to `UI-K-HOME-2026-A — Premium Homepage Top Shell + Smart Search`; root middleware now provides the request locale header required by the global layout/header.

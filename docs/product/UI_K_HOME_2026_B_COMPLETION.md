@@ -647,3 +647,49 @@ Required FIX06 validation commands:
 ### Manual QA notes and merge readiness
 
 Manual QA should confirm that `/en/om` and `/ar/om` show a provider-linked Special Offer title that changes with the active provider, a subtle Special Offer stamp on the main card, premium warm offer accents, no overflow on mobile, and no changes to header, search, language switch, footer, fonts, routes, SEO, database, Supabase, API, package, or lockfile boundaries.
+
+## 23. FIX07 — Final Premium Polish for Offer, Actions, Media and Rail
+
+### Special Offer stamp polish
+
+FIX07 keeps the provider-linked Special Offer behavior and refines the stamp into a warmer, more visible champagne/gold glass seal. It remains small, inline with the active provider status area, and uses compact mobile handling so it does not crowd Arabic or small-screen layouts.
+
+### Provider-linked offer panel polish
+
+The Special Offer panel remains linked to the active provider title and offer subtitle. The panel now has a stronger but still calm warm accent, a small premium seal marker, gold bullet indicators, and a softer static-safety note so it feels more commercial and less like a legal/informational card.
+
+### Action button recognizability
+
+The action buttons remain preview-safe real `<button type="button">` controls with no fake links. FIX07 sharpens the inline SVG cues for Directions, Call, and WhatsApp and strengthens the soft-glass icon surfaces so the actions are easier to recognise at a glance without adding external icon packages or loud brand colors.
+
+### Media overlay labels
+
+The two-tile provider media preview now uses concise localized overlay labels by media tone, such as `Care space`, `Treatment room`, `Reception preview`, `Diagnostic services`, and Arabic equivalents. These labels are static, short, and glassy; no external images or fake real photos were added.
+
+### Provider rail readability
+
+The bottom provider rail remains compact and horizontal but uses a larger thumbnail marker, more readable provider names, one cleaner provider/type/location line, and a small sample-rating pill. The rail still shows provider preview names rather than generic visibility labels.
+
+### Guardrails confirmed
+
+No font family, typography system, header, Smart Search, language switch, footer, i18n/routing, SEO infrastructure, backend, database, Supabase, API routes, package files, lockfile, real provider data, fake phone/map/WhatsApp URLs, prices, discounts, availability, or medical promises were added or changed.
+
+### Validation results
+
+Required FIX07 validation commands:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+- `git status --short`: showed only the three approved FIX07 files changed before commit.
+- `pnpm lint`: passed with pre-existing warnings only.
+- `pnpm typecheck`: passed.
+- `pnpm build`: passed.
+- `pnpm routes:check`: passed.
+
+### Merge readiness recommendation
+
+Merge readiness is recommended after validation and visual QA confirm that `/en/om` and `/ar/om` retain the approved homepage/search foundation, show a premium Special Offer stamp, provider-linked offer panel, recognizable WhatsApp/Directions/Call buttons, meaningful media overlay labels, readable provider rail items, and no horizontal overflow on mobile.

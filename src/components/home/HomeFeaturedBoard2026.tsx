@@ -14,6 +14,29 @@ type MockProviderPhoto = {
   tone: 'clinic' | 'suite' | 'reception' | 'lab' | 'wellness' | 'pharmacy' | 'pet' | 'service';
 };
 
+const photoOverlayLabels: Record<SupportedLocale, Record<MockProviderPhoto['tone'], string>> = {
+  en: {
+    clinic: 'Care space',
+    suite: 'Treatment room',
+    reception: 'Reception preview',
+    lab: 'Diagnostic services',
+    wellness: 'Wellness room',
+    pharmacy: 'Pharmacy counter',
+    pet: 'Pet care room',
+    service: 'Featured care'
+  },
+  ar: {
+    clinic: 'مساحة رعاية',
+    suite: 'غرفة علاج',
+    reception: 'معاينة الاستقبال',
+    lab: 'خدمات تشخيصية',
+    wellness: 'غرفة رفاهية',
+    pharmacy: 'واجهة الصيدلية',
+    pet: 'غرفة رعاية بيطرية',
+    service: 'رعاية مميزة'
+  }
+};
+
 type LocalizedPreview = {
   providerKind: string;
   title: string;
@@ -477,7 +500,8 @@ function HomeFeaturedActionIcon({ icon }: { icon: FeaturedBoardCopy['actions'][n
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path d="M12 21s6.2-5.4 6.2-11.2A6.2 6.2 0 0 0 5.8 9.8C5.8 15.6 12 21 12 21z" />
         <path d="M12 12.2a2.3 2.3 0 1 0 0-4.6 2.3 2.3 0 0 0 0 4.6z" />
-        <path d="m14.3 14.5 3.4 1.2" />
+        <path d="M14.8 14.4 20 16.2l-1.8-5.2" />
+        <path d="m20 16.2-5.2-1.8" />
       </svg>
     );
   }
@@ -486,6 +510,8 @@ function HomeFeaturedActionIcon({ icon }: { icon: FeaturedBoardCopy['actions'][n
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path d="M7.4 4.8 9.6 4c.8-.3 1.7.1 2 .9l.9 2.1c.3.7.1 1.5-.5 2l-1.1.9a9.8 9.8 0 0 0 4.2 4.2l.9-1.1c.5-.6 1.3-.8 2-.5l2.1.9c.8.3 1.2 1.2.9 2l-.8 2.2c-.3.8-1 1.3-1.8 1.3A14.4 14.4 0 0 1 6.1 6.6c0-.8.5-1.5 1.3-1.8z" />
+        <path d="M15.8 5.5a5.2 5.2 0 0 1 2.7 2.8" />
+        <path d="M17.9 3.5a8 8 0 0 1 3.8 4" />
       </svg>
     );
   }
@@ -493,7 +519,8 @@ function HomeFeaturedActionIcon({ icon }: { icon: FeaturedBoardCopy['actions'][n
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M5.6 19.2 6.7 16A8 8 0 1 1 10 18.3z" />
-      <path d="M9.5 8.2c.3 2.6 2.1 4.7 4.5 5.4l1.4-1.2 2.1 1.1c-.4 1.5-1.4 2.3-2.8 2.3-3.7 0-7.2-3.6-7.2-7.3 0-1.4.8-2.4 2.3-2.8z" />
+      <path d="M9.4 8.2c.35 2.7 2.15 4.75 4.55 5.45l1.35-1.15 2.2 1.12c-.4 1.52-1.42 2.34-2.86 2.34-3.74 0-7.28-3.62-7.28-7.36 0-1.44.82-2.46 2.34-2.86z" />
+      <path d="M8.5 20.3 5.6 21l.85-2.75" />
     </svg>
   );
 }
@@ -507,6 +534,8 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
   const activePreview = activeEntry[locale];
   const primaryPhoto = activePreview.photos[activePhotoIndex] ?? activePreview.photos[0]!;
   const secondaryPhoto = activePreview.photos[(activePhotoIndex + 1) % activePreview.photos.length] ?? activePreview.photos[0]!;
+  const primaryPhotoOverlay = photoOverlayLabels[locale][primaryPhoto.tone];
+  const secondaryPhotoOverlay = photoOverlayLabels[locale][secondaryPhoto.tone];
   const hasSpecialOffer = Boolean(activePreview.offerTitle);
   const specialOfferStamp = locale === 'ar' ? 'عرض خاص' : 'Special Offer';
   const specialOfferTitle = locale === 'ar' ? `عرض خاص من ${activePreview.title}` : `${activePreview.title} Special Offer`;
@@ -582,7 +611,7 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
                   aria-label={primaryPhoto.label}
                 >
                   <span aria-hidden="true" />
-                  <span className="dm2026-featured-board__photo-label">{activePreview.chips[0]}</span>
+                  <span className="dm2026-featured-board__photo-label">{primaryPhotoOverlay}</span>
                 </div>
                 <div
                   key={`${activeEntry.id}-${secondaryPhoto.label}-side`}
@@ -591,7 +620,7 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
                   aria-label={secondaryPhoto.label}
                 >
                   <span aria-hidden="true" />
-                  <span className="dm2026-featured-board__photo-label dm2026-featured-board__photo-label--side">{activePreview.area}</span>
+                  <span className="dm2026-featured-board__photo-label dm2026-featured-board__photo-label--side">{secondaryPhotoOverlay}</span>
                 </div>
               </div>
 
@@ -605,7 +634,12 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
                   <span className="dm2026-featured-board__active-badge" aria-label={`${copy.activeLabel}: ${activePreview.title}`}>
                     {copy.activeLabel}
                   </span>
-                  {hasSpecialOffer ? <span className="dm2026-featured-board__offer-stamp">{specialOfferStamp}</span> : null}
+                  {hasSpecialOffer ? (
+                    <span className="dm2026-featured-board__offer-stamp">
+                      <span aria-hidden="true">✦</span>
+                      {specialOfferStamp}
+                    </span>
+                  ) : null}
                 </span>
               </div>
 
@@ -652,7 +686,7 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
             <aside className="dm2026-featured-board__offer dm2026-card-soft" aria-labelledby="dm2026-featured-offer-title">
               <div className="dm2026-featured-board__offer-head">
                 <span className="dm2026-badge">{copy.offerKicker}</span>
-                <span aria-hidden="true">✦</span>
+                <span className="dm2026-featured-board__offer-seal" aria-hidden="true">✦</span>
               </div>
               <p className="dm2026-featured-board__offer-provider">{copy.offerHeading}</p>
               <h3 id="dm2026-featured-offer-title">{specialOfferTitle}</h3>
@@ -662,7 +696,7 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-              <p>{copy.offerNote}</p>
+              <p className="dm2026-featured-board__offer-note">{copy.offerNote}</p>
             </aside>
 
             <div className="dm2026-featured-board__rail" aria-label={copy.railLabel}>
@@ -682,8 +716,8 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
                     <span className={`dm2026-featured-board__slot-thumb dm2026-featured-board__slot-thumb--${railPhoto.tone}`} aria-hidden="true" />
                     <span>
                       <strong>{preview.title}</strong>
-                      <small>{preview.providerKind}</small>
-                      <small>{`${preview.area} · ${preview.ratingLabel}`}</small>
+                      <small>{`${preview.providerKind} · ${preview.area}`}</small>
+                      <span className="dm2026-featured-board__slot-rating">{preview.ratingValue}</span>
                     </span>
                   </button>
                 );

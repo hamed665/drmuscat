@@ -1,56 +1,50 @@
-# UI-K-HOME-2026-FULL Completion Report — Premium Full Homepage Shell
+# UI-K-HOME-2026-FULL Completion Report — Premium Homepage Shell with Search and Rotating Ads
 
-## 1. Current issues fixed
+## 1. Problems found before this fix
 
-- Upgraded PR #157 from a partial header/hero/search implementation into a premium full homepage shell.
-- Expanded the single official global header with the requested nav labels and safe non-link pending pills for unsupported route families.
-- Reworked the search surface into a large premium command center with a dominant input, segmented/chip controls, complete static-safe options and user-facing suggestion copy.
-- Strengthened hero copy for a premium Oman healthcare discovery brand while keeping trust/safety boundaries visible.
-- Polished lower homepage shells for care stories, categories, doctors/centers, offers, articles, provider acquisition, ads and trust.
-- Added Arabic typography safeguards so Arabic hero and section headings are compact, readable and RTL-safe.
-- Updated documentation to describe the actual scope as “Premium Full Homepage Shell.”
+- Search still felt too close to a normal form rather than a premium command center.
+- The sponsored visibility/ads section was present but not visible or premium enough and did not behave like a rotating spotlight carousel.
+- Care stories, offers, article guides and provider/profile shells still read as safe placeholders rather than polished product inventory shells.
+- Header included Sign in and Create account but they needed to remain visually clear while staying route-safe.
+- Arabic headings needed tighter, more premium scaling and line-height safeguards.
+- The homepage flow needed search first, then spotlight/ads, then discovery stories and lower sections.
 
 ## 2. Files changed
 
-- `src/components/layout/site-header.tsx`
+- `src/app/[locale]/[country]/page.tsx`
 - `src/components/home/HomePage2026HeaderHero.tsx`
 - `src/components/home/HomeSearch2026.tsx`
+- `src/components/home/HomeAds2026.tsx`
 - `src/components/home/HomeCareStories2026.tsx`
+- `src/components/home/HomeCategories2026.tsx`
 - `src/components/home/HomeFeaturedProviders2026.tsx`
 - `src/components/home/HomeOffers2026.tsx`
 - `src/components/home/HomeArticles2026.tsx`
-- `src/components/home/HomeAds2026.tsx`
 - `src/components/home/HomeForProviders2026.tsx`
 - `src/components/home/HomeTrust2026.tsx`
 - `src/styles/dm2026-home.css`
-- `docs/product/UI_K_HOME_2026_A_COMPLETION.md`
-- `docs/product/UI_K_HOME_2026_B_COMPLETION.md`
 - `docs/product/UI_K_HOME_2026_FULL_COMPLETION.md`
 
-## 3. Header/nav/sign-in/create-account result
+## 3. Header/sign-in/create-account/language switch result
 
-- The homepage still renders exactly one official global header.
-- Real links remain limited to approved route helpers: Home, Doctors, Centers, Labs, Pharmacies, Services and For Providers.
-- Hospitals, Offers and Articles are shown as disabled/coming-soon header pills because approved routes do not exist.
-- Sign in and Create account are shown as disabled/coming-soon account pills because adding auth/account routes would require route-check approval and no auth backend is in scope.
-- No placeholder `#` links or dead links were added.
+- The page keeps exactly one official global header.
+- Header includes DrMuscat, Home, Doctors, Centers, Labs, Pharmacies, Services, Hospitals, Offers, Articles, For Providers, Sign in, Create account and language switch.
+- Approved routes remain real links only.
+- Hospitals, Offers, Articles, Sign in and Create account remain disabled/preview-safe pills because supported routes do not exist and route-check must not be weakened.
+- English page shows only `العربية` as the language switch.
+- Arabic page shows only `English` as the language switch.
 
-## 4. Language switch behavior
+## 4. Premium search command center result
 
-- English pages show `العربية` and link to `/ar/om`.
-- Arabic pages show `English` and link to `/en/om`.
-- Arabic header labels are localized and RTL-safe.
+- Search remains the first primary homepage product element.
+- The command center has one dominant large search input, content-type chips, provider-type chips, country/city/area filters, curated suggestion chips and bottom CTAs.
+- Main input placeholders are:
+  - English: “Search doctors, clinics, services, offers or areas…”
+  - Arabic: “ابحث عن طبيب، عيادة، خدمة، عرض أو منطقة…”
+- Search submits to the existing approved search route with query parameters only.
+- No live backend, autocomplete API, Supabase query or real ranking was added.
 
-## 5. Premium search command center details
-
-- The search surface now uses a large command input with the English placeholder “Search doctors, clinics, services, areas…” and Arabic placeholder “ابحث عن طبيب، عيادة، خدمة أو منطقة…”.
-- Content type and provider type are rendered as segmented/chip controls.
-- Country, city and area controls remain native selects but are wrapped in premium grouped controls.
-- Suggestions are rendered as elegant submit chips with user-facing safety copy.
-- Search submits to the existing approved `/[locale]/[country]/search` route with query parameters only.
-- No live autocomplete, Supabase query, API route or backend search was added.
-
-## 6. Complete option lists added
+## 5. Complete options added
 
 - Content types: Doctors, Clinics, Hospitals, Labs, Pharmacies, Services, Offers and Articles, with Arabic equivalents.
 - Provider types: Doctors, Clinics / Centers, Hospitals, Labs, Pharmacies, Beauty & Wellness, Pet Clinics and Services, with Arabic equivalents.
@@ -59,46 +53,61 @@
 - Muscat areas: Al Khuwair, Qurum, Azaiba, Al Ghubra, Ruwi, Muttrah, Seeb, Bawshar, Madinat Sultan Qaboos, Ghala, Al Hail, Al Mouj, Muscat Hills, Wadi Kabir, Darsait, Al Amerat and Mabela, with Arabic equivalents.
 - Specialty/service suggestions include dentistry, dermatology, pediatrics, gynecology, ENT, orthopedics, ophthalmology, general practice, cardiology, physiotherapy, lab tests, dental cleaning, skin clinic, laser hair removal, pharmacy, pet clinic, nutrition, mental health, beauty clinic and wellness center, with Arabic equivalents.
 
-## 7. Homepage sections implemented
+## 6. Rotating ads/spotlight carousel result
 
-- Hero + premium search command center.
-- Care Stories / quick discovery rail.
-- Trusted categories grid from the previous full-shell work.
-- Muscat/Oman area discovery from the previous full-shell work.
-- Featured doctors and centers/clinics shell using safe preview cards.
-- Offers / packages preview shell.
-- Articles / health guides preview shell.
-- For Providers CTA with sales-ready public-profile and visibility copy.
-- Ads / sponsored placement teaser.
-- Trust and safety layer.
-- Premium bilingual footer.
+- Added a full-width premium `DrMuscat Spotlight` section directly after the search/hero top and before care stories.
+- Implemented CSS-only rotating spotlight cards with a rotating orb/lens visual.
+- Carousel items:
+  - Homepage Featured Placement
+  - Category Featured
+  - Area Featured
+  - Offers Spotlight
+  - Article Sponsored Placement
+- Arabic equivalents are included.
+- Disclaimer is visible: “Sponsored visibility is paid placement, not quality ranking.” / “الظهور المموّل مساحة مدفوعة وليس ترتيباً لجودة الخدمة.”
+- No prices, billing, wallet, checkout or ad backend were added.
+- `prefers-reduced-motion` disables the animation and keeps the first spotlight card visible.
 
-## 8. Arabic typography fixes
+## 7. Care stories result
 
-- RTL hero heading uses a smaller clamp than English and avoids negative letter spacing.
-- RTL section titles and search headings use compact font sizing and comfortable line-height.
-- RTL header/footer continue to use the Arabic font stack from the existing 2026 foundation.
-- Cards and chips are designed to wrap without horizontal overflow.
+- Care Stories remain immediately after the search/spotlight flow.
+- The story rail uses premium orb/lens cards and stronger spacing.
+- Story labels are Dental, Beauty, Kids, Pet Clinic, Labs, Offers, Articles and For Providers, with Arabic equivalents.
+- No modal behavior or medical advice was added.
 
-## 9. RTL/mobile/accessibility/performance notes
+## 8. Offers/doctors/articles/providers sections result
 
-- Header uses horizontal overflow-safe nav/actions on smaller widths.
-- Search controls wrap into one column on mobile and retain 44px touch targets.
-- Sections use semantic HTML, real links, real buttons and labeled form controls.
-- Disabled/pending header items are non-links with `aria-disabled="true"`.
-- No heavy JavaScript, carousel library, animation library, remote font, large image or video was added.
-- Motion transitions respect `prefers-reduced-motion`.
+- Featured Doctors / Centers shells now use more product-like premium cards with orb/silhouette media placeholders and explicit safe review/approval copy.
+- Offers now read as future approved offer inventory without prices, guaranteed outcomes or medical claims.
+- Articles are styled as magazine-style guide previews and remain educational only.
+- Provider CTA includes List your center, View provider options and disabled Create account preview while documenting that auth/dashboard/payment are inactive.
 
-## 10. SEO/route safety notes
+## 9. Arabic typography fixes
+
+- Arabic hero and section headings use smaller RTL clamps, comfortable line-height and no negative letter spacing.
+- Spotlight headings have dedicated RTL sizing.
+- Chips and cards wrap safely for Arabic labels.
+
+## 10. RTL/mobile/accessibility/performance notes
+
+- Semantic sections, headings, labels, fieldsets, buttons and links are used.
+- Pending header/account items are non-links with disabled semantics.
+- Search chips remain keyboard-operable native radio controls or submit buttons.
+- Mobile search stacks cleanly; CTA buttons become full-width where needed.
+- Horizontal rails use CSS only.
+- Carousel is CSS-only and respects `prefers-reduced-motion`.
+- No new dependency, remote font, heavy JS, large image, background video or client-only SEO-critical content was added.
+
+## 11. SEO/route safety notes
 
 - Supported locales remain `en` and `ar`; supported country remains `om`.
-- No Persian or Hindi routes were added.
-- No sitemap, robots or llms changes were made.
-- No schema.org output or fake structured data was added.
-- No unsupported auth, sign-in, create-account, article or offer routes were added.
-- Header unsupported items are disabled pills, not links.
+- No Persian/Hindi route expansion.
+- No sitemap, robots or llms changes.
+- No schema.org output or fake structured data.
+- No sign-in, create-account, offers, articles or hospital route was added.
+- Disabled/pending header items are not dead links.
 
-## 11. Forbidden areas untouched
+## 12. Forbidden areas untouched
 
 Confirmed untouched:
 
@@ -120,7 +129,7 @@ Confirmed untouched:
 - `src/lib/routes/public.ts`
 - `src/lib/i18n/config.ts`
 
-## 12. Validation results
+## 13. Validation results
 
 - `git status --short` — run before commit.
 - `pnpm lint` — passed with existing repository warnings and no errors.
@@ -130,13 +139,14 @@ Confirmed untouched:
 - Forbidden path/content scans — passed.
 - Built-page HTML checks for `/en/om` and `/ar/om` — passed.
 
-## 13. Remaining known limitations
+## 14. Remaining limitations
 
-- Sign in and Create account are intentionally non-link coming-soon pills until an approved auth/account route phase exists.
-- Hospitals, Offers and Articles are intentionally non-link coming-soon header pills until approved route families exist.
-- Search suggestions and filters are UI-only/static-safe and do not perform live autocomplete or backend ranking.
-- Sponsored placements and provider monetization are previews only; no billing, wallet, checkout, dashboard or payment behavior is active.
+- Sign in and Create account remain disabled/preview-safe because no approved auth routes/backend are in scope.
+- Hospitals, Offers and Articles remain disabled/preview-safe in the header because those route families are not approved.
+- Search is UI-only/static-safe and does not perform live autocomplete, provider ranking or backend search.
+- Ads/spotlight carousel is a premium UI shell only with no advertiser backend, pricing, checkout or billing.
+- Screenshot tooling was unavailable in the container, so visual QA relied on build output, HTML checks and CSS review.
 
-## 14. Next PR recommendation
+## 15. Next PR recommendation
 
-UI-K-DISCOVERY-2026-A — Premium discovery/listing pages
+UI-K-HOME-2026-POLISH — final visual QA and Claude UI Kit alignment pass

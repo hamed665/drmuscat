@@ -71,11 +71,11 @@ export default async function LocaleCountryHome({ params }: { params: Promise<Pa
     <div className="home-foundation dm2026-home-page" dir={dir} data-country={safeCountry} data-locale={safeLocale}>
       <HomePage2026HeaderHero locale={safeLocale} country={safeCountry} dir={dir} />
       <div className="dm2026-container dm2026-home-main" role="region" aria-label={safeLocale === 'ar' ? 'محتوى الصفحة الرئيسية' : 'Homepage content'}>
+        <HomeAds2026 locale={safeLocale} dir={dir} />
         <HomeCareStories2026 locale={safeLocale} dir={dir} />
         <HomeCategories2026 locale={safeLocale} country={safeCountry} dir={dir} />
         <HomeFeaturedProviders2026 locale={safeLocale} dir={dir} />
         <HomeOffers2026 locale={safeLocale} dir={dir} />
-        <HomeAds2026 locale={safeLocale} dir={dir} />
         <HomeArticles2026 locale={safeLocale} dir={dir} />
         <HomeAreas2026 locale={safeLocale} country={safeCountry} dir={dir} />
         <HomeForProviders2026 locale={safeLocale} country={safeCountry} dir={dir} />

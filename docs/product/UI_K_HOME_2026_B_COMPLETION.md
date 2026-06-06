@@ -465,3 +465,53 @@ Manual browser QA should confirm:
 ### Merge readiness recommendation
 
 FIX03 is merge-ready after lint, typecheck, build, route checks, and final visual QA confirm the board feels provider-led, premium, compact, static-safe, and aligned with the approved DrMuscat 2026 design system.
+
+## 19. FIX04 — Premium Mock Photo Rotation Refinement
+
+### FIX04 summary
+
+FIX04 refines only the existing homepage Featured Provider Preview section. The main provider card now includes a premium mock photo composition that keeps the provider/center visually prominent without changing the approved homepage header, Smart Search, locale system, font system, routes, SEO infrastructure, database, Supabase, RLS, API, or package files.
+
+### Exact files changed
+
+- `src/components/home/HomeFeaturedBoard2026.tsx`
+- `src/styles/dm2026-home.css`
+- `docs/product/UI_K_HOME_2026_B_COMPLETION.md`
+
+### Mock photo rotation behavior
+
+Each static provider preview now includes four localized mock photo labels. The visible photo area renders a refined two-image composition with one larger primary image and one smaller secondary image. A lightweight local timer rotates the provider photo pair approximately every 1.75 seconds and uses safe cleanup. The existing provider selector rotation remains separate and slower.
+
+Reduced-motion users receive a stable photo composition because the photo and provider timers do not run when `prefers-reduced-motion: reduce` is active.
+
+### Static-safe image strategy
+
+No real provider photos, remote images, public assets, storage integrations, image APIs, or new dependencies were added. The “photos” are CSS-only mock visual surfaces with localized `role="img"` labels, designed to preview how provider photography could look after approval.
+
+### Provider-led polish
+
+The provider name, type, location, rating preview, service chips, offer preview, and action dock remain visible within the main card. The rail keeps provider names and thumbnail-style markers, while the offer panel continues to update with the selected provider preview.
+
+### Safety confirmations
+
+FIX04 keeps the implementation UI-only and presentational. It does not add fake phone numbers, fake maps, fake WhatsApp links, real provider data, prices, discounts, availability, booking promises, or medical guarantees. It also does not change fonts, header/search behavior, SEO infrastructure, database, Supabase, RLS, API, auth, sitemap, robots, `llms.txt`, `package.json`, or the lockfile.
+
+### Validation results
+
+Required FIX04 validation commands:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+- `git status --short`: showed only the three approved FIX04 files changed.
+- `pnpm lint`: passed with pre-existing warnings only after removing a synchronous state reset effect flagged by lint.
+- `pnpm typecheck`: passed.
+- `pnpm build`: passed.
+- `pnpm routes:check`: passed.
+
+### Manual QA notes
+
+Manual QA should confirm that `/en/om` and `/ar/om` show a compact premium board below Smart Search, that the two-image mock photo composition rotates smoothly without jarring motion, that actions remain visible on desktop, that mobile stacks cleanly, and that Arabic/RTL layout remains controlled with no horizontal overflow.

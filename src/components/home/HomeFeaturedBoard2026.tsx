@@ -9,6 +9,11 @@ type HomeFeaturedBoard2026Props = {
   dir: 'ltr' | 'rtl';
 };
 
+type MockProviderPhoto = {
+  label: string;
+  tone: 'clinic' | 'suite' | 'reception' | 'lab' | 'wellness' | 'pharmacy' | 'pet' | 'service';
+};
+
 type LocalizedPreview = {
   providerKind: string;
   title: string;
@@ -22,6 +27,7 @@ type LocalizedPreview = {
   providerContext: string;
   offerTitle: string;
   offerContext: readonly string[];
+  photos: readonly MockProviderPhoto[];
 };
 
 type VisibilityPreviewItem = {
@@ -41,6 +47,7 @@ type FeaturedBoardCopy = {
   locationLabel: string;
   servicesLabel: string;
   ratingAriaLabel: string;
+  photosLabel: string;
   offerHeading: string;
   offerKicker: string;
   offerNote: string;
@@ -59,7 +66,7 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
     id: 'muscat-dental-clinic-preview',
     en: {
       providerKind: 'Dental clinic',
-      title: 'Muscat Dental Clinic Preview',
+      title: 'Muscat Dental Clinic',
       subtitle: 'Approved dental profile preview with services, offer context and contact actions.',
       city: 'Muscat',
       area: 'Muscat area preview',
@@ -67,13 +74,19 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingLabel: 'Rating preview',
       ratingValue: '4.8 sample rating',
       ratingNote: 'Verified reviews appear after approval',
-      providerContext: 'This preview shows how a dental profile can present services and contact actions without live listing data.',
+      providerContext: 'A calm preview of how a dental center can present services, location context and contact actions.',
       offerTitle: 'Dental cleaning package',
-      offerContext: ['Provider offer preview', 'Appears after provider approval', 'Sponsored placement is clearly marked']
+      offerContext: ['Provider offer preview', 'Appears after provider approval', 'Sponsored placement is clearly marked'],
+      photos: [
+        { label: 'Dental reception mock photo', tone: 'reception' },
+        { label: 'Dental suite mock photo', tone: 'suite' },
+        { label: 'Calm dental care mock photo', tone: 'clinic' },
+        { label: 'Provider lounge mock photo', tone: 'wellness' }
+      ]
     },
     ar: {
       providerKind: 'عيادة أسنان',
-      title: 'معاينة عيادة أسنان في مسقط',
+      title: 'عيادة أسنان في مسقط',
       subtitle: 'معاينة ملف أسنان معتمد مع الخدمات وسياق العرض وإجراءات التواصل.',
       city: 'مسقط',
       area: 'معاينة منطقة في مسقط',
@@ -81,16 +94,22 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingLabel: 'معاينة التقييم',
       ratingValue: 'تقييم تجريبي 4.8',
       ratingNote: 'تظهر المراجعات الموثقة بعد الاعتماد',
-      providerContext: 'توضح هذه المعاينة كيف يمكن لملف أسنان عرض الخدمات وإجراءات التواصل بدون بيانات قائمة مباشرة.',
+      providerContext: 'معاينة هادئة لكيفية عرض مركز أسنان للخدمات وسياق الموقع وإجراءات التواصل.',
       offerTitle: 'باقة تنظيف الأسنان',
-      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'يتم توضيح الظهور المدعوم بوضوح']
+      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'يتم توضيح الظهور المدعوم بوضوح'],
+      photos: [
+        { label: 'صورة معاينة لاستقبال عيادة الأسنان', tone: 'reception' },
+        { label: 'صورة معاينة لجناح أسنان', tone: 'suite' },
+        { label: 'صورة معاينة لرعاية أسنان هادئة', tone: 'clinic' },
+        { label: 'صورة معاينة لاستراحة مقدم الخدمة', tone: 'wellness' }
+      ]
     }
   },
   {
     id: 'al-khuwair-medical-center-preview',
     en: {
       providerKind: 'Medical center',
-      title: 'Al Khuwair Medical Center Preview',
+      title: 'Al Khuwair Medical Center',
       subtitle: 'Approved center profile preview with service chips and clear contact actions.',
       city: 'Muscat',
       area: 'Al Khuwair preview',
@@ -98,13 +117,19 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingLabel: 'Rating preview',
       ratingValue: '4.8 sample rating',
       ratingNote: 'Verified reviews appear after approval',
-      providerContext: 'A center profile can highlight approved services, location context and action buttons in one calm card.',
+      providerContext: 'A center profile can highlight approved services and make the next action obvious.',
       offerTitle: 'Family care package',
-      offerContext: ['Provider offer preview', 'Appears after provider approval', 'No prices or discounts shown']
+      offerContext: ['Provider offer preview', 'Appears after provider approval', 'No prices or discounts shown'],
+      photos: [
+        { label: 'Medical center exterior mock photo', tone: 'clinic' },
+        { label: 'Medical center reception mock photo', tone: 'reception' },
+        { label: 'Consultation room mock photo', tone: 'suite' },
+        { label: 'Care corridor mock photo', tone: 'service' }
+      ]
     },
     ar: {
       providerKind: 'مركز طبي',
-      title: 'معاينة مركز طبي في الخوير',
+      title: 'مركز طبي في الخوير',
       subtitle: 'معاينة ملف مركز معتمد مع شرائح الخدمات وإجراءات تواصل واضحة.',
       city: 'مسقط',
       area: 'معاينة الخوير',
@@ -112,16 +137,22 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingLabel: 'معاينة التقييم',
       ratingValue: 'تقييم تجريبي 4.8',
       ratingNote: 'تظهر المراجعات الموثقة بعد الاعتماد',
-      providerContext: 'يمكن لملف المركز إبراز الخدمات المعتمدة وسياق الموقع وأزرار الإجراءات في بطاقة هادئة واحدة.',
+      providerContext: 'يمكن لملف المركز إبراز الخدمات المعتمدة وجعل الخطوة التالية واضحة.',
       offerTitle: 'باقة رعاية عائلية',
-      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'لا يتم عرض أسعار أو خصومات']
+      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'لا يتم عرض أسعار أو خصومات'],
+      photos: [
+        { label: 'صورة معاينة لواجهة مركز طبي', tone: 'clinic' },
+        { label: 'صورة معاينة لاستقبال مركز طبي', tone: 'reception' },
+        { label: 'صورة معاينة لغرفة استشارة', tone: 'suite' },
+        { label: 'صورة معاينة لممر رعاية', tone: 'service' }
+      ]
     }
   },
   {
     id: 'qurum-wellness-clinic-preview',
     en: {
       providerKind: 'Wellness clinic',
-      title: 'Qurum Wellness Clinic Preview',
+      title: 'Qurum Wellness Clinic',
       subtitle: 'Approved wellness profile preview for calm services and reviewed offers.',
       city: 'Muscat',
       area: 'Qurum preview',
@@ -129,13 +160,19 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingLabel: 'Rating preview',
       ratingValue: '4.8 sample rating',
       ratingNote: 'Verified reviews appear after approval',
-      providerContext: 'Wellness providers can show approved profile details while avoiding unsupported health promises.',
+      providerContext: 'Wellness providers can show refined profile details while avoiding unsupported health promises.',
       offerTitle: 'Wellness package',
-      offerContext: ['Provider offer preview', 'Appears after provider approval', 'Offer wording stays review-first']
+      offerContext: ['Provider offer preview', 'Appears after provider approval', 'Offer wording stays review-first'],
+      photos: [
+        { label: 'Wellness lobby mock photo', tone: 'wellness' },
+        { label: 'Wellness suite mock photo', tone: 'suite' },
+        { label: 'Quiet care room mock photo', tone: 'clinic' },
+        { label: 'Soft reception mock photo', tone: 'reception' }
+      ]
     },
     ar: {
       providerKind: 'عيادة رفاهية',
-      title: 'معاينة عيادة رفاهية في القرم',
+      title: 'عيادة رفاهية في القرم',
       subtitle: 'معاينة ملف رفاهية معتمد للخدمات الهادئة والعروض بعد المراجعة.',
       city: 'مسقط',
       area: 'معاينة القرم',
@@ -143,16 +180,22 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingLabel: 'معاينة التقييم',
       ratingValue: 'تقييم تجريبي 4.8',
       ratingNote: 'تظهر المراجعات الموثقة بعد الاعتماد',
-      providerContext: 'يمكن لمقدّمي الرفاهية عرض تفاصيل ملف معتمدة مع تجنّب الوعود الصحية غير المدعومة.',
+      providerContext: 'يمكن لمقدّمي الرفاهية عرض تفاصيل ملف مصقولة مع تجنّب الوعود الصحية غير المدعومة.',
       offerTitle: 'باقة رفاهية',
-      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'تبقى صياغة العرض خاضعة للمراجعة']
+      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'تبقى صياغة العرض خاضعة للمراجعة'],
+      photos: [
+        { label: 'صورة معاينة لاستقبال رفاهية', tone: 'wellness' },
+        { label: 'صورة معاينة لجناح رفاهية', tone: 'suite' },
+        { label: 'صورة معاينة لغرفة رعاية هادئة', tone: 'clinic' },
+        { label: 'صورة معاينة لاستقبال ناعم', tone: 'reception' }
+      ]
     }
   },
   {
     id: 'seeb-lab-preview',
     en: {
       providerKind: 'Laboratory',
-      title: 'Seeb Lab Preview',
+      title: 'Seeb Lab',
       subtitle: 'Approved lab profile preview with package wording reviewed before publishing.',
       city: 'Muscat',
       area: 'Seeb preview',
@@ -162,11 +205,17 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingNote: 'Verified reviews appear after approval',
       providerContext: 'A lab profile can present service categories and package previews without making clinical claims.',
       offerTitle: 'Lab test package',
-      offerContext: ['Provider offer preview', 'Appears after provider approval', 'No fake prices or availability']
+      offerContext: ['Provider offer preview', 'Appears after provider approval', 'No fake prices or availability'],
+      photos: [
+        { label: 'Laboratory counter mock photo', tone: 'lab' },
+        { label: 'Sample room mock photo', tone: 'suite' },
+        { label: 'Lab reception mock photo', tone: 'reception' },
+        { label: 'Clean testing area mock photo', tone: 'service' }
+      ]
     },
     ar: {
       providerKind: 'مختبر',
-      title: 'معاينة مختبر في السيب',
+      title: 'مختبر في السيب',
       subtitle: 'معاينة ملف مختبر معتمد مع صياغة الباقات بعد المراجعة قبل النشر.',
       city: 'مسقط',
       area: 'معاينة السيب',
@@ -176,14 +225,20 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingNote: 'تظهر المراجعات الموثقة بعد الاعتماد',
       providerContext: 'يمكن لملف المختبر عرض فئات الخدمات ومعاينات الباقات بدون ادعاءات طبية.',
       offerTitle: 'باقة فحوصات المختبر',
-      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'بدون أسعار أو توفر وهمي']
+      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'بدون أسعار أو توفر وهمي'],
+      photos: [
+        { label: 'صورة معاينة لمنضدة مختبر', tone: 'lab' },
+        { label: 'صورة معاينة لغرفة عينات', tone: 'suite' },
+        { label: 'صورة معاينة لاستقبال مختبر', tone: 'reception' },
+        { label: 'صورة معاينة لمنطقة فحص نظيفة', tone: 'service' }
+      ]
     }
   },
   {
     id: 'bausher-specialist-clinic-preview',
     en: {
       providerKind: 'Specialist clinic',
-      title: 'Bausher Specialist Clinic Preview',
+      title: 'Bausher Specialist Clinic',
       subtitle: 'Approved specialist profile preview with reviewed service and contact context.',
       city: 'Muscat',
       area: 'Bausher preview',
@@ -191,13 +246,19 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingLabel: 'Rating preview',
       ratingValue: '4.8 sample rating',
       ratingNote: 'Verified reviews appear after approval',
-      providerContext: 'A specialist card can keep the provider profile prominent while clearly marking preview-only content.',
+      providerContext: 'A specialist card can keep the provider prominent while clearly marking preview-only content.',
       offerTitle: 'Skin consultation offer',
-      offerContext: ['Provider offer preview', 'Appears after provider approval', 'No medical promise included']
+      offerContext: ['Provider offer preview', 'Appears after provider approval', 'No medical promise included'],
+      photos: [
+        { label: 'Specialist clinic mock photo', tone: 'clinic' },
+        { label: 'Consultation suite mock photo', tone: 'suite' },
+        { label: 'Specialist reception mock photo', tone: 'reception' },
+        { label: 'Care detail mock photo', tone: 'service' }
+      ]
     },
     ar: {
       providerKind: 'عيادة تخصصية',
-      title: 'معاينة عيادة تخصصية في بوشر',
+      title: 'عيادة تخصصية في بوشر',
       subtitle: 'معاينة ملف تخصصي معتمد مع سياق خدمة وتواصل بعد المراجعة.',
       city: 'مسقط',
       area: 'معاينة بوشر',
@@ -207,14 +268,20 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingNote: 'تظهر المراجعات الموثقة بعد الاعتماد',
       providerContext: 'تحافظ بطاقة الاختصاصي على بروز ملف المقدّم مع توضيح أن المحتوى للمعاينة فقط.',
       offerTitle: 'عرض استشارة جلدية',
-      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'بدون وعود طبية']
+      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'بدون وعود طبية'],
+      photos: [
+        { label: 'صورة معاينة لعيادة تخصصية', tone: 'clinic' },
+        { label: 'صورة معاينة لجناح استشارة', tone: 'suite' },
+        { label: 'صورة معاينة لاستقبال تخصصي', tone: 'reception' },
+        { label: 'صورة معاينة لتفاصيل رعاية', tone: 'service' }
+      ]
     }
   },
   {
     id: 'azaiba-pharmacy-preview',
     en: {
       providerKind: 'Pharmacy',
-      title: 'Azaiba Pharmacy Preview',
+      title: 'Azaiba Pharmacy',
       subtitle: 'Approved pharmacy profile preview with clear area and contact action context.',
       city: 'Muscat',
       area: 'Azaiba preview',
@@ -224,11 +291,17 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingNote: 'Verified reviews appear after approval',
       providerContext: 'Pharmacy profiles can show public information and actions only after provider approval.',
       offerTitle: 'Pharmacy offer preview',
-      offerContext: ['Provider offer preview', 'Appears after provider approval', 'Sponsored placement is clearly marked']
+      offerContext: ['Provider offer preview', 'Appears after provider approval', 'Sponsored placement is clearly marked'],
+      photos: [
+        { label: 'Pharmacy front mock photo', tone: 'pharmacy' },
+        { label: 'Pharmacy shelves mock photo', tone: 'service' },
+        { label: 'Pharmacy counter mock photo', tone: 'reception' },
+        { label: 'Local pharmacy mock photo', tone: 'clinic' }
+      ]
     },
     ar: {
       providerKind: 'صيدلية',
-      title: 'معاينة صيدلية في العذيبة',
+      title: 'صيدلية في العذيبة',
       subtitle: 'معاينة ملف صيدلية معتمد مع سياق واضح للمنطقة وإجراءات التواصل.',
       city: 'مسقط',
       area: 'معاينة العذيبة',
@@ -238,14 +311,20 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingNote: 'تظهر المراجعات الموثقة بعد الاعتماد',
       providerContext: 'يمكن لملفات الصيدليات عرض المعلومات العامة والإجراءات فقط بعد اعتماد المقدّم.',
       offerTitle: 'معاينة عرض صيدلية',
-      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'يتم توضيح الظهور المدعوم بوضوح']
+      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'يتم توضيح الظهور المدعوم بوضوح'],
+      photos: [
+        { label: 'صورة معاينة لواجهة صيدلية', tone: 'pharmacy' },
+        { label: 'صورة معاينة لرفوف صيدلية', tone: 'service' },
+        { label: 'صورة معاينة لمنضدة صيدلية', tone: 'reception' },
+        { label: 'صورة معاينة لصيدلية محلية', tone: 'clinic' }
+      ]
     }
   },
   {
     id: 'pet-care-clinic-preview',
     en: {
       providerKind: 'Pet clinic',
-      title: 'Pet Care Clinic Preview',
+      title: 'Pet Care Clinic',
       subtitle: 'Approved pet care profile preview with profile actions and service chips.',
       city: 'Muscat',
       area: 'Muscat area preview',
@@ -255,11 +334,17 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingNote: 'Verified reviews appear after approval',
       providerContext: 'Pet care providers can use the same polished profile format with safe preview wording.',
       offerTitle: 'Pet care package',
-      offerContext: ['Provider offer preview', 'Appears after provider approval', 'No fake availability shown']
+      offerContext: ['Provider offer preview', 'Appears after provider approval', 'No fake availability shown'],
+      photos: [
+        { label: 'Pet clinic reception mock photo', tone: 'pet' },
+        { label: 'Pet care room mock photo', tone: 'suite' },
+        { label: 'Pet clinic front mock photo', tone: 'clinic' },
+        { label: 'Pet care detail mock photo', tone: 'service' }
+      ]
     },
     ar: {
       providerKind: 'عيادة بيطرية',
-      title: 'معاينة عيادة بيطرية',
+      title: 'عيادة بيطرية',
       subtitle: 'معاينة ملف رعاية حيوانات معتمد مع إجراءات الملف وشرائح الخدمات.',
       city: 'مسقط',
       area: 'معاينة منطقة في مسقط',
@@ -269,14 +354,20 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingNote: 'تظهر المراجعات الموثقة بعد الاعتماد',
       providerContext: 'يمكن لمقدّمي رعاية الحيوانات استخدام نفس تنسيق الملف المصقول مع صياغة آمنة للمعاينة.',
       offerTitle: 'باقة رعاية الحيوانات',
-      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'بدون توفر وهمي']
+      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'بدون توفر وهمي'],
+      photos: [
+        { label: 'صورة معاينة لاستقبال عيادة بيطرية', tone: 'pet' },
+        { label: 'صورة معاينة لغرفة رعاية حيوانات', tone: 'suite' },
+        { label: 'صورة معاينة لواجهة عيادة بيطرية', tone: 'clinic' },
+        { label: 'صورة معاينة لتفاصيل رعاية حيوانات', tone: 'service' }
+      ]
     }
   },
   {
     id: 'medical-service-provider-preview',
     en: {
       providerKind: 'Medical service',
-      title: 'Medical Service Provider Preview',
+      title: 'Medical Service Provider',
       subtitle: 'Approved service profile preview for future provider inventory beyond clinics.',
       city: 'Muscat',
       area: 'Oman preview',
@@ -286,11 +377,17 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingNote: 'Verified reviews appear after approval',
       providerContext: 'The preview inventory can scale to more providers while keeping each card profile-led.',
       offerTitle: 'Service offer preview',
-      offerContext: ['Provider offer preview', 'Appears after provider approval', 'Sponsored placement is clearly marked']
+      offerContext: ['Provider offer preview', 'Appears after provider approval', 'Sponsored placement is clearly marked'],
+      photos: [
+        { label: 'Medical service mock photo', tone: 'service' },
+        { label: 'Service reception mock photo', tone: 'reception' },
+        { label: 'Care suite mock photo', tone: 'suite' },
+        { label: 'Provider detail mock photo', tone: 'clinic' }
+      ]
     },
     ar: {
       providerKind: 'خدمة طبية',
-      title: 'معاينة مقدم خدمة طبية',
+      title: 'مقدم خدمة طبية',
       subtitle: 'معاينة ملف خدمة معتمد لمخزون مقدّمين مستقبلي يتجاوز العيادات.',
       city: 'مسقط',
       area: 'معاينة عُمان',
@@ -300,7 +397,13 @@ const previewInventory: readonly VisibilityPreviewItem[] = [
       ratingNote: 'تظهر المراجعات الموثقة بعد الاعتماد',
       providerContext: 'يمكن لمخزون المعاينات التوسع لمقدّمين أكثر مع بقاء كل بطاقة متمحورة حول الملف.',
       offerTitle: 'معاينة عرض خدمة',
-      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'يتم توضيح الظهور المدعوم بوضوح']
+      offerContext: ['معاينة عرض مقدم الخدمة', 'يظهر بعد اعتماد مقدم الخدمة', 'يتم توضيح الظهور المدعوم بوضوح'],
+      photos: [
+        { label: 'صورة معاينة لخدمة طبية', tone: 'service' },
+        { label: 'صورة معاينة لاستقبال خدمة', tone: 'reception' },
+        { label: 'صورة معاينة لجناح رعاية', tone: 'suite' },
+        { label: 'صورة معاينة لتفاصيل مقدم خدمة', tone: 'clinic' }
+      ]
     }
   }
 ] as const;
@@ -311,16 +414,17 @@ const featuredBoardCopy: Record<SupportedLocale, FeaturedBoardCopy> = {
     badge: 'Featured preview',
     title: 'Featured provider previews',
     subtitle: 'See how approved healthcare profiles can appear with rating, services, offers and clear contact actions.',
-    trustNote: 'Preview content only. Ratings, offers and contact actions appear after provider approval.',
-    activeLabel: 'Active provider preview',
+    trustNote: 'Static preview only. Photos, ratings, offers and contact actions appear after provider approval.',
+    activeLabel: 'Active preview',
     profileLabel: 'Approved profile preview',
     locationLabel: 'Provider preview location',
     servicesLabel: 'Provider preview services',
     ratingAriaLabel: 'Safe sample rating preview',
+    photosLabel: 'Mock provider photo rotation',
     offerHeading: 'Provider offer preview',
     offerKicker: 'Offer preview',
     offerNote: 'No real prices, discounts, availability or medical promises are shown in this static preview.',
-    railLabel: 'Provider preview carousel',
+    railLabel: 'Provider preview selector',
     actionsLabel: 'Preview profile actions',
     actions: [
       { label: 'View Profile', symbol: '↗', tone: 'primary', aria: 'Preview action. Provider profile appears after provider approval.' },
@@ -334,16 +438,17 @@ const featuredBoardCopy: Record<SupportedLocale, FeaturedBoardCopy> = {
     badge: 'معاينة مميزة',
     title: 'معاينات مميزة لمقدمي الرعاية',
     subtitle: 'شاهد كيف يمكن أن تظهر الملفات المعتمدة مع التقييم والخدمات والعروض وإجراءات التواصل الواضحة.',
-    trustNote: 'محتوى معاينة فقط. تظهر التقييمات والعروض وإجراءات التواصل بعد اعتماد مقدّم الخدمة.',
-    activeLabel: 'معاينة مقدم نشطة',
+    trustNote: 'معاينة ثابتة فقط. تظهر الصور والتقييمات والعروض وإجراءات التواصل بعد اعتماد مقدّم الخدمة.',
+    activeLabel: 'معاينة نشطة',
     profileLabel: 'معاينة ملف معتمد',
     locationLabel: 'موقع معاينة مقدم الخدمة',
     servicesLabel: 'خدمات معاينة مقدم الخدمة',
     ratingAriaLabel: 'معاينة تقييم تجريبية وآمنة',
+    photosLabel: 'دوران صور معاينة لمقدم الخدمة',
     offerHeading: 'معاينة عرض مقدم الخدمة',
     offerKicker: 'معاينة عرض',
     offerNote: 'لا يتم عرض أسعار أو خصومات أو توفر أو وعود طبية حقيقية في هذه المعاينة الثابتة.',
-    railLabel: 'شريط معاينات مقدمي الرعاية',
+    railLabel: 'محدد معاينات مقدمي الرعاية',
     actionsLabel: 'معاينة إجراءات الملف',
     actions: [
       { label: 'عرض الملف', symbol: '↗', tone: 'primary', aria: 'إجراء معاينة. يظهر ملف مقدّم الخدمة بعد الاعتماد.' },
@@ -357,9 +462,13 @@ const featuredBoardCopy: Record<SupportedLocale, FeaturedBoardCopy> = {
 export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoard2026Props) {
   const copy = featuredBoardCopy[locale];
   const [activeIndex, setActiveIndex] = useState(0);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const activeEntry = previewInventory[activeIndex] ?? previewInventory[0]!;
   const activePreview = activeEntry[locale];
+  const primaryPhoto = activePreview.photos[activePhotoIndex] ?? activePreview.photos[0]!;
+  const secondaryPhoto = activePreview.photos[(activePhotoIndex + 1) % activePreview.photos.length] ?? activePreview.photos[0]!;
+
 
   useEffect(() => {
     if (isPaused) return;
@@ -373,6 +482,19 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
 
     return () => window.clearInterval(rotationTimer);
   }, [isPaused]);
+
+  useEffect(() => {
+    if (isPaused) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const photoTimer = window.setInterval(() => {
+      setActivePhotoIndex((currentIndex) => (currentIndex + 1) % activePreview.photos.length);
+    }, 1750);
+
+    return () => window.clearInterval(photoTimer);
+  }, [activePreview.photos.length, isPaused]);
 
   const pauseHandlers = useMemo(
     () => ({
@@ -405,10 +527,26 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
 
           <div className="dm2026-featured-board__grid">
             <article className="dm2026-featured-board__profile dm2026-card-glass" aria-labelledby="dm2026-featured-profile-title">
-              <div className="dm2026-featured-board__profile-head">
-                <div className="dm2026-featured-board__mark" aria-hidden="true">
-                  <span />
+              <div className="dm2026-featured-board__photos" aria-label={copy.photosLabel}>
+                <div
+                  key={`${activeEntry.id}-${primaryPhoto.label}-main`}
+                  className={`dm2026-featured-board__photo dm2026-featured-board__photo--main dm2026-featured-board__photo--${primaryPhoto.tone}`}
+                  role="img"
+                  aria-label={primaryPhoto.label}
+                >
+                  <span aria-hidden="true" />
                 </div>
+                <div
+                  key={`${activeEntry.id}-${secondaryPhoto.label}-side`}
+                  className={`dm2026-featured-board__photo dm2026-featured-board__photo--side dm2026-featured-board__photo--${secondaryPhoto.tone}`}
+                  role="img"
+                  aria-label={secondaryPhoto.label}
+                >
+                  <span aria-hidden="true" />
+                </div>
+              </div>
+
+              <div className="dm2026-featured-board__profile-head">
                 <div className="dm2026-featured-board__profile-copy">
                   <p>{copy.profileLabel}</p>
                   <h3 id="dm2026-featured-profile-title">{activePreview.title}</h3>
@@ -478,6 +616,7 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
               {previewInventory.map((entry, index) => {
                 const preview = entry[locale];
                 const isActive = index === activeIndex;
+                const railPhoto = preview.photos[0] ?? activePreview.photos[0]!;
 
                 return (
                   <button
@@ -487,7 +626,7 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
                     aria-pressed={isActive}
                     onClick={() => setActiveIndex(index)}
                   >
-                    <span className="dm2026-featured-board__slot-dot" aria-hidden="true" />
+                    <span className={`dm2026-featured-board__slot-thumb dm2026-featured-board__slot-thumb--${railPhoto.tone}`} aria-hidden="true" />
                     <span>
                       <strong>{preview.title}</strong>
                       <small>{preview.providerKind}</small>

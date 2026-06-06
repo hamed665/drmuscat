@@ -421,7 +421,7 @@ const featuredBoardCopy: Record<SupportedLocale, FeaturedBoardCopy> = {
     servicesLabel: 'Provider preview services',
     ratingAriaLabel: 'Safe sample rating preview',
     photosLabel: 'Provider photo preview rotation',
-    offerHeading: 'Offer preview',
+    offerHeading: 'Special Offer Preview',
     offerKicker: 'After approval',
     offerNote: 'No real prices, discounts, availability or medical promises are shown in this static preview.',
     railLabel: 'Provider preview selector',
@@ -445,7 +445,7 @@ const featuredBoardCopy: Record<SupportedLocale, FeaturedBoardCopy> = {
     servicesLabel: 'خدمات معاينة مقدم الخدمة',
     ratingAriaLabel: 'معاينة تقييم تجريبية وآمنة',
     photosLabel: 'دوران صور مقدم الخدمة للمعاينة',
-    offerHeading: 'معاينة عرض',
+    offerHeading: 'معاينة عرض خاص',
     offerKicker: 'بعد الاعتماد',
     offerNote: 'لا يتم عرض أسعار أو خصومات أو توفر أو وعود طبية حقيقية في هذه المعاينة الثابتة.',
     railLabel: 'محدد معاينات مقدمي الرعاية',
@@ -507,6 +507,14 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
   const activePreview = activeEntry[locale];
   const primaryPhoto = activePreview.photos[activePhotoIndex] ?? activePreview.photos[0]!;
   const secondaryPhoto = activePreview.photos[(activePhotoIndex + 1) % activePreview.photos.length] ?? activePreview.photos[0]!;
+  const hasSpecialOffer = Boolean(activePreview.offerTitle);
+  const specialOfferStamp = locale === 'ar' ? 'عرض خاص' : 'Special Offer';
+  const specialOfferTitle = locale === 'ar' ? `عرض خاص من ${activePreview.title}` : `${activePreview.title} Special Offer`;
+  const specialOfferSubtitle = locale === 'ar' ? `${activePreview.offerTitle} من ${activePreview.title}` : `${activePreview.offerTitle} from ${activePreview.title}`;
+  const specialOfferBullets =
+    locale === 'ar'
+      ? ['معاينة عرض خاص معتمد من مقدم الخدمة', 'مرتبط بهذا الملف', 'يظهر بعد الاعتماد']
+      : ['Provider-approved special offer preview', 'Linked to this provider profile', 'Visible after approval'];
 
 
   useEffect(() => {
@@ -593,8 +601,11 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
                   <h3 id="dm2026-featured-profile-title">{activePreview.title}</h3>
                   <span>{activePreview.subtitle}</span>
                 </div>
-                <span className="dm2026-featured-board__active-badge" aria-label={`${copy.activeLabel}: ${activePreview.title}`}>
-                  {copy.activeLabel}
+                <span className="dm2026-featured-board__profile-badges">
+                  <span className="dm2026-featured-board__active-badge" aria-label={`${copy.activeLabel}: ${activePreview.title}`}>
+                    {copy.activeLabel}
+                  </span>
+                  {hasSpecialOffer ? <span className="dm2026-featured-board__offer-stamp">{specialOfferStamp}</span> : null}
                 </span>
               </div>
 
@@ -643,10 +654,11 @@ export function HomeFeaturedBoard2026({ locale, country, dir }: HomeFeaturedBoar
                 <span className="dm2026-badge">{copy.offerKicker}</span>
                 <span aria-hidden="true">✦</span>
               </div>
-              <h3 id="dm2026-featured-offer-title">{copy.offerHeading}</h3>
-              <p className="dm2026-featured-board__offer-title">{activePreview.offerTitle}</p>
+              <p className="dm2026-featured-board__offer-provider">{copy.offerHeading}</p>
+              <h3 id="dm2026-featured-offer-title">{specialOfferTitle}</h3>
+              <p className="dm2026-featured-board__offer-title">{specialOfferSubtitle}</p>
               <ul>
-                {activePreview.offerContext.map((item) => (
+                {specialOfferBullets.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>

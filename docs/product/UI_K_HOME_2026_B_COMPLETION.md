@@ -598,3 +598,52 @@ Required FIX05 validation commands:
 ### Merge readiness recommendation
 
 Merge readiness is recommended after validation passes and visual QA confirms that `/en/om` and `/ar/om` show meaningful image overlays, recognisable WhatsApp/Directions/Call/Profile icons, compact desktop and mobile layouts, and no regression to header, search, font, route, SEO, or backend boundaries.
+
+## 22. FIX06 — Provider-Linked Special Offer Panel
+
+### Special Offer language update
+
+FIX06 replaces generic offer language in the active offer panel with provider-linked Special Offer language. The panel now uses `Special Offer Preview` / `معاينة عرض خاص`, while the active provider card can show a small `Special Offer` / `عرض خاص` stamp.
+
+### Provider-linked offer panel
+
+The right-side panel now derives its title and subtitle from the active provider preview:
+
+- English title pattern: `{Active Provider Name} Special Offer`
+- Arabic title pattern: `عرض خاص من {اسم مقدم الخدمة}`
+- English subtitle pattern: `{Offer Subtitle} from {Active Provider Name}`
+- Arabic subtitle pattern: `{وصف العرض} من {اسم مقدم الخدمة}`
+
+The panel bullets are concise and provider-led: provider-approved preview, linked to this profile, and visible after approval.
+
+### Minimal Special Offer stamp
+
+The main provider card now shows a small warm champagne/gold glass stamp when the active preview has an offer title. The stamp is intentionally minimal and sits beside the active featured badge so it does not cover provider text or media.
+
+### Warm premium offer accent
+
+The Special Offer panel uses a subtle warm border, champagne-tinted glass background, muted gold badge treatment, and soft gold shadow while retaining DrMuscat teal as the base palette. No bright yellow, red, neon, discount, or price styling was added.
+
+### Safety confirmations
+
+FIX06 remains static-safe and UI-only. It adds no fake prices, fake discounts, fake availability, medical promises, real provider data, backend calls, Supabase access, API calls, storage, routes, SEO changes, package changes, or font changes.
+
+### Validation results
+
+Required FIX06 validation commands:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+- `git status --short`: showed only the three approved FIX06 files changed.
+- `pnpm lint`: passed with pre-existing warnings only.
+- `pnpm typecheck`: passed.
+- `pnpm build`: passed.
+- `pnpm routes:check`: passed.
+
+### Manual QA notes and merge readiness
+
+Manual QA should confirm that `/en/om` and `/ar/om` show a provider-linked Special Offer title that changes with the active provider, a subtle Special Offer stamp on the main card, premium warm offer accents, no overflow on mobile, and no changes to header, search, language switch, footer, fonts, routes, SEO, database, Supabase, API, package, or lockfile boundaries.

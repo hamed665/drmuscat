@@ -294,3 +294,59 @@ No database, Supabase, RLS, API, auth, payment, sitemap, robots, llms, package, 
 ### Remaining deferred sections
 
 Ads / Featured Board, Care Stories, Categories, Areas, Featured Doctors, Featured Centers, Offers, Articles, Provider CTA and Footer redesign remain deferred.
+
+## 19. FIX11 — Responsive QA and final visual polish
+
+### Responsive QA summary
+
+- Reviewed the scoped top-shell/search/header files after FIX10 and kept PR #157 limited to the homepage top shell and approved Smart Search Command Center.
+- Added CSS-only responsive polish for desktop, laptop, tablet and mobile widths without adding JavaScript layout code, dependencies or new routes.
+- Kept deferred lower homepage sections out of this PR.
+
+### Visual polish summary
+
+- Refined the search surface with a warmer premium glass background, softer border, controlled teal/gold ambient accents and a stronger but still lightweight shadow.
+- Improved the command input focus treatment so it remains the dominant homepage action without increasing card height.
+
+### Header / brand polish summary
+
+- Polished the existing `DM` + `DrMuscat` brand presentation through scoped header CSS only.
+- Improved mark sizing, spacing, alignment and contrast while preserving the single official header and existing header links/actions.
+
+### Search card, chips, location and suggestions polish
+
+- Strengthened selected chip states with a clear teal gradient and softened unselected chip surfaces.
+- Preserved compact horizontal chip rails and popular suggestion More behavior.
+- Polished Country / City / Area select controls so they read as premium discovery controls rather than raw admin fields.
+- Kept the secondary bottom search action visually quieter so the main command-row Search button remains dominant.
+
+### Arabic / RTL status
+
+- Arabic search remains in the same unified vertical layout.
+- RTL legend styling avoids uppercase/letter-spacing treatments that would look unnatural in Arabic.
+- Arabic chips, selects and suggestion rails keep the existing overflow-safe behavior.
+
+### Smart search behavior preserved
+
+- `HomeSearch2026` state, autocomplete, one-character matching, Arabic normalization, suggestion scoring/grouping, hover/focus preview, click-to-fill, popular More handling, search preview and city/area dependency were not changed in FIX11.
+
+### Validation results
+
+- `git status --short` — run during FIX11 and showed only the scoped doc/CSS changes before commit.
+- `pnpm lint` — passed with existing repository warnings and no errors.
+- `pnpm typecheck` — passed.
+- `pnpm build` — passed.
+- `pnpm routes:check` — passed.
+- Built-page HTML and source checks passed for `/en/om`, `/ar/om`, deferred lower-section absence and approved smart-search markers.
+
+### Forbidden areas untouched
+
+No database, Supabase, RLS, API, auth, payment, sitemap, robots, llms, package, lockfile, route helper, i18n config, route-check, migration, footer, route page, lower homepage section file or search logic was changed in FIX11.
+
+### Remaining deferred sections
+
+Ads / Featured Board, Care Stories, Categories, Areas, Featured Doctors, Featured Centers, Offers, Articles, Provider CTA and Footer redesign remain deferred.
+
+### Merge-readiness recommendation
+
+PR #157 is recommended to remain scoped as `UI-K-HOME-2026-A — Premium Homepage Top Shell + Smart Search`; future visual/product work should continue in `UI-K-HOME-2026-B — Featured Provider Board / Ads Board` or a dedicated header polish PR if a production logo asset is approved.

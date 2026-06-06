@@ -459,3 +459,47 @@ No database, Supabase, RLS, API, auth, payment, sitemap, robots, llms, package, 
 ### Merge-readiness note
 
 PR #157 remains scoped to `UI-K-HOME-2026-A — Premium Homepage Top Shell + Smart Search`; remaining navigation/i18n polish and lower homepage sections should proceed in future PRs.
+
+## 23. FIX15 — Locale source fix for header language switch
+
+### Root cause found
+
+- `RootLayout`, `AppShell` and `SiteHeader` all depend on request headers for the active locale.
+- The existing Next.js request-interception file is `src/proxy.ts`, which is the project middleware-equivalent in this Next 16 app.
+- The previous proxy parsed everything after the locale as a single `country` value, which made nested localized routes unreliable and did not expose `x-drmuscat-country`.
+- The header then had to rely on brittle fallbacks and a browser-side language-sync patch.
+
+### Locale source fix
+
+- Updated `src/proxy.ts` to parse the first path segment as locale and the second path segment as country.
+- `/en/om...` now forwards `x-drmuscat-locale: en` and `x-drmuscat-country: om`.
+- `/ar/om...` now forwards `x-drmuscat-locale: ar` and `x-drmuscat-country: om`.
+- The proxy does not redirect or rewrite URLs for this fix.
+
+### Header cleanup
+
+- Removed the browser-side language-switch text/href sync from `SiteHeader` because the language switch should now be correct on first server render.
+- Kept the small mobile-menu close script so clicking a marked mobile menu item closes the native popover.
+- Smart Search was not touched.
+
+### Language switch QA result
+
+- `/en/om` renders the language switch as `العربية` with `/ar/om` as the target.
+- `/ar/om` renders the language switch as `English` with `/en/om` as the target.
+
+### Validation result
+
+- `git status --short` — run during FIX15 and showed only scoped proxy/header/report changes before commit.
+- `pnpm lint` — run during FIX15.
+- `pnpm typecheck` — run during FIX15.
+- `pnpm build` — run during FIX15.
+- `pnpm routes:check` — run during FIX15.
+- Built-page HTML/source checks were run for `/en/om`, `/ar/om`, exact language switch labels/hrefs, mobile close markers, deferred lower-section absence and unchanged smart-search markers.
+
+### Forbidden files untouched
+
+No database, Supabase, RLS, API, auth, payment, sitemap, robots, llms, package, lockfile, route helper, i18n config, route-check, migration, footer, route page, lower homepage section file or search logic was changed in FIX15.
+
+### Merge-readiness recommendation
+
+PR #157 remains scoped to `UI-K-HOME-2026-A — Premium Homepage Top Shell + Smart Search`; the header locale source is now fixed at the request boundary and remaining navigation/i18n polish should continue in a future PR.

@@ -200,22 +200,9 @@ export async function SiteHeader() {
       </div>
 
       <script
-        id="dm2026-site-header-mobile-fixes"
+        id="dm2026-site-header-mobile-menu-close"
         dangerouslySetInnerHTML={{
           __html: `(() => {
-  const getLocale = () => window.location.pathname.startsWith('/ar/') || window.location.pathname === '/ar' ? 'ar' : 'en';
-  const syncLanguageSwitch = () => {
-    const locale = getLocale();
-    document.querySelectorAll('[data-dm2026-locale-switch]').forEach((link) => {
-      const label = locale === 'ar' ? 'English' : 'العربية';
-      const href = locale === 'ar' ? '/en/om' : '/ar/om';
-      link.setAttribute('href', href);
-      link.setAttribute('hreflang', locale === 'ar' ? 'en' : 'ar');
-      link.setAttribute('aria-label', locale === 'ar' ? 'Switch language to English' : 'Switch language to Arabic');
-      const labelNode = link.querySelector('span') ?? link;
-      labelNode.textContent = label;
-    });
-  };
   const closeMenu = (target) => {
     if (!(target instanceof Element)) return;
     const trigger = target.closest('[data-dm2026-mobile-menu-close]');
@@ -223,8 +210,6 @@ export async function SiteHeader() {
     const menu = target.closest('[data-dm2026-mobile-menu]');
     if (menu && typeof menu.hidePopover === 'function') menu.hidePopover();
   };
-  syncLanguageSwitch();
-  window.addEventListener('pageshow', syncLanguageSwitch);
   document.addEventListener('click', (event) => closeMenu(event.target));
 })();`
         }}

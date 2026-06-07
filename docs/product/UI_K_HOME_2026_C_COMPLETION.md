@@ -514,3 +514,48 @@ Results after command execution:
 ### Merge-readiness recommendation
 
 Merge-readiness is recommended once validation passes and human QA confirms `/en/om` and `/ar/om` desktop/mobile views show Dental and Beauty fully redesigned internally, all other cards stable, and no font/layout/global regressions.
+
+## 25. PR #159-FIX07 Dental and Beauty icon concepts rebuilt from scratch
+
+FIX07 removes the previous Dental and Beauty & Aesthetics internal icon concepts and rebuilds only those two SVG symbol groups from scratch. Existing card shells, spacing, grid, section title, typography, Explore buttons, responsive structure, and all other category cards remain unchanged.
+
+### Dental concept removed and rebuilt
+
+- The previous Dental tooth concept was discarded rather than tweaked.
+- Dental now uses a new centered premium tooth silhouette with a simpler crown, cleaner root structure, stronger raised presence, and only one subtle central enamel contour.
+- The symbol remains minimal and embossed with soft teal stroke, pearl fill, and controlled shadow/highlight treatment; no sparkle, diagonal shine, messy internal mark, or cartoon detail was added.
+
+### Beauty & Aesthetics concept removed and rebuilt
+
+- The previous Beauty concept was discarded rather than evolved.
+- Beauty & Aesthetics now uses a new woman-face/profile-inspired mark with a graceful outer hair/face mass, clear side-profile contour, and minimal brow/lip cues.
+- The rebuilt symbol is centered in the existing tile and stays within the DrMuscat teal, sage, and pearl embossed language without droplet-heavy, leaf-like, broken-face, or spa-logo treatment.
+
+### Preserved scope
+
+- Special Offers, Doctors, Labs, Pet Clinic, and Hospitals were not changed.
+- No font family, typography sizing, card layout, grid structure, spacing system, button style, header, Search, Featured Board, route, SEO, backend, database, Supabase, migration, dependency, package, or lockfile changes were made.
+
+### Validation results
+
+Validation commands for FIX07:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+Results after command execution:
+
+- `git status --short`: completed and showed only the three allowed FIX07 files modified before commit.
+- `pnpm lint`: passed with existing repository warnings only.
+- `pnpm typecheck`: passed.
+- `pnpm build`: passed.
+- `pnpm routes:check`: passed.
+- Additional checks: `git diff --check` and localized HTML smoke checks for the rebuilt Dental/Beauty symbols passed.
+- Screenshot capture was attempted, but the local environment does not include the `playwright` executable.
+
+### Merge-readiness recommendation
+
+Merge-readiness is recommended once validation passes and human QA confirms `/en/om` and `/ar/om` desktop/mobile views show Dental and Beauty rebuilt from scratch, other category cards stable, no diagonal shine/streak, and no typography/layout regressions.

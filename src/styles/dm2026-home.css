@@ -3311,16 +3311,16 @@
   }
 }
 
-/* FIX06: full targeted Dental and Beauty internal symbol redesign only. */
+/* FIX07: rebuilt Dental and Beauty symbols from scratch only. */
 .dm2026-discovery-card--dental .dm2026-symbol__cast--dental {
-  stroke: rgba(6, 45, 41, 0.21);
-  filter: drop-shadow(4px 6px 6px rgba(7, 43, 40, 0.14));
+  stroke: rgba(6, 45, 41, 0.22);
+  filter: drop-shadow(4px 7px 7px rgba(7, 43, 40, 0.14));
 }
 
 .dm2026-discovery-card--dental .dm2026-symbol__mass--dental {
-  fill: rgba(245, 251, 249, 0.99);
-  stroke: rgba(10, 98, 90, 0.47);
-  stroke-width: 4.65;
+  fill: rgba(246, 252, 250, 0.99);
+  stroke: rgba(10, 98, 90, 0.48);
+  stroke-width: 4.75;
   filter:
     drop-shadow(5px 7px 7px rgba(7, 43, 40, 0.17))
     drop-shadow(-3px -3px 3px rgba(255, 255, 255, 0.98));
@@ -3337,22 +3337,22 @@
 }
 
 .dm2026-discovery-card--dental .dm2026-symbol__carve--dental {
-  stroke-width: 3.05;
-  opacity: 0.78;
+  stroke-width: 3;
+  opacity: 0.76;
 }
 
 .dm2026-discovery-card--beauty .dm2026-symbol__mass--beauty {
-  fill: rgba(245, 251, 249, 0.99);
+  fill: rgba(246, 252, 250, 0.99);
   stroke: rgba(11, 94, 87, 0.44);
-  stroke-width: 4.5;
+  stroke-width: 4.55;
   filter:
     drop-shadow(5px 7px 7px rgba(7, 43, 40, 0.16))
     drop-shadow(-3px -3px 3px rgba(255, 255, 255, 0.98));
 }
 
 .dm2026-discovery-card--beauty .dm2026-symbol__profile--beauty {
-  stroke: rgba(7, 84, 77, 0.66);
-  stroke-width: 4.65;
+  stroke: rgba(7, 84, 77, 0.67);
+  stroke-width: 4.75;
   filter:
     drop-shadow(3px 4px 3px rgba(7, 43, 40, 0.15))
     drop-shadow(-2px -2px 2px rgba(255, 255, 255, 0.95));
@@ -3360,12 +3360,12 @@
 
 .dm2026-discovery-card--beauty .dm2026-symbol__profile--detail {
   stroke: rgba(7, 84, 77, 0.55);
-  stroke-width: 3.05;
-  opacity: 0.84;
+  stroke-width: 3;
+  opacity: 0.82;
 }
 
 .dm2026-discovery-card--beauty .dm2026-symbol__mark--beauty {
   stroke: rgba(8, 91, 83, 0.43);
-  stroke-width: 3.05;
-  opacity: 0.72;
+  stroke-width: 3;
+  opacity: 0.7;
 }

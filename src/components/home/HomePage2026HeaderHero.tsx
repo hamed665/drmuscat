@@ -194,7 +194,7 @@ export function HomePage2026HeaderHero({ locale, country, dir }: HomePage2026Hea
 
       <HomeFeaturedBoard2026 locale={locale} country={country} dir={dir} />
       <HomeDiscoveryCategories2026 locale={locale} country={country} dir={dir} />
-      <HomeProviderCTA2026 locale={locale} dir={dir} providerHref={providerHref} />
+      <HomeProviderCTA2026 locale={locale} dir={dir} />
     </section>
   );
 }

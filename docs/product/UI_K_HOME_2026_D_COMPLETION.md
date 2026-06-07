@@ -1,10 +1,10 @@
-# UI-K-HOME-2026-D — Provider CTA Completion
+# UI-K-HOME-2026-D — Homepage Provider CTA Completion
 
 ## 1. Final scope
 
 Implemented and refined a UI-only homepage Provider CTA section for DrMuscat 2026. The section promotes a reviewed public provider profile with photos, services, special offers and direct contact actions for healthcare providers in Oman.
 
-No backend, dashboard, form submission, payment, subscription, database, Supabase, API, SEO infrastructure, route creation, package or migration work was included.
+Final scope is homepage Provider CTA only. The full `/for-providers` landing page with plans, pricing, comparison, onboarding form, claim policy, sponsored visibility and provider product decisions is explicitly moved to a future dedicated PR. No backend, dashboard, form submission, payment, subscription, database, Supabase, API, SEO infrastructure, route creation, package or migration work was included.
 
 ## 2. Files changed
 
@@ -33,9 +33,9 @@ No remote image URLs, generated images, placeholder images, renamed images or du
 
 ## 5. Provider CTA layout strategy
 
-The section is mounted after the existing Smart Search, Featured Provider Board and Discovery Categories sections. It uses a large rounded premium CTA block with:
+The section is mounted after the existing Smart Search, Featured Provider Board and Discovery Categories sections. It is the only Provider CTA scope delivered by this PR and uses a large rounded premium CTA block with:
 
-- left-side localized provider copy, feature pills, CTA links and trust microcopy;
+- left-side localized provider copy, feature pills, preview-safe CTA buttons and trust microcopy;
 - right-side supporting healthcare visual treatment;
 - a compact preview card communicating photos, services, special offers and contact actions without fake metrics or fake reviews.
 
@@ -47,9 +47,9 @@ The healthcare-platform image is art-directed as a supporting visual rather than
 
 - The section has a locale-stable accessible heading via `aria-labelledby` and trust note via `aria-describedby`.
 - The image has concise localized alt text because it provides contextual support.
-- CTA links have visible, localized accessible names.
+- CTA buttons have visible, localized accessible names and intentionally do not navigate to the unfinished provider page.
 - Feature, preview item and preview action chips are semantic lists.
-- Focus-visible styling is included for CTA links.
+- Focus-visible styling is included for CTA buttons.
 - The content does not require hover or motion to understand.
 
 ## 8. Performance notes
@@ -65,11 +65,11 @@ Arabic copy is included inside the component and selected by locale. The compone
 
 ## 10. CTA behavior
 
-Both CTA actions link to the existing approved provider route supplied by the homepage through `publicProviderRoute(locale, country)`. No new route was created and no dead or fake backend action was introduced.
+Because the full `/for-providers` product page is not ready for this PR, the Provider CTA renders preview-safe CTA buttons instead of linking to the unfinished provider page. No new route was created, no dead link was added, and no fake backend action was introduced.
 
 ## 11. No backend/database/SEO changes confirmation
 
-Confirmed: this implementation does not change backend code, API routes, Supabase files, migrations, schema, seed data, SEO infrastructure, sitemap, robots, route-check scripts, package files or lockfiles.
+Confirmed: this implementation does not change backend code, API routes, Supabase files, migrations, schema, seed data, SEO infrastructure, sitemap, robots, route-check scripts, package files or lockfiles. It does not ship pricing plans, comparison tables, onboarding forms, payment flows or provider product-page scope.
 
 ## 12. Validation results
 
@@ -81,7 +81,7 @@ Required validation commands were run after implementation:
 - `pnpm build`
 - `pnpm routes:check`
 
-All validation commands passed after the refinement pass.
+Validation was rerun after the scope cleanup and targeted UI polish pass.
 
 ## 13. Manual QA notes
 
@@ -96,11 +96,16 @@ Manual/browser QA checklist for `/en/om` and `/ar/om` desktop/mobile:
 - Image supports the design without hurting readability.
 - Text remains readable on desktop and mobile.
 - Arabic layout uses RTL direction and tuned headline sizing.
-- CTA buttons use the existing premium DrMuscat button language.
+- CTA buttons use the existing premium DrMuscat button language and do not link to an unfinished `/for-providers` page.
 - Feature pills wrap cleanly.
 - No search/header/language/footer files were changed.
 - No DB/API/Supabase/migration changes were made.
 - No SEO infrastructure changes were made.
 - No package changes were made.
 - No fake provider counts, fake ratings, fake reviews or booking claims are included.
+- No pricing/plans/comparison/onboarding form scope is shipped in this PR.
 - CSS uses clipped overflow and responsive stacking to avoid horizontal overflow.
+
+## 14. Next PR recommendation
+
+UI-K-HOME-2026-E — Dedicated `/for-providers` landing page with plans, pricing, comparison, onboarding form, and safety policy.

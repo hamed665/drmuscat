@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 import type { SupportedLocale } from '@/lib/i18n/config';
 
 type ProviderCTACopy = {
@@ -23,7 +21,6 @@ type ProviderCTACopy = {
 type HomeProviderCTA2026Props = {
   locale: SupportedLocale;
   dir: 'ltr' | 'rtl';
-  providerHref: string;
 };
 
 const providerCTACopy: Record<SupportedLocale, ProviderCTACopy> = {
@@ -79,7 +76,7 @@ const providerCTACopy: Record<SupportedLocale, ProviderCTACopy> = {
   }
 };
 
-export function HomeProviderCTA2026({ locale, dir, providerHref }: HomeProviderCTA2026Props) {
+export function HomeProviderCTA2026({ locale, dir }: HomeProviderCTA2026Props) {
   const copy = providerCTACopy[locale];
 
   const titleId = `dm2026-provider-cta-title-${locale}`;
@@ -106,12 +103,12 @@ export function HomeProviderCTA2026({ locale, dir, providerHref }: HomeProviderC
           </ul>
 
           <div className="dm2026-provider-cta__actions" aria-label={copy.badge}>
-            <Link className="dm2026-button dm2026-button-primary dm2026-provider-cta__button" href={providerHref}>
+            <button className="dm2026-button dm2026-button-primary dm2026-provider-cta__button dm2026-provider-cta__button--preview" type="button" aria-disabled="true" aria-describedby={trustId}>
               {copy.primaryCta}
-            </Link>
-            <Link className="dm2026-button dm2026-button-secondary dm2026-provider-cta__button" href={providerHref}>
+            </button>
+            <button className="dm2026-button dm2026-button-secondary dm2026-provider-cta__button dm2026-provider-cta__button--preview" type="button" aria-disabled="true" aria-describedby={trustId}>
               {copy.secondaryCta}
-            </Link>
+            </button>
           </div>
 
           <p id={trustId} className="dm2026-provider-cta__trust">{copy.trustMicrocopy}</p>

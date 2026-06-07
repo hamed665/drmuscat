@@ -4,7 +4,7 @@
 
 Implemented and refined a UI-only homepage Provider CTA section for DrMuscat 2026. The section promotes a reviewed public provider profile with photos, services, special offers and direct contact actions for healthcare providers in Oman.
 
-Final scope is homepage Provider CTA only. FIX04 hard scope cleanup disables the existing `/for-providers` public page so it fails closed instead of rendering provider plans, pricing/product cards, comparison tables, onboarding/request forms, safety-note page sections, or the dark provider product hero. The full `/for-providers` landing page with plans, pricing, comparison, onboarding form, claim policy, sponsored visibility and provider product decisions is explicitly moved to a future dedicated PR. No backend, dashboard, form submission, payment, subscription, database, Supabase, API, SEO infrastructure, route creation, package or migration work was included.
+Final scope is homepage Provider CTA only. FIX04 hard scope cleanup disables the existing `/for-providers` public page so it fails closed instead of rendering provider plans, pricing/product cards, comparison tables, onboarding/request forms, safety-note page sections, or the dark provider product hero. FIX05 adds final typography and background polish only: the Provider CTA headline scale/weight is more controlled and the copy-side gradient wash is calmer so it matches the approved DrMuscat 2026 homepage system. The full `/for-providers` landing page with plans, pricing, comparison, onboarding form, claim policy, sponsored visibility and provider product decisions is explicitly moved to a future dedicated PR. No backend, dashboard, form submission, payment, subscription, database, Supabase, API, SEO infrastructure, route creation, package or migration work was included.
 
 ## 2. Files changed
 
@@ -42,7 +42,7 @@ The section is mounted after the existing Smart Search, Featured Provider Board 
 
 ## 6. Background/supporting image treatment
 
-The healthcare-platform image is art-directed as a supporting visual rather than a text background. CSS adds a soft glass surface, gradient mask, controlled opacity, rounded clipping and overlay protection so the copy remains readable and the visual does not overpower the message.
+The healthcare-platform image is art-directed as a supporting visual rather than a text background. CSS adds a soft glass surface, gradient mask, controlled opacity, rounded clipping and overlay protection so the copy remains readable and the visual does not overpower the message. FIX05 softens the copy-side wash and lowers the decorative gradient intensity so the English headline area feels cleaner while preserving the Arabic visual balance.
 
 ## 7. Accessibility notes
 
@@ -59,10 +59,11 @@ The healthcare-platform image is art-directed as a supporting visual rather than
 - No video, remote media, new dependencies or animation libraries were added.
 - The visual area has controlled dimensions to reduce layout shift.
 - CSS is scoped to the `dm2026-provider-cta-*` namespace and does not add broad global selectors.
+- FIX05 keeps the existing font family and global typography untouched while reducing only local headline scale, weight and letter-spacing.
 
 ## 9. Arabic/RTL status
 
-Arabic copy is included inside the component and selected by locale. The component respects the received `dir` prop, uses logical CSS properties and includes RTL-specific headline sizing to avoid oversized Arabic layout.
+Arabic copy is included inside the component and selected by locale. The component respects the received `dir` prop, uses logical CSS properties and includes RTL-specific headline sizing to avoid oversized Arabic layout. FIX05 preserves the stronger Arabic balance while applying the same typography-consistency direction.
 
 ## 10. CTA behavior
 
@@ -82,7 +83,7 @@ Required validation commands were run after implementation:
 - `pnpm build`
 - `pnpm routes:check`
 
-Validation was rerun after the FIX04 hard scope cleanup and targeted UI polish pass.
+Validation was rerun after the FIX04 hard scope cleanup and again after the FIX05 typography/background polish pass.
 
 ## 13. Manual QA notes
 
@@ -96,7 +97,9 @@ Manual/browser QA checklist for `/en/om` and `/ar/om` desktop/mobile:
 - No random placeholder image is used.
 - Image supports the design without hurting readability.
 - Text remains readable on desktop and mobile.
-- Arabic layout uses RTL direction and tuned headline sizing.
+- FIX05 headline scale is more controlled and less oversized while keeping the CTA premium.
+- English copy-side background/gradient is calmer and less distracting.
+- Arabic layout uses RTL direction and tuned headline sizing; FIX05 preserves the balanced Arabic direction.
 - CTA buttons use the existing premium DrMuscat button language and do not link to an unfinished `/for-providers` page.
 - `/en/om/for-providers` and `/ar/om/for-providers` are expected to fail closed rather than render provider plans, pricing cards, comparison tables or onboarding/request forms.
 - Feature pills wrap cleanly.
@@ -108,6 +111,10 @@ Manual/browser QA checklist for `/en/om` and `/ar/om` desktop/mobile:
 - No pricing/plans/comparison/onboarding form scope is shipped or publicly exposed in this PR.
 - CSS uses clipped overflow and responsive stacking to avoid horizontal overflow.
 
-## 14. Next PR recommendation
+## 14. Merge-readiness recommendation
+
+PR #160 is merge-ready as a homepage Provider CTA only after FIX05 typography/background polish, with `/for-providers` still disabled and future product-page scope excluded.
+
+## 15. Next PR recommendation
 
 UI-K-HOME-2026-E — Dedicated `/for-providers` landing page with product decisions for plans, pricing, comparison, onboarding form, claim policy, sponsored visibility rules, Arabic/English sales copy, and safety policy.

@@ -3520,9 +3520,9 @@
   border: 1px solid rgba(14, 110, 100, 0.16);
   border-radius: clamp(1.65rem, 3vw, 2.35rem);
   background:
-    linear-gradient(115deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.86) 43%, rgba(239, 246, 244, 0.68) 100%),
-    radial-gradient(620px circle at 92% 12%, rgba(42, 161, 146, 0.2), transparent 52%),
-    radial-gradient(500px circle at 8% 100%, rgba(201, 162, 75, 0.12), transparent 48%);
+    linear-gradient(115deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.88) 46%, rgba(239, 246, 244, 0.62) 100%),
+    radial-gradient(620px circle at 94% 14%, rgba(42, 161, 146, 0.16), transparent 54%),
+    radial-gradient(500px circle at 8% 100%, rgba(201, 162, 75, 0.08), transparent 50%);
   box-shadow:
     0 28px 80px rgba(11, 40, 38, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.92);
@@ -3536,8 +3536,8 @@
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.58) 48%, rgba(255, 255, 255, 0.22) 100%),
-    radial-gradient(740px circle at 88% 46%, rgba(14, 110, 100, 0.12), transparent 58%);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.34) 44%, rgba(255, 255, 255, 0.08) 100%),
+    radial-gradient(740px circle at 90% 46%, rgba(14, 110, 100, 0.1), transparent 60%);
   pointer-events: none;
 }
 
@@ -3588,10 +3588,10 @@
   max-inline-size: 13ch;
   margin: 0;
   color: var(--dm-teal-950, #07302c);
-  font-size: clamp(2rem, 4.2vw, 4rem);
-  font-weight: 760;
-  letter-spacing: -0.045em;
-  line-height: 1;
+  font-size: clamp(1.85rem, 3.35vw, 3.28rem);
+  font-weight: 720;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
 }
 
 .dm2026-provider-cta__headline-group p,
@@ -3604,13 +3604,13 @@
 
 .dm2026-provider-cta__headline-group p {
   max-inline-size: 40rem;
-  font-size: clamp(1rem, 1.55vw, 1.16rem);
+  font-size: clamp(0.98rem, 1.36vw, 1.08rem);
 }
 
 .dm2026-provider-cta__supporting-line {
   max-inline-size: 35rem;
   color: var(--dm-ink-700, #2e3a3b);
-  font-weight: 680;
+  font-weight: 650;
 }
 
 .dm2026-provider-cta__pills {
@@ -3631,7 +3631,7 @@
   background: rgba(255, 255, 255, 0.74);
   color: var(--dm-color-brand-strong, #0b6f63);
   font-size: 0.8rem;
-  font-weight: 740;
+  font-weight: 700;
   padding: 0.42rem 0.68rem;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
@@ -3807,9 +3807,9 @@
 
 [dir='rtl'] .dm2026-provider-cta__headline-group h2 {
   max-inline-size: 14ch;
-  font-size: clamp(1.85rem, 3.6vw, 3.25rem);
+  font-size: clamp(1.78rem, 3.2vw, 2.95rem);
   letter-spacing: 0;
-  line-height: 1.15;
+  line-height: 1.18;
 }
 
 [dir='rtl'] .dm2026-provider-cta__copy,
@@ -3849,8 +3849,8 @@
 
   .dm2026-provider-cta__headline-group h2 {
     max-inline-size: 14ch;
-    font-size: clamp(1.85rem, 10vw, 2.55rem);
-    line-height: 1.03;
+    font-size: clamp(1.72rem, 8.4vw, 2.28rem);
+    line-height: 1.08;
   }
 
   .dm2026-provider-cta__headline-group p,

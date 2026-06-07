@@ -2375,79 +2375,71 @@
   }
 }
 
-/* PR #159: premium discovery categories bento with CSS/SVG-only micro-scenes. */
+
+/* Discovery categories: premium minimal embossed reference style. */
 .dm2026-discovery-categories {
   position: relative;
-  padding-block: clamp(var(--dm-space-2), 1.2vw, var(--dm-space-4)) clamp(var(--dm-space-10), 6vw, var(--dm-space-14));
+  padding-block: clamp(2.4rem, 5vw, 4.7rem);
 }
 
 .dm2026-discovery-categories__module {
   position: relative;
-  isolation: isolate;
   overflow: hidden;
-  border-color: rgba(14, 110, 100, 0.15);
-  border-radius: clamp(var(--dm-radius-xl), 2.4vw, var(--dm-radius-2xl));
+  padding: clamp(1.1rem, 2.8vw, 2rem);
+  border-color: rgba(14, 110, 100, 0.11);
   background:
-    radial-gradient(560px circle at 9% -8%, rgba(42, 161, 146, 0.11), transparent 48%),
-    radial-gradient(440px circle at 94% 2%, rgba(201, 162, 75, 0.09), transparent 48%),
-    var(--dm-color-surface-glass);
-  box-shadow: var(--dm-shadow-glass);
-  padding: clamp(var(--dm-space-3), 2vw, var(--dm-space-5));
+    radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.78), transparent 34%),
+    radial-gradient(circle at 88% 10%, rgba(14, 110, 100, 0.055), transparent 32%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(248, 250, 247, 0.58));
+  box-shadow: 0 22px 60px rgba(11, 40, 38, 0.075);
 }
 
 .dm2026-discovery-categories__module::before {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
-  background:
-    linear-gradient(90deg, rgba(14, 110, 100, 0.032) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(14, 110, 100, 0.026) 1px, transparent 1px);
-  background-size: 2.8rem 2.8rem;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.68), transparent 82%);
   pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), transparent 34%, rgba(14, 110, 100, 0.035));
 }
 
 .dm2026-discovery-categories__glow {
   position: absolute;
-  z-index: -1;
-  border-radius: var(--dm-radius-pill);
   pointer-events: none;
+  border-radius: 999px;
+  filter: blur(28px);
+  opacity: 0.28;
 }
 
 .dm2026-discovery-categories__glow--teal {
-  inset-block-start: -7rem;
-  inset-inline-start: 6%;
-  inline-size: 17rem;
-  block-size: 17rem;
-  background: rgba(42, 161, 146, 0.12);
+  inset-block-start: 10%;
+  inset-inline-end: 8%;
+  inline-size: 11rem;
+  block-size: 11rem;
+  background: rgba(14, 110, 100, 0.14);
 }
 
 .dm2026-discovery-categories__glow--gold {
-  inset-block-end: -8rem;
-  inset-inline-end: 4%;
-  inline-size: 15rem;
-  block-size: 15rem;
-  background: rgba(201, 162, 75, 0.1);
+  inset-block-end: 8%;
+  inset-inline-start: 10%;
+  inline-size: 9rem;
+  block-size: 9rem;
+  background: rgba(201, 162, 75, 0.09);
 }
 
 .dm2026-discovery-categories__header {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: clamp(var(--dm-space-3), 2vw, var(--dm-space-5));
-  margin-block-end: var(--dm-space-3);
-}
-
-.dm2026-discovery-categories__header > div {
+  position: relative;
+  z-index: 1;
   display: grid;
-  gap: 0.32rem;
+  gap: var(--dm-space-2);
   max-inline-size: 42rem;
+  margin-block-end: clamp(1.1rem, 2.5vw, 1.75rem);
 }
 
 .dm2026-discovery-categories__badge {
-  flex: 0 0 auto;
-  background: rgba(239, 246, 244, 0.84);
+  inline-size: max-content;
+  background: rgba(255, 255, 255, 0.66);
+  border-color: rgba(14, 110, 100, 0.14);
+  color: var(--dm-color-primary-700);
 }
 
 .dm2026-discovery-categories__header h2,
@@ -2456,746 +2448,289 @@
 }
 
 .dm2026-discovery-categories__header h2 {
-  color: var(--dm-teal-950);
-  font-size: clamp(1.18rem, 1.9vw, var(--dm-type-h2));
-  font-weight: var(--dm-weight-semibold);
-  line-height: var(--dm-type-h2-line);
-  letter-spacing: -0.018em;
+  color: var(--dm-color-ink);
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+  line-height: 1.08;
+  letter-spacing: -0.028em;
+}
+
+[dir='rtl'] .dm2026-discovery-categories__header h2 {
+  letter-spacing: 0;
+  line-height: 1.25;
 }
 
 .dm2026-discovery-categories__header p {
-  color: var(--dm-color-text-muted);
-  font-size: var(--dm-type-small);
-  line-height: var(--dm-type-small-line);
+  max-inline-size: 34rem;
+  color: var(--dm-color-muted);
+  font-size: clamp(0.98rem, 1.4vw, 1.08rem);
+  line-height: 1.7;
 }
 
 .dm2026-discovery-categories__grid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(var(--dm-space-2), 1.2vw, var(--dm-space-3));
+  gap: clamp(0.85rem, 1.7vw, 1.1rem);
 }
 
 .dm2026-discovery-card {
   position: relative;
-  min-block-size: 13.5rem;
   display: grid;
-  grid-template-rows: minmax(5.8rem, 1fr) auto auto;
-  gap: var(--dm-space-2);
+  gap: var(--dm-space-3);
+  min-block-size: 100%;
+  padding: clamp(1rem, 1.7vw, 1.35rem);
   overflow: hidden;
-  border-color: rgba(14, 110, 100, 0.13);
-  border-radius: clamp(var(--dm-radius-lg), 1.8vw, var(--dm-radius-xl));
-  background:
-    radial-gradient(220px circle at 88% 10%, rgba(42, 161, 146, 0.12), transparent 58%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(247, 252, 250, 0.62));
-  color: var(--dm-ink-700);
-  padding: clamp(var(--dm-space-3), 1.55vw, var(--dm-space-4));
-  text-align: start;
   text-decoration: none;
-  box-shadow: var(--dm-shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: inherit;
+  border: 1px solid rgba(14, 110, 100, 0.1);
+  border-radius: calc(var(--dm-radius-xl) + 0.15rem);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(247, 250, 248, 0.67)),
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.72), transparent 38%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 16px 38px rgba(11, 40, 38, 0.06);
   transition: transform var(--dm-motion-fast) var(--dm-ease), border-color var(--dm-motion-fast) var(--dm-ease), box-shadow var(--dm-motion-fast) var(--dm-ease), background-color var(--dm-motion-fast) var(--dm-ease);
 }
 
 .dm2026-discovery-card::before {
   content: '';
   position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), transparent 36%, rgba(255, 255, 255, 0.28));
-  opacity: 0.78;
+  inset: 0;
   pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 38%, rgba(14, 110, 100, 0.026));
 }
 
-.dm2026-discovery-card::after {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline-start: -55%;
-  inline-size: 42%;
-  block-size: 100%;
-  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.28), transparent);
-  opacity: 0;
-  transform: skewX(-18deg);
-  pointer-events: none;
-}
-
+.dm2026-discovery-card--hero,
 .dm2026-discovery-card--large {
   grid-column: span 4;
-  min-block-size: 14.75rem;
+  min-block-size: 20rem;
 }
 
+.dm2026-discovery-card--secondary,
 .dm2026-discovery-card--medium {
   grid-column: span 3;
-  min-block-size: 11.8rem;
+  min-block-size: 15rem;
 }
 
 .dm2026-discovery-card--offers {
-  border-color: rgba(201, 162, 75, 0.2);
+  border-color: rgba(201, 162, 75, 0.18);
   background:
-    radial-gradient(220px circle at 86% 12%, rgba(201, 162, 75, 0.15), transparent 58%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 250, 238, 0.68));
+    linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(250, 247, 239, 0.7)),
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.74), transparent 38%);
 }
 
 .dm2026-discovery-card[href]:hover,
+.dm2026-discovery-card:hover,
 .dm2026-discovery-card[href]:focus-visible {
-  border-color: rgba(14, 110, 100, 0.28);
-  box-shadow: var(--dm-shadow-focus-card);
-  transform: translateY(-2px);
-}
-
-.dm2026-discovery-card[href]:hover::after,
-.dm2026-discovery-card[href]:focus-visible::after {
-  animation: dm2026-discovery-shine 1300ms var(--dm-ease) both;
+  transform: translateY(-3px);
+  border-color: rgba(14, 110, 100, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 22px 50px rgba(11, 40, 38, 0.085);
 }
 
 .dm2026-discovery-card[href]:focus-visible {
-  outline: none;
-  box-shadow: var(--dm-focus-ring), var(--dm-shadow-focus-card);
+  outline: 3px solid rgba(14, 110, 100, 0.24);
+  outline-offset: 4px;
 }
 
-.dm2026-discovery-card__scene,
+.dm2026-discovery-card__visual,
 .dm2026-discovery-card__copy,
 .dm2026-discovery-card__cta {
   position: relative;
   z-index: 1;
 }
 
-.dm2026-discovery-card__scene {
-  min-block-size: 5.85rem;
+.dm2026-discovery-card__visual {
   display: grid;
   place-items: center;
-  border: 1px solid rgba(14, 110, 100, 0.09);
-  border-radius: var(--dm-radius-lg);
+  min-block-size: 8.7rem;
+}
+
+.dm2026-discovery-card--hero .dm2026-discovery-card__visual {
+  min-block-size: 10.6rem;
+}
+
+.dm2026-discovery-card__visual-plate {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: min(10.4rem, 78%);
+  aspect-ratio: 1;
+  border-radius: 2rem;
   background:
-    radial-gradient(140px circle at 50% 34%, rgba(255, 255, 255, 0.76), transparent 60%),
-    rgba(239, 246, 244, 0.48);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(235, 245, 242, 0.66)),
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.9), transparent 42%);
+  box-shadow:
+    14px 18px 34px rgba(11, 40, 38, 0.085),
+    -10px -10px 24px rgba(255, 255, 255, 0.72),
+    inset 6px 6px 14px rgba(11, 40, 38, 0.035),
+    inset -7px -7px 16px rgba(255, 255, 255, 0.82);
+  transition: transform var(--dm-motion-fast) var(--dm-ease), box-shadow var(--dm-motion-fast) var(--dm-ease);
 }
 
-.dm2026-discovery-card--large .dm2026-discovery-card__scene {
-  min-block-size: 7rem;
+.dm2026-discovery-card__visual-plate::before {
+  content: '';
+  position: absolute;
+  inset: 13%;
+  border-radius: 1.45rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.42), rgba(14, 110, 100, 0.045));
+  box-shadow:
+    inset 5px 5px 12px rgba(11, 40, 38, 0.045),
+    inset -5px -5px 13px rgba(255, 255, 255, 0.78);
 }
 
-.dm2026-discovery-card--offers .dm2026-discovery-card__scene {
-  border-color: rgba(201, 162, 75, 0.13);
+.dm2026-discovery-card__visual-plate::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 -58%;
+  inline-size: 42%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  opacity: 0;
+  transform: skewX(-16deg);
+  transition: opacity var(--dm-motion-fast) var(--dm-ease), transform 0.85s var(--dm-ease);
+}
+
+.dm2026-discovery-card--hero .dm2026-discovery-card__visual-plate {
+  inline-size: min(11.7rem, 82%);
+  border-radius: 2.25rem;
+}
+
+.dm2026-discovery-card--offers .dm2026-discovery-card__visual-plate {
   background:
-    radial-gradient(150px circle at 50% 34%, rgba(255, 255, 255, 0.82), transparent 62%),
-    rgba(255, 250, 238, 0.66);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(250, 243, 226, 0.72)),
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.9), transparent 42%);
+  box-shadow:
+    14px 18px 34px rgba(77, 57, 13, 0.075),
+    -10px -10px 24px rgba(255, 255, 255, 0.72),
+    inset 6px 6px 14px rgba(77, 57, 13, 0.035),
+    inset -7px -7px 16px rgba(255, 255, 255, 0.84);
 }
 
-.dm2026-discovery-card__svg {
-  inline-size: min(8.9rem, 82%);
-  block-size: auto;
+.dm2026-discovery-card:hover .dm2026-discovery-card__visual-plate,
+.dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__visual-plate {
+  transform: translateY(-2px);
+  box-shadow:
+    18px 24px 42px rgba(11, 40, 38, 0.1),
+    -11px -11px 26px rgba(255, 255, 255, 0.76),
+    inset 7px 7px 15px rgba(11, 40, 38, 0.04),
+    inset -8px -8px 17px rgba(255, 255, 255, 0.86);
+}
+
+.dm2026-discovery-card:hover .dm2026-discovery-card__visual-plate::after,
+.dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__visual-plate::after {
+  opacity: 0.62;
+  transform: translateX(390%) skewX(-16deg);
+}
+
+.dm2026-discovery-card__embossed-svg {
+  position: relative;
+  z-index: 1;
+  inline-size: 68%;
+  block-size: 68%;
   overflow: visible;
 }
 
-.dm2026-discovery-card__halo {
-  fill: rgba(42, 161, 146, 0.1);
-  stroke: rgba(42, 161, 146, 0.13);
-  stroke-width: 1;
+.dm2026-discovery-card--secondary .dm2026-discovery-card__embossed-svg {
+  inline-size: 64%;
+  block-size: 64%;
 }
 
-.dm2026-discovery-card__halo--gold {
-  fill: rgba(201, 162, 75, 0.14);
-  stroke: rgba(201, 162, 75, 0.16);
+.dm2026-discovery-card__relief-fill,
+.dm2026-discovery-card__relief-line,
+.dm2026-discovery-card__relief-accent,
+.dm2026-discovery-card__relief-dot {
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter:
+    drop-shadow(2px 3px 3px rgba(11, 40, 38, 0.12))
+    drop-shadow(-2px -2px 2px rgba(255, 255, 255, 0.88));
 }
 
-.dm2026-discovery-card__line,
-.dm2026-discovery-card__shine,
-.dm2026-discovery-card__sparkle,
-.dm2026-discovery-card__pulse,
-.dm2026-discovery-card__beacon {
+.dm2026-discovery-card__relief-fill {
+  fill: rgba(238, 247, 244, 0.72);
+  stroke: rgba(14, 110, 100, 0.18);
+  stroke-width: 2.4;
+}
+
+.dm2026-discovery-card__relief-line {
   fill: none;
-  stroke: var(--dm-color-brand-strong);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 3;
+  stroke: rgba(14, 110, 100, 0.32);
+  stroke-width: 4.2;
 }
 
-.dm2026-discovery-card__line--soft,
-.dm2026-discovery-card__shine,
-.dm2026-discovery-card__pulse,
-.dm2026-discovery-card__beacon {
-  stroke-width: 2.2;
-  opacity: 0.72;
+.dm2026-discovery-card__relief-accent {
+  fill: none;
+  stroke: rgba(14, 110, 100, 0.27);
+  stroke-width: 3.5;
 }
 
-.dm2026-discovery-card__line--gold,
-.dm2026-discovery-card__shine--gold,
-.dm2026-discovery-card__sparkle--gold {
-  stroke: var(--dm-color-accent-gold);
-}
-
-.dm2026-discovery-card__droplet,
-.dm2026-discovery-card__fluid,
-.dm2026-discovery-card__paw,
-.dm2026-discovery-card__toe,
-.dm2026-discovery-card__dot,
-.dm2026-discovery-card__molecule {
-  fill: rgba(42, 161, 146, 0.16);
-  stroke: var(--dm-color-brand-strong);
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.dm2026-discovery-card__relief-dot {
+  fill: rgba(238, 247, 244, 0.74);
+  stroke: rgba(14, 110, 100, 0.2);
   stroke-width: 2.2;
 }
 
-.dm2026-discovery-card--offers .dm2026-discovery-card__dot {
-  fill: rgba(201, 162, 75, 0.18);
-  stroke: var(--dm-color-accent-gold);
+.dm2026-discovery-card--offers .dm2026-discovery-card__relief-fill,
+.dm2026-discovery-card--offers .dm2026-discovery-card__relief-line,
+.dm2026-discovery-card--offers .dm2026-discovery-card__relief-accent {
+  stroke: rgba(172, 132, 46, 0.36);
 }
 
-.dm2026-discovery-card__shine {
-  stroke: rgba(255, 255, 255, 0.95);
-  stroke-width: 3.2;
-}
-
-.dm2026-discovery-card__shine--gold {
-  stroke: rgba(255, 255, 255, 0.96);
-}
-
-.dm2026-discovery-card__sparkle {
-  opacity: 0.78;
-  stroke-width: 2.1;
-  transform-origin: center;
-  animation: dm2026-discovery-sparkle 5.8s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__sparkle--two {
-  animation-delay: 1.8s;
-}
-
-.dm2026-discovery-card__sparkle--gold {
-  animation-delay: 0.8s;
-}
-
-.dm2026-discovery-card__line--float,
-.dm2026-discovery-card__paw,
-.dm2026-discovery-card__toe,
-.dm2026-discovery-card__droplet {
-  animation: dm2026-discovery-float 7.2s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__line--draw,
-.dm2026-discovery-card__pulse,
-.dm2026-discovery-card__beacon {
-  stroke-dasharray: 120;
-  animation: dm2026-discovery-stroke 8s linear infinite;
-}
-
-.dm2026-discovery-card__fluid,
-.dm2026-discovery-card__molecule {
-  animation: dm2026-discovery-fluid 7.6s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__molecule--two {
-  animation-delay: 1.3s;
+.dm2026-discovery-card--offers .dm2026-discovery-card__relief-fill {
+  fill: rgba(250, 243, 226, 0.78);
 }
 
 .dm2026-discovery-card__copy {
   display: grid;
-  gap: 0.28rem;
+  gap: 0.4rem;
 }
 
 .dm2026-discovery-card__copy strong {
-  color: var(--dm-teal-950);
-  font-size: clamp(1rem, 1.25vw, 1.18rem);
-  font-weight: var(--dm-weight-semibold);
-  line-height: var(--dm-type-small-line);
-  letter-spacing: -0.012em;
+  color: var(--dm-color-ink);
+  font-size: clamp(1.08rem, 1.6vw, 1.35rem);
+  line-height: 1.2;
+  letter-spacing: -0.018em;
 }
 
-.dm2026-discovery-card--large .dm2026-discovery-card__copy strong {
-  font-size: clamp(1.12rem, 1.45vw, var(--dm-type-h3));
-  line-height: var(--dm-type-h3-line);
+[dir='rtl'] .dm2026-discovery-card__copy strong {
+  letter-spacing: 0;
+  line-height: 1.35;
 }
 
 .dm2026-discovery-card__copy span {
-  color: var(--dm-color-text-muted);
-  font-size: var(--dm-type-caption);
-  line-height: var(--dm-type-caption-line);
+  color: var(--dm-color-muted);
+  font-size: 0.95rem;
+  line-height: 1.62;
 }
 
 .dm2026-discovery-card__cta {
+  align-self: end;
   justify-self: start;
   display: inline-flex;
   align-items: center;
-  min-block-size: 2rem;
-  border: 1px solid rgba(14, 110, 100, 0.14);
-  border-radius: var(--dm-radius-pill);
-  background: rgba(239, 246, 244, 0.82);
-  color: var(--dm-color-brand-strong);
-  font-size: var(--dm-type-caption);
-  font-weight: var(--dm-weight-semibold);
-  line-height: var(--dm-type-caption-line);
-  padding-inline: 0.7rem;
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__cta {
-  border-color: rgba(201, 162, 75, 0.22);
-  background: rgba(255, 250, 238, 0.86);
-  color: var(--dm-gold-700);
-}
-
-[dir='rtl'] .dm2026-discovery-categories__header h2,
-[dir='rtl'] .dm2026-discovery-card__copy strong {
-  letter-spacing: var(--dm-arabic-letter-spacing);
-}
-
-@keyframes dm2026-discovery-float {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -3px, 0); }
-}
-
-@keyframes dm2026-discovery-sparkle {
-  0%, 70%, 100% { opacity: 0.38; transform: scale(0.92); }
-  78% { opacity: 0.9; transform: scale(1.05); }
-}
-
-@keyframes dm2026-discovery-stroke {
-  0% { stroke-dashoffset: 120; }
-  45%, 100% { stroke-dashoffset: 0; }
-}
-
-@keyframes dm2026-discovery-fluid {
-  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.78; }
-  50% { transform: translate3d(0, -2px, 0); opacity: 0.92; }
-}
-
-@keyframes dm2026-discovery-shine {
-  0% { inset-inline-start: -55%; opacity: 0; }
-  25% { opacity: 0.78; }
-  100% { inset-inline-start: 120%; opacity: 0; }
-}
-
-@media (max-width: 62rem) {
-  .dm2026-discovery-categories__grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-
-  .dm2026-discovery-card--large,
-  .dm2026-discovery-card--medium {
-    grid-column: span 3;
-  }
-
-  .dm2026-discovery-card--offers {
-    grid-column: span 6;
-  }
-}
-
-@media (max-width: 48rem) {
-  .dm2026-discovery-categories {
-    padding-block: var(--dm-space-2) var(--dm-space-10);
-  }
-
-  .dm2026-discovery-categories__module {
-    padding: var(--dm-space-3);
-    border-radius: var(--dm-radius-xl);
-  }
-
-  .dm2026-discovery-categories__header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: var(--dm-space-2);
-  }
-
-  .dm2026-discovery-categories__header h2 {
-    font-size: clamp(1.08rem, 4.8vw, var(--dm-type-h3));
-  }
-
-  .dm2026-discovery-categories__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dm2026-discovery-card--large,
-  .dm2026-discovery-card--medium,
-  .dm2026-discovery-card--offers {
-    grid-column: 1;
-  }
-
-  .dm2026-discovery-card,
-  .dm2026-discovery-card--large,
-  .dm2026-discovery-card--medium {
-    min-block-size: auto;
-    grid-template-columns: minmax(5.9rem, 0.46fr) minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    align-items: center;
-    gap: var(--dm-space-3);
-  }
-
-  .dm2026-discovery-card__scene,
-  .dm2026-discovery-card--large .dm2026-discovery-card__scene {
-    min-block-size: 6.25rem;
-    grid-row: span 2;
-  }
-
-  .dm2026-discovery-card__cta {
-    grid-column: 2;
-  }
-}
-
-@media (max-width: 34rem) {
-  .dm2026-discovery-card,
-  .dm2026-discovery-card--large,
-  .dm2026-discovery-card--medium {
-    grid-template-columns: 1fr;
-  }
-
-  .dm2026-discovery-card__scene,
-  .dm2026-discovery-card--large .dm2026-discovery-card__scene,
-  .dm2026-discovery-card__cta {
-    grid-column: 1;
-  }
-
-  .dm2026-discovery-card__scene,
-  .dm2026-discovery-card--large .dm2026-discovery-card__scene {
-    min-block-size: 6.7rem;
-    grid-row: auto;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dm2026-discovery-card,
-  .dm2026-discovery-card::after,
-  .dm2026-discovery-card__sparkle,
-  .dm2026-discovery-card__line--float,
-  .dm2026-discovery-card__line--draw,
-  .dm2026-discovery-card__pulse,
-  .dm2026-discovery-card__beacon,
-  .dm2026-discovery-card__fluid,
-  .dm2026-discovery-card__molecule,
-  .dm2026-discovery-card__paw,
-  .dm2026-discovery-card__toe,
-  .dm2026-discovery-card__droplet {
-    animation: none;
-    transition: none;
-  }
-
-  .dm2026-discovery-card[href]:hover,
-  .dm2026-discovery-card[href]:focus-visible {
-    transform: none;
-  }
-}
-
-/* PR #159 polish: stronger premium hero cards and refined motion scenes. */
-.dm2026-discovery-categories__header {
-  margin-block-end: clamp(var(--dm-space-4), 2.1vw, var(--dm-space-5));
-}
-
-.dm2026-discovery-card {
-  isolation: isolate;
-  border-color: rgba(14, 110, 100, 0.16);
-  background:
-    radial-gradient(240px circle at 82% 8%, rgba(42, 161, 146, 0.14), transparent 56%),
-    radial-gradient(180px circle at 5% 92%, rgba(255, 255, 255, 0.72), transparent 60%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(247, 252, 250, 0.68));
-  box-shadow: 0 16px 38px rgba(11, 40, 38, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.86);
-}
-
-.dm2026-discovery-card--large {
-  min-block-size: clamp(15.9rem, 22vw, 18.25rem);
-  gap: var(--dm-space-3);
-  padding: clamp(var(--dm-space-4), 2vw, var(--dm-space-5));
-  border-color: rgba(14, 110, 100, 0.2);
-  background:
-    radial-gradient(340px circle at 84% 2%, rgba(42, 161, 146, 0.18), transparent 56%),
-    radial-gradient(260px circle at 8% 95%, rgba(201, 162, 75, 0.08), transparent 62%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(247, 252, 250, 0.72));
-  box-shadow: 0 22px 54px rgba(11, 40, 38, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.88);
-}
-
-.dm2026-discovery-card--large::before {
-  background:
-    linear-gradient(140deg, rgba(255, 255, 255, 0.76), transparent 32%, rgba(42, 161, 146, 0.045) 54%, rgba(255, 255, 255, 0.38)),
-    radial-gradient(240px circle at 50% 20%, rgba(255, 255, 255, 0.48), transparent 68%);
-}
-
-.dm2026-discovery-card--beauty {
-  background:
-    radial-gradient(340px circle at 88% 0%, rgba(42, 161, 146, 0.15), transparent 56%),
-    radial-gradient(230px circle at 12% 94%, rgba(201, 162, 75, 0.075), transparent 60%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(247, 252, 250, 0.72));
-}
-
-.dm2026-discovery-card--offers {
-  border-color: rgba(201, 162, 75, 0.28);
-  background:
-    radial-gradient(360px circle at 86% 0%, rgba(201, 162, 75, 0.22), transparent 57%),
-    radial-gradient(240px circle at 9% 94%, rgba(42, 161, 146, 0.09), transparent 62%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 238, 0.76));
-  box-shadow: 0 24px 58px rgba(77, 57, 13, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-}
-
-.dm2026-discovery-card--medium {
-  min-block-size: 12.6rem;
-}
-
-.dm2026-discovery-card:hover {
-  border-color: rgba(14, 110, 100, 0.27);
-  box-shadow: 0 20px 48px rgba(11, 40, 38, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transform: translateY(-1px);
-}
-
-.dm2026-discovery-card--large:hover {
-  transform: translateY(-3px);
-}
-
-.dm2026-discovery-card--offers:hover {
-  border-color: rgba(201, 162, 75, 0.38);
-  box-shadow: 0 24px 58px rgba(77, 57, 13, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.92);
-}
-
-.dm2026-discovery-card[href]:focus-visible {
-  transform: translateY(-2px);
-}
-
-.dm2026-discovery-card__scene {
-  position: relative;
-  overflow: hidden;
-  border-color: rgba(14, 110, 100, 0.12);
-  background:
-    radial-gradient(190px circle at 48% 30%, rgba(255, 255, 255, 0.86), transparent 58%),
-    radial-gradient(160px circle at 92% 8%, rgba(42, 161, 146, 0.13), transparent 56%),
-    rgba(239, 246, 244, 0.55);
-}
-
-.dm2026-discovery-card__scene::before,
-.dm2026-discovery-card__scene::after {
-  content: '';
-  position: absolute;
-  pointer-events: none;
-}
-
-.dm2026-discovery-card__scene::before {
-  inset: 0.55rem;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  border-radius: calc(var(--dm-radius-lg) - 0.18rem);
-  opacity: 0.7;
-}
-
-.dm2026-discovery-card__scene::after {
-  inset-block-start: -35%;
-  inset-inline-start: -28%;
-  inline-size: 46%;
-  block-size: 170%;
-  background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.26), transparent);
-  opacity: 0.68;
-  transform: rotate(18deg);
-  animation: dm2026-discovery-scene-sweep 9.6s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card--large .dm2026-discovery-card__scene {
-  min-block-size: clamp(8.15rem, 11vw, 9.5rem);
-  border-radius: clamp(var(--dm-radius-lg), 1.6vw, var(--dm-radius-xl));
-  background:
-    radial-gradient(220px circle at 50% 34%, rgba(255, 255, 255, 0.9), transparent 58%),
-    radial-gradient(200px circle at 84% 10%, rgba(42, 161, 146, 0.18), transparent 58%),
-    radial-gradient(180px circle at 5% 96%, rgba(201, 162, 75, 0.08), transparent 62%),
-    rgba(239, 246, 244, 0.62);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78), 0 14px 34px rgba(11, 40, 38, 0.08);
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__scene {
-  border-color: rgba(201, 162, 75, 0.2);
-  background:
-    radial-gradient(220px circle at 50% 32%, rgba(255, 255, 255, 0.94), transparent 58%),
-    radial-gradient(210px circle at 86% 8%, rgba(201, 162, 75, 0.22), transparent 60%),
-    radial-gradient(160px circle at 4% 98%, rgba(42, 161, 146, 0.09), transparent 64%),
-    rgba(255, 250, 238, 0.74);
-}
-
-.dm2026-discovery-card__svg--hero {
-  inline-size: min(10.8rem, 88%);
-  filter: drop-shadow(0 16px 24px rgba(11, 40, 38, 0.12));
-}
-
-.dm2026-discovery-card__aura {
-  fill: rgba(42, 161, 146, 0.105);
-  stroke: rgba(42, 161, 146, 0.13);
-  stroke-width: 1.1;
-  transform-origin: center;
-  animation: dm2026-discovery-aura 8.8s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__aura--tight {
-  fill: rgba(255, 255, 255, 0.34);
-  stroke: rgba(255, 255, 255, 0.62);
-  animation-delay: 1.1s;
-}
-
-.dm2026-discovery-card__aura--gold {
-  fill: rgba(201, 162, 75, 0.15);
-  stroke: rgba(201, 162, 75, 0.2);
-}
-
-.dm2026-discovery-card__tooth-glass,
-.dm2026-discovery-card__serum-drop,
-.dm2026-discovery-card__jewel {
-  fill: rgba(255, 255, 255, 0.44);
-  stroke: var(--dm-color-brand-strong);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2.35;
-  transform-origin: center;
-}
-
-.dm2026-discovery-card__tooth-glass {
-  fill: rgba(255, 255, 255, 0.52);
-  stroke-width: 2.55;
-  animation: dm2026-discovery-premium-breathe 7.4s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__tooth-edge,
-.dm2026-discovery-card__tooth-core,
-.dm2026-discovery-card__chrome-arc,
-.dm2026-discovery-card__beauty-glow,
-.dm2026-discovery-card__beauty-contour,
-.dm2026-discovery-card__serum-highlight,
-.dm2026-discovery-card__jewel-facet,
-.dm2026-discovery-card__jewel-shine,
-.dm2026-discovery-card__jewel-ray {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.dm2026-discovery-card__tooth-edge,
-.dm2026-discovery-card__beauty-contour--primary {
-  stroke: var(--dm-color-brand-strong);
-  stroke-width: 2.6;
-}
-
-.dm2026-discovery-card__tooth-core,
-.dm2026-discovery-card__beauty-contour--secondary,
-.dm2026-discovery-card__beauty-contour--soft,
-.dm2026-discovery-card__chrome-arc,
-.dm2026-discovery-card__beauty-glow {
-  stroke: rgba(14, 110, 100, 0.58);
-  stroke-width: 2.05;
-}
-
-.dm2026-discovery-card__beauty-glow,
-.dm2026-discovery-card__beauty-contour--primary,
-.dm2026-discovery-card__beauty-contour--secondary {
-  stroke-dasharray: 190;
-  animation: dm2026-discovery-contour-lux 9.2s linear infinite;
-}
-
-.dm2026-discovery-card__beauty-contour--secondary {
-  animation-delay: 1.2s;
-}
-
-.dm2026-discovery-card__enamel-sweep,
-.dm2026-discovery-card__serum-highlight,
-.dm2026-discovery-card__jewel-shine {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.96);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 4.1;
-  stroke-dasharray: 46 88;
-  animation: dm2026-discovery-highlight-lux 6.8s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__enamel-sweep--beauty {
-  stroke-width: 3.2;
-  animation-delay: 1.4s;
-}
-
-.dm2026-discovery-card__serum-drop {
-  fill: rgba(255, 255, 255, 0.38);
-  animation: dm2026-discovery-premium-breathe 7.9s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__jewel {
-  fill: rgba(255, 250, 238, 0.68);
-  stroke: var(--dm-color-accent-gold);
-  stroke-width: 2.5;
-  animation: dm2026-discovery-jewel-breathe 8.4s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__jewel-shadow {
-  fill: rgba(77, 57, 13, 0.08);
-}
-
-.dm2026-discovery-card__jewel-facet {
-  stroke: rgba(138, 106, 30, 0.48);
-  stroke-width: 1.7;
-}
-
-.dm2026-discovery-card__jewel-core {
-  fill: rgba(201, 162, 75, 0.14);
-  stroke: rgba(138, 106, 30, 0.38);
-  stroke-linejoin: round;
-  stroke-width: 1.4;
-  animation: dm2026-discovery-gem-core 7.2s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__jewel-shine,
-.dm2026-discovery-card__jewel-ray {
-  stroke: rgba(255, 255, 255, 0.98);
-}
-
-.dm2026-discovery-card__jewel-ray {
-  stroke-width: 2.2;
-  transform-origin: center;
-  animation: dm2026-discovery-sparkle 6.2s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__jewel-ray--two {
-  animation-delay: 1.6s;
-}
-
-.dm2026-discovery-card__jewel-ray--three {
-  animation-delay: 2.4s;
-}
-
-.dm2026-discovery-card__micro-glint,
-.dm2026-discovery-card__champagne-glint {
-  fill: rgba(255, 255, 255, 0.95);
-  stroke: rgba(14, 110, 100, 0.18);
-  stroke-width: 0.8;
-  transform-origin: center;
-  animation: dm2026-discovery-glint 5.9s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__champagne-glint {
-  fill: rgba(255, 250, 238, 0.98);
-  stroke: rgba(201, 162, 75, 0.25);
-}
-
-.dm2026-discovery-card__micro-glint--two,
-.dm2026-discovery-card__champagne-glint--two {
-  animation-delay: 2.1s;
-}
-
-.dm2026-discovery-card--medium .dm2026-discovery-card__scene {
-  min-block-size: 6.35rem;
-}
-
-.dm2026-discovery-card--medium .dm2026-discovery-card__svg {
-  inline-size: min(8rem, 82%);
-  filter: drop-shadow(0 10px 18px rgba(11, 40, 38, 0.09));
-}
-
-.dm2026-discovery-card--medium .dm2026-discovery-card__line,
-.dm2026-discovery-card--medium .dm2026-discovery-card__pulse,
-.dm2026-discovery-card--medium .dm2026-discovery-card__beacon {
-  stroke-width: 2.45;
-}
-
-.dm2026-discovery-card__cta {
-  gap: 0.34rem;
-  min-block-size: 2.2rem;
-  border-color: rgba(14, 110, 100, 0.18);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(239, 246, 244, 0.82));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 8px 18px rgba(11, 40, 38, 0.06);
-  transition: transform var(--dm-motion-fast) var(--dm-ease), border-color var(--dm-motion-fast) var(--dm-ease), background-color var(--dm-motion-fast) var(--dm-ease), box-shadow var(--dm-motion-fast) var(--dm-ease);
+  justify-content: center;
+  gap: 0.35rem;
+  min-block-size: 2.25rem;
+  padding-inline: 0.85rem;
+  border: 1px solid rgba(14, 110, 100, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--dm-color-primary-700);
+  font-size: 0.88rem;
+  font-weight: 750;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 8px 18px rgba(11, 40, 38, 0.045);
+  transition: transform var(--dm-motion-fast) var(--dm-ease), border-color var(--dm-motion-fast) var(--dm-ease), box-shadow var(--dm-motion-fast) var(--dm-ease);
 }
 
 .dm2026-discovery-card__cta::after {
   content: '→';
-  font-size: 0.9em;
-  opacity: 0.72;
-  transform: translateX(0);
+  opacity: 0.68;
   transition: transform var(--dm-motion-fast) var(--dm-ease), opacity var(--dm-motion-fast) var(--dm-ease);
 }
 
@@ -3203,29 +2738,23 @@
   content: '←';
 }
 
-.dm2026-discovery-card--large .dm2026-discovery-card__cta {
-  min-block-size: 2.35rem;
-  border-color: rgba(14, 110, 100, 0.22);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(239, 246, 244, 0.9));
-  padding-inline: 0.86rem;
-}
-
 .dm2026-discovery-card--offers .dm2026-discovery-card__cta {
-  border-color: rgba(201, 162, 75, 0.3);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 238, 0.88));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76), 0 10px 22px rgba(77, 57, 13, 0.08);
+  border-color: rgba(201, 162, 75, 0.24);
+  color: rgb(125, 93, 26);
 }
 
 .dm2026-discovery-card:hover .dm2026-discovery-card__cta,
 .dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__cta {
-  border-color: rgba(14, 110, 100, 0.28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 10px 22px rgba(11, 40, 38, 0.09);
   transform: translateY(-1px);
+  border-color: rgba(14, 110, 100, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    0 10px 22px rgba(11, 40, 38, 0.06);
 }
 
 .dm2026-discovery-card:hover .dm2026-discovery-card__cta::after,
 .dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__cta::after {
-  opacity: 0.95;
+  opacity: 0.92;
   transform: translateX(2px);
 }
 
@@ -3234,81 +2763,65 @@
   transform: translateX(-2px);
 }
 
-.dm2026-discovery-card--offers:hover .dm2026-discovery-card__cta,
-.dm2026-discovery-card--offers[href]:focus-visible .dm2026-discovery-card__cta {
-  border-color: rgba(201, 162, 75, 0.4);
-}
+@media (max-width: 64rem) {
+  .dm2026-discovery-card--hero,
+  .dm2026-discovery-card--large {
+    grid-column: span 6;
+  }
 
-@keyframes dm2026-discovery-scene-sweep {
-  0%, 38%, 100% { transform: translateX(-30%) rotate(18deg); opacity: 0; }
-  52% { opacity: 0.56; }
-  72% { transform: translateX(260%) rotate(18deg); opacity: 0; }
-}
-
-@keyframes dm2026-discovery-aura {
-  0%, 100% { transform: scale(0.985); opacity: 0.72; }
-  50% { transform: scale(1.025); opacity: 0.98; }
-}
-
-@keyframes dm2026-discovery-premium-breathe {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(0, -2px, 0) scale(1.012); }
-}
-
-@keyframes dm2026-discovery-contour-lux {
-  0% { stroke-dashoffset: 190; opacity: 0.5; }
-  36% { opacity: 0.86; }
-  72%, 100% { stroke-dashoffset: 0; opacity: 0.72; }
-}
-
-@keyframes dm2026-discovery-highlight-lux {
-  0%, 26%, 100% { stroke-dashoffset: 92; opacity: 0; }
-  46% { opacity: 0.92; }
-  72% { stroke-dashoffset: -38; opacity: 0; }
-}
-
-@keyframes dm2026-discovery-jewel-breathe {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); filter: drop-shadow(0 0 0 rgba(201, 162, 75, 0)); }
-  50% { transform: translate3d(0, -2px, 0) scale(1.012); filter: drop-shadow(0 0 10px rgba(201, 162, 75, 0.22)); }
-}
-
-@keyframes dm2026-discovery-gem-core {
-  0%, 100% { opacity: 0.58; }
-  50% { opacity: 0.94; }
-}
-
-@keyframes dm2026-discovery-glint {
-  0%, 68%, 100% { transform: scale(0.82); opacity: 0.2; }
-  78% { transform: scale(1.08); opacity: 0.95; }
+  .dm2026-discovery-card--secondary,
+  .dm2026-discovery-card--medium {
+    grid-column: span 6;
+  }
 }
 
 @media (max-width: 48rem) {
-  .dm2026-discovery-card--large {
-    min-block-size: auto;
+  .dm2026-discovery-categories {
+    padding-block: 2rem;
+  }
+
+  .dm2026-discovery-categories__module {
     padding: var(--dm-space-3);
   }
 
-  .dm2026-discovery-card--large .dm2026-discovery-card__scene,
-  .dm2026-discovery-card--medium .dm2026-discovery-card__scene {
-    min-block-size: 7rem;
+  .dm2026-discovery-categories__grid {
+    grid-template-columns: 1fr;
   }
 
-  .dm2026-discovery-card__svg--hero {
-    inline-size: min(9.5rem, 84%);
+  .dm2026-discovery-card--hero,
+  .dm2026-discovery-card--large,
+  .dm2026-discovery-card--secondary,
+  .dm2026-discovery-card--medium {
+    grid-column: 1;
+    min-block-size: auto;
   }
-}
 
-@media (max-width: 34rem) {
-  .dm2026-discovery-card--large .dm2026-discovery-card__scene,
-  .dm2026-discovery-card--medium .dm2026-discovery-card__scene {
-    min-block-size: 7.45rem;
+  .dm2026-discovery-card__visual,
+  .dm2026-discovery-card--hero .dm2026-discovery-card__visual {
+    min-block-size: 7.7rem;
+  }
+
+  .dm2026-discovery-card__visual-plate,
+  .dm2026-discovery-card--hero .dm2026-discovery-card__visual-plate {
+    inline-size: min(9rem, 68%);
+    border-radius: 1.8rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .dm2026-discovery-card,
+  .dm2026-discovery-card__visual-plate,
+  .dm2026-discovery-card__visual-plate::after,
+  .dm2026-discovery-card__cta,
+  .dm2026-discovery-card__cta::after {
+    transition: none;
+  }
+
+  .dm2026-discovery-card[href]:hover,
   .dm2026-discovery-card:hover,
-  .dm2026-discovery-card--large:hover,
   .dm2026-discovery-card[href]:focus-visible,
+  .dm2026-discovery-card:hover .dm2026-discovery-card__visual-plate,
+  .dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__visual-plate,
   .dm2026-discovery-card:hover .dm2026-discovery-card__cta,
   .dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__cta,
   .dm2026-discovery-card:hover .dm2026-discovery-card__cta::after,
@@ -3316,791 +2829,8 @@
     transform: none;
   }
 
-  .dm2026-discovery-card__scene::after,
-  .dm2026-discovery-card__aura,
-  .dm2026-discovery-card__tooth-glass,
-  .dm2026-discovery-card__beauty-glow,
-  .dm2026-discovery-card__beauty-contour,
-  .dm2026-discovery-card__enamel-sweep,
-  .dm2026-discovery-card__serum-drop,
-  .dm2026-discovery-card__jewel,
-  .dm2026-discovery-card__jewel-core,
-  .dm2026-discovery-card__jewel-ray,
-  .dm2026-discovery-card__micro-glint,
-  .dm2026-discovery-card__champagne-glint {
-    animation: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dm2026-discovery-card,
-  .dm2026-discovery-card__cta,
-  .dm2026-discovery-card__cta::after {
-    transition: none;
-  }
-}
-
-/* PR #159 high-fidelity pass: turn category art into layered motion panels, not icon boxes. */
-.dm2026-discovery-card__scene {
-  isolation: isolate;
-  perspective: 680px;
-  transform-style: preserve-3d;
-  background:
-    linear-gradient(155deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.12) 36%, rgba(14, 110, 100, 0.055) 100%),
-    radial-gradient(220px circle at 52% 30%, rgba(255, 255, 255, 0.92), transparent 58%),
-    radial-gradient(180px circle at 86% 10%, rgba(42, 161, 146, 0.14), transparent 58%),
-    rgba(239, 246, 244, 0.62);
-}
-
-.dm2026-discovery-card__scene > :not(.dm2026-discovery-card__scene-object) {
-  position: absolute;
-  pointer-events: none;
-}
-
-.dm2026-discovery-card__scene-ambient {
-  inset: -22%;
-  z-index: 0;
-  border-radius: 42%;
-  background:
-    conic-gradient(from 210deg at 52% 48%, transparent 0 22%, rgba(255, 255, 255, 0.62) 30%, rgba(42, 161, 146, 0.12) 43%, transparent 58%, rgba(255, 255, 255, 0.42) 74%, transparent 100%);
-  filter: blur(18px);
-  opacity: 0.72;
-  transform: translate3d(0, 0, -38px) rotate(0deg);
-  animation: dm2026-discovery-ambient-orbit 18s linear infinite;
-}
-
-.dm2026-discovery-card__scene-halo {
-  inset-block-start: 8%;
-  inset-inline: 14%;
-  z-index: 1;
-  block-size: 62%;
-  border-radius: 50%;
-  background:
-    radial-gradient(closest-side, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16) 58%, transparent 100%),
-    radial-gradient(closest-side, rgba(42, 161, 146, 0.13), transparent 72%);
-  box-shadow: inset 0 1px 10px rgba(255, 255, 255, 0.64), 0 16px 34px rgba(11, 40, 38, 0.07);
-  transform: translate3d(0, 0, -20px) rotateX(58deg);
-  animation: dm2026-discovery-depth-drift 10.5s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__scene-ribbon {
-  inset-block-start: 12%;
-  inset-inline-start: -20%;
-  z-index: 3;
-  inline-size: 58%;
-  block-size: 120%;
-  border-radius: var(--dm-radius-pill);
-  background: linear-gradient(112deg, transparent 0 24%, rgba(255, 255, 255, 0.34) 43%, rgba(255, 255, 255, 0.08) 58%, transparent 82%);
-  filter: blur(1px);
-  opacity: 0.72;
-  transform: translate3d(-38%, 0, 44px) rotate(21deg);
-  animation: dm2026-discovery-cinematic-ribbon 10.8s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__scene-floor {
-  inset-inline: 18%;
-  inset-block-end: 10%;
-  z-index: 1;
-  block-size: 22%;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(11, 40, 38, 0.13), rgba(11, 40, 38, 0.045) 54%, transparent 82%);
-  filter: blur(8px);
-  opacity: 0.62;
-  transform: translate3d(0, 0, -8px) rotateX(72deg);
-  animation: dm2026-discovery-floor-breathe 8.6s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__scene-object {
-  position: relative;
-  z-index: 4;
-  display: grid;
-  place-items: center;
-  inline-size: 100%;
-  block-size: 100%;
-  transform: translate3d(0, 0, 36px) rotateX(0deg) rotateY(0deg);
-  transform-style: preserve-3d;
-  animation: dm2026-discovery-object-parallax 9.4s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card--large .dm2026-discovery-card__scene {
-  min-block-size: clamp(9.4rem, 12.5vw, 10.75rem);
-  background:
-    linear-gradient(150deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.14) 38%, rgba(14, 110, 100, 0.07) 100%),
-    radial-gradient(260px circle at 52% 24%, rgba(255, 255, 255, 0.96), transparent 58%),
-    radial-gradient(220px circle at 88% 8%, rgba(42, 161, 146, 0.18), transparent 60%),
-    rgba(239, 246, 244, 0.68);
-}
-
-.dm2026-discovery-card--large .dm2026-discovery-card__scene-object {
-  animation-duration: 10.4s;
-}
-
-.dm2026-discovery-card--dental .dm2026-discovery-card__scene-ambient {
-  background:
-    conic-gradient(from 222deg at 52% 50%, transparent 0 18%, rgba(255, 255, 255, 0.78) 29%, rgba(42, 161, 146, 0.16) 45%, transparent 60%, rgba(255, 255, 255, 0.46) 82%, transparent 100%);
-}
-
-.dm2026-discovery-card--dental .dm2026-discovery-card__scene-halo {
-  background:
-    radial-gradient(closest-side, rgba(255, 255, 255, 0.88), rgba(239, 246, 244, 0.34) 58%, transparent 100%),
-    radial-gradient(closest-side, rgba(42, 161, 146, 0.16), transparent 72%);
-}
-
-.dm2026-discovery-card--dental .dm2026-discovery-card__scene::before {
-  border-color: rgba(255, 255, 255, 0.72);
-  box-shadow: inset 0 0 32px rgba(255, 255, 255, 0.34), inset 0 -18px 34px rgba(42, 161, 146, 0.055);
-}
-
-.dm2026-discovery-card--beauty .dm2026-discovery-card__scene-ambient {
-  background:
-    conic-gradient(from 170deg at 50% 48%, transparent 0 20%, rgba(255, 255, 255, 0.7) 31%, rgba(201, 162, 75, 0.095) 42%, rgba(42, 161, 146, 0.13) 55%, transparent 72%, rgba(255, 255, 255, 0.5) 86%, transparent 100%);
-}
-
-.dm2026-discovery-card--beauty .dm2026-discovery-card__scene-halo {
-  inset-inline: 10% 18%;
-  border-radius: 44% 56% 48% 52%;
-  background:
-    radial-gradient(closest-side, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 60%, transparent 100%),
-    radial-gradient(closest-side, rgba(201, 162, 75, 0.095), transparent 72%);
-}
-
-.dm2026-discovery-card--beauty .dm2026-discovery-card__scene-ribbon {
-  background: linear-gradient(112deg, transparent 0 24%, rgba(255, 255, 255, 0.4) 40%, rgba(201, 162, 75, 0.08) 56%, transparent 82%);
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__scene-ambient {
-  background:
-    conic-gradient(from 218deg at 52% 50%, transparent 0 16%, rgba(255, 250, 238, 0.84) 28%, rgba(201, 162, 75, 0.24) 42%, transparent 58%, rgba(255, 255, 255, 0.48) 76%, transparent 100%);
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__scene-halo {
-  background:
-    radial-gradient(closest-side, rgba(255, 250, 238, 0.86), rgba(201, 162, 75, 0.13) 58%, transparent 100%),
-    radial-gradient(closest-side, rgba(42, 161, 146, 0.08), transparent 72%);
-  box-shadow: inset 0 1px 12px rgba(255, 255, 255, 0.72), 0 18px 38px rgba(77, 57, 13, 0.09);
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__scene-ribbon {
-  background: linear-gradient(112deg, transparent 0 22%, rgba(255, 255, 255, 0.52) 39%, rgba(201, 162, 75, 0.12) 57%, transparent 82%);
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__scene-floor {
-  background: radial-gradient(closest-side, rgba(77, 57, 13, 0.16), rgba(77, 57, 13, 0.05) 54%, transparent 82%);
-}
-
-.dm2026-discovery-card--medium .dm2026-discovery-card__scene {
-  background:
-    linear-gradient(150deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.12) 38%, rgba(14, 110, 100, 0.045) 100%),
-    radial-gradient(170px circle at 54% 30%, rgba(255, 255, 255, 0.82), transparent 60%),
-    rgba(239, 246, 244, 0.56);
-}
-
-.dm2026-discovery-card--medium .dm2026-discovery-card__scene-halo {
-  inset-inline: 20%;
-  inset-block-start: 14%;
-  block-size: 56%;
-  opacity: 0.78;
-}
-
-.dm2026-discovery-card--medium .dm2026-discovery-card__scene-ribbon {
-  inline-size: 46%;
-  opacity: 0.48;
-  animation-duration: 13s;
-}
-
-.dm2026-discovery-card--medium .dm2026-discovery-card__scene-object {
-  animation-duration: 11.6s;
-}
-
-.dm2026-discovery-card:hover .dm2026-discovery-card__scene-object,
-.dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__scene-object {
-  animation-duration: 6.8s;
-}
-
-.dm2026-discovery-card:hover .dm2026-discovery-card__scene-ribbon,
-.dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__scene-ribbon {
-  opacity: 0.9;
-  animation-duration: 6.5s;
-}
-
-@keyframes dm2026-discovery-ambient-orbit {
-  0% { transform: translate3d(-1%, 0, -38px) rotate(0deg) scale(1); }
-  50% { transform: translate3d(1%, -1%, -38px) rotate(180deg) scale(1.04); }
-  100% { transform: translate3d(-1%, 0, -38px) rotate(360deg) scale(1); }
-}
-
-@keyframes dm2026-discovery-depth-drift {
-  0%, 100% { transform: translate3d(-1%, 1%, -20px) rotateX(58deg) scale(0.98); opacity: 0.72; }
-  50% { transform: translate3d(1%, -1%, -20px) rotateX(58deg) scale(1.04); opacity: 0.95; }
-}
-
-@keyframes dm2026-discovery-cinematic-ribbon {
-  0%, 22%, 100% { transform: translate3d(-56%, 0, 44px) rotate(21deg); opacity: 0; }
-  42% { opacity: 0.7; }
-  72% { transform: translate3d(245%, 0, 44px) rotate(21deg); opacity: 0; }
-}
-
-@keyframes dm2026-discovery-floor-breathe {
-  0%, 100% { transform: translate3d(0, 0, -8px) rotateX(72deg) scale(0.92); opacity: 0.46; }
-  50% { transform: translate3d(0, 1px, -8px) rotateX(72deg) scale(1.08); opacity: 0.68; }
-}
-
-@keyframes dm2026-discovery-object-parallax {
-  0%, 100% { transform: translate3d(0, 0, 36px) rotateX(0deg) rotateY(-1.2deg); }
-  38% { transform: translate3d(1px, -2px, 42px) rotateX(1.1deg) rotateY(1.4deg); }
-  72% { transform: translate3d(-1px, -1px, 39px) rotateX(-0.7deg) rotateY(0.8deg); }
-}
-
-@media (max-width: 48rem) {
-  .dm2026-discovery-card--large .dm2026-discovery-card__scene {
-    min-block-size: 8rem;
-  }
-
-  .dm2026-discovery-card__scene-ambient {
-    inset: -18%;
-    filter: blur(16px);
-  }
-
-  .dm2026-discovery-card__scene-ribbon {
-    opacity: 0.5;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dm2026-discovery-card__scene-ambient,
-  .dm2026-discovery-card__scene-halo,
-  .dm2026-discovery-card__scene-ribbon,
-  .dm2026-discovery-card__scene-floor,
-  .dm2026-discovery-card__scene-object {
-    animation: none;
-  }
-}
-
-/* PR #159 reference-inspired sculpted tile pass: calm editorial relief panels. */
-.dm2026-discovery-categories__module::after {
-  content: '';
-  position: absolute;
-  inset: 9% -8% auto -8%;
-  z-index: -1;
-  block-size: 52%;
-  background:
-    radial-gradient(42% 72% at 18% 42%, rgba(255, 255, 255, 0.48), transparent 72%),
-    radial-gradient(42% 72% at 82% 38%, rgba(42, 161, 146, 0.07), transparent 70%),
-    linear-gradient(116deg, transparent 0 18%, rgba(255, 255, 255, 0.34) 31%, rgba(14, 110, 100, 0.035) 48%, rgba(201, 162, 75, 0.04) 65%, transparent 82%);
-  filter: blur(22px);
-  opacity: 0.72;
-  transform: rotate(-2deg);
-  pointer-events: none;
-}
-
-.dm2026-discovery-card {
-  overflow: hidden;
-  border-color: rgba(226, 233, 231, 0.78);
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(250, 252, 250, 0.74) 52%, rgba(239, 246, 244, 0.7)),
-    var(--dm-color-surface-glass);
-  box-shadow:
-    0 18px 42px rgba(11, 40, 38, 0.075),
-    0 1px 0 rgba(255, 255, 255, 0.9) inset,
-    inset 0 -1px 0 rgba(14, 110, 100, 0.04);
-}
-
-.dm2026-discovery-card--hero {
-  border-color: rgba(14, 110, 100, 0.18);
-  background:
-    radial-gradient(120% 90% at 50% -20%, rgba(255, 255, 255, 0.86), transparent 62%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(250, 252, 250, 0.78) 50%, rgba(239, 246, 244, 0.74)),
-    var(--dm-color-surface-glass);
-  box-shadow:
-    0 26px 62px rgba(11, 40, 38, 0.11),
-    0 1px 0 rgba(255, 255, 255, 0.94) inset,
-    inset 0 -1px 0 rgba(14, 110, 100, 0.06);
-}
-
-.dm2026-discovery-card--secondary {
-  border-radius: clamp(var(--dm-radius-lg), 1.5vw, var(--dm-radius-xl));
-}
-
-.dm2026-discovery-card::before {
-  opacity: 1;
-  background:
-    linear-gradient(132deg, rgba(255, 255, 255, 0.78), transparent 30%, rgba(14, 110, 100, 0.032) 54%, rgba(255, 255, 255, 0.38)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent 48%);
-}
-
-.dm2026-discovery-card--hero::after {
-  inline-size: 36%;
-  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.16), transparent);
-}
-
-.dm2026-discovery-card--hero .dm2026-discovery-card__scene {
-  border-color: rgba(255, 255, 255, 0.72);
-  background:
-    radial-gradient(80% 95% at 50% 12%, rgba(255, 255, 255, 0.98), transparent 64%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.74), rgba(239, 246, 244, 0.46) 52%, rgba(14, 110, 100, 0.035)),
-    rgba(255, 255, 255, 0.38);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.86),
-    inset 10px 12px 28px rgba(255, 255, 255, 0.34),
-    inset -16px -18px 38px rgba(11, 40, 38, 0.045),
-    0 18px 42px rgba(11, 40, 38, 0.07);
-}
-
-.dm2026-discovery-card--secondary .dm2026-discovery-card__scene {
-  border-color: rgba(255, 255, 255, 0.64);
-  background:
-    radial-gradient(78% 90% at 50% 14%, rgba(255, 255, 255, 0.9), transparent 64%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(239, 246, 244, 0.44) 56%, rgba(14, 110, 100, 0.032));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.76),
-    inset 8px 10px 24px rgba(255, 255, 255, 0.24),
-    inset -12px -14px 30px rgba(11, 40, 38, 0.035),
-    0 12px 26px rgba(11, 40, 38, 0.055);
-}
-
-.dm2026-discovery-card__scene::before {
-  border-color: rgba(255, 255, 255, 0.78);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    inset 0 0 42px rgba(255, 255, 255, 0.22),
-    0 1px 0 rgba(14, 110, 100, 0.035);
-}
-
-.dm2026-discovery-card__scene::after {
-  background: linear-gradient(108deg, transparent 0 18%, rgba(255, 255, 255, 0.34) 42%, rgba(255, 255, 255, 0.1) 56%, transparent 82%);
-  opacity: 0.5;
-}
-
-.dm2026-discovery-card__scene-halo {
-  opacity: 0.86;
-  background:
-    radial-gradient(closest-side, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.22) 58%, transparent 100%),
-    radial-gradient(closest-side, rgba(14, 110, 100, 0.095), transparent 72%);
-  box-shadow:
-    inset 0 1px 10px rgba(255, 255, 255, 0.74),
-    0 14px 32px rgba(11, 40, 38, 0.065);
-}
-
-.dm2026-discovery-card__scene-object svg {
-  transform-origin: 50% 54%;
-}
-
-.dm2026-discovery-card__aura,
-.dm2026-discovery-card__halo {
-  filter: drop-shadow(0 18px 22px rgba(11, 40, 38, 0.08));
-}
-
-.dm2026-discovery-card__tooth-glass,
-.dm2026-discovery-card__serum-drop,
-.dm2026-discovery-card__jewel,
-.dm2026-discovery-card__paw,
-.dm2026-discovery-card__fluid,
-.dm2026-discovery-card__dot,
-.dm2026-discovery-card__molecule,
-.dm2026-discovery-card__toe {
-  filter:
-    drop-shadow(0 14px 16px rgba(11, 40, 38, 0.105))
-    drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.55));
-}
-
-.dm2026-discovery-card__line,
-.dm2026-discovery-card__beauty-contour,
-.dm2026-discovery-card__tooth-edge,
-.dm2026-discovery-card__tooth-core,
-.dm2026-discovery-card__jewel-facet,
-.dm2026-discovery-card__pulse,
-.dm2026-discovery-card__beacon {
-  filter:
-    drop-shadow(0 8px 10px rgba(11, 40, 38, 0.08))
-    drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.38));
-}
-
-.dm2026-discovery-card--dental .dm2026-discovery-card__tooth-glass {
-  fill: rgba(255, 255, 255, 0.68);
-  stroke: rgba(11, 79, 74, 0.72);
-}
-
-.dm2026-discovery-card--beauty .dm2026-discovery-card__beauty-contour--primary {
-  stroke: rgba(11, 79, 74, 0.76);
-}
-
-.dm2026-discovery-card--beauty .dm2026-discovery-card__serum-drop {
-  fill: rgba(255, 255, 255, 0.58);
-  stroke: rgba(11, 79, 74, 0.62);
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__jewel {
-  fill: rgba(255, 250, 238, 0.78);
-  stroke: rgba(201, 162, 75, 0.88);
-  filter:
-    drop-shadow(0 18px 20px rgba(77, 57, 13, 0.13))
-    drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.65));
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__scene::before {
-  border-color: rgba(255, 250, 238, 0.78);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.78),
-    inset 0 0 42px rgba(201, 162, 75, 0.08),
-    0 1px 0 rgba(201, 162, 75, 0.06);
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__copy strong::after {
-  content: '';
-  display: inline-block;
-  inline-size: 0.42rem;
-  block-size: 0.42rem;
-  margin-inline-start: 0.42rem;
-  border-radius: 50%;
-  background: var(--dm-color-accent-gold);
-  box-shadow: 0 0 0 4px rgba(201, 162, 75, 0.12);
-  vertical-align: 0.12em;
-}
-
-[dir='rtl'] .dm2026-discovery-card--offers .dm2026-discovery-card__copy strong::after {
-  margin-inline: 0.42rem 0;
-}
-
-.dm2026-discovery-card__cta {
-  backdrop-filter: blur(10px) saturate(118%);
-  -webkit-backdrop-filter: blur(10px) saturate(118%);
-  border-color: rgba(255, 255, 255, 0.62);
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(239, 246, 244, 0.76)),
-    rgba(255, 255, 255, 0.62);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.82),
-    0 10px 24px rgba(11, 40, 38, 0.07);
-}
-
-.dm2026-discovery-card--hero .dm2026-discovery-card__cta {
-  color: var(--dm-color-brand-strong);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.86),
-    0 12px 28px rgba(11, 40, 38, 0.085);
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__cta {
-  color: var(--dm-gold-700);
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(255, 250, 238, 0.8)),
-    rgba(255, 250, 238, 0.64);
-}
-
-.dm2026-discovery-card:hover .dm2026-discovery-card__scene,
-.dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__scene {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 10px 12px 28px rgba(255, 255, 255, 0.38),
-    inset -18px -20px 40px rgba(11, 40, 38, 0.05),
-    0 20px 46px rgba(11, 40, 38, 0.09);
-}
-
-@media (max-width: 48rem) {
-  .dm2026-discovery-card--hero .dm2026-discovery-card__scene {
-    min-block-size: 8.4rem;
-  }
-}
-
-/* PR #159-FIX02: premium layered graphic scenes replacing simple icon-card feel. */
-.dm2026-discovery-card__scene {
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  background:
-    radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0) 30%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(238, 248, 245, 0.48));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.84),
-    inset 0 -18px 48px rgba(14, 110, 100, 0.055),
-    0 18px 36px rgba(11, 40, 38, 0.08);
-  transform-style: preserve-3d;
-}
-
-.dm2026-discovery-card--hero .dm2026-discovery-card__scene {
-  min-block-size: 10.75rem;
-  border-radius: calc(var(--dm-radius-xl) - 0.3rem);
-  background:
-    radial-gradient(circle at 23% 18%, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0) 31%),
-    linear-gradient(138deg, rgba(255, 255, 255, 0.82), rgba(236, 248, 245, 0.52) 53%, rgba(255, 255, 255, 0.64));
-}
-
-.dm2026-discovery-card__scene-glass-panel,
-.dm2026-discovery-card__scene-depth,
-.dm2026-discovery-card__scene-vignette {
-  position: absolute;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.dm2026-discovery-card__scene-glass-panel {
-  inset: 11% 9%;
-  border-radius: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(242, 249, 247, 0.28)),
-    radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 36%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    inset 0 -18px 40px rgba(14, 110, 100, 0.055),
-    0 20px 44px rgba(11, 40, 38, 0.095);
-  transform: rotate(-2deg) translateZ(10px);
-}
-
-.dm2026-discovery-card--hero .dm2026-discovery-card__scene-glass-panel {
-  inset: 9% 8%;
-  border-radius: 2.25rem;
-}
-
-.dm2026-discovery-card__scene-depth--back {
-  inset: 14% 17% 24% 12%;
-  border-radius: 999px 999px 48% 52%;
-  background:
-    radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0) 34%),
-    linear-gradient(135deg, rgba(14, 110, 100, 0.13), rgba(255, 255, 255, 0.22));
-  filter: blur(0.1px);
-  opacity: 0.82;
-  transform: rotate(7deg) translateZ(18px);
-  animation: dm2026-discovery-depth-drift 9s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__scene-depth--front {
-  inset: auto 14% 12% 38%;
-  block-size: 34%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(14, 110, 100, 0.16), rgba(255, 255, 255, 0));
-  opacity: 0.72;
-  filter: blur(0.4px);
-  transform: rotate(-10deg) translateZ(28px);
-}
-
-.dm2026-discovery-card__scene-vignette {
-  inset: 0;
-  z-index: 4;
-  border-radius: inherit;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 44%, rgba(11, 40, 38, 0.025)),
-    radial-gradient(circle at 50% 112%, rgba(11, 40, 38, 0.11), rgba(11, 40, 38, 0) 42%);
-  mix-blend-mode: multiply;
-}
-
-.dm2026-discovery-card__scene-object {
-  z-index: 3;
-  transform: translateZ(44px);
-  filter: drop-shadow(0 22px 26px rgba(11, 40, 38, 0.12));
-}
-
-.dm2026-discovery-card:hover .dm2026-discovery-card__scene-object,
-.dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__scene-object {
-  transform: translate3d(0, -2px, 44px) scale(1.018);
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__scene {
-  background:
-    radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0) 31%),
-    linear-gradient(138deg, rgba(255, 255, 255, 0.84), rgba(255, 249, 234, 0.58) 52%, rgba(239, 247, 244, 0.55));
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__scene-glass-panel {
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.76), rgba(255, 247, 226, 0.38)),
-    radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0) 36%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    inset 0 -18px 40px rgba(201, 162, 75, 0.075),
-    0 20px 44px rgba(77, 57, 13, 0.1);
-}
-
-.dm2026-discovery-card--offers .dm2026-discovery-card__scene-depth--back {
-  background:
-    radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 34%),
-    linear-gradient(135deg, rgba(201, 162, 75, 0.2), rgba(255, 255, 255, 0.24));
-}
-
-.dm2026-discovery-card__scene-plate-svg,
-.dm2026-discovery-card__tooth-shell,
-.dm2026-discovery-card__skin-surface,
-.dm2026-discovery-card__jewel-back,
-.dm2026-discovery-card__jewel-facet-fill {
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.dm2026-discovery-card__scene-plate-svg {
-  fill: rgba(255, 255, 255, 0.34);
-  stroke: rgba(255, 255, 255, 0.66);
-  stroke-width: 1;
-  filter: drop-shadow(0 18px 24px rgba(11, 40, 38, 0.075));
-}
-
-.dm2026-discovery-card__scene-plate-svg--beauty {
-  fill: rgba(255, 255, 255, 0.38);
-  stroke: rgba(214, 179, 124, 0.24);
-}
-
-.dm2026-discovery-card__scene-plate-svg--gold {
-  fill: rgba(255, 250, 237, 0.52);
-  stroke: rgba(201, 162, 75, 0.28);
-}
-
-.dm2026-discovery-card__material-shadow {
-  fill: none;
-  stroke: rgba(11, 40, 38, 0.13);
-  stroke-width: 10;
-  stroke-linecap: round;
-  opacity: 0.34;
-  filter: blur(3px);
-}
-
-.dm2026-discovery-card__tooth-shell {
-  fill: rgba(247, 255, 253, 0.88);
-  stroke: rgba(255, 255, 255, 0.88);
-  stroke-width: 2;
-  filter:
-    drop-shadow(0 12px 18px rgba(11, 40, 38, 0.12))
-    drop-shadow(0 -2px 8px rgba(255, 255, 255, 0.74));
-}
-
-.dm2026-discovery-card__tooth-lumen {
-  fill: rgba(255, 255, 255, 0.48);
-  stroke: rgba(14, 110, 100, 0.13);
-  stroke-width: 1;
-}
-
-.dm2026-discovery-card__tooth-core--soft {
-  opacity: 0.45;
-}
-
-.dm2026-discovery-card__surface-sheen {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.82);
-  stroke-width: 3;
-  stroke-linecap: round;
-  opacity: 0.78;
-  stroke-dasharray: 24 92;
-  animation: dm2026-discovery-surface-sheen 5.8s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card__skin-surface {
-  fill: rgba(255, 255, 255, 0.46);
-  stroke: rgba(214, 179, 124, 0.24);
-  stroke-width: 1.4;
-  filter: drop-shadow(0 16px 22px rgba(11, 40, 38, 0.1));
-}
-
-.dm2026-discovery-card__beauty-ribbon {
-  fill: none;
-  stroke: rgba(201, 162, 75, 0.24);
-  stroke-width: 8;
-  stroke-linecap: round;
-  opacity: 0.45;
-  filter: blur(0.6px);
-}
-
-.dm2026-discovery-card__jewel-back {
-  fill: rgba(255, 248, 230, 0.72);
-  stroke: rgba(201, 162, 75, 0.36);
-  stroke-width: 2.2;
-  filter: drop-shadow(0 16px 22px rgba(77, 57, 13, 0.13));
-}
-
-.dm2026-discovery-card__jewel-facet-fill--one {
-  fill: rgba(255, 255, 255, 0.36);
-}
-
-.dm2026-discovery-card__jewel-facet-fill--two {
-  fill: rgba(201, 162, 75, 0.14);
-}
-
-.dm2026-discovery-card__jewel-facet-fill--three {
-  fill: rgba(255, 255, 255, 0.26);
-  animation: dm2026-discovery-gem-core 4.9s var(--dm-ease) infinite;
-}
-
-.dm2026-discovery-card--secondary .dm2026-discovery-card__scene-glass-panel {
-  inset: 12% 10%;
-  border-radius: 1.5rem;
-}
-
-.dm2026-discovery-card--secondary .dm2026-discovery-card__scene-depth--back {
-  inset: 18% 18% 26% 15%;
-  opacity: 0.72;
-}
-
-.dm2026-discovery-card--secondary .dm2026-discovery-card__svg {
-  inline-size: min(8.7rem, 86%);
-}
-
-.dm2026-discovery-card--secondary .dm2026-discovery-card__halo {
-  fill: rgba(255, 255, 255, 0.32);
-  stroke: rgba(14, 110, 100, 0.12);
-  stroke-width: 1.4;
-  filter: drop-shadow(0 14px 18px rgba(11, 40, 38, 0.08));
-}
-
-.dm2026-discovery-card--secondary .dm2026-discovery-card__line,
-.dm2026-discovery-card--secondary .dm2026-discovery-card__paw,
-.dm2026-discovery-card--secondary .dm2026-discovery-card__fluid {
-  filter: drop-shadow(0 9px 14px rgba(11, 40, 38, 0.08));
-}
-
-.dm2026-discovery-card__cta {
-  position: relative;
-  overflow: hidden;
-  border-color: rgba(14, 110, 100, 0.2);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(239, 247, 244, 0.84)),
-    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0) 48%);
-}
-
-.dm2026-discovery-card__cta::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 -55%;
-  inline-size: 42%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.86), transparent);
-  opacity: 0;
-  transform: skewX(-18deg);
-  transition: opacity var(--dm-motion-fast) var(--dm-ease), transform 0.7s var(--dm-ease);
-}
-
-.dm2026-discovery-card:hover .dm2026-discovery-card__cta::before,
-.dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__cta::before {
-  opacity: 0.72;
-  transform: translateX(360%) skewX(-18deg);
-}
-
-@keyframes dm2026-discovery-depth-drift {
-  0%, 100% { transform: rotate(7deg) translate3d(0, 0, 18px) scale(1); }
-  50% { transform: rotate(5deg) translate3d(2px, -2px, 18px) scale(1.025); }
-}
-
-@keyframes dm2026-discovery-surface-sheen {
-  0%, 26%, 100% { stroke-dashoffset: 118; opacity: 0; }
-  46% { opacity: 0.78; }
-  72% { stroke-dashoffset: -28; opacity: 0; }
-}
-
-@media (max-width: 48rem) {
-  .dm2026-discovery-card--hero .dm2026-discovery-card__scene {
-    min-block-size: 8.6rem;
-  }
-
-  .dm2026-discovery-card__scene-glass-panel {
-    inset: 10% 8%;
-    border-radius: 1.65rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dm2026-discovery-card__scene-depth--back,
-  .dm2026-discovery-card__surface-sheen,
-  .dm2026-discovery-card__cta::before {
-    animation: none;
-    transition: none;
-  }
-
-  .dm2026-discovery-card:hover .dm2026-discovery-card__scene-object,
-  .dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__scene-object {
-    transform: translateZ(44px);
+  .dm2026-discovery-card:hover .dm2026-discovery-card__visual-plate::after,
+  .dm2026-discovery-card[href]:focus-visible .dm2026-discovery-card__visual-plate::after {
+    opacity: 0;
   }
 }

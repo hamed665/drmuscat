@@ -172,84 +172,43 @@ Checklist:
 
 UI-K-HOME-2026-D — Provider CTA / List Your Center Section
 
-## 17. UI polish follow-up
 
-A focused polish pass upgraded the existing discovery category section without changing routes, data, backend, SEO infrastructure, fonts, category hierarchy, or surrounding homepage sections.
+## 17. Minimal embossed visual refinement
 
-- Hero cards now have stronger glass depth, larger visual stages, elevated CTA pills, and more premium idle/hover motion.
-- Dental now uses a refined glass tooth scene with enamel sweep, chrome arcs, internal glow, and tiny glints.
-- Beauty & Aesthetics now uses elegant facial contour linework, serum-drop motion, shimmer, and soft glow.
-- Special Offers now uses a champagne-gold jewel/diamond scene with facets, shine, sparkle, and premium glow.
-- Secondary cards received cleaner glass stages, stronger icon treatment, and calmer premium motion while remaining visually subordinate to the hero row.
-- Reduced-motion handling remains enabled for the added motion classes.
+This refinement replaces the previous layered/animated graphic-card direction with the requested premium minimal embossed reference style while preserving the approved card grid, card structure, titles, descriptions, route-safe actions, and Explore pills.
 
-## 18. High-fidelity graphic scene pass
+### What changed
 
-A second focused visual pass moved the section further away from simple icon cards and toward layered premium motion panels. The card content, routes, fonts, brand palette, backend, SEO, and i18n logic were not changed.
-
-- Added reusable cinematic scene layers around every category SVG: ambient light field, dimensional halo, reflective ribbon, contact shadow, and foreground object stage.
-- Hero cards now read more like 2.5D graphic panels with deeper material layering, controlled parallax, natural light travel, and stronger premium presence.
-- Dental, Beauty & Aesthetics, and Special Offers retain their distinct SVG objects while gaining more immersive lighting, reflection, and depth composition.
-- Secondary cards keep a calmer visual hierarchy but no longer read as plain icon boxes because they share the same premium glass stage system.
-- Reduced-motion coverage was extended to the new scene layers.
-
-## 19. Sculpted reference-inspired card pass
-
-A third focused visual pass adapted the newly shared reference direction into the DrMuscat system without copying it literally.
-
-- Added explicit `hero` and `secondary` card variant classes for clearer hierarchy and maintainable styling.
-- Shifted cards toward calmer sculpted editorial tiles with softer relief surfaces, disciplined borders, stronger whitespace, and embossed scene panels.
-- Strengthened SVG object material quality using subtle relief shadows, inner highlights, and restrained brand-compatible teal/champagne accents.
-- Added a minimal premium Special Offers cue while preserving the exact “Special Offers” wording and avoiding discount-style visuals.
-- Refined CTA pills to feel more crisp, glassy, and modern while preserving accessibility and reduced-motion behavior.
-
-## 20. PR #159-FIX02 layered graphic scene replacement
-
-FIX02 directly addresses the remaining simple icon-card concern. The discovery categories section now treats each card visual as a composed premium graphic scene instead of a lone outline icon.
-
-### Simple icon-card issue fixed
-
-- The scene stage now includes multiple visible layers before the SVG object: ambient light, a frosted inner glass panel, rear/front depth layers, halo, ribbon, floor/contact shadow, foreground object, and vignette.
-- Hero SVGs were expanded with material surfaces and object-specific depth layers so the static screenshot reads as a premium graphic panel even before animation.
-- Secondary cards retain simpler hierarchy but share the same layered glass-panel system so Doctors, Labs, Pet Clinic, and Hospitals no longer read as isolated icon blocks.
-
-### Layered graphic scene strategy
-
-- Dental now uses an enamel/glass tooth composition with a translucent shell, inner lumen, contour lines, material shadow, teal halo, and reflective sheen.
-- Beauty & Aesthetics now uses a skin-surface panel, facial contour linework, luminous droplet, warm/teal glass layers, and a soft editorial ribbon.
-- Special Offers now uses a champagne-gold faceted jewel with a back plate, filled facet surfaces, inner reflections, gold halo, and refined glints.
-- Doctors, Labs, Pet Clinic, and Hospitals remain subordinate in scale while gaining the same premium scene frame, depth, and soft medical glow treatment.
-
-### Motion strategy
-
-- Motion remains CSS/SVG-only: slow depth drift, reflective surface sheen, existing float/glow/pulse movement, CTA light sweep, and reduced hover parallax.
-- No animation libraries, images, canvas, video, external icons, or dependencies were added.
-- `prefers-reduced-motion` disables the added depth drift, sheen, and CTA sweep motion.
+- Removed the rendered internal decorative scene stack from the cards and replaced it with one restrained embossed visual plate per card.
+- Replaced the previous hero illustrations with minimal relief symbols: tooth, face/beauty contour, champagne diamond, medical care, lab vessel, veterinary paw/cross, and hospital facility.
+- Rebuilt the discovery CSS block so the active card internals now use soft off-white/pearl/very-light-teal surfaces, subtle inner shadows, gentle outer shadows, and restrained DrMuscat teal accents.
+- Kept Special Offers in the same minimal embossed style with only a subtle warm champagne accent.
+- Reduced motion to minimal premium hover elevation and a tiny light sweep; no bouncing, rotating, playful, or cartoon motion remains in the active card internals.
 
 ### Scope confirmations
 
-- No font changes were made.
+- The existing seven category cards remain in the same hierarchy.
+- Card titles, descriptions, and Explore action text remain unchanged.
+- The approved project font family was not changed or overridden.
 - No header, Smart Search, Featured Provider Board, route, SEO infrastructure, i18n logic, backend, API, database, Supabase, RLS, migration, package, or lockfile files were changed.
-- The approved seven categories and hierarchy remain unchanged.
 
 ### Validation results
 
-FIX02 validation commands:
+Validation commands for this refinement:
 
 - `git status --short`
 - `pnpm lint`
 - `pnpm typecheck`
 - `pnpm build`
-- `pnpm routes:check`
 
-Results after FIX02 command execution:
+Results after command execution:
 
-- `git status --short`: completed and showed only the three allowed FIX02 files modified before commit.
+- `git status --short`: completed and showed only the three allowed visual-refinement files modified before commit.
 - `pnpm lint`: passed with existing repository warnings only.
 - `pnpm typecheck`: passed.
 - `pnpm build`: passed.
-- `pnpm routes:check`: passed.
+- Additional guardrail checks: `pnpm routes:check` and `git diff --check` also passed.
 
 ### Merge-readiness recommendation
 
-Merge-readiness is recommended after the required automated validation passes and human browser QA confirms `/en/om` and `/ar/om` desktop/mobile views now read as layered premium graphic category scenes rather than simple icon cards.
+Merge-readiness is recommended after automated validation passes and human desktop/mobile QA confirms `/en/om` and `/ar/om` show premium minimal embossed category cards matching the reference direction without changing the homepage architecture.

@@ -559,3 +559,44 @@ Results after command execution:
 ### Merge-readiness recommendation
 
 Merge-readiness is recommended once validation passes and human QA confirms `/en/om` and `/ar/om` desktop/mobile views show Dental and Beauty rebuilt from scratch, other category cards stable, no diagonal shine/streak, and no typography/layout regressions.
+
+## 26. PR #159-FIX06 micro Beauty icon replacement only
+
+This micro-fix replaces only the Beauty & Aesthetics internal icon artwork. Dental is preserved as accepted, and Special Offers, Doctors, Labs, Pet Clinic, and Hospitals are untouched. The card shell, grid, spacing, section title, typography, button system, routes, and homepage architecture remain unchanged.
+
+### Beauty & Aesthetics icon fully replaced
+
+- The previous Beauty concept was removed rather than iterated.
+- Beauty & Aesthetics now uses a clean side-profile face line with a smooth forehead/nose/lips/chin gesture, one subtle inner contour line, and a small premium sparkle accent near the upper-right temple area.
+- The replacement avoids droplet, leaf, ring, oval enclosure, abstract blob, mask, or salon-cheap styling.
+- The icon itself receives stronger embossed relief through controlled teal stroke, soft shadow beneath, and subtle highlight treatment without diagonal shine streaks.
+
+### Preserved scope
+
+- Dental is unchanged in this micro-fix.
+- Special Offers, Doctors, Labs, Pet Clinic, and Hospitals are unchanged.
+- No font family, typography sizing, card layout, grid structure, spacing system, button style, header, Search, Featured Board, route, SEO, backend, database, Supabase, migration, dependency, package, or lockfile changes were made.
+
+### Validation results
+
+Validation commands for this Beauty-only micro-fix:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+Results after command execution:
+
+- `git status --short`: completed and showed only the three allowed Beauty-only files modified before commit.
+- `pnpm lint`: passed with existing repository warnings only.
+- `pnpm typecheck`: passed.
+- `pnpm build`: passed.
+- `pnpm routes:check`: passed.
+- Additional checks: `git diff --check` and localized HTML smoke checks for the Beauty replacement passed.
+- Screenshot capture was attempted, but the local environment does not include the `playwright` executable.
+
+### Merge-readiness recommendation
+
+Merge-readiness is recommended once validation passes and human QA confirms `/en/om` and `/ar/om` desktop/mobile views show the new Beauty side-profile/sparkle icon, Dental unchanged, other cards untouched, and no typography/layout/global regressions.

@@ -117,11 +117,10 @@ function EmbossedSymbol({ id }: { id: DiscoveryCardTone }) {
 
       {id === 'beauty' ? (
         <>
-          <path className="dm2026-symbol__cast dm2026-symbol__cast--beauty" d="M59 17c-18-3-34 10-36 28-2 17 9 30 27 36 16-5 27-19 27-35 0-14-7-25-18-29Z" />
-          <path className="dm2026-symbol__mass dm2026-symbol__mass--hero dm2026-symbol__mass--beauty" d="M59 14c-18-3-34 10-36 28-2 17 9 30 27 36 16-5 27-19 27-35 0-14-7-25-18-29Z" />
-          <path className="dm2026-symbol__profile dm2026-symbol__profile--beauty" d="M61 22c-10 5-17 15-17 27 5 1 9 3 12 7-2 4-7 6-12 6 3 7 10 12 20 15" />
-          <path className="dm2026-symbol__profile dm2026-symbol__profile--detail" d="M47 37c5-2 10-2 15 1M47 62c5 3 10 3 16 0" />
-          <path className="dm2026-symbol__mark dm2026-symbol__mark--beauty" d="M31 48c3-14 12-24 28-29" />
+          <path className="dm2026-symbol__cast dm2026-symbol__cast--beauty" d="M60 21c-12 4-21 15-21 29 0 14 9 24 25 28" />
+          <path className="dm2026-symbol__profile dm2026-symbol__profile--beauty" d="M59 18c-12 4-20 14-20 27 5 1 10 4 13 8-2 4-6 7-12 7 3 9 12 16 25 19" />
+          <path className="dm2026-symbol__profile dm2026-symbol__profile--detail" d="M46 38c5-3 10-3 16 1" />
+          <path className="dm2026-symbol__mark dm2026-symbol__mark--beauty" d="M73 19v9M68.5 23.5h9M70 21l6 6M76 21l-6 6" />
         </>
       ) : null}
 

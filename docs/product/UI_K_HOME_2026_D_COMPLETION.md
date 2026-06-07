@@ -63,7 +63,7 @@ The healthcare-platform image is art-directed as a supporting visual rather than
 
 ## 9. Arabic/RTL status
 
-Arabic copy is included inside the component and selected by locale. The component respects the received `dir` prop, uses logical CSS properties and includes RTL-specific headline sizing to avoid oversized Arabic layout. FIX05 preserves the stronger Arabic balance while applying the same typography-consistency direction.
+Arabic copy is included inside the component and selected by locale. The component respects the received `dir` prop, uses logical CSS properties and includes RTL-specific headline sizing to avoid oversized Arabic layout. FIX05 preserves the stronger Arabic balance while applying the same typography-consistency direction. The final approved Arabic copy is applied for the headline, subtitle, feature pill wording, preview metadata and WhatsApp-ready label.
 
 ## 10. CTA behavior
 
@@ -83,7 +83,7 @@ Required validation commands were run after implementation:
 - `pnpm build`
 - `pnpm routes:check`
 
-Validation was rerun after the FIX04 hard scope cleanup and again after the FIX05 typography/background polish pass.
+Validation was rerun after the FIX04 hard scope cleanup, after the FIX05 typography/background polish pass, and after applying the final approved Arabic copy.
 
 ## 13. Manual QA notes
 
@@ -99,7 +99,7 @@ Manual/browser QA checklist for `/en/om` and `/ar/om` desktop/mobile:
 - Text remains readable on desktop and mobile.
 - FIX05 headline scale is more controlled and less oversized while keeping the CTA premium.
 - English copy-side background/gradient is calmer and less distracting.
-- Arabic layout uses RTL direction and tuned headline sizing; FIX05 preserves the balanced Arabic direction.
+- Arabic layout uses RTL direction and tuned headline sizing; FIX05 preserves the balanced Arabic direction and the final approved Arabic copy is applied.
 - CTA buttons use the existing premium DrMuscat button language and do not link to an unfinished `/for-providers` page.
 - `/en/om/for-providers` and `/ar/om/for-providers` are expected to fail closed rather than render provider plans, pricing cards, comparison tables or onboarding/request forms.
 - Feature pills wrap cleanly.

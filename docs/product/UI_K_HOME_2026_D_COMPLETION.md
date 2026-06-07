@@ -1,0 +1,120 @@
+# UI-K-HOME-2026-D — Homepage Provider CTA Completion
+
+## 1. Final scope
+
+Implemented and refined a UI-only homepage Provider CTA section for DrMuscat 2026. The section promotes a reviewed public provider profile with photos, services, special offers and direct contact actions for healthcare providers in Oman.
+
+Final scope is homepage Provider CTA only. FIX04 hard scope cleanup disables the existing `/for-providers` public page so it fails closed instead of rendering provider plans, pricing/product cards, comparison tables, onboarding/request forms, safety-note page sections, or the dark provider product hero. FIX05 adds final typography and background polish only: the Provider CTA headline scale/weight is more controlled and the copy-side gradient wash is calmer so it matches the approved DrMuscat 2026 homepage system. The full `/for-providers` landing page with plans, pricing, comparison, onboarding form, claim policy, sponsored visibility and provider product decisions is explicitly moved to a future dedicated PR. No backend, dashboard, form submission, payment, subscription, database, Supabase, API, SEO infrastructure, route creation, package or migration work was included.
+
+## 2. Files changed
+
+- `src/components/home/HomeProviderCTA2026.tsx`
+- `src/components/home/HomePage2026HeaderHero.tsx`
+- `src/styles/dm2026-home.css`
+- `docs/product/UI_K_HOME_2026_D_COMPLETION.md`
+- `src/app/[locale]/[country]/for-providers/page.tsx`
+
+## 3. Asset existence check result
+
+The required asset existence check passed before implementation. All three local assets were found:
+
+- `public/images/home/provider-cta-healthcare-platform-preview.webp`
+- `public/images/home/provider-cta-healthcare-platform-preview-mobile.webp`
+- `public/images/home/provider-cta-healthcare-platform-preview.jpg`
+
+## 4. Image asset paths used
+
+The Provider CTA uses only the committed local homepage assets:
+
+- Desktop WebP: `/images/home/provider-cta-healthcare-platform-preview.webp`
+- Mobile WebP: `/images/home/provider-cta-healthcare-platform-preview-mobile.webp`
+- Fallback JPG: `/images/home/provider-cta-healthcare-platform-preview.jpg`
+
+No remote image URLs, generated images, placeholder images, renamed images or duplicated images were used.
+
+## 5. Provider CTA layout strategy
+
+The section is mounted after the existing Smart Search, Featured Provider Board and Discovery Categories sections. It is the only Provider CTA scope delivered by this PR and uses a large rounded premium CTA block with:
+
+- left-side localized provider copy, feature pills, preview-safe CTA buttons and trust microcopy;
+- right-side supporting healthcare visual treatment;
+- a compact preview card communicating photos, services, special offers and contact actions without fake metrics or fake reviews.
+
+## 6. Background/supporting image treatment
+
+The healthcare-platform image is art-directed as a supporting visual rather than a text background. CSS adds a soft glass surface, gradient mask, controlled opacity, rounded clipping and overlay protection so the copy remains readable and the visual does not overpower the message. FIX05 softens the copy-side wash and lowers the decorative gradient intensity so the English headline area feels cleaner while preserving the Arabic visual balance.
+
+## 7. Accessibility notes
+
+- The section has a locale-stable accessible heading via `aria-labelledby` and trust note via `aria-describedby`.
+- The image has concise localized alt text because it provides contextual support.
+- CTA buttons have visible, localized accessible names and intentionally do not navigate to the unfinished provider page.
+- Feature, preview item and preview action chips are semantic lists.
+- Focus-visible styling is included for CTA buttons.
+- The content does not require hover or motion to understand.
+
+## 8. Performance notes
+
+- Only local committed images are used.
+- No video, remote media, new dependencies or animation libraries were added.
+- The visual area has controlled dimensions to reduce layout shift.
+- CSS is scoped to the `dm2026-provider-cta-*` namespace and does not add broad global selectors.
+- FIX05 keeps the existing font family and global typography untouched while reducing only local headline scale, weight and letter-spacing.
+
+## 9. Arabic/RTL status
+
+Arabic copy is included inside the component and selected by locale. The component respects the received `dir` prop, uses logical CSS properties and includes RTL-specific headline sizing to avoid oversized Arabic layout. FIX05 preserves the stronger Arabic balance while applying the same typography-consistency direction. The final approved Arabic copy is applied for the headline, subtitle, feature pill wording, preview metadata and WhatsApp-ready label.
+
+## 10. CTA behavior
+
+Because the full `/for-providers` product page is not ready for this PR, the Provider CTA renders preview-safe CTA buttons instead of linking to the unfinished provider page. The `/for-providers` route file now fails closed with `notFound()` so provider plans, pricing, comparison, onboarding form and provider product content are not publicly exposed by this PR. No new route was created, no dead link was added, and no fake backend action was introduced.
+
+## 11. No backend/database/SEO changes confirmation
+
+Confirmed: this implementation does not change backend code, API routes, Supabase files, migrations, schema, seed data, SEO infrastructure files, sitemap, robots, route-check scripts, package files or lockfiles. It does not ship pricing plans, comparison tables, onboarding forms, payment flows or provider product-page scope; the existing provider page route fails closed.
+
+## 12. Validation results
+
+Required validation commands were run after implementation:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+Validation was rerun after the FIX04 hard scope cleanup, after the FIX05 typography/background polish pass, and after applying the final approved Arabic copy.
+
+## 13. Manual QA notes
+
+Code-level and build QA confirms the Provider CTA remains mounted after Discovery Categories and uses responsive LTR/RTL-safe markup and scoped CSS. Browser screenshot capture was attempted for desktop and mobile, but the workspace does not provide the Playwright CLI, so visual screenshot artifacts could not be produced in this environment.
+
+Manual/browser QA checklist for `/en/om` and `/ar/om` desktop/mobile:
+
+- Provider CTA appears after Discovery Categories.
+- Local image assets were checked before implementation.
+- Local image assets are used through `<picture>` sources and JPG fallback.
+- No random placeholder image is used.
+- Image supports the design without hurting readability.
+- Text remains readable on desktop and mobile.
+- FIX05 headline scale is more controlled and less oversized while keeping the CTA premium.
+- English copy-side background/gradient is calmer and less distracting.
+- Arabic layout uses RTL direction and tuned headline sizing; FIX05 preserves the balanced Arabic direction and the final approved Arabic copy is applied.
+- CTA buttons use the existing premium DrMuscat button language and do not link to an unfinished `/for-providers` page.
+- `/en/om/for-providers` and `/ar/om/for-providers` are expected to fail closed rather than render provider plans, pricing cards, comparison tables or onboarding/request forms.
+- Feature pills wrap cleanly.
+- No search/header/language/footer files were changed.
+- No DB/API/Supabase/migration changes were made.
+- No SEO infrastructure changes were made.
+- No package changes were made.
+- No fake provider counts, fake ratings, fake reviews or booking claims are included.
+- No pricing/plans/comparison/onboarding form scope is shipped or publicly exposed in this PR.
+- CSS uses clipped overflow and responsive stacking to avoid horizontal overflow.
+
+## 14. Merge-readiness recommendation
+
+PR #160 is merge-ready as a homepage Provider CTA only after FIX05 typography/background polish, with `/for-providers` still disabled and future product-page scope excluded.
+
+## 15. Next PR recommendation
+
+UI-K-HOME-2026-E — Dedicated `/for-providers` landing page with product decisions for plans, pricing, comparison, onboarding form, claim policy, sponsored visibility rules, Arabic/English sales copy, and safety policy.

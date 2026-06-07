@@ -212,3 +212,39 @@ Results after command execution:
 ### Merge-readiness recommendation
 
 Merge-readiness is recommended after automated validation passes and human desktop/mobile QA confirms `/en/om` and `/ar/om` show premium minimal embossed category cards matching the reference direction without changing the homepage architecture.
+
+## 18. Raised icon relief refinement
+
+This refinement keeps the card grid, titles, descriptions, Explore actions, routes, fonts, and homepage architecture unchanged while improving the icon artwork itself.
+
+### Per-card refinements
+
+- Dental was redrawn as a cleaner, stronger tooth silhouette with a dedicated relief shadow, raised fill, top highlight, and minimal enamel contour lines.
+- Beauty & Aesthetics was redrawn into a clearer face/aesthetic silhouette with a face contour, facial highlight lines, and a restrained droplet accent so it reads as beauty rather than a messy abstract mark.
+- Doctors was replaced with a clearer professional stethoscope and waveform composition, removing the previous ambiguous shape.
+- Special Offers keeps the premium diamond direction and now has a stronger relief shadow, raised diamond fill, facet lines, and highlight line.
+- Labs keeps the lab vessel direction and now has a stronger relief shadow, cleaner vessel placement, liquid fill, and highlight detail.
+- Pet Clinic keeps the paw/care direction and now has a stronger raised paw pad, clearer toe shapes, cross cue, and highlight detail.
+- Hospitals keeps the facility direction and now has a stronger structural relief shadow, cleaner building/cross geometry, and highlight strokes.
+
+### Scope confirmations
+
+- Layout, card structure, text content, Explore buttons, route-safe behavior, and approved font system were preserved.
+- No backend, database, routing, SEO, Supabase, RLS, migration, package, Header, Smart Search, or Featured Board files were changed.
+
+### Validation results
+
+Validation commands for this refinement:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+
+Results after command execution:
+
+- `git status --short`: completed and showed only the three allowed UI-refinement files modified before commit.
+- `pnpm lint`: passed with existing repository warnings only.
+- `pnpm typecheck`: passed.
+- `pnpm build`: passed.
+- Additional guardrail checks: `pnpm routes:check`, `git diff --check`, and localized HTML smoke checks also passed.

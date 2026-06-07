@@ -2834,3 +2834,106 @@
     opacity: 0;
   }
 }
+
+/* Discovery category icon relief refinement: make symbols themselves feel raised, not just their plates. */
+.dm2026-discovery-card__embossed-svg {
+  inline-size: 72%;
+  block-size: 72%;
+  filter: drop-shadow(0 10px 14px rgba(11, 40, 38, 0.075));
+}
+
+.dm2026-discovery-card--secondary .dm2026-discovery-card__embossed-svg {
+  inline-size: 68%;
+  block-size: 68%;
+}
+
+.dm2026-discovery-card__relief-shadow,
+.dm2026-discovery-card__relief-highlight {
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dm2026-discovery-card__relief-shadow {
+  fill: none;
+  stroke: rgba(11, 40, 38, 0.12);
+  stroke-width: 5.6;
+  opacity: 0.42;
+  transform: translate(1.8px, 2.2px);
+  filter: blur(0.15px);
+}
+
+.dm2026-discovery-card__relief-fill,
+.dm2026-discovery-card__relief-line,
+.dm2026-discovery-card__relief-accent,
+.dm2026-discovery-card__relief-dot {
+  filter:
+    drop-shadow(3px 4px 4px rgba(11, 40, 38, 0.15))
+    drop-shadow(-3px -3px 3px rgba(255, 255, 255, 0.95));
+}
+
+.dm2026-discovery-card__relief-fill {
+  fill: rgba(241, 249, 247, 0.86);
+  stroke: rgba(14, 110, 100, 0.23);
+  stroke-width: 3;
+}
+
+.dm2026-discovery-card__relief-fill--hero {
+  stroke-width: 3.4;
+}
+
+.dm2026-discovery-card__relief-line {
+  stroke: rgba(14, 110, 100, 0.42);
+  stroke-width: 4.7;
+}
+
+.dm2026-discovery-card__relief-line--soft,
+.dm2026-discovery-card__relief-line--face {
+  stroke-width: 3.6;
+  opacity: 0.88;
+}
+
+.dm2026-discovery-card__relief-line--stethoscope {
+  stroke-width: 4.9;
+}
+
+.dm2026-discovery-card__relief-accent {
+  stroke: rgba(14, 110, 100, 0.36);
+  stroke-width: 3.9;
+}
+
+.dm2026-discovery-card__relief-accent--drop {
+  fill: rgba(241, 249, 247, 0.64);
+}
+
+.dm2026-discovery-card__relief-highlight {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.86);
+  stroke-width: 2.8;
+  opacity: 0.92;
+  filter: drop-shadow(-2px -2px 2px rgba(255, 255, 255, 0.9));
+}
+
+.dm2026-discovery-card__relief-dot {
+  fill: rgba(241, 249, 247, 0.88);
+  stroke: rgba(14, 110, 100, 0.24);
+  stroke-width: 2.8;
+}
+
+.dm2026-discovery-card--offers .dm2026-discovery-card__relief-shadow {
+  stroke: rgba(77, 57, 13, 0.13);
+}
+
+.dm2026-discovery-card--offers .dm2026-discovery-card__relief-fill,
+.dm2026-discovery-card--offers .dm2026-discovery-card__relief-line,
+.dm2026-discovery-card--offers .dm2026-discovery-card__relief-accent {
+  stroke: rgba(150, 111, 34, 0.42);
+}
+
+.dm2026-discovery-card--offers .dm2026-discovery-card__relief-fill {
+  fill: rgba(252, 246, 231, 0.9);
+}
+
+.dm2026-discovery-card--offers .dm2026-discovery-card__relief-highlight {
+  stroke: rgba(255, 255, 255, 0.9);
+}

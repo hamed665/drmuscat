@@ -1,0 +1,128 @@
+# UI-K-HOME-2026-D — Premium Provider CTA / List Your Center Homepage Section
+
+## 1. Final scope
+
+Implemented a UI-only provider acquisition CTA section on the DrMuscat 2026 homepage immediately after the approved Discovery Categories section. The section is limited to homepage presentation and provider-oriented conversion messaging.
+
+## 2. Files changed
+
+- `src/components/home/HomeProviderCTA2026.tsx` — new localized provider CTA and static profile preview component.
+- `src/components/home/HomePage2026HeaderHero.tsx` — mounted the provider CTA after Discovery Categories.
+- `src/styles/dm2026-home.css` — added responsive DrMuscat 2026 glass/premium styles for the provider CTA.
+- `docs/product/UI_K_HOME_2026_D_COMPLETION.md` — phase completion documentation.
+
+## 3. UI-only provider CTA strategy
+
+The section presents DrMuscat as a premium public discovery surface for healthcare providers in Oman. It uses calm commercial messaging, concise value points, and a profile preview card to communicate how a reviewed public profile can show photos, services, offers, and direct contact actions.
+
+## 4. No form/backend/payment confirmation
+
+This PR does not add a form, backend lead capture, API integration, CRM integration, Supabase calls, payment flow, checkout, pricing table, provider dashboard, or claim flow.
+
+## 5. Media/photo preview approach
+
+The profile preview includes a prominent but controlled CSS-only gallery/media placeholder. It uses gradients, soft glass overlays, and safe abstract visual blocks only. No external images, stock photos, real clinic photos, videos, or image assets were added.
+
+## 6. Value points included
+
+English value points:
+
+- Premium profile
+- Photos & gallery
+- Special Offers
+- WhatsApp, Call & Directions
+- Arabic + English content
+- Featured visibility preview
+
+Arabic value points:
+
+- ملف مميز
+- الصور والمعرض
+- العروض الخاصة
+- واتساب واتصال واتجاهات
+- محتوى عربي وإنجليزي
+- معاينة الظهور المميز
+
+## 7. CTA behavior and route safety
+
+The CTA buttons use the existing approved localized provider route helper, `publicProviderRoute(locale, country)`, which maps to the existing `/[locale]/[country]/for-providers` route. No new route was created and no fake or dead links were introduced.
+
+## 8. Arabic/RTL status
+
+Arabic copy is included for headings, subtitles, value points, CTAs, preview labels, chips, rating preview, and notes. The component receives the existing `dir` prop and applies RTL-safe logical CSS properties.
+
+## 9. Responsive notes
+
+Desktop uses a premium two-column layout with content on one side and a profile/media preview on the other. Laptop and tablet widths stack cleanly when space is constrained. Mobile uses a single-column layout with full-width CTAs, compact media height, and no intentional horizontal overflow.
+
+## 10. Accessibility notes
+
+The section uses semantic `<section>` markup with an accessible heading reference. CTA actions are real links to an existing route. Preview-only action controls are disabled buttons to avoid fake submissions or dead behavior. Decorative glow/media elements are marked with `aria-hidden` where applicable, and focus-visible states are included for interactive links.
+
+## 11. Performance notes
+
+No new dependencies, external APIs, external images, videos, heavy JavaScript, or animation libraries were added. Visuals are CSS-only and reduced-motion preferences are respected for hover transitions.
+
+## 12. SEO/route safety status
+
+No SEO infrastructure files, sitemap, robots, `llms.txt`, route-check scripts, or i18n route definitions were changed. The homepage order is now Header, Smart Search, Featured Provider Board, Discovery Categories, Provider CTA, then stop.
+
+## 13. Database/Supabase/RLS untouched confirmation
+
+No migrations, seed files, Supabase clients, generated database types, RLS policies, API routes, database schema files, or backend data flows were changed.
+
+## 14. Validation results
+
+Required validation commands for this PR:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+Validation completed after implementation:
+
+- PASS — `git status --short` showed only the approved UI/documentation files changed.
+- PASS with pre-existing warnings only — `pnpm lint`.
+- PASS — `pnpm typecheck`.
+- PASS — `pnpm build`.
+- PASS — `pnpm routes:check`.
+- PASS — `/en/om` and `/ar/om` server-rendered HTML smoke checks confirmed localized Provider CTA content is present.
+- WARNING — automated screenshot capture was attempted with Playwright, but the package registry returned HTTP 403 in this environment; no repository dependency was added.
+
+## 15. Manual QA checklist
+
+- [ ] `/en/om` desktop
+- [ ] `/ar/om` desktop
+- [ ] `/en/om` laptop
+- [ ] `/ar/om` laptop
+- [ ] `/en/om` tablet
+- [ ] `/ar/om` tablet
+- [ ] `/en/om` mobile
+- [ ] `/ar/om` mobile
+- [ ] Smart Search unchanged
+- [ ] Featured Provider Board unchanged
+- [ ] Discovery Categories unchanged
+- [ ] Header unchanged
+- [ ] Language switch unchanged
+- [ ] Mobile hamburger unchanged
+- [ ] Provider CTA appears below Discovery Categories
+- [ ] Section feels premium and not crowded
+- [ ] Large media/profile preview is visible and balanced
+- [ ] CTAs are clear
+- [ ] No fake real provider data
+- [ ] No pricing table
+- [ ] No form
+- [ ] No payment
+- [ ] No backend/API/database/Supabase changes
+- [ ] No new routes
+- [ ] No SEO infra changes
+- [ ] No package changes
+- [ ] No horizontal overflow
+- [ ] Arabic typography clean
+- [ ] Build passes
+
+## 16. Next PR recommendation
+
+UI-K-HOME-2026-E — List Your Center Request Page / Form UI

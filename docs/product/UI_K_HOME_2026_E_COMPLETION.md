@@ -359,3 +359,39 @@ Validation completed for FIX04:
 ## 37. FIX04 merge-readiness recommendation
 
 PR #162-FIX04 is intended to be merge-ready if visual QA confirms the mobile media slot feels better prepared for future photo/video posters while the full mobile card remains readable, compact, and stable in English and Arabic.
+
+## 38. FIX05 desktop-only media slot polish
+
+PR #162-FIX05 is a desktop-only micro polish pass for the Special Offers Showcase card media slot. It uses a `min-width: 68.01rem` media query so the accepted mobile layout, mobile media slot, mobile card height, mobile CTA spacing, and mobile carousel behavior remain unchanged.
+
+FIX05 increases the desktop media/photo/video slot slightly by adjusting the desktop card row allocation and media minimum height. The goal is to use existing desktop card breathing room near the lower portion of the card so future photo and video poster uploads have a more useful presentation area.
+
+## 39. FIX05 text and readability confirmation
+
+FIX05 does not shrink or compress text. It does not reduce provider detail text, offer title text, chips, CTA labels, or trust-note readability. It only adjusts desktop media row sizing and body placement so content continues to sit naturally below the larger media slot.
+
+## 40. FIX05 desktop photo/video readiness note
+
+The media slot remains placeholder-only. No real images, generated images, external assets, video files, autoplay, copy changes, carousel behavior changes, color changes, or route/backend changes were introduced.
+
+## 41. FIX05 validation results
+
+Required validation commands for FIX05:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+Validation completed for FIX05:
+
+- `git status --short` showed only the approved Special Offers CSS and completion documentation changed before commit.
+- `pnpm lint` passed with existing repository warnings only.
+- `pnpm typecheck` passed.
+- `pnpm build` passed.
+- `pnpm routes:check` passed.
+
+## 42. FIX05 merge-readiness recommendation
+
+PR #162-FIX05 is intended to be merge-ready if visual QA confirms desktop media/photo/video slots feel slightly taller and better prepared for future posters while desktop card height and carousel stability remain visually consistent, and mobile remains unchanged.

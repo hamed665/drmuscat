@@ -5253,3 +5253,19 @@
     max-block-size: 13.75rem;
   }
 }
+
+/* PR #162-FIX05: desktop-only media-slot expansion using existing card breathing room. */
+@media (min-width: 68.01rem) {
+  .dm2026-special-offers-card {
+    grid-template-rows: minmax(11.15rem, 0.86fr) minmax(0, 1fr);
+  }
+
+  .dm2026-special-offers-card__media {
+    min-block-size: clamp(11.15rem, 17.8vw, 14.2rem);
+  }
+
+  .dm2026-special-offers-card__body {
+    align-content: start;
+    padding-block-end: clamp(0.62rem, 1.15vw, 0.88rem);
+  }
+}

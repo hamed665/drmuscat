@@ -6724,3 +6724,18 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* PR #165-FIX01B: keep Services in More filters, not primary Search in. */
+.dm2026-home-search__segment--services {
+  background: rgba(239, 246, 244, 0.56);
+}
+
+.dm2026-home-search__segment--services .dm2026-home-search__chip span {
+  border-style: dashed;
+}
+
+@media (max-width: 42rem) {
+  .dm2026-home-search__segment--services .dm2026-home-search__chip span {
+    min-block-size: 1.9rem;
+  }
+}

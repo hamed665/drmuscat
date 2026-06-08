@@ -148,8 +148,7 @@ English order:
 4. Pharmacies
 5. Beauty
 6. Pet Clinic
-7. Services
-8. Offers
+7. Offers
 
 Arabic order:
 
@@ -159,15 +158,14 @@ Arabic order:
 4. الصيدليات
 5. التجميل
 6. العيادات البيطرية
-7. الخدمات
-8. العروض
+7. العروض
 
-Beauty and Pet Clinic use the existing services/provider-type state only; no backend, route, query, database, or search infrastructure was added.
+Beauty and Pet Clinic use the existing services/provider-type state only; Services was removed from the primary visible chip row and moved into More filters as `Services` / `الخدمات`. No backend, route, query, database, or search infrastructure was added.
 
 ### Mobile height reduction
 
 - Reduced mobile hero padding, vertical gaps, heading size, subtitle line-height, chip height, select height, More filters height, CTA height, trust-chip height, and visual-placeholder height.
-- Kept the main search, Country, City, Area, More filters, Search in chips, CTAs, and trust messages visible.
+- Kept the main search, Country, City, Area, More filters, primary Search in chips, CTAs, and trust messages visible.
 - Mobile now treats the hero as a compact premium search surface instead of a tall form wall.
 
 ### Mobile search/input polish
@@ -179,8 +177,14 @@ Beauty and Pet Clinic use the existing services/provider-type state only; no bac
 ### Mobile chip row polish
 
 - The primary Search in row is intentionally horizontally scrollable with tighter spacing and an edge fade affordance.
-- Doctors, Centers, Labs, Pharmacies, Beauty, Pet Clinic, Services, and Offers remain accessible without adding Articles or other default chips.
+- Doctors, Centers, Labs, Pharmacies, Beauty, Pet Clinic, and Offers remain visible in the primary row without adding Services, Articles, or other default chips.
 - Horizontal page overflow is avoided by constraining scrolling to the chip row.
+
+### Services moved to More filters
+
+- Services / الخدمات now appears inside More filters instead of the primary visible Search in row.
+- The Services control uses existing `contentType` state only and does not add backend logic, route logic, API behavior, or search infrastructure.
+- The secondary provider-type list filters out its duplicate Services option so More filters shows Services once.
 
 ### Country/City/Area compact treatment
 
@@ -205,7 +209,7 @@ Beauty and Pet Clinic use the existing services/provider-type state only; no bac
 
 ### Arabic/RTL notes
 
-- Arabic chips now include `التجميل` and `العيادات البيطرية`.
+- Arabic chips now include `التجميل` and `العيادات البيطرية`, and `الخدمات` appears in More filters rather than the primary chip row.
 - RTL headline sizing, chip scrolling, compact selects, CTA row, trust row, and visual placeholder remain scoped for natural RTL layout and no horizontal page overflow.
 
 ### FIX01 validation results

@@ -154,7 +154,6 @@ const primaryChipBlueprint: Record<'ltr' | 'rtl', readonly { label: string; cont
     { label: 'Pharmacies', contentTypeValue: 'Pharmacies' },
     { label: 'Beauty', contentTypeValue: 'Services', providerTypeValue: 'Beauty & Wellness' },
     { label: 'Pet Clinic', contentTypeValue: 'Services', providerTypeValue: 'Pet Clinics' },
-    { label: 'Services', contentTypeValue: 'Services' },
     { label: 'Offers', contentTypeValue: 'Offers' }
   ],
   rtl: [
@@ -164,9 +163,19 @@ const primaryChipBlueprint: Record<'ltr' | 'rtl', readonly { label: string; cont
     { label: 'الصيدليات', contentTypeValue: 'الصيدليات' },
     { label: 'التجميل', contentTypeValue: 'الخدمات', providerTypeValue: 'الجمال والرفاهية' },
     { label: 'العيادات البيطرية', contentTypeValue: 'الخدمات', providerTypeValue: 'العيادات البيطرية' },
-    { label: 'الخدمات', contentTypeValue: 'الخدمات' },
     { label: 'العروض', contentTypeValue: 'العروض' }
   ]
+};
+
+const secondaryMoreFilterBlueprint: Record<'ltr' | 'rtl', SearchChipOption> = {
+  ltr: { label: 'Services', contentTypeValue: 'Services' },
+  rtl: { label: 'الخدمات', contentTypeValue: 'الخدمات' }
+};
+
+const secondaryMoreFilterOption = (contentTypes: readonly string[], dir: 'ltr' | 'rtl'): SearchChipOption | undefined => {
+  const option = secondaryMoreFilterBlueprint[dir];
+
+  return contentTypes.includes(option.contentTypeValue) ? option : undefined;
 };
 
 const primaryChipOptions = (contentTypes: readonly string[], providerTypes: readonly string[], dir: 'ltr' | 'rtl'): readonly SearchChipOption[] =>
@@ -339,6 +348,8 @@ export function HomeSearch2026({ copy, dir, searchHref, providerHref }: HomeSear
   const suggestionPanelId = 'dm2026-home-search-smart-panel';
   const heroCopy = premiumHeroCopy[dir];
   const chipOptions = useMemo(() => primaryChipOptions(copy.contentTypes, copy.providerTypes, dir), [copy.contentTypes, copy.providerTypes, dir]);
+  const servicesFilterOption = useMemo(() => secondaryMoreFilterOption(copy.contentTypes, dir), [copy.contentTypes, dir]);
+  const secondaryProviderTypes = useMemo(() => copy.providerTypes.filter((providerType) => providerType !== (dir === 'rtl' ? 'الخدمات' : 'Services')), [copy.providerTypes, dir]);
 
   const resetAreaForCity = (city: string) => {
     const nextAreas = cityAreas[city] ?? [copy.cityWideAreaLabel];
@@ -521,10 +532,30 @@ export function HomeSearch2026({ copy, dir, searchHref, providerHref }: HomeSear
 
           <details className="dm2026-home-search__more-filters">
             <summary>{heroCopy.moreFiltersLabel}</summary>
+            {servicesFilterOption ? (
+              <fieldset className="dm2026-home-search__segment dm2026-home-search__segment--secondary dm2026-home-search__segment--services" aria-label={heroCopy.searchInLabel}>
+                <legend>{heroCopy.searchInLabel}</legend>
+                <div>
+                  <label className="dm2026-home-search__chip">
+                    <input
+                      type="radio"
+                      name="contentType"
+                      value={servicesFilterOption.contentTypeValue}
+                      checked={servicesFilterOption.label === selectedSearchChip}
+                      onChange={() => {
+                        setSelectedSearchChip(servicesFilterOption.label);
+                        setSelectedContentType(servicesFilterOption.contentTypeValue);
+                      }}
+                    />
+                    <span>{servicesFilterOption.label}</span>
+                  </label>
+                </div>
+              </fieldset>
+            ) : null}
             <fieldset className="dm2026-home-search__segment dm2026-home-search__segment--secondary" aria-label={copy.providerTypeLabel}>
               <legend>{copy.providerTypeLabel}</legend>
               <div>
-                {copy.providerTypes.map((providerType) => (
+                {secondaryProviderTypes.map((providerType) => (
                   <label key={providerType} className="dm2026-home-search__chip">
                     <input type="radio" name="type" value={providerType} checked={providerType === selectedProviderType} onChange={() => setSelectedProviderType(providerType)} />
                     <span>{providerType}</span>

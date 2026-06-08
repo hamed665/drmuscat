@@ -4403,6 +4403,18 @@
   line-height: 1.45;
 }
 
+.dm2026-special-offers__guardrail {
+  position: relative;
+  z-index: 1;
+  max-inline-size: 48rem;
+  margin: clamp(0.82rem, 1.6vw, 1.08rem) auto 0;
+  color: var(--dm-color-text-muted, #66736f);
+  font-size: 0.79rem;
+  font-weight: 650;
+  line-height: 1.55;
+  text-align: center;
+}
+
 .dm2026-special-offers__dots {
   position: relative;
   z-index: 1;
@@ -5231,6 +5243,13 @@
     min-block-size: 2.32rem;
     inline-size: 100%;
     white-space: normal;
+  }
+
+  .dm2026-special-offers__guardrail {
+    margin-block-start: 0.68rem;
+    padding-inline: 0.24rem;
+    font-size: 0.72rem;
+    line-height: 1.48;
   }
 
   .dm2026-special-offers__dots {

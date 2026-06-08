@@ -43,7 +43,8 @@ type SpecialOffersCopy = {
   subtitle: string;
   sectionAria: string;
   offerBadge: string;
-  providerApproved: string;
+  previewSafetyLabel: string;
+  guardrailNote: string;
   photoReady: string;
   videoReady: string;
   primaryCta: string;
@@ -59,16 +60,17 @@ type SpecialOffersCopy = {
 const specialOffersCopy: Record<SupportedLocale, SpecialOffersCopy> = {
   en: {
     badge: 'Special Offers',
-    headline: 'Special Offers from reviewed providers',
-    subtitle: 'Explore provider-approved offers with photo and video-ready previews.',
+    headline: 'Provider-led Special Offers previews',
+    subtitle: 'Explore preview-safe provider-led cards designed for future photo and video offer media.',
     sectionAria: 'Special Offers Showcase',
-    offerBadge: 'Special Offer preview',
-    providerApproved: 'Provider-approved offer',
+    offerBadge: 'Provider-led preview',
+    previewSafetyLabel: 'Preview-safe offer actions',
+    guardrailNote: 'No prices, discounts, ratings, availability, booking or medical claims are shown in this preview.',
     photoReady: 'Photo-ready preview',
     videoReady: 'Video-ready preview',
-    primaryCta: 'View offer',
-    secondaryCta: 'View profile',
-    trustNote: 'Confirm details with provider',
+    primaryCta: 'Preview offer',
+    secondaryCta: 'Preview profile',
+    trustNote: 'Preview only. Confirm any future offer details directly with provider',
     previousLabel: 'Show previous special offer',
     nextLabel: 'Show next special offer',
     dotLabel: (index, title) => `Show offer ${index}: ${title}`,
@@ -77,16 +79,17 @@ const specialOffersCopy: Record<SupportedLocale, SpecialOffersCopy> = {
   },
   ar: {
     badge: 'العروض الخاصة',
-    headline: 'عروض خاصة من مقدمي خدمة تمت مراجعتهم',
-    subtitle: 'استكشف عروضاً معتمدة مع معاينات جاهزة للصور والفيديو.',
+    headline: 'معاينات عروض خاصة يقودها مقدمو الخدمة',
+    subtitle: 'استكشف بطاقات آمنة للمعاينة يقودها مقدمو الخدمة ومجهزة لوسائط الصور والفيديو المستقبلية.',
     sectionAria: 'معرض العروض الخاصة',
-    offerBadge: 'معاينة عرض خاص',
-    providerApproved: 'عرض معتمد من مقدم الخدمة',
+    offerBadge: 'معاينة يقودها مقدم الخدمة',
+    previewSafetyLabel: 'إجراءات آمنة للمعاينة',
+    guardrailNote: 'لا تعرض هذه المعاينة أسعاراً أو خصومات أو تقييمات أو توفر مواعيد أو حجزاً أو ادعاءات طبية.',
     photoReady: 'معاينة جاهزة للصور',
     videoReady: 'معاينة جاهزة للفيديو',
-    primaryCta: 'عرض التفاصيل',
-    secondaryCta: 'عرض الملف',
-    trustNote: 'أكّد التفاصيل مع مقدم الخدمة',
+    primaryCta: 'معاينة العرض',
+    secondaryCta: 'معاينة الملف',
+    trustNote: 'معاينة فقط. أكّد أي تفاصيل مستقبلية للعرض مباشرة مع مقدم الخدمة',
     previousLabel: 'عرض العرض الخاص السابق',
     nextLabel: 'عرض العرض الخاص التالي',
     dotLabel: (index, title) => `عرض العرض ${index}: ${title}`,
@@ -108,8 +111,8 @@ const specialOfferPreviews: readonly SpecialOfferPreview[] = [
     areaAr: 'الخوير',
     offerTitleEn: 'Dental cleaning package preview',
     offerTitleAr: 'معاينة باقة تنظيف الأسنان',
-    descriptionEn: 'A provider-approved dental package preview that can appear after review.',
-    descriptionAr: 'معاينة باقة أسنان معتمدة من مقدم الخدمة ويمكن أن تظهر بعد المراجعة.',
+    descriptionEn: 'A provider-led dental package preview prepared for review-safe homepage discovery.',
+    descriptionAr: 'معاينة باقة أسنان يقودها مقدم الخدمة ومجهزة لاكتشاف آمن على الصفحة الرئيسية.',
     categoryEn: 'Dental',
     categoryAr: 'الأسنان',
     chipsEn: ['Dental care', 'Cleaning', 'Photo-ready'],
@@ -131,8 +134,8 @@ const specialOfferPreviews: readonly SpecialOfferPreview[] = [
     areaAr: 'القرم',
     offerTitleEn: 'Skin care special offer preview',
     offerTitleAr: 'معاينة عرض خاص للعناية بالبشرة',
-    descriptionEn: 'A premium aesthetics offer preview prepared for provider approval.',
-    descriptionAr: 'معاينة عرض تجميلي مميز جاهزة لاعتماد مقدم الخدمة.',
+    descriptionEn: 'A premium aesthetics preview prepared for provider-led media storytelling.',
+    descriptionAr: 'معاينة تجميلية مميزة مجهزة لسرد بصري يقوده مقدم الخدمة.',
     categoryEn: 'Beauty',
     categoryAr: 'الجمال',
     chipsEn: ['Beauty', 'Skin care', 'Video-ready'],
@@ -154,8 +157,8 @@ const specialOfferPreviews: readonly SpecialOfferPreview[] = [
     areaAr: 'الحيل',
     offerTitleEn: 'Diagnostic package preview',
     offerTitleAr: 'معاينة باقة تشخيصية',
-    descriptionEn: 'Reviewed lab package previews can appear after provider approval.',
-    descriptionAr: 'يمكن أن تظهر معاينات باقات المختبر بعد مراجعتها واعتمادها من مقدم الخدمة.',
+    descriptionEn: 'Lab package previews can be presented with provider context after future review.',
+    descriptionAr: 'يمكن تقديم معاينات باقات المختبر مع سياق مقدم الخدمة بعد مراجعة مستقبلية.',
     categoryEn: 'Labs',
     categoryAr: 'المختبرات',
     chipsEn: ['Labs', 'Diagnostics', 'Photo-ready'],
@@ -177,8 +180,8 @@ const specialOfferPreviews: readonly SpecialOfferPreview[] = [
     areaAr: 'العذيبة',
     offerTitleEn: 'Veterinary care package preview',
     offerTitleAr: 'معاينة باقة رعاية بيطرية',
-    descriptionEn: 'Pet care offers can be presented with clear provider context after review.',
-    descriptionAr: 'يمكن عرض عروض رعاية الحيوانات مع سياق واضح لمقدم الخدمة بعد المراجعة.',
+    descriptionEn: 'Pet care offer previews can be presented with clear provider context and media readiness.',
+    descriptionAr: 'يمكن تقديم معاينات عروض رعاية الحيوانات مع سياق واضح لمقدم الخدمة وجاهزية للوسائط.',
     categoryEn: 'Pet clinic',
     categoryAr: 'عيادة بيطرية',
     chipsEn: ['Pet clinic', 'Care package', 'Photo-ready'],
@@ -200,8 +203,8 @@ const specialOfferPreviews: readonly SpecialOfferPreview[] = [
     areaAr: 'الخوير',
     offerTitleEn: 'Family care package preview',
     offerTitleAr: 'معاينة باقة رعاية عائلية',
-    descriptionEn: 'A reviewed center-led care package preview for public discovery.',
-    descriptionAr: 'معاينة باقة رعاية من مركز تمت مراجعتها للاكتشاف العام.',
+    descriptionEn: 'A center-led care package preview for public discovery without availability or booking claims.',
+    descriptionAr: 'معاينة باقة رعاية يقودها مركز للاكتشاف العام دون ادعاءات توفر أو حجز.',
     categoryEn: 'Medical center',
     categoryAr: 'مركز طبي',
     chipsEn: ['Center', 'Family care', 'Video-ready'],
@@ -223,8 +226,8 @@ const specialOfferPreviews: readonly SpecialOfferPreview[] = [
     areaAr: 'بوشر',
     offerTitleEn: 'Consultation offer preview',
     offerTitleAr: 'معاينة عرض استشارة',
-    descriptionEn: 'A specialist-led consultation preview that appears only after review.',
-    descriptionAr: 'معاينة استشارة يقودها اختصاصي ولا تظهر إلا بعد المراجعة.',
+    descriptionEn: 'A specialist-led consultation preview framed for discovery without medical outcome claims.',
+    descriptionAr: 'معاينة استشارة يقودها اختصاصي ومصاغة للاكتشاف دون ادعاءات نتائج طبية.',
     categoryEn: 'Doctors',
     categoryAr: 'الأطباء',
     chipsEn: ['Specialist', 'Consultation', 'Photo-ready'],
@@ -246,8 +249,8 @@ const specialOfferPreviews: readonly SpecialOfferPreview[] = [
     areaAr: 'الموج',
     offerTitleEn: 'Healthy lifestyle preview',
     offerTitleAr: 'معاينة نمط حياة صحي',
-    descriptionEn: 'A reviewed wellness preview designed for calm provider-led discovery.',
-    descriptionAr: 'معاينة رفاهية تمت مراجعتها لاكتشاف هادئ تقوده الجهة المقدمة.',
+    descriptionEn: 'A wellness preview designed for calm provider-led discovery without outcome claims.',
+    descriptionAr: 'معاينة رفاهية مصممة لاكتشاف هادئ تقوده الجهة المقدمة دون ادعاءات نتائج.',
     categoryEn: 'Wellness',
     categoryAr: 'الرفاهية',
     chipsEn: ['Wellness', 'Nutrition', 'Video-ready'],
@@ -395,6 +398,8 @@ export function HomeSpecialOffersShowcase2026({ locale, country, dir }: HomeSpec
           ))}
         </div>
 
+        <p className="dm2026-special-offers__guardrail">{copy.guardrailNote}</p>
+
         <div className="dm2026-special-offers__dots" role="tablist" aria-label={copy.sectionAria}>
           {specialOfferPreviews.map((offer, index) => {
             const offerTitle = locale === 'ar' ? offer.offerTitleAr : offer.offerTitleEn;
@@ -500,7 +505,7 @@ function OfferCard({ copy, locale, offer, slot, isActive, slideIndex, onPreview 
           ))}
         </ul>
 
-        <div className="dm2026-special-offers-card__actions" aria-label={copy.providerApproved}>
+        <div className="dm2026-special-offers-card__actions" aria-label={copy.previewSafetyLabel}>
           <button className="dm2026-button dm2026-button-primary dm2026-special-offers-card__cta" type="button" aria-describedby={`${offer.id}-trust`}>
             {copy.primaryCta}
           </button>

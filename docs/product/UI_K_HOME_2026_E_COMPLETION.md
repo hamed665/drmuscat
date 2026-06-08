@@ -313,3 +313,49 @@ Validation completed for FIX02:
 ## 32. FIX02 merge-readiness recommendation
 
 PR #162-FIX02 is intended to be merge-ready if visual QA confirms the active mobile card fully renders on `/en/om` and `/ar/om`, CTAs are visible/tappable, desktop headline and carousel hierarchy feel premium, media placeholders feel photo/video-ready, Arabic is unclipped, and validation passes.
+
+## 33. FIX04 media slot aspect ratio polish
+
+PR #162-FIX04 is a micro UI polish pass for the Special Offers Showcase media slot only. It keeps the existing carousel, copy, typography, colors, controls, dots, routes, and backend-free preview behavior unchanged.
+
+FIX04 adjusts the mobile media slot toward a more useful future photo/video poster shape by increasing the mobile media area height slightly and applying a local `4 / 3` aspect-ratio intent with a capped block size. This improves photo/video readiness without making the full mobile card excessively tall.
+
+## 34. FIX04 mobile photo/video readiness note
+
+The media slot remains placeholder-only: no real images, generated images, external assets, video files, or autoplay were added. Provider details, chips, CTAs, trust note, Arabic/RTL wrapping, and normal page scroll remain preserved below the media area.
+
+## 35. FIX04 unchanged-scope confirmation
+
+FIX04 did not change:
+
+- carousel behavior or auto-rotation;
+- previous/next controls;
+- dots/progress indicators;
+- English or Arabic copy;
+- typography family or global typography;
+- color palette;
+- routes;
+- backend/API/database/Supabase/SEO/package files;
+- unrelated homepage sections.
+
+## 36. FIX04 validation results
+
+Required validation commands for FIX04:
+
+- `git status --short`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm routes:check`
+
+Validation completed for FIX04:
+
+- `git status --short` showed only the approved Special Offers CSS and completion documentation changed before commit.
+- `pnpm lint` passed with existing repository warnings only.
+- `pnpm typecheck` passed.
+- `pnpm build` passed.
+- `pnpm routes:check` passed.
+
+## 37. FIX04 merge-readiness recommendation
+
+PR #162-FIX04 is intended to be merge-ready if visual QA confirms the mobile media slot feels better prepared for future photo/video posters while the full mobile card remains readable, compact, and stable in English and Arabic.

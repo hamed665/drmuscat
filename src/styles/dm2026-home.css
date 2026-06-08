@@ -5243,3 +5243,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* PR #162-FIX04: final mobile media-slot aspect-ratio polish. */
+@media (max-width: 42rem) {
+  .dm2026-special-offers-card__media {
+    aspect-ratio: 4 / 3;
+    block-size: clamp(10.75rem, 56vw, 13.75rem);
+    min-block-size: clamp(10.75rem, 56vw, 13.75rem);
+    max-block-size: 13.75rem;
+  }
+}

@@ -161,3 +161,54 @@ Recommended next PR options:
 
 1. `UI-K-HOME-2026-I — Homepage Final SEO/LLM Metadata Audit`
 2. `UI-K-CONTENT-2026-A — Medical Editorial / Articles Foundation`
+
+## 15. FIX01 — Mobile + RTL polish summary
+
+`PR #166-FIX01` applied targeted UI polish only to the FAQ and Trust/Safety foundation. The sections were not rebuilt, FAQ content was preserved, Trust/Safety content was preserved, and no homepage order or unrelated homepage section changes were made.
+
+FIX01 scope:
+
+- Added CSS scroll offset protection to the FAQ and Trust/Safety section containers so mobile scroll positioning has safe space below the sticky header without editing the header.
+- Refined the desktop FAQ grid from the initial heavier right-column balance to a slightly calmer left/right ratio.
+- Reduced mobile FAQ vertical weight by tightening section padding, shell gaps, card gaps, question padding, question font size, icon size, and answer line spacing.
+- Reduced mobile Trust/Safety height by tightening shell padding, grid gaps, icon size, body text size/line-height, pill gaps, and pill padding.
+- Fixed the Arabic FAQ plus/minus rendering alignment by centering the icon strokes with physical `top`/`left` positioning inside the icon circle, avoiding RTL logical-position drift inside the icon itself.
+- Preserved accessible FAQ button behavior, `aria-expanded`, `aria-controls`, linked panels, and semantic Trust/Safety markup.
+
+## 16. FIX01 Arabic/RTL notes
+
+- Arabic FAQ and Trust/Safety still receive the page `dir="rtl"` value from the existing homepage integration.
+- Arabic question text remains naturally right-aligned via `text-align: start` in an RTL context.
+- The FAQ icon strokes no longer depend on `inset-inline-start` for internal centering, preventing the plus/minus mark from visually drifting in Arabic.
+- Arabic paragraph line-height remains slightly more generous than English, with a compact mobile override to avoid excessive vertical height.
+- Trust/Safety pills continue to wrap naturally in Arabic without clipping or hidden content.
+
+## 17. FIX01 validation results
+
+- `git status --short` completed before validation and showed only the planned CSS/documentation changes.
+- `pnpm lint` passed with existing repository warnings only.
+- `pnpm typecheck` passed.
+- `pnpm build` passed.
+- `pnpm routes:check` passed.
+
+## 18. FIX01 manual QA notes
+
+Manual QA checklist status:
+
+- FAQ has mobile scroll offset protection for sticky-header overlap.
+- Mobile FAQ cards are more compact while preserving readable/tappable controls.
+- Mobile FAQ no longer presents as a wall of oversized buttons.
+- Mobile Trust/Safety is shorter, compact, and premium while keeping all trust pills visible.
+- Trust/Safety bottom spacing was reduced for mobile.
+- Desktop FAQ remains visually balanced with a small left/right ratio refinement.
+- Arabic FAQ plus/minus icon strokes remain centered inside the icon circle.
+- Arabic FAQ rows remain unified cards with consistent padding and no clipped text.
+- English LTR and Arabic RTL content remains preserved.
+- No schema or JSON-LD was added.
+- No Articles were added.
+- No DB/API/Supabase/RLS/SEO/package changes were made.
+- Header/footer, Search Hero, Featured Provider Board, Discovery Categories, Special Offers, and Provider CTA were not edited.
+
+## 19. FIX01 merge-readiness recommendation
+
+After FIX01, `UI-K-HOME-2026-H` remains merge-ready from an implementation standpoint, pending reviewer approval.

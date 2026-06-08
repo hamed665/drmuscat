@@ -41,6 +41,12 @@ Out of scope and not implemented:
 
 ## 3. FIX02/FIX03 summary
 
+FIX04 copy-only account trigger update:
+
+- Header account trigger visible copy changed from Account / الحساب to Login / دخول.
+- Dropdown/popover items were preserved as Sign in / Create account and تسجيل الدخول / إنشاء حساب.
+- No layout, styling, footer, account popover behavior, mobile behavior, route, i18n logic, or language-switch behavior changed in FIX04.
+
 FIX03 account-menu bugfix scope:
 
 - Desktop RTL account popover positioning was corrected with logical CSS anchoring so الحساب opens near the trigger instead of jumping to the wrong side.
@@ -51,9 +57,9 @@ FIX02 addressed the post-polish density and account-access concerns without rebu
 
 - Desktop nav typography was dialed back from the prior over-heavy state.
 - Desktop nav and action spacing were refined to reduce crowding around `Articles` and `For Providers`.
-- Separate Sign in/Create account desktop pills were replaced by one compact Account / الحساب trigger.
+- Separate Sign in/Create account desktop pills were replaced by one compact Login / دخول trigger.
 - Account options remain preview-safe/disabled and do not link to unfinished auth routes.
-- Mobile now exposes Account / الحساب near the language switch/menu area.
+- Mobile now exposes Login / دخول near the language switch/menu area.
 - The mobile menu also places Sign in/Create account immediately below the menu header, not at the bottom.
 - The footer dark teal/glass direction was preserved and only lightly aligned/guarded.
 
@@ -70,7 +76,7 @@ The desktop header keeps the same structure and route behavior while becoming le
 
 ## 5. Desktop account action cleanup
 
-Desktop actions now use a compact Account / الحساب control:
+Desktop actions now use a compact Login / دخول control:
 
 - `For Providers` remains the primary linked provider CTA.
 - Sign in and Create account remain accessible through a lightweight HTML popover.
@@ -83,7 +89,7 @@ Desktop actions now use a compact Account / الحساب control:
 
 Mobile account access is now surfaced near the header actions and at the top of the opened mobile menu:
 
-- The compact Account / الحساب trigger remains visible near the language switch and hamburger menu on mobile.
+- The compact Login / دخول trigger remains visible near the language switch and hamburger menu on mobile.
 - The mobile menu includes an account block directly below the menu header.
 - Sign in and Create account are no longer buried at the bottom of the mobile menu.
 - Language switch and hamburger controls remain present.
@@ -148,9 +154,9 @@ No i18n or route logic was changed.
 
 ## 12. FIX03 account menu bugfix notes
 
-- English desktop Account menu uses logical popover anchoring near the trigger.
-- Arabic desktop الحساب menu uses RTL logical anchoring near the trigger.
-- Mobile Account popover has explicit inline and block size constraints, compact padding, and short disabled rows.
+- English desktop Login menu uses logical popover anchoring near the trigger.
+- Arabic desktop دخول menu uses RTL logical anchoring near the trigger.
+- Mobile Login popover has explicit inline and block size constraints, compact padding, and short disabled rows.
 - The larger hamburger mobile menu layout is not reused for the account popover.
 - Header glass/gradient, footer styling, heartbeat line, logo fallback/image slot, i18n logic, and language switch behavior were preserved.
 
@@ -166,8 +172,8 @@ Required validation commands:
 
 Additional smoke checks:
 
-- `/en/om` rendered successfully with English header/footer/account labels.
-- `/ar/om` rendered successfully with Arabic header/footer/account labels.
+- `/en/om` rendered successfully with English header/footer/account labels and Login trigger copy.
+- `/ar/om` rendered successfully with Arabic header/footer/account labels and دخول trigger copy.
 - Changed-file safety searches confirmed no `/offers`, Supabase, RLS, route-header, request-header label dependency, admin, storage, package, or forbidden homepage source changes.
 
 ## 14. Manual QA notes
@@ -177,7 +183,7 @@ Manual/code QA completed:
 - Desktop nav is less crowded than the prior polish pass.
 - Desktop nav text is refined and no longer too large/heavy.
 - `Articles` and `For Providers` have more breathing room.
-- Sign in/Create account remain accessible through compact Account / الحساب access.
+- Sign in/Create account remain accessible through compact Login / دخول access.
 - Mobile account access is visible near the language/menu area and immediately below the mobile menu header.
 - Language switch markup remains present.
 - Hamburger menu markup remains present.
@@ -189,6 +195,8 @@ Manual/code QA completed:
 - Logo renders the current `DM` fallback without requiring image props.
 - Logo component can later render a provided image in the same mark slot.
 - Footer remains clean, compact, and dark teal/glass.
+- Dropdown items remained Sign in / Create account and تسجيل الدخول / إنشاء حساب.
+- Footer and styling were unchanged in FIX04.
 - No admin/upload/backend/storage was added.
 - No homepage content sections were touched.
 

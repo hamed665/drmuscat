@@ -17,7 +17,7 @@ export function SiteHeader() {
   const providerHref = publicProviderRoute(locale, country);
   const mobileMenuId = `dm2026-mobile-menu-${locale}`;
   const accountPopoverId = `dm2026-account-menu-${locale}`;
-  const accountLabel = locale === 'ar' ? 'الحساب' : 'Account';
+  const accountLabel = locale === 'ar' ? 'دخول' : 'Login';
   const linkedNavItems = [
     { href: homeHref, label: copy.home },
     { href: publicDiscoveryRoute(locale, country, 'doctors'), label: copy.doctors },

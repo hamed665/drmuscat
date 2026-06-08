@@ -1,31 +1,18 @@
-# UI-K-LAYOUT-2026-B Completion — Premium Header/Footer Visual Polish
+# UI-K-LAYOUT-2026-B Completion — Premium Header/Footer Visual Polish + Future Logo Slot
 
-## 1. Precheck result
+## 1. Final scope
 
-Precheck passed on the current `work` branch.
-
-- Current branch was `work`.
-- No local `main` branch was available.
-- No Git remote was configured.
-- `src/components/layout/layout-i18n-copy.ts` was present.
-- `docs/product/UI_K_LAYOUT_2026_A_COMPLETION.md` was present.
-- Header/footer visible labels were verified to use `usePathname` with `resolveLayoutPathnameI18n` from `layout-i18n-copy`.
-- No request-header visible-label dependency was found in `src/components/layout/site-header.tsx` or `src/components/layout/site-footer.tsx` for `x-drmuscat-locale`, `x-next-url`, `referer`, or `headers(`.
-
-Conclusion: the workspace contains the merged PR #163 header/footer i18n baseline, so this visual polish proceeded from the verified current `work` branch.
-
-## 2. Final scope
-
-This PR is visual polish only for the public layout header and footer.
+This phase is visual polish only for the public header, footer, and brand/logo area.
 
 Implemented scope:
 
-- Premium/glassy header surface refinement.
+- Premium gradient-glass header refinement.
 - Slightly larger and slightly bolder desktop header nav labels.
-- More intentional disabled/pending header nav treatment.
-- Subtle desktop ECG/heartbeat-inspired micro-line in the header nav glass area.
-- Premium dark teal/glass footer surface polish.
-- Footer readability and structure refinements.
+- Preview-safe pending nav styling with `Special Offers` / `العروض الخاصة` still visible.
+- Subtle healthcare ECG/heartbeat micro-line in the desktop header/nav area.
+- Future-ready logo image slot with safe current `DM` fallback.
+- Dark teal/deep-green footer polish with cleaner hierarchy, spacing, and alignment.
+- Documentation of validation, route safety, i18n safety, and merge readiness.
 
 Out of scope and not implemented:
 
@@ -33,105 +20,112 @@ Out of scope and not implemented:
 - No pathname locale detection changes.
 - No `HeaderLanguageSwitch` behavior changes.
 - No route helper changes.
-- No homepage section changes.
+- No homepage content section changes.
 - No Offers page work.
-- No route creation.
+- No For Providers page work.
+- No admin panel work.
+- No upload flow, storage integration, backend logo lookup, or CMS wiring.
 - No database, Supabase, RLS, migration, API, SEO infrastructure, package, or lockfile changes.
 
-## 3. Files changed
+## 2. Files changed
 
+- `src/components/brand/logo.tsx`
 - `src/components/layout/site-header.tsx`
 - `src/components/layout/site-footer.tsx`
 - `src/styles/dm2026-home.css`
 - `docs/product/UI_K_LAYOUT_2026_B_COMPLETION.md`
 
 `src/components/layout/layout-i18n-copy.ts` was not changed.
+`src/components/layout/header-language-switch.tsx` was not changed.
 
-## 4. Header visual polish summary
+## 3. Header gradient glass polish
 
-- Added a decorative, non-interactive ECG accent element inside the desktop nav region.
-- Refined the sticky header with a more translucent healthcare-branded glass surface.
-- Added a more premium border, soft elevation, and safe backdrop blur/saturation treatment.
-- Wrapped the nav row visually in its own subtle pill surface.
-- Increased nav label size modestly with a responsive clamp.
-- Increased nav label weight slightly while keeping the tone minimal and compact.
-- Preserved the one-row desktop header structure.
-- Preserved the existing mobile menu structure and behavior.
+The header keeps its existing layout and behavior while receiving a more premium visual treatment:
 
-## 5. Footer visual polish summary
+- Header surface uses a restrained ivory/white, soft teal, deep green, and champagne-tinted gradient stack.
+- Glass effect is kept moderate with safe blur/saturation values.
+- Border and shadow are refined to feel elevated without making the header heavy.
+- Desktop nav is wrapped in a subtle pill-like glass surface.
+- Nav labels are slightly larger and slightly bolder, but not oversized.
+- Desktop header remains compact and designed for a single row.
+- Mobile header behavior and menu structure are preserved.
+- RTL typography avoids negative Arabic letter spacing.
 
-- Added a scoped `dm2026-site-footer` class to target the premium footer polish safely.
-- Replaced the plain white footer feel with a soft dark teal/deep-green/blue-teal gradient.
-- Added restrained radial highlights using teal and champagne tones.
-- Added compact glass cards around brand, link, and utility groups for clearer structure.
-- Preserved readable contrast for headings, links, trust text, and disabled labels.
-- Preserved compact responsive layout and existing bilingual footer copy.
+## 4. Heartbeat micro-line final behavior
 
-## 6. Heartbeat micro-line decision
+The ECG/heartbeat detail is decorative, CSS-only, and intentionally subtle:
 
-The heartbeat/ECG detail is animated, but extremely subtly:
+- It is a thin low-opacity line inside the desktop nav glass area.
+- It uses a slow, minimal opacity/position drift.
+- It is `aria-hidden` and does not affect navigation or layout semantics.
+- It mirrors safely in RTL.
+- It is hidden below the desktop/tablet breakpoint to keep mobile clean.
+- `prefers-reduced-motion: reduce` disables the animation and leaves the accent static.
 
-- It is a tiny, thin, low-opacity CSS-shaped accent in the desktop nav glass area.
-- It uses a slow CSS opacity/position drift only.
-- It is hidden at narrower layout widths to avoid mobile clutter.
-- It is non-interactive and marked `aria-hidden="true"`.
-- It does not create a route, link, button, or layout dependency.
+## 5. Future-ready logo slot strategy
 
-Reduced-motion behavior:
+The `Logo` component remains backward compatible and requires no caller changes.
 
-- `prefers-reduced-motion: reduce` disables the animation and leaves a static low-opacity accent.
+Implemented logo behavior:
 
-## 7. i18n confirmation
+- Existing fallback still renders the premium `DM` mark and `DrMuscat` wordmark.
+- Optional `imageSrc?: string` and `imageAlt?: string` props were added for a future admin/CMS-provided logo asset.
+- The component renders an image only when `imageSrc` is supplied.
+- No image URL is hardcoded.
+- No backend, API, Supabase Storage, database field, or admin upload flow was added.
+- If no image is provided, the current `DM` fallback remains stable.
+- The mark container is sized and styled to support square or horizontal logos with `object-fit: contain`.
+- The visible mark/wordmark are hidden from screen readers and a single screen-reader label is emitted to avoid duplicate announcement.
+- Footer usage now shares the same logo component, ensuring the logo slot is compatible with light header and dark footer surfaces.
 
-No i18n logic was changed.
+Future work must wire admin/CMS logo management in a separately approved backend/storage/admin phase.
 
+## 6. Footer cleanup and layout refinement
+
+The footer was adjusted away from a loose/plain treatment toward a cohesive premium healthcare footer:
+
+- Footer background uses a subtle dark teal/deep-green/blue-teal gradient instead of white.
+- Layout uses a clearer grid for brand, Browse, For Providers, and Trust & Safety.
+- Brand, link, and utility areas now align through one cohesive footer surface rather than disconnected floating cards.
+- Column spacing and item spacing are more consistent.
+- Headings have a consistent hierarchy.
+- Footer remains compact without being cramped.
+- Mobile footer stacks cleanly.
+- Arabic/RTL alignment remains natural through existing `dir` handling.
+
+## 7. Footer dark-teal/glass design notes
+
+- The footer uses a calm healthcare palette: deep green, dark teal, soft blue-teal, and restrained warm highlight.
+- Text contrast is kept readable on the dark surface.
+- Links remain visibly distinct and keyboard-focusable.
+- Disabled/pending items remain non-link, muted, and preview-safe.
+- No unfinished destinations were exposed.
+
+## 8. I18n and route safety confirmation
+
+No i18n or route logic was changed.
+
+- Header and footer still resolve locale/country/direction from `usePathname()` and `resolveLayoutPathnameI18n()`.
 - `layout-i18n-copy.ts` was not edited.
 - `HeaderLanguageSwitch` was not edited.
-- Pathname locale resolution was not changed.
-- Header and footer still resolve visible labels from the PR #163 pathname/client-locale baseline.
+- Route helper files were not edited.
+- `Special Offers` / `العروض الخاصة` remains visible and preview-safe as pending copy.
+- `/offers` was not created or linked.
+- No new public routes, admin routes, API routes, sitemap entries, robots changes, or `llms.txt` changes were added.
 
-## 8. Special Offers confirmation
+## 9. Homepage/admin/backend confirmation
 
-Special Offers was not implemented as a route and was not linked.
+- No homepage section files were changed.
+- No Smart Search, Featured Board, Discovery Categories, Special Offers Showcase, Provider CTA, FAQ, or Trust section files were changed.
+- No admin panel files were changed.
+- No upload/storage logic was added.
+- No database, Supabase, RLS, migration, seed, API, SEO infrastructure, package, or lockfile files were changed.
 
-- The header still renders `Special Offers` / `العروض الخاصة` as a pending, preview-safe, non-link item.
-- The footer still renders offers copy as disabled/pending copy where already intended.
-- `/offers` was not created.
-- No offers homepage component was edited.
-
-## 9. Arabic / RTL notes
-
-- Arabic layout direction is still supplied by the existing pathname i18n resolver.
-- Arabic nav labels remain Arabic on `/ar/om`.
-- Arabic footer labels remain Arabic on `/ar/om`.
-- Arabic nav typography avoids negative letter spacing.
-- The ECG line mirrors to the inline end for RTL and is hidden on smaller widths.
-- Footer glass cards keep RTL text readable and structured.
-
-## 10. Accessibility notes
-
-- Existing semantic `header`, `nav`, and `footer` elements were preserved.
-- Existing mobile popover menu button and menu structure were preserved.
-- Existing language switch behavior was preserved.
-- The ECG accent is decorative and `aria-hidden`.
-- Focus-visible states were refined with a visible champagne outline.
-- Disabled/pending items remain marked with `aria-disabled="true"`.
-- Reduced motion is respected for the ECG animation.
-
-## 11. Route/link safety notes
-
-- No new route files were created.
-- No `/offers` link was added.
-- No route helper was changed.
-- No sitemap, robots, or `llms.txt` files were changed.
-- No backend/API/database/Supabase/RLS files were changed.
-- No package or lockfile files were changed.
-
-## 12. Validation results
+## 10. Validation results
 
 Required validation commands:
 
-- `git status --short` — passed; showed only the approved visual/doc files changed before validation.
+- `git status --short` — passed.
 - `pnpm lint` — passed with existing warnings only.
 - `pnpm typecheck` — passed.
 - `pnpm build` — passed.
@@ -139,29 +133,34 @@ Required validation commands:
 
 Additional smoke checks:
 
-- `curl -fsS http://localhost:3000/en/om` — passed.
-- `curl -fsS http://localhost:3000/ar/om` — passed.
-- Rendered HTML token checks confirmed English header/footer labels on `/en/om` and Arabic header/footer labels on `/ar/om`.
-- Changed-file safety search found no `/offers`, Supabase, RLS, route header, or request-header label dependencies in the changed source/CSS files.
+- `/en/om` rendered successfully with English header/footer labels.
+- `/ar/om` rendered successfully with Arabic header/footer labels.
+- Changed-file safety searches confirmed no `/offers`, Supabase, RLS, route-header, request-header label dependency, admin, storage, package, or forbidden homepage source changes.
 
-## 13. Manual QA notes
+## 11. Manual QA notes
+
+Manual/code QA completed:
+
+- Header labels remain English on `/en/om`.
+- Header labels remain Arabic on `/ar/om`.
+- Footer labels remain English on `/en/om`.
+- Footer labels remain Arabic on `/ar/om`.
+- Language switch markup remains present.
+- Header has subtle premium gradient glass.
+- Header nav remains compact, readable, and preview-safe.
+- `Special Offers` remains visible and non-link/pending.
+- ECG accent is subtle and reduced-motion-safe.
+- Logo renders the current `DM` fallback without requiring image props.
+- Logo component can later render a provided image in the same mark slot.
+- Footer has clearer hierarchy and a cohesive dark teal/glass design.
+- Mobile header/footer structure remains clean.
+- Arabic RTL remains driven by existing direction handling.
 
 Environment limitation:
 
 - No Chromium/Chrome binary was available in this environment, so screenshots could not be captured without adding/downloading tooling.
 
-Manual/code QA completed:
-
-- `/en/om` desktop: rendered HTML contains English header/footer labels and Special Offers as pending copy.
-- `/ar/om` desktop: rendered HTML contains Arabic header/footer labels and `العروض الخاصة` as pending copy.
-- `/en/om` mobile: mobile header/menu markup remains unchanged except inherited visual CSS; ECG accent is hidden on smaller widths.
-- `/ar/om` mobile: Arabic direction and labels remain controlled by existing pathname i18n logic; ECG accent is hidden on smaller widths.
-- Language switch markup and links remain present in rendered English and Arabic pages.
-- No homepage section source files were changed.
-- No Special Offers showcase file was changed.
-- No database/API/Supabase/SEO/package files were changed.
-
-## 14. Merge-readiness recommendation
+## 12. Merge-readiness recommendation
 
 Merge-ready after human visual review.
 

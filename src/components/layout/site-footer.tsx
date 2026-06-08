@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { HeaderLanguageSwitch } from '@/components/layout/header-language-switch';
+import { Logo } from '@/components/brand/logo';
 import { footerCopy, resolveLayoutPathnameI18n } from '@/components/layout/layout-i18n-copy';
 import { Container } from '@/components/ui/container';
 import { publicDiscoveryRoute, publicProviderRoute } from '@/lib/routes/public';
@@ -26,12 +27,14 @@ export function SiteFooter() {
   return (
     <footer className="site-footer site-footer--premium dm2026-site-footer" role="contentinfo" dir={dir}>
       <Container className="site-footer__inner dm2026-site-footer__inner">
-        <div className="site-footer__brand">
-          <strong>DrMuscat</strong>
+        <div className="site-footer__brand dm2026-site-footer__brand">
+          <div className="dm2026-site-footer__brand-head">
+            <Logo />
+          </div>
           <p>{copy.brandText}</p>
         </div>
-        <nav className="site-footer__links" aria-label={copy.navLabel}>
-          <div>
+        <nav className="site-footer__links dm2026-site-footer__links" aria-label={copy.navLabel}>
+          <div className="dm2026-site-footer__column">
             <strong>{copy.browseHeading}</strong>
             <ul>
               {browseLinks.map((item) => (
@@ -46,7 +49,7 @@ export function SiteFooter() {
               ))}
             </ul>
           </div>
-          <div>
+          <div className="dm2026-site-footer__column">
             <strong>{copy.providersHeading}</strong>
             <ul>
               {providerLinks.map((item) => (
@@ -62,7 +65,7 @@ export function SiteFooter() {
             </ul>
           </div>
         </nav>
-        <div className="site-footer__utility">
+        <div className="site-footer__utility dm2026-site-footer__utility">
           <strong>{copy.trustHeading}</strong>
           <ul>
             {trustItems.map((item) => (

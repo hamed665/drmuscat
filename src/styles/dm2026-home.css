@@ -6882,9 +6882,15 @@
 
 [dir='rtl'] .dm2026-home-faq__button {
   direction: rtl;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+[dir='rtl'] .dm2026-home-faq__button > span:first-child {
+  grid-column: 2;
 }
 
 [dir='rtl'] .dm2026-home-faq__icon {
+  grid-column: 1;
   justify-self: start;
 }
 
@@ -6944,7 +6950,7 @@
 
 .dm2026-home-trust__shell {
   display: grid;
-  grid-template-columns: auto minmax(0, 0.92fr) minmax(18rem, 1.08fr);
+  grid-template-columns: minmax(0, 0.96fr) minmax(18rem, 1.04fr);
   gap: clamp(0.78rem, 1.8vw, 1.25rem);
   align-items: center;
   border: 1px solid rgba(14, 110, 100, 0.12);
@@ -6959,8 +6965,9 @@
 .dm2026-home-trust__mark {
   display: grid;
   place-items: center;
-  inline-size: 3.25rem;
-  block-size: 3.25rem;
+  inline-size: 2.72rem;
+  block-size: 2.72rem;
+  flex: 0 0 auto;
   border: 1px solid rgba(14, 110, 100, 0.14);
   border-radius: 1.05rem;
   background: rgba(255, 255, 255, 0.82);
@@ -6979,18 +6986,24 @@
 .dm2026-home-trust__mark span::after {
   content: '';
   position: absolute;
-  inset-block-start: 0.4rem;
-  inset-inline-start: 0.3rem;
+  top: 0.4rem;
+  left: 0.3rem;
   inline-size: 0.64rem;
   block-size: 0.36rem;
   border-block-end: 0.14rem solid var(--dm-color-brand-strong, #0b6f63);
-  border-inline-start: 0.14rem solid var(--dm-color-brand-strong, #0b6f63);
+  border-left: 0.14rem solid var(--dm-color-brand-strong, #0b6f63);
   transform: rotate(-45deg);
 }
 
 .dm2026-home-trust__copy {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.45rem;
+}
+
+.dm2026-home-trust__heading-row {
+  display: flex;
+  align-items: center;
+  gap: 0.72rem;
 }
 
 .dm2026-home-trust__copy h2 {
@@ -7039,8 +7052,8 @@
   }
 
   .dm2026-home-trust__mark {
-    inline-size: 2.9rem;
-    block-size: 2.9rem;
+    inline-size: 2.55rem;
+    block-size: 2.55rem;
   }
 
   .dm2026-home-trust__pills {
@@ -7120,15 +7133,30 @@
     line-height: 1.58;
   }
 
+  .dm2026-home-trust__heading-row {
+    gap: 0.5rem;
+  }
+
   .dm2026-home-trust__mark {
-    inline-size: 2.4rem;
-    block-size: 2.4rem;
-    border-radius: 0.82rem;
+    inline-size: 2.05rem;
+    block-size: 2.05rem;
+    border-radius: 0.72rem;
   }
 
   .dm2026-home-trust__mark span {
-    inline-size: 1.16rem;
-    block-size: 1.42rem;
+    inline-size: 0.98rem;
+    block-size: 1.18rem;
+    border-width: 0.13rem;
+    border-block-start-width: 0.22rem;
+  }
+
+  .dm2026-home-trust__mark span::after {
+    top: 0.31rem;
+    left: 0.23rem;
+    inline-size: 0.48rem;
+    block-size: 0.28rem;
+    border-block-end-width: 0.12rem;
+    border-left-width: 0.12rem;
   }
 
   .dm2026-home-trust__copy {

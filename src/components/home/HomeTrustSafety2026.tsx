@@ -33,11 +33,13 @@ export function HomeTrustSafety2026({ locale, dir }: HomeTrustSafety2026Props) {
   return (
     <section className="dm2026-home-trust dm2026-container" dir={dir} aria-labelledby={titleId}>
       <div className="dm2026-home-trust__shell">
-        <div className="dm2026-home-trust__mark" aria-hidden="true">
-          <span />
-        </div>
         <div className="dm2026-home-trust__copy">
-          <h2 id={titleId}>{copy.heading}</h2>
+          <div className="dm2026-home-trust__heading-row">
+            <div className="dm2026-home-trust__mark" aria-hidden="true">
+              <span />
+            </div>
+            <h2 id={titleId}>{copy.heading}</h2>
+          </div>
           <p>{copy.body}</p>
         </div>
         <ul className="dm2026-home-trust__pills" aria-label={copy.heading}>

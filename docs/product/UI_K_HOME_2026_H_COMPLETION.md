@@ -171,8 +171,9 @@ FIX01 scope:
 - Added CSS scroll offset protection to the FAQ and Trust/Safety section containers so mobile scroll positioning has safe space below the sticky header without editing the header.
 - Refined the desktop FAQ grid from the initial heavier right-column balance to a slightly calmer left/right ratio.
 - Reduced mobile FAQ vertical weight by tightening section padding, shell gaps, card gaps, question padding, question font size, icon size, and answer line spacing.
-- Reduced mobile Trust/Safety height by tightening shell padding, grid gaps, icon size, body text size/line-height, pill gaps, and pill padding.
-- Fixed the Arabic FAQ plus/minus rendering alignment by centering the icon strokes with physical `top`/`left` positioning inside the icon circle, avoiding RTL logical-position drift inside the icon itself.
+- Reduced mobile Trust/Safety height by tightening shell padding, grid gaps, heading-row gap, icon size, body text size/line-height, pill gaps, and pill padding.
+- Fixed the Arabic FAQ plus/minus rendering alignment by keeping the icon inside the clickable grid row, placing it in the RTL-leading column, and centering the icon strokes inside the circle.
+- Fixed the Trust/Safety icon alignment by moving the existing icon badge into a compact heading row so it mirrors naturally with English LTR and Arabic RTL direction.
 - Preserved accessible FAQ button behavior, `aria-expanded`, `aria-controls`, linked panels, and semantic Trust/Safety markup.
 
 ## 16. FIX01 Arabic/RTL notes
@@ -180,6 +181,8 @@ FIX01 scope:
 - Arabic FAQ and Trust/Safety still receive the page `dir="rtl"` value from the existing homepage integration.
 - Arabic question text remains naturally right-aligned via `text-align: start` in an RTL context.
 - The FAQ icon strokes no longer depend on `inset-inline-start` for internal centering, preventing the plus/minus mark from visually drifting in Arabic.
+- The FAQ icon badge is assigned to the RTL-leading grid column so it stays connected to Arabic question text instead of floating at the opposite edge.
+- The Trust/Safety icon badge now sits inside the heading row and mirrors with the Arabic heading direction.
 - Arabic paragraph line-height remains slightly more generous than English, with a compact mobile override to avoid excessive vertical height.
 - Trust/Safety pills continue to wrap naturally in Arabic without clipping or hidden content.
 
@@ -202,7 +205,9 @@ Manual QA checklist status:
 - Trust/Safety bottom spacing was reduced for mobile.
 - Desktop FAQ remains visually balanced with a small left/right ratio refinement.
 - Arabic FAQ plus/minus icon strokes remain centered inside the icon circle.
+- Arabic FAQ icon badges align with the RTL-leading side of the question row instead of floating far away from the text.
 - Arabic FAQ rows remain unified cards with consistent padding and no clipped text.
+- Trust/Safety check icon is grouped with the heading and no longer sits as a detached grid column.
 - English LTR and Arabic RTL content remains preserved.
 - No schema or JSON-LD was added.
 - No Articles were added.

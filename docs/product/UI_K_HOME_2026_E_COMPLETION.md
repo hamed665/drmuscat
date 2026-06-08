@@ -364,11 +364,11 @@ PR #162-FIX04 is intended to be merge-ready if visual QA confirms the mobile med
 
 PR #162-FIX05 is a desktop-only micro polish pass for the Special Offers Showcase card media slot. It uses a `min-width: 68.01rem` media query so the accepted mobile layout, mobile media slot, mobile card height, mobile CTA spacing, and mobile carousel behavior remain unchanged.
 
-FIX05 increases the desktop media/photo/video slot slightly by adjusting the desktop card row allocation and media minimum height. The goal is to use existing desktop card breathing room near the lower portion of the card so future photo and video poster uploads have a more useful presentation area.
+FIX05 increases the desktop media/photo/video slot slightly by adjusting only the desktop card row allocation and media minimum height. It uses the existing lower-card breathing room by keeping the body row content-sized and reducing bottom-only padding, so future photo and video poster uploads have a more useful presentation area without shrinking text.
 
 ## 39. FIX05 text and readability confirmation
 
-FIX05 does not shrink or compress text. It does not reduce provider detail text, offer title text, chips, CTA labels, or trust-note readability. It only adjusts desktop media row sizing and body placement so content continues to sit naturally below the larger media slot.
+FIX05 does not shrink or compress text. It does not reduce provider detail text, offer title text, chips, CTA labels, or trust-note readability. It only adjusts desktop media row sizing and bottom breathing room so content continues to sit naturally below the larger media slot.
 
 ## 40. FIX05 desktop photo/video readiness note
 

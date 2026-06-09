@@ -264,3 +264,116 @@ Recommended next PR:
 Alternative next PR:
 
 - `UI-K-CONTENT-2026-A — Medical Editorial / Articles Foundation`
+
+---
+
+# FIX01 — Premium WhatsApp Button Activation + Visual Polish
+
+## FIX01 summary
+
+FIX01 keeps the original PR #170 support section intact and applies a targeted WhatsApp support UI fix only.
+
+Changed in FIX01:
+
+- Verified the WhatsApp URL helper returns a real `wa.me` URL only when the public env var normalizes to digits.
+- Confirmed the local shell did not have `NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER` set, which means the component intentionally rendered the disabled fallback instead of an anchor.
+- Added explicit active/disabled state classes and `data-whatsapp-state` markers for the floating quick-access control.
+- Removed the floating wrapper `pointer-events: none` pattern so the active anchor is not dependent on descendant pointer-event overrides.
+- Upgraded the floating button to a more premium DrMuscat 2026 glass/teal pill with a soft WhatsApp accent glyph, stronger readable label, premium shadow, hover/focus elevation, tap feedback and reduced-motion-safe behavior.
+
+## WhatsApp activation fix
+
+When `NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER` is set, the floating quick-access control renders as a real anchor:
+
+- `href` is generated from the env var via `normalizeWhatsAppNumber` and `buildWhatsAppUrl`.
+- `target="_blank"` is present.
+- `rel="noopener noreferrer"` is present.
+- The accessible label remains:
+  - English: `Contact DrMuscat support on WhatsApp`
+  - Arabic: `تواصل مع دعم DrMuscat عبر واتساب`
+
+Expected active URL shape:
+
+```txt
+https://wa.me/96877402910?text=Hi%20DrMuscat%2C%20I%20need%20help%20finding%20public%20healthcare%20provider%20information%20in%20Oman.
+```
+
+The number is still not hardcoded in the component. It must come from:
+
+```env
+NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER=96877402910
+```
+
+## Floating button visual polish
+
+The floating button now uses:
+
+- compact glassy pill styling
+- white/teal DrMuscat surface treatment
+- soft WhatsApp green accent glyph
+- stronger premium shadow
+- subtle border
+- readable label
+- hover elevation on desktop
+- active/tap feedback
+- focus-visible outline
+- reduced-motion-safe transition handling
+
+It remains intentionally compact and is not a full-width sticky bar, popup, modal, chatbot or live chat widget.
+
+## Missing env fallback reminder
+
+If `NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER` is missing or invalid:
+
+- No `wa.me/undefined` link is generated.
+- The floating control renders as a disabled/non-active element with `aria-disabled="true"`.
+- Inline support buttons render disabled/non-active fallbacks.
+- The UI remains intentional and not broken-looking.
+
+Vercel must set:
+
+```env
+NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER=96877402910
+```
+
+Format requirement:
+
+- digits only
+- country code included
+- no plus sign
+- no spaces
+- no hyphens
+
+## FIX01 manual QA notes
+
+Reviewer should check:
+
+- `/en/om` desktop
+- `/ar/om` desktop
+- `/en/om` mobile
+- `/ar/om` mobile
+- `/` after redirect
+
+Checklist:
+
+- Floating WhatsApp button opens WhatsApp when `NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER=96877402910` is configured.
+- User support inline button opens the user-support WhatsApp message.
+- Provider team inline button opens the provider-listing WhatsApp message.
+- Links contain valid `wa.me` URLs.
+- URL `text` parameter is encoded.
+- No `wa.me/undefined` link exists when env var is missing.
+- Floating button looks premium/glassy and not dead/gray when active.
+- Floating button remains visible on desktop and mobile.
+- Floating button does not create horizontal overflow.
+- Arabic RTL remains clean.
+- No backend/database/API/Supabase/SEO/package changes were made.
+
+## FIX01 validation results
+
+- `git status --short` — pending local FIX01 files only at documentation time.
+- `pnpm lint` — passed with existing warnings in prototype/public files.
+- `pnpm typecheck` — passed.
+- `NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER=96877402910 pnpm build` — passed with the env var set for active-link build verification.
+- `pnpm build` — passed with the local missing-env fallback.
+- `pnpm routes:check` — passed.
+- `pnpm seo:check` — passed.

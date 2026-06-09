@@ -7479,55 +7479,144 @@
 
 .dm2026-home-whatsapp-float {
   position: fixed;
-  z-index: 30;
-  inset-inline-end: max(1rem, env(safe-area-inset-right));
-  inset-block-end: max(1rem, env(safe-area-inset-bottom));
-  max-inline-size: calc(100vw - 2rem);
-  pointer-events: none;
+  z-index: 65;
+  inset-inline-end: max(1.05rem, env(safe-area-inset-right));
+  inset-block-end: max(1.05rem, env(safe-area-inset-bottom));
+  max-inline-size: calc(100vw - 2.1rem);
 }
 
 .dm2026-home-whatsapp-float__button {
   display: inline-flex;
-  min-block-size: 2.75rem;
+  min-block-size: 3rem;
   max-inline-size: 100%;
   align-items: center;
   justify-content: center;
-  gap: 0.46rem;
-  border: 1px solid rgba(17, 132, 94, 0.2);
+  gap: 0.55rem;
+  border: 1px solid rgba(33, 151, 125, 0.34);
   border-radius: 999px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(243, 252, 249, 0.92)),
-    linear-gradient(135deg, rgba(37, 211, 102, 0.16), transparent);
-  color: #0b5f4f;
-  font-size: 0.83rem;
-  font-weight: 850;
+    linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(239, 253, 249, 0.82)),
+    radial-gradient(120% 160% at 0% 0%, rgba(37, 211, 102, 0.22), transparent 52%),
+    linear-gradient(135deg, rgba(9, 95, 80, 0.12), rgba(255, 248, 236, 0.58));
+  color: #074f43;
+  font-size: 0.86rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
   line-height: 1;
-  padding: 0.68rem 0.82rem;
+  padding: 0.58rem 0.86rem 0.58rem 0.66rem;
   text-decoration: none;
-  box-shadow: 0 16px 36px rgba(7, 56, 48, 0.18);
-  pointer-events: auto;
+  box-shadow:
+    0 18px 42px rgba(7, 56, 48, 0.22),
+    0 1px 0 rgba(255, 255, 255, 0.78) inset,
+    0 0 0 0.45rem rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  transform: translateZ(0);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease,
+    background 160ms ease;
 }
 
-.dm2026-home-whatsapp-float__dot {
-  inline-size: 0.64rem;
-  block-size: 0.64rem;
+.dm2026-home-whatsapp-float__button--active {
+  cursor: pointer;
+}
+
+.dm2026-home-whatsapp-float__button--active:hover {
+  border-color: rgba(24, 168, 118, 0.48);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(235, 255, 249, 0.9)),
+    radial-gradient(120% 160% at 0% 0%, rgba(37, 211, 102, 0.3), transparent 54%),
+    linear-gradient(135deg, rgba(9, 95, 80, 0.14), rgba(255, 248, 236, 0.62));
+  box-shadow:
+    0 22px 52px rgba(7, 56, 48, 0.28),
+    0 1px 0 rgba(255, 255, 255, 0.82) inset,
+    0 0 0 0.48rem rgba(236, 250, 247, 0.34);
+  transform: translateY(-0.08rem);
+}
+
+.dm2026-home-whatsapp-float__button--active:active {
+  transform: translateY(0.02rem) scale(0.985);
+}
+
+.dm2026-home-whatsapp-float__glyph {
+  position: relative;
+  display: inline-flex;
+  inline-size: 1.86rem;
+  block-size: 1.86rem;
   flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(37, 211, 102, 0.58);
   border-radius: 999px;
-  background: #25d366;
-  box-shadow: 0 0 0 0.28rem rgba(37, 211, 102, 0.12);
+  background:
+    radial-gradient(circle at 32% 25%, rgba(255, 255, 255, 0.5), transparent 34%),
+    linear-gradient(135deg, #21c767, #10946f);
+  box-shadow:
+    0 10px 20px rgba(16, 148, 111, 0.26),
+    0 0 0 0.22rem rgba(37, 211, 102, 0.12);
+}
+
+.dm2026-home-whatsapp-float__glyph::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0.28rem;
+  inset-block-end: 0.1rem;
+  inline-size: 0.42rem;
+  block-size: 0.42rem;
+  border-end-start-radius: 0.12rem;
+  background: #10946f;
+  transform: rotate(35deg);
+}
+
+.dm2026-home-whatsapp-float__glyph span {
+  position: relative;
+  z-index: 1;
+  inline-size: 0.82rem;
+  block-size: 0.82rem;
+  border: 0.14rem solid rgba(255, 255, 255, 0.96);
+  border-radius: 999px;
+}
+
+.dm2026-home-whatsapp-float__glyph span::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0.18rem;
+  inset-block-start: 0.18rem;
+  inline-size: 0.26rem;
+  block-size: 0.16rem;
+  border-block-end: 0.12rem solid rgba(255, 255, 255, 0.96);
+  border-inline-start: 0.12rem solid rgba(255, 255, 255, 0.96);
+  transform: rotate(-45deg);
+}
+
+.dm2026-home-whatsapp-float__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dm2026-home-whatsapp-float__button--disabled {
   cursor: not-allowed;
-  border-color: rgba(161, 174, 171, 0.35);
-  background: rgba(255, 255, 255, 0.9);
-  color: rgba(53, 70, 66, 0.68);
-  box-shadow: 0 12px 28px rgba(7, 56, 48, 0.1);
+  border-color: rgba(151, 168, 164, 0.34);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(245, 248, 247, 0.84)),
+    linear-gradient(135deg, rgba(151, 168, 164, 0.12), rgba(255, 248, 236, 0.32));
+  color: rgba(53, 70, 66, 0.64);
+  box-shadow:
+    0 14px 32px rgba(7, 56, 48, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.72) inset;
 }
 
-.dm2026-home-whatsapp-float__button--disabled .dm2026-home-whatsapp-float__dot {
-  background: #9aa9a5;
-  box-shadow: 0 0 0 0.28rem rgba(154, 169, 165, 0.12);
+.dm2026-home-whatsapp-float__button--disabled .dm2026-home-whatsapp-float__glyph {
+  border-color: rgba(151, 168, 164, 0.42);
+  background: linear-gradient(135deg, #b8c5c1, #8fa19c);
+  box-shadow: 0 8px 18px rgba(76, 92, 88, 0.14);
+}
+
+.dm2026-home-whatsapp-float__button--disabled .dm2026-home-whatsapp-float__glyph::after {
+  background: #8fa19c;
 }
 
 [dir='rtl'] .dm2026-home-support__eyebrow {
@@ -7623,14 +7712,31 @@
   }
 
   .dm2026-home-whatsapp-float {
-    inset-inline-end: max(0.78rem, env(safe-area-inset-right));
-    inset-block-end: max(0.78rem, env(safe-area-inset-bottom));
-    max-inline-size: calc(100vw - 1.56rem);
+    inset-inline-end: max(0.82rem, env(safe-area-inset-right));
+    inset-block-end: max(0.92rem, env(safe-area-inset-bottom));
+    max-inline-size: calc(100vw - 1.64rem);
   }
 
   .dm2026-home-whatsapp-float__button {
-    min-block-size: 2.6rem;
-    font-size: 0.78rem;
-    padding: 0.62rem 0.72rem;
+    min-block-size: 2.82rem;
+    gap: 0.46rem;
+    font-size: 0.8rem;
+    padding: 0.52rem 0.74rem 0.52rem 0.56rem;
+  }
+
+  .dm2026-home-whatsapp-float__glyph {
+    inline-size: 1.68rem;
+    block-size: 1.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dm2026-home-whatsapp-float__button {
+    transition: none;
+  }
+
+  .dm2026-home-whatsapp-float__button--active:hover,
+  .dm2026-home-whatsapp-float__button--active:active {
+    transform: none;
   }
 }

@@ -96,10 +96,11 @@ export function HomeSupportContact2026({ locale, dir }: HomeSupportContact2026Pr
   const whatsAppNumber = normalizeWhatsAppNumber(process.env.NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER);
   const userHref = buildWhatsAppUrl(whatsAppNumber, copy.user.message);
   const providerHref = buildWhatsAppUrl(whatsAppNumber, copy.provider.message);
+  const whatsAppState = userHref ? 'active' : 'disabled';
 
   return (
     <>
-      <section className="dm2026-home-support dm2026-container" dir={dir} aria-labelledby={titleId}>
+      <section className="dm2026-home-support dm2026-container" dir={dir} aria-labelledby={titleId} data-whatsapp-state={whatsAppState}>
         <div className="dm2026-home-support__shell">
           <div className="dm2026-home-support__intro">
             <span className="dm2026-home-support__eyebrow">{copy.eyebrow}</span>
@@ -133,19 +134,28 @@ export function HomeSupportContact2026({ locale, dir }: HomeSupportContact2026Pr
       <div className="dm2026-home-whatsapp-float" dir={dir}>
         {userHref ? (
           <a
-            className="dm2026-home-whatsapp-float__button"
+            className="dm2026-home-whatsapp-float__button dm2026-home-whatsapp-float__button--active"
             href={userHref}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={copy.quickAriaLabel}
+            data-whatsapp-state="active"
           >
-            <span className="dm2026-home-whatsapp-float__dot" aria-hidden="true" />
-            <span>{copy.quickLabel}</span>
+            <span className="dm2026-home-whatsapp-float__glyph" aria-hidden="true">
+              <span />
+            </span>
+            <span className="dm2026-home-whatsapp-float__label">{copy.quickLabel}</span>
           </a>
         ) : (
-          <span className="dm2026-home-whatsapp-float__button dm2026-home-whatsapp-float__button--disabled" aria-disabled="true">
-            <span className="dm2026-home-whatsapp-float__dot" aria-hidden="true" />
-            <span>{copy.quickLabel}</span>
+          <span
+            className="dm2026-home-whatsapp-float__button dm2026-home-whatsapp-float__button--disabled"
+            aria-disabled="true"
+            data-whatsapp-state="disabled"
+          >
+            <span className="dm2026-home-whatsapp-float__glyph" aria-hidden="true">
+              <span />
+            </span>
+            <span className="dm2026-home-whatsapp-float__label">{copy.quickLabel}</span>
           </span>
         )}
       </div>

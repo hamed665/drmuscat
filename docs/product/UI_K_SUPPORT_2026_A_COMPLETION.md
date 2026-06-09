@@ -478,3 +478,14 @@ Checklist:
 - `pnpm build` — passed with missing-env fallback.
 - `pnpm routes:check` — passed.
 - `pnpm seo:check` — passed.
+
+## FIX02 deployment and final polish note
+
+Follow-up polish after manual QA tightened the final FAB presentation without changing homepage structure:
+
+- The central mark now uses a tiny inline, local phone-in-chat SVG so the icon reads more clearly as a WhatsApp-style action.
+- The desktop text label is now a secondary companion tooltip/chip that appears on hover or keyboard focus; the main action remains a circular FAB.
+- Mobile remains icon-only and fully circular.
+- The active visual uses a stronger DrMuscat teal plus WhatsApp green gradient, white glyph, glass highlight, glow and shadow.
+- Preview and Production must both define `NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER=96877402910`.
+- Because this is a `NEXT_PUBLIC_` variable, Vercel Preview/Production must be rebuilt or redeployed after the env var is added; a preview built before the env existed can continue to show the disabled fallback.

@@ -73,6 +73,17 @@ const supportContactCopy: Record<SupportedLocale, SupportContactCopy> = {
   }
 };
 
+function WhatsAppLogoMark() {
+  return (
+    <span className="dm2026-home-whatsapp-float__glyph" aria-hidden="true">
+      <svg viewBox="0 0 32 32" focusable="false">
+        <path d="M16.02 3.2c-6.98 0-12.66 5.54-12.66 12.35 0 2.18.6 4.32 1.73 6.2L3.25 28.8l7.28-1.8a13.06 13.06 0 0 0 5.49 1.2c6.98 0 12.66-5.54 12.66-12.35S23 3.2 16.02 3.2Zm0 22.84c-1.78 0-3.52-.46-5.05-1.33l-.36-.2-4.33 1.07 1.1-4.08-.24-.4a10.17 10.17 0 0 1-1.58-5.55c0-5.62 4.7-10.2 10.46-10.2 5.76 0 10.46 4.58 10.46 10.2 0 5.9-4.9 10.49-10.46 10.49Z" />
+        <path d="M21.92 18.46c-.32-.16-1.9-.92-2.2-1.02-.3-.1-.52-.16-.74.16-.22.32-.85 1.02-1.04 1.23-.2.21-.38.24-.7.08-.32-.16-1.36-.49-2.6-1.56-.96-.83-1.6-1.86-1.8-2.18-.19-.32-.02-.49.15-.64.15-.14.32-.36.48-.55.16-.19.21-.32.32-.53.1-.21.05-.4-.03-.55-.08-.16-.74-1.75-1.02-2.4-.27-.64-.54-.55-.74-.56h-.63c-.21 0-.55.08-.84.4-.3.32-1.1 1.07-1.1 2.6 0 1.54 1.13 3.02 1.29 3.23.16.21 2.23 3.34 5.4 4.68.76.33 1.35.52 1.81.66.76.24 1.45.2 2 .12.61-.09 1.9-.76 2.17-1.5.27-.74.27-1.37.19-1.5-.08-.14-.29-.22-.61-.37Z" />
+      </svg>
+    </span>
+  );
+}
+
 function SupportAction({ href, copy, unavailable }: { href: string | null; copy: SupportCardCopy; unavailable: string }) {
   if (!href) {
     return (
@@ -133,24 +144,16 @@ export function HomeSupportContact2026({ locale, dir }: HomeSupportContact2026Pr
 
       <div className="dm2026-home-whatsapp-float" dir={dir} data-whatsapp-state={whatsAppState}>
         {userHref ? (
-          <>
-            <span className="dm2026-home-whatsapp-float__companion" aria-hidden="true">{copy.quickLabel}</span>
-            <a
-              className="dm2026-home-whatsapp-float__fab dm2026-home-whatsapp-float__fab--active"
-              href={userHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={copy.quickAriaLabel}
-              data-whatsapp-state="active"
-            >
-              <span className="dm2026-home-whatsapp-float__glyph" aria-hidden="true">
-                <svg viewBox="0 0 32 32" focusable="false">
-                  <path d="M16 4.7c-6 0-10.9 4.5-10.9 10.1 0 2 .65 3.85 1.78 5.42L5.8 26.45l6.05-1.72c1.3.55 2.7.84 4.15.84 6 0 10.9-4.55 10.9-10.15S22 4.7 16 4.7Z" />
-                  <path d="M12.9 10.4c-.24-.54-.5-.55-.72-.56h-.62c-.22 0-.56.08-.86.4-.3.33-1.13 1.1-1.13 2.68 0 1.58 1.16 3.1 1.32 3.32.16.22 2.24 3.58 5.52 4.88 2.73 1.08 3.28.86 3.88.8.6-.05 1.92-.78 2.2-1.54.27-.76.27-1.41.19-1.55-.08-.14-.3-.22-.62-.38-.32-.16-1.9-.94-2.2-1.04-.3-.1-.52-.16-.74.16-.22.32-.84 1.04-1.03 1.26-.19.22-.38.24-.7.08-.32-.16-1.36-.5-2.6-1.6-.96-.86-1.6-1.92-1.8-2.24-.19-.32-.02-.5.14-.65.15-.14.32-.38.48-.57.16-.19.22-.32.32-.54.1-.22.05-.4-.03-.56-.08-.16-.7-1.73-1-2.35Z" />
-                </svg>
-              </span>
-            </a>
-          </>
+          <a
+            className="dm2026-home-whatsapp-float__fab dm2026-home-whatsapp-float__fab--active"
+            href={userHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={copy.quickAriaLabel}
+            data-whatsapp-state="active"
+          >
+            <WhatsAppLogoMark />
+          </a>
         ) : (
           <span
             className="dm2026-home-whatsapp-float__fab dm2026-home-whatsapp-float__fab--disabled"
@@ -158,12 +161,7 @@ export function HomeSupportContact2026({ locale, dir }: HomeSupportContact2026Pr
             data-whatsapp-state="disabled"
             title={copy.unavailable}
           >
-            <span className="dm2026-home-whatsapp-float__glyph" aria-hidden="true">
-              <svg viewBox="0 0 32 32" focusable="false">
-                <path d="M16 4.7c-6 0-10.9 4.5-10.9 10.1 0 2 .65 3.85 1.78 5.42L5.8 26.45l6.05-1.72c1.3.55 2.7.84 4.15.84 6 0 10.9-4.55 10.9-10.15S22 4.7 16 4.7Z" />
-                <path d="M12.9 10.4c-.24-.54-.5-.55-.72-.56h-.62c-.22 0-.56.08-.86.4-.3.33-1.13 1.1-1.13 2.68 0 1.58 1.16 3.1 1.32 3.32.16.22 2.24 3.58 5.52 4.88 2.73 1.08 3.28.86 3.88.8.6-.05 1.92-.78 2.2-1.54.27-.76.27-1.41.19-1.55-.08-.14-.3-.22-.62-.38-.32-.16-1.9-.94-2.2-1.04-.3-.1-.52-.16-.74.16-.22.32-.84 1.04-1.03 1.26-.19.22-.38.24-.7.08-.32-.16-1.36-.5-2.6-1.6-.96-.86-1.6-1.92-1.8-2.24-.19-.32-.02-.5.14-.65.15-.14.32-.38.48-.57.16-.19.22-.32.32-.54.1-.22.05-.4-.03-.56-.08-.16-.7-1.73-1-2.35Z" />
-              </svg>
-            </span>
+            <WhatsAppLogoMark />
           </span>
         )}
       </div>

@@ -489,3 +489,37 @@ Follow-up polish after manual QA tightened the final FAB presentation without ch
 - The active visual uses a stronger DrMuscat teal plus WhatsApp green gradient, white glyph, glass highlight, glow and shadow.
 - Preview and Production must both define `NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER=96877402910`.
 - Because this is a `NEXT_PUBLIC_` variable, Vercel Preview/Production must be rebuilt or redeployed after the env var is added; a preview built before the env existed can continue to show the disabled fallback.
+
+---
+
+# FIX05 — Final WhatsApp FAB Desktop/RTL Placement Cleanup + Logo
+
+## FIX05 summary
+
+FIX05 is a targeted final UI cleanup for the floating WhatsApp support CTA only.
+
+Implemented:
+
+- Replaced the generic phone-in-chat mark with a clearer inline WhatsApp-logo-style SVG mark.
+- Removed the unwanted desktop glass/text companion label completely.
+- Final desktop English result is one circular WhatsApp FAB only.
+- Added explicit desktop RTL positioning so Arabic desktop uses an intentional safe floating corner position.
+- Preserved the existing mobile placement behavior while keeping mobile as one circular icon-only FAB.
+- Preserved the env-driven active anchor / inactive fallback behavior.
+
+## FIX05 behavior confirmation
+
+- Active FAB remains a real anchor when `NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER` is valid.
+- Active FAB keeps `target="_blank"` and `rel="noopener noreferrer"`.
+- Missing or invalid env still renders an inactive non-anchor fallback.
+- Inline user and provider support buttons still use the same WhatsApp helper and safe fallback behavior.
+- No backend, database, API, Supabase, route, redirect, SEO, package, or lockfile changes were made.
+
+## FIX05 validation results
+
+- `git status --short` — pending local FIX05 files only at documentation time.
+- `pnpm lint` — passed with existing warnings in prototype/public files.
+- `pnpm typecheck` — passed.
+- `pnpm build` — passed.
+- `pnpm routes:check` — passed.
+- `pnpm seo:check` — passed.

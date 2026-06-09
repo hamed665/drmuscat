@@ -7032,6 +7032,8 @@
   line-height: 1.9;
 }
 
+
+
 @media (max-width: 56rem) {
   .dm2026-home-faq,
   .dm2026-home-trust {
@@ -7270,6 +7272,8 @@
 [dir='rtl'] .dm2026-home-entity__eyebrow {
   letter-spacing: 0;
 }
+
+
 
 @media (max-width: 56rem) {
   .dm2026-home-entity__grid {
@@ -7572,50 +7576,6 @@
   filter: drop-shadow(0 3px 7px rgba(4, 75, 67, 0.22));
 }
 
-.dm2026-home-whatsapp-float__companion {
-  display: inline-flex;
-  max-inline-size: min(11rem, calc(100vw - 7.1rem));
-  align-items: center;
-  border: 1px solid rgba(202, 229, 223, 0.78);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
-  color: #075545;
-  font-size: 0.8rem;
-  font-weight: 850;
-  line-height: 1;
-  opacity: 0;
-  overflow: hidden;
-  padding: 0.62rem 0.78rem;
-  text-overflow: ellipsis;
-  transform: translateX(0.35rem);
-  transition: opacity 160ms ease, transform 160ms ease;
-  white-space: nowrap;
-  box-shadow:
-    0 14px 34px rgba(7, 56, 48, 0.14),
-    0 1px 0 rgba(255, 255, 255, 0.84) inset;
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  pointer-events: none;
-}
-
-.dm2026-home-whatsapp-float:hover .dm2026-home-whatsapp-float__companion,
-.dm2026-home-whatsapp-float:focus-within .dm2026-home-whatsapp-float__companion {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-[dir='rtl'] .dm2026-home-whatsapp-float {
-  flex-direction: row-reverse;
-}
-
-[dir='rtl'] .dm2026-home-whatsapp-float__companion {
-  transform: translateX(-0.35rem);
-}
-
-[dir='rtl'] .dm2026-home-whatsapp-float:hover .dm2026-home-whatsapp-float__companion,
-[dir='rtl'] .dm2026-home-whatsapp-float:focus-within .dm2026-home-whatsapp-float__companion {
-  transform: translateX(0);
-}
 
 .dm2026-home-whatsapp-float__fab--disabled {
   cursor: not-allowed;
@@ -7643,6 +7603,16 @@
 [dir='rtl'] .dm2026-home-support__card p {
   line-height: 1.82;
 }
+
+@media (min-width: 42.01rem) {
+  [dir='rtl'] .dm2026-home-whatsapp-float {
+    inset-inline-start: max(1.28rem, env(safe-area-inset-left));
+    inset-inline-end: auto;
+    inset-block-end: max(1.42rem, env(safe-area-inset-bottom));
+  }
+}
+
+
 
 @media (max-width: 56rem) {
   .dm2026-home-support {
@@ -7742,15 +7712,10 @@
     inline-size: 2.16rem;
     block-size: 2.16rem;
   }
-
-  .dm2026-home-whatsapp-float__companion {
-    display: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dm2026-home-whatsapp-float__fab,
-  .dm2026-home-whatsapp-float__companion {
+  .dm2026-home-whatsapp-float__fab {
     transition: none;
   }
 

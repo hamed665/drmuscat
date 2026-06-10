@@ -5,6 +5,7 @@ DrMuscat is an SEO-first healthcare discovery and provider visibility platform f
 Canonical specification path:
 
 - `docs/master-spec/`
+- `docs/platform/DRMUSCAT_PLATFORM_ARCHITECTURE_V1.md` — documentation-only future platform architecture map.
 
 Build mode:
 

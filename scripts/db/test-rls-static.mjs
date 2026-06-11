@@ -29,6 +29,7 @@ const REQUIRED_FILES = [
   '0049_media_public_rls_hardening.sql',
   '0050_provider_onboarding_leads.sql',
   '0051_landing_page_contents.sql',
+  '0052_review_companion_tables.sql',
 ];
 
 const APPROVED_POLICY_FILES = new Set([
@@ -44,6 +45,7 @@ const APPROVED_POLICY_FILES = new Set([
   '0049_media_public_rls_hardening.sql',
   '0050_provider_onboarding_leads.sql',
   '0051_landing_page_contents.sql',
+  '0052_review_companion_tables.sql',
 ]);
 
 const HELPER_FILES = new Set([

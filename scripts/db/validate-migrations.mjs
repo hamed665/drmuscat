@@ -54,7 +54,8 @@ const required = [
   '0048_media_public_visibility_hardening.sql',
   '0049_media_public_rls_hardening.sql',
   '0050_provider_onboarding_leads.sql',
-  '0051_landing_page_contents.sql'
+  '0051_landing_page_contents.sql',
+  '0052_review_companion_tables.sql'
 ];
 
 const dir = 'supabase/migrations';
@@ -144,7 +145,8 @@ const rlsPolicyFiles = new Set([
   '0047_provider_license_verification_foundation.sql',
   '0049_media_public_rls_hardening.sql',
   '0050_provider_onboarding_leads.sql',
-  '0051_landing_page_contents.sql'
+  '0051_landing_page_contents.sql',
+  '0052_review_companion_tables.sql'
 ]);
 const catalogRlsPolicyFile = '0032_rls_public_catalog_read_policies.sql';
 const profilesRlsPolicyFile = '0033_profiles_rls.sql';

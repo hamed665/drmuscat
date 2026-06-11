@@ -13,8 +13,8 @@
 
 ## Completed migration range
 
-- Completed migration set: `0001` through `0050`.
-- Migration validation is expected through `0050_provider_onboarding_leads.sql`.
+- Completed migration set: `0001` through `0051`.
+- Migration validation is expected through `0051_landing_page_contents.sql`.
 - Existing SQL migrations must not be modified unless explicitly approved.
 
 ## Implemented public app surface
@@ -40,8 +40,10 @@
 
 ## Data/RLS foundations
 
-- Database foundations now validate through `0050_provider_onboarding_leads.sql`.
-- Contact visibility, callback request, provider license verification, media public visibility/RLS hardening, and provider onboarding leads foundations exist.
+- Database foundations now validate through `0051_landing_page_contents.sql`.
+- Contact visibility, callback request, provider license verification, media public visibility/RLS hardening, provider onboarding leads, and landing content foundations exist.
+- Legacy/current review foundations already exist in `0020_reviews.sql` and `0021_review_reports.sql`.
+- Further review system work is blocked until existing review schema reconciliation is approved.
 - Private-data access remains phase-gated.
 - `CREATE POLICY` and `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` remain allowed only in explicitly approved RLS phases.
 - No real seed rows are allowed unless a seed phase is explicitly approved.
@@ -80,7 +82,7 @@ Current validation gate:
 ## Last known validation status
 
 - Environment check passes.
-- Migration validation passes through `0050_provider_onboarding_leads.sql`.
+- Migration validation passes through `0051_landing_page_contents.sql`.
 - RLS static tests pass.
 - Route contract check passes.
 - Typecheck passes.

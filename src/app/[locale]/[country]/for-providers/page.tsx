@@ -113,6 +113,12 @@ type ProviderPageCopy = {
   form: ProviderFormCopy;
 };
 
+const addonGroupAccentClasses = [
+  'provider-onboarding-addons__group--visibility',
+  'provider-onboarding-addons__group--campaign',
+  'provider-onboarding-addons__group--profile'
+] as const;
+
 const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
   en: {
     metadataTitle: 'List your healthcare business in Oman | DrMuscat',
@@ -324,38 +330,38 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
     },
     addons: {
       badge: 'Future request-based add-ons',
-      title: 'Add-on visibility options can be discussed after review.',
+      title: 'Request-based growth options can be reviewed later.',
       subtitle:
-        'Providers can request extra visibility, campaign, or profile support later. These options are not automatic products and must be reviewed, confirmed, and clearly presented before use.',
-      safetyNote: 'No sponsored placement, offer, lead boost, or featured visibility is activated from this page.',
+        'Providers can discuss extra visibility, campaign support, and profile expansion after their public information is ready. These options are request-based and must be reviewed, confirmed, and clearly presented before use.',
+      safetyNote: 'Nothing in this section activates sponsored placement, offers, lead boosts, payment, booking, dashboard access, ranking, or guaranteed visibility.',
       statusLabel: 'Request-based',
       groups: [
         {
           title: 'Visibility placements',
-          description: 'Request extra placement opportunities when public profile information is ready.',
+          description: 'Optional placement requests for providers with reviewed public information.',
           items: [
             { title: 'Homepage featured placement', description: 'Request visibility in homepage discovery areas when available.' },
-            { title: 'Category featured placement', description: 'Request placement inside relevant provider or service categories.' },
+            { title: 'Category featured placement', description: 'Request visibility inside relevant provider or service categories.' },
             { title: 'Area placement', description: 'Request visibility for a specific city or area discovery page.' },
             { title: 'Sponsored card request', description: 'Request a sponsored card concept for future review.' }
           ]
         },
         {
           title: 'Campaign and offer tools',
-          description: 'Prepare future provider-approved campaign ideas without making automatic placement promises.',
+          description: 'Future campaign concepts that require provider approval and review.',
           items: [
             { title: 'Homepage offer placement', description: 'Request a provider-approved offer placement when the offer flow is available.' },
-            { title: 'Seasonal campaign package', description: 'Request campaign planning around seasonal healthcare, beauty, wellness, or pet-care moments.' },
+            { title: 'Seasonal campaign package', description: 'Discuss campaign planning around healthcare, beauty, wellness, or pet-care seasons.' },
             { title: 'WhatsApp lead boost', description: 'Request future visibility support for approved contact actions.' }
           ]
         },
         {
           title: 'Profile expansion support',
-          description: 'Expand profile structure when provider information is ready and reviewed.',
+          description: 'Structured support for providers with more people, branches, or setup needs.',
           items: [
             { title: 'Extra doctors', description: 'Request additional doctor or team profile support.' },
             { title: 'Extra branches', description: 'Request extra branch or location structure.' },
-            { title: 'Premium onboarding support', description: 'Request guided setup support for profile preparation and public information review.' }
+            { title: 'Premium onboarding support', description: 'Request guided setup support for public profile preparation and information review.' }
           ]
         }
       ],
@@ -364,7 +370,7 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
       cta: 'Request add-on discussion',
       secondaryNote: 'Add-ons are request-based and subject to review, availability, and confirmation.',
       disclaimer:
-        'Future sponsored, featured, campaign, offer, or lead-related visibility must be reviewed and confirmed before use. Nothing in this section activates payment, guaranteed placement, ranking, booking, dashboard access, or guaranteed leads.'
+        'Future sponsored, featured, campaign, offer, or lead-related visibility must be reviewed and confirmed before use. Nothing here guarantees placement, ranking, traffic, leads, bookings, or patients.'
     },
     formIntro: {
       badge: 'Provider request form',
@@ -661,15 +667,15 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
     },
     addons: {
       badge: 'إضافات مستقبلية حسب الطلب',
-      title: 'يمكن مناقشة خيارات ظهور إضافية بعد المراجعة.',
+      title: 'يمكن مراجعة خيارات النمو حسب الطلب لاحقًا.',
       subtitle:
-        'يمكن لمقدّمي الخدمة طلب خيارات إضافية للظهور أو الحملات أو دعم الملف لاحقًا. هذه الخيارات ليست منتجات مفعّلة تلقائيًا، ويجب مراجعتها وتأكيدها وعرضها بوضوح قبل استخدامها.',
-      safetyNote: 'لا يتم تفعيل أي ظهور مدعوم أو عرض أو تعزيز للتواصل أو ظهور مميز من خلال هذه الصفحة.',
+        'يمكن لمقدّمي الخدمة مناقشة خيارات إضافية للظهور ودعم الحملات وتوسيع الملف بعد جاهزية معلوماتهم العامة. هذه الخيارات حسب الطلب وتخضع للمراجعة والتأكيد والعرض الواضح قبل استخدامها.',
+      safetyNote: 'لا يفعّل هذا القسم أي ظهور مدعوم أو عروض أو تعزيز للتواصل أو دفع أو حجز أو لوحة تحكم أو ترتيب أو ظهور مضمون.',
       statusLabel: 'حسب الطلب',
       groups: [
         {
           title: 'مواضع الظهور',
-          description: 'اطلب فرص ظهور إضافية عندما تكون معلومات الملف العام جاهزة.',
+          description: 'طلبات ظهور اختيارية لمقدّمي الخدمة الذين تمت مراجعة معلوماتهم العامة.',
           items: [
             { title: 'ظهور مميز في الصفحة الرئيسية', description: 'طلب ظهور ضمن مناطق الاكتشاف في الصفحة الرئيسية عند توفره.' },
             { title: 'ظهور مميز داخل الفئة', description: 'طلب ظهور داخل الفئات المناسبة لمقدم الخدمة أو الخدمة.' },
@@ -679,20 +685,20 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
         },
         {
           title: 'أدوات الحملات والعروض',
-          description: 'حضّر أفكار حملات مستقبلية بموافقة مقدم الخدمة دون وعود بظهور تلقائي.',
+          description: 'تصورات حملات مستقبلية تتطلب موافقة مقدم الخدمة والمراجعة.',
           items: [
             { title: 'موضع عرض في الصفحة الرئيسية', description: 'طلب موضع لعرض معتمد من مقدم الخدمة عندما يصبح مسار العروض متاحًا.' },
-            { title: 'باقة حملة موسمية', description: 'طلب تخطيط حملة حول مواسم الرعاية الصحية أو التجميل أو الرفاهية أو رعاية الحيوانات الأليفة.' },
+            { title: 'باقة حملة موسمية', description: 'مناقشة تخطيط حملة حول مواسم الرعاية الصحية أو التجميل أو الرفاهية أو رعاية الحيوانات الأليفة.' },
             { title: 'دعم ظهور واتساب', description: 'طلب دعم ظهور مستقبلي لإجراءات التواصل المعتمدة.' }
           ]
         },
         {
           title: 'دعم توسيع الملف',
-          description: 'وسّع بنية الملف عندما تكون معلومات مقدم الخدمة جاهزة ومراجعة.',
+          description: 'دعم منظم لمقدّمي الخدمة الذين لديهم فريق أو فروع أو احتياجات إعداد أكبر.',
           items: [
             { title: 'أطباء إضافيون', description: 'طلب دعم لإضافة أطباء أو أعضاء فريق إضافيين.' },
             { title: 'فروع إضافية', description: 'طلب بنية إضافية للفروع أو المواقع.' },
-            { title: 'دعم انضمام مميز', description: 'طلب دعم موجه لإعداد الملف ومراجعة المعلومات العامة.' }
+            { title: 'دعم انضمام مميز', description: 'طلب دعم موجه لإعداد الملف العام ومراجعة المعلومات.' }
           ]
         }
       ],
@@ -701,7 +707,7 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
       cta: 'طلب مناقشة الإضافات',
       secondaryNote: 'الإضافات حسب الطلب وتخضع للمراجعة والتوفر والتأكيد.',
       disclaimer:
-        'يجب مراجعة وتأكيد أي ظهور مدعوم أو مميز أو حملة أو عرض أو دعم مرتبط بالتواصل قبل استخدامه. لا يفعّل هذا القسم الدفع أو الظهور المضمون أو الترتيب أو الحجز أو لوحة التحكم أو العملاء المحتملين المضمونين.'
+        'يجب مراجعة وتأكيد أي ظهور مدعوم أو مميز أو حملة أو عرض أو دعم مرتبط بالتواصل قبل استخدامه. لا يضمن هذا القسم الظهور أو الترتيب أو الزيارات أو العملاء المحتملين أو الحجوزات أو المرضى.'
     },
     formIntro: {
       badge: 'نموذج طلب مقدم الخدمة',
@@ -1072,8 +1078,8 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
             </header>
 
             <div className="provider-onboarding-addons__groups" aria-label={copy.addons.badge}>
-              {copy.addons.groups.map((group) => (
-                <article className="provider-onboarding-addons__group" key={group.title}>
+              {copy.addons.groups.map((group, groupIndex) => (
+                <article className={`provider-onboarding-addons__group ${addonGroupAccentClasses[groupIndex] ?? ''}`} key={group.title}>
                   <header className="provider-onboarding-addons__group-header">
                     <h3>{group.title}</h3>
                     <p>{group.description}</p>
@@ -2342,18 +2348,19 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           isolation: isolate;
           overflow: hidden;
           display: grid;
-          gap: clamp(1.2rem, 2.5vw, 1.8rem);
-          padding: clamp(1.15rem, 3vw, 2rem);
-          border: 1px solid rgba(14, 110, 100, 0.14);
-          border-radius: clamp(1.45rem, 3vw, 2.25rem);
+          gap: clamp(1.25rem, 2.6vw, 1.95rem);
+          padding: clamp(1.2rem, 3vw, 2.15rem);
+          border: 1px solid rgba(14, 110, 100, 0.18);
+          border-radius: clamp(1.55rem, 3vw, 2.35rem);
           background:
-            linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(244, 250, 248, 0.76)),
-            radial-gradient(circle at 12% 0%, rgba(42, 161, 146, 0.16), transparent 34%),
-            radial-gradient(circle at 88% 12%, rgba(14, 110, 100, 0.12), transparent 32%);
+            linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(244, 250, 248, 0.8)),
+            radial-gradient(circle at 12% 0%, rgba(42, 161, 146, 0.2), transparent 34%),
+            radial-gradient(circle at 70% 12%, rgba(228, 184, 92, 0.09), transparent 28%),
+            radial-gradient(circle at 92% 20%, rgba(14, 110, 100, 0.14), transparent 32%);
           box-shadow:
-            0 24px 70px rgba(9, 51, 47, 0.12),
-            0 1px 0 rgba(255, 255, 255, 0.78) inset;
-          backdrop-filter: blur(16px);
+            0 30px 84px rgba(9, 51, 47, 0.15),
+            0 1px 0 rgba(255, 255, 255, 0.86) inset;
+          backdrop-filter: blur(18px);
         }
 
         .provider-onboarding-addons__glow {
@@ -2367,17 +2374,17 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         .provider-onboarding-addons__glow--primary {
           inset-block-start: -5rem;
           inset-inline-start: -4rem;
-          inline-size: 15rem;
-          block-size: 15rem;
-          background: rgba(42, 161, 146, 0.14);
+          inline-size: 16rem;
+          block-size: 16rem;
+          background: rgba(42, 161, 146, 0.18);
         }
 
         .provider-onboarding-addons__glow--secondary {
-          inset-block-end: 12rem;
+          inset-block-end: 11rem;
           inset-inline-end: -5rem;
-          inline-size: 18rem;
-          block-size: 18rem;
-          background: rgba(14, 110, 100, 0.11);
+          inline-size: 19rem;
+          block-size: 19rem;
+          background: rgba(14, 110, 100, 0.13);
         }
 
         .provider-onboarding-addons__header {
@@ -2425,22 +2432,67 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         }
 
         .provider-onboarding-addons__group {
+          --addon-accent: var(--dm-color-brand, #0e6e64);
+          --addon-accent-soft: rgba(42, 161, 146, 0.11);
+          --addon-accent-border: rgba(14, 110, 100, 0.18);
+          --addon-accent-shadow: rgba(14, 110, 100, 0.13);
+          position: relative;
+          overflow: hidden;
           display: grid;
           align-content: start;
-          gap: 0.82rem;
+          gap: 0.88rem;
           min-block-size: 100%;
-          border: 1px solid rgba(14, 110, 100, 0.12);
-          border-radius: 1.35rem;
-          padding: clamp(0.82rem, 1.7vw, 1rem);
-          background: rgba(255, 255, 255, 0.66);
+          border: 1px solid var(--addon-accent-border);
+          border-radius: 1.45rem;
+          padding: clamp(0.88rem, 1.7vw, 1.08rem);
+          background:
+            linear-gradient(180deg, var(--addon-accent-soft), transparent 34%),
+            rgba(255, 255, 255, 0.72);
           box-shadow:
-            0 16px 36px rgba(11, 40, 38, 0.08),
-            inset 0 1px 0 rgba(255, 255, 255, 0.78);
+            0 18px 42px rgba(11, 40, 38, 0.09),
+            0 0 0 1px rgba(255, 255, 255, 0.48) inset,
+            0 18px 42px var(--addon-accent-shadow);
+        }
+
+        .provider-onboarding-addons__group::before {
+          content: '';
+          position: absolute;
+          inset-block-start: 0;
+          inset-inline: 1rem;
+          block-size: 3px;
+          border-radius: 999px;
+          background: linear-gradient(90deg, transparent, var(--addon-accent), transparent);
+          opacity: 0.72;
+        }
+
+        .provider-onboarding-addons__group--visibility {
+          --addon-accent: #0e6e64;
+          --addon-accent-soft: rgba(42, 161, 146, 0.12);
+          --addon-accent-border: rgba(14, 110, 100, 0.2);
+          --addon-accent-shadow: rgba(14, 110, 100, 0.08);
+        }
+
+        .provider-onboarding-addons__group--campaign {
+          --addon-accent: #b8892f;
+          --addon-accent-soft: rgba(228, 184, 92, 0.12);
+          --addon-accent-border: rgba(184, 137, 47, 0.18);
+          --addon-accent-shadow: rgba(184, 137, 47, 0.07);
+        }
+
+        .provider-onboarding-addons__group--profile {
+          --addon-accent: #08765f;
+          --addon-accent-soft: rgba(19, 140, 105, 0.12);
+          --addon-accent-border: rgba(8, 118, 95, 0.2);
+          --addon-accent-shadow: rgba(8, 118, 95, 0.08);
         }
 
         .provider-onboarding-addons__group-header {
           display: grid;
-          gap: 0.32rem;
+          gap: 0.36rem;
+          border: 1px solid var(--addon-accent-border);
+          border-radius: 1.05rem;
+          padding: 0.72rem;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.74), var(--addon-accent-soft));
         }
 
         .provider-onboarding-addons__group-header h3,
@@ -2474,24 +2526,38 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           position: relative;
           display: grid;
           grid-template-columns: auto minmax(0, 1fr);
-          gap: 0.64rem;
-          border: 1px solid rgba(14, 110, 100, 0.11);
-          border-radius: 1.05rem;
-          padding: 0.72rem;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(242, 249, 247, 0.66));
-          box-shadow: 0 10px 24px rgba(11, 40, 38, 0.06);
+          gap: 0.66rem;
+          border: 1px solid rgba(14, 110, 100, 0.12);
+          border-radius: 1.08rem;
+          padding: 0.76rem;
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(247, 251, 250, 0.68)),
+            linear-gradient(90deg, var(--addon-accent-soft), transparent 62%);
+          box-shadow:
+            0 12px 28px rgba(11, 40, 38, 0.07),
+            inset 0 1px 0 rgba(255, 255, 255, 0.82);
+          transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+        }
+
+        .provider-onboarding-addons__card:hover {
+          border-color: var(--addon-accent-border);
+          box-shadow:
+            0 16px 34px rgba(11, 40, 38, 0.09),
+            0 10px 26px var(--addon-accent-shadow),
+            inset 0 1px 0 rgba(255, 255, 255, 0.86);
+          transform: translateY(-1px);
         }
 
         .provider-onboarding-addons__marker {
-          inline-size: 0.78rem;
-          block-size: 0.78rem;
+          inline-size: 0.8rem;
+          block-size: 0.8rem;
           margin-block-start: 0.2rem;
-          border: 3px solid rgba(255, 255, 255, 0.95);
+          border: 3px solid rgba(255, 255, 255, 0.96);
           border-radius: 999px;
-          background: linear-gradient(135deg, var(--dm-color-brand, #0e6e64), var(--dm-color-accent, #2aa192));
+          background: var(--addon-accent);
           box-shadow:
-            0 0 0 1px rgba(14, 110, 100, 0.18),
-            0 8px 16px rgba(14, 110, 100, 0.18);
+            0 0 0 1px var(--addon-accent-border),
+            0 8px 18px var(--addon-accent-shadow);
         }
 
         .provider-onboarding-addons__card-copy {
@@ -2518,32 +2584,34 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         .provider-onboarding-addons__status {
           grid-column: 2;
           width: fit-content;
-          border: 1px solid rgba(14, 110, 100, 0.12);
+          border: 1px solid var(--addon-accent-border);
           border-radius: 999px;
-          padding: 0.24rem 0.5rem;
-          background: rgba(239, 246, 244, 0.86);
+          padding: 0.26rem 0.56rem;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), var(--addon-accent-soft));
           color: var(--dm-color-brand-strong, #0b4f4a);
           font-size: 0.68rem;
-          font-weight: 850;
+          font-weight: 900;
           line-height: 1;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
         }
 
         .provider-onboarding-addons__visual {
           position: relative;
           overflow: hidden;
           display: grid;
-          min-block-size: clamp(13rem, 24vw, 18rem);
+          min-block-size: clamp(12rem, 21vw, 16rem);
           align-items: end;
-          border: 1px solid rgba(14, 110, 100, 0.13);
-          border-radius: clamp(1.2rem, 2.3vw, 1.65rem);
-          padding: clamp(1rem, 2vw, 1.25rem);
+          border: 1px solid rgba(14, 110, 100, 0.16);
+          border-radius: clamp(1.25rem, 2.3vw, 1.75rem);
+          padding: clamp(1rem, 2vw, 1.35rem);
           background:
-            linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(238, 248, 245, 0.74)),
-            radial-gradient(circle at 22% 26%, rgba(42, 161, 146, 0.2), transparent 26%),
-            radial-gradient(circle at 78% 34%, rgba(14, 110, 100, 0.12), transparent 28%);
+            linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(238, 248, 245, 0.78)),
+            radial-gradient(circle at 18% 24%, rgba(42, 161, 146, 0.22), transparent 25%),
+            radial-gradient(circle at 58% 14%, rgba(228, 184, 92, 0.1), transparent 22%),
+            radial-gradient(circle at 82% 34%, rgba(14, 110, 100, 0.15), transparent 28%);
           box-shadow:
-            0 20px 48px rgba(11, 40, 38, 0.09),
-            inset 0 1px 0 rgba(255, 255, 255, 0.74);
+            0 22px 54px rgba(11, 40, 38, 0.11),
+            inset 0 1px 0 rgba(255, 255, 255, 0.82);
         }
 
         .provider-onboarding-addons__visual::before {
@@ -2591,12 +2659,26 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
 
         .provider-onboarding-addons__visual-map span {
           min-block-size: clamp(3.8rem, 8vw, 5.4rem);
-          border: 1px solid rgba(14, 110, 100, 0.12);
+          border: 1px solid rgba(14, 110, 100, 0.13);
           border-radius: 1.1rem;
           background:
-            linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(239, 246, 244, 0.62)),
-            linear-gradient(90deg, rgba(14, 110, 100, 0.11), transparent 56%);
+            linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(239, 246, 244, 0.66)),
+            linear-gradient(90deg, rgba(14, 110, 100, 0.12), transparent 56%);
           box-shadow: 0 16px 36px rgba(11, 40, 38, 0.08);
+        }
+
+        .provider-onboarding-addons__visual-map span:nth-child(2) {
+          border-color: rgba(184, 137, 47, 0.16);
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(252, 247, 237, 0.68)),
+            linear-gradient(90deg, rgba(228, 184, 92, 0.12), transparent 56%);
+        }
+
+        .provider-onboarding-addons__visual-map span:nth-child(3) {
+          border-color: rgba(8, 118, 95, 0.15);
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(239, 248, 245, 0.7)),
+            linear-gradient(90deg, rgba(8, 118, 95, 0.12), transparent 56%);
         }
 
         .provider-onboarding-addons__visual-card {
@@ -2641,11 +2723,15 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           align-items: center;
           justify-content: space-between;
           gap: 1rem;
-          border: 1px solid rgba(14, 110, 100, 0.12);
-          border-radius: 1.2rem;
-          padding: clamp(0.82rem, 1.8vw, 1rem);
-          background: rgba(255, 255, 255, 0.68);
-          box-shadow: 0 14px 30px rgba(11, 40, 38, 0.07);
+          border: 1px solid rgba(14, 110, 100, 0.14);
+          border-radius: 1.25rem;
+          padding: clamp(0.88rem, 1.8vw, 1.08rem);
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(239, 246, 244, 0.62)),
+            radial-gradient(circle at 5% 20%, rgba(42, 161, 146, 0.12), transparent 35%);
+          box-shadow:
+            0 16px 36px rgba(11, 40, 38, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.82);
         }
 
         .provider-onboarding-addons__button {

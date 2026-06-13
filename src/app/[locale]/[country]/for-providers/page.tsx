@@ -2957,7 +2957,23 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         }
 
         .provider-onboarding-section--form {
-          padding-block: clamp(1.4rem, 4vw, 3.1rem) clamp(2.4rem, 6vw, 4.4rem);
+          position: relative;
+          padding-block: clamp(1.2rem, 3.6vw, 2.8rem) clamp(2.2rem, 5.4vw, 4rem);
+        }
+
+        .provider-onboarding-section--form::before {
+          content: '';
+          position: absolute;
+          inset-block-start: 4%;
+          inset-inline: 8%;
+          block-size: 62%;
+          border-radius: 999px;
+          background:
+            radial-gradient(circle at 18% 28%, rgba(42, 161, 146, 0.13), transparent 34%),
+            radial-gradient(circle at 78% 18%, rgba(14, 110, 100, 0.1), transparent 32%);
+          filter: blur(18px);
+          opacity: 0.9;
+          pointer-events: none;
         }
 
         .provider-onboarding-form-copy {
@@ -2966,17 +2982,17 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           overflow: hidden;
           display: grid;
           align-self: start;
-          gap: 0.82rem;
+          gap: 0.72rem;
           margin-block-end: 0;
-          border: 1px solid rgba(14, 110, 100, 0.15);
+          border: 1px solid rgba(14, 110, 100, 0.2);
           border-radius: clamp(1.25rem, 2.3vw, 1.7rem);
           padding: clamp(1rem, 2.2vw, 1.35rem);
           background:
-            radial-gradient(circle at 18% 18%, rgba(42, 161, 146, 0.16), transparent 34%),
-            linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(239, 248, 245, 0.72));
+            linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(235, 249, 245, 0.76)),
+            radial-gradient(circle at 18% 18%, rgba(42, 161, 146, 0.2), transparent 34%);
           box-shadow:
-            0 20px 50px rgba(11, 40, 38, 0.09),
-            inset 0 1px 0 rgba(255, 255, 255, 0.86);
+            0 22px 52px rgba(11, 40, 38, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.92);
           backdrop-filter: blur(14px);
         }
 
@@ -3000,10 +3016,22 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
 
         .provider-onboarding-form-copy h2 {
           max-inline-size: 13ch;
+          margin: 0;
+          color: var(--dm-teal-950, #07302c);
+          font-family: var(--dm-font-display, var(--dm-font-sans, system-ui));
+          font-size: clamp(1.68rem, 3vw, 2.55rem);
+          font-weight: 720;
+          letter-spacing: -0.035em;
+          line-height: 1.05;
         }
 
         .provider-onboarding-form-copy p {
           max-inline-size: 34rem;
+          margin: 0;
+          color: var(--dm-color-text-muted, #66736f);
+          font-size: 0.98rem;
+          font-weight: 620;
+          line-height: 1.7;
         }
 
         .provider-onboarding-form-copy__bullets {
@@ -3014,18 +3042,22 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
 
         .provider-onboarding-form-copy__bullets span,
         .provider-onboarding-form-copy__note {
-          border: 1px solid rgba(14, 110, 100, 0.13);
+          border: 1px solid rgba(14, 110, 100, 0.18);
           border-radius: 999px;
-          background: rgba(255, 255, 255, 0.68);
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(232, 248, 244, 0.72)),
+            radial-gradient(circle at 0% 50%, rgba(42, 161, 146, 0.14), transparent 44%);
           color: var(--dm-teal-950, #07302c);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
+          box-shadow:
+            0 10px 24px rgba(11, 40, 38, 0.055),
+            inset 0 1px 0 rgba(255, 255, 255, 0.88);
         }
 
         .provider-onboarding-form-copy__bullets span {
           width: fit-content;
-          padding: 0.43rem 0.68rem;
+          padding: 0.45rem 0.7rem;
           font-size: 0.82rem;
-          font-weight: 850;
+          font-weight: 820;
           line-height: 1.15;
         }
 
@@ -3035,7 +3067,7 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           padding: 0.72rem 0.78rem;
           color: var(--dm-ink-700, #2e3a3b);
           font-size: 0.86rem;
-          font-weight: 700;
+          font-weight: 680;
           line-height: 1.5;
         }
 
@@ -3043,25 +3075,26 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           position: relative;
           overflow: hidden;
           display: grid;
-          gap: 0.82rem;
-          border: 1px solid rgba(14, 110, 100, 0.16);
-          padding: clamp(0.95rem, 2.2vw, 1.32rem);
+          gap: 0.74rem;
+          border: 1px solid rgba(14, 110, 100, 0.2);
+          padding: clamp(0.9rem, 2vw, 1.22rem);
           background:
-            radial-gradient(circle at 96% 0%, rgba(42, 161, 146, 0.14), transparent 30%),
-            linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(247, 251, 250, 0.78));
+            radial-gradient(circle at 98% 0%, rgba(42, 161, 146, 0.18), transparent 30%),
+            radial-gradient(circle at 0% 100%, rgba(14, 110, 100, 0.08), transparent 32%),
+            linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(241, 250, 248, 0.82));
           box-shadow:
-            0 22px 56px rgba(11, 40, 38, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            0 24px 60px rgba(11, 40, 38, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.94);
           backdrop-filter: blur(16px);
         }
 
         .provider-onboarding-form__intro {
           display: grid;
-          gap: 0.28rem;
-          border: 1px solid rgba(14, 110, 100, 0.11);
+          gap: 0.24rem;
+          border: 1px solid rgba(14, 110, 100, 0.14);
           border-radius: 1.15rem;
-          padding: 0.82rem 0.9rem;
-          background: rgba(255, 255, 255, 0.62);
+          padding: 0.76rem 0.84rem;
+          background: rgba(255, 255, 255, 0.72);
         }
 
         .provider-onboarding-form__intro h2,
@@ -3074,50 +3107,50 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           color: var(--dm-teal-950, #07302c);
           font-family: var(--dm-font-display, var(--dm-font-sans, system-ui));
           font-size: clamp(1.16rem, 1.8vw, 1.45rem);
-          font-weight: 850;
-          letter-spacing: -0.025em;
-          line-height: 1.14;
+          font-weight: 720;
+          letter-spacing: -0.03em;
+          line-height: 1.08;
         }
 
         .provider-onboarding-form__intro p,
         .provider-onboarding-form__intro span {
           color: var(--dm-color-text-muted, #66736f);
           font-size: 0.88rem;
-          font-weight: 650;
+          font-weight: 620;
           line-height: 1.5;
         }
 
         .provider-onboarding-form__intro span {
           color: var(--dm-color-brand-strong, #0b4f4a);
           font-size: 0.78rem;
-          font-weight: 850;
+          font-weight: 820;
         }
 
         .provider-onboarding-form__grid {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 0.68rem;
+          gap: 0.62rem;
         }
 
         .provider-onboarding-form label {
           display: grid;
-          gap: 0.3rem;
+          gap: 0.28rem;
           color: var(--dm-teal-950, #07302c);
           font-size: 0.84rem;
-          font-weight: 800;
+          font-weight: 760;
           line-height: 1.25;
         }
 
         .provider-onboarding-form .dm2026-input,
         .provider-onboarding-form .dm2026-select {
-          min-block-size: 2.7rem;
-          border-color: rgba(14, 110, 100, 0.16);
+          min-block-size: 2.62rem;
+          border-color: rgba(14, 110, 100, 0.2);
           border-radius: 0.95rem;
-          background: rgba(255, 255, 255, 0.86);
+          background: rgba(255, 255, 255, 0.9);
           color: var(--dm-teal-950, #07302c);
           font-size: 0.92rem;
-          font-weight: 650;
-          padding-block: 0.66rem;
+          font-weight: 620;
+          padding-block: 0.62rem;
           padding-inline: 0.82rem;
           box-shadow:
             inset 0 1px 0 rgba(255, 255, 255, 0.88),
@@ -3131,20 +3164,22 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
 
         .provider-onboarding-form .dm2026-input:hover,
         .provider-onboarding-form .dm2026-select:hover {
-          border-color: rgba(14, 110, 100, 0.26);
+          border-color: rgba(14, 110, 100, 0.34);
           background: rgba(255, 255, 255, 0.94);
         }
 
         .provider-onboarding-form .dm2026-input:focus,
         .provider-onboarding-form .dm2026-select:focus {
-          border-color: rgba(14, 110, 100, 0.48);
+          border-color: rgba(14, 110, 100, 0.58);
+          background: #ffffff;
           box-shadow:
-            0 0 0 3px rgba(42, 161, 146, 0.18),
+            0 0 0 3px rgba(42, 161, 146, 0.22),
+            0 12px 26px rgba(11, 40, 38, 0.06),
             inset 0 1px 0 rgba(255, 255, 255, 0.9);
         }
 
         .provider-onboarding-form textarea.dm2026-input {
-          min-block-size: 6.4rem;
+          min-block-size: 6.1rem;
           resize: vertical;
         }
 
@@ -3159,13 +3194,14 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           display: flex !important;
           align-items: flex-start;
           gap: 0.68rem;
-          border: 1px solid rgba(14, 110, 100, 0.14);
+          border: 1px solid rgba(14, 110, 100, 0.18);
           border-radius: 1rem;
-          background: rgba(239, 248, 245, 0.74);
-          padding: 0.76rem 0.82rem;
+          background:
+            linear-gradient(135deg, rgba(239, 248, 245, 0.86), rgba(255, 255, 255, 0.72));
+          padding: 0.7rem 0.78rem;
           color: var(--dm-ink-700, #2e3a3b);
           font-size: 0.84rem;
-          font-weight: 700;
+          font-weight: 680;
           line-height: 1.5;
           box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
         }
@@ -3190,13 +3226,36 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
 
         .provider-onboarding-form__submit {
           justify-self: start;
-          min-block-size: 2.9rem;
-          border: 1px solid rgba(255, 255, 255, 0.34);
-          padding-inline: 1.18rem;
+          min-block-size: 2.98rem;
+          border: 1px solid rgba(255, 255, 255, 0.42);
+          border-radius: 999px;
+          padding-inline: 1.28rem;
+          background:
+            linear-gradient(135deg, #0f8a78 0%, var(--dm-color-brand, #0e6e64) 45%, var(--dm-color-brand-strong, #0b4f4a) 100%);
           font-weight: 900;
+          letter-spacing: -0.005em;
           box-shadow:
-            0 16px 34px rgba(14, 110, 100, 0.22),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            0 18px 40px rgba(14, 110, 100, 0.28),
+            0 8px 18px rgba(11, 40, 38, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.34);
+        }
+
+        .provider-onboarding-form__submit:hover,
+        .provider-onboarding-form__submit:focus-visible {
+          background:
+            linear-gradient(135deg, #12a08b 0%, #0f7d70 46%, #094842 100%);
+          box-shadow:
+            0 22px 46px rgba(14, 110, 100, 0.32),
+            0 0 0 3px rgba(42, 161, 146, 0.16),
+            inset 0 1px 0 rgba(255, 255, 255, 0.38);
+          transform: translateY(-1px);
+        }
+
+        .provider-onboarding-form__submit:active {
+          transform: translateY(0);
+          box-shadow:
+            0 12px 28px rgba(14, 110, 100, 0.24),
+            inset 0 1px 0 rgba(255, 255, 255, 0.28);
         }
 
         [dir='rtl'] .provider-onboarding-form__submit {
@@ -3431,6 +3490,33 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
 
           .provider-onboarding-addons__safety {
             border-radius: 1rem;
+          }
+
+          .provider-onboarding-form-copy {
+            gap: 0.66rem;
+            border-radius: 1.16rem;
+            padding: 0.92rem;
+          }
+
+          .provider-onboarding-form-copy h2 {
+            max-inline-size: 16ch;
+            font-size: clamp(1.42rem, 7vw, 2rem);
+            line-height: 1.08;
+          }
+
+          .provider-onboarding-form-copy p {
+            font-size: 0.92rem;
+            line-height: 1.62;
+          }
+
+          .provider-onboarding-form {
+            border-radius: 1.16rem;
+            padding: 0.86rem;
+          }
+
+          .provider-onboarding-form__intro {
+            border-radius: 0.96rem;
+            padding: 0.72rem;
           }
 
           .provider-onboarding-addons__groups,

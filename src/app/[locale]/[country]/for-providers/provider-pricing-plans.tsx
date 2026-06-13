@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-export type BillingPeriodId = 'three' | 'six' | 'twelve';
+export type BillingPeriodId = 'month' | 'three' | 'six' | 'twelve';
 
 export type ProviderPricingPlan = {
   id: 'free' | 'starter' | 'growth' | 'premium';
@@ -12,6 +12,7 @@ export type ProviderPricingPlan = {
   bestForLabel: string;
   bestFor: string;
   cta: string;
+  monthlyReferenceCta?: string;
   note: string;
   recommendedLabel?: string;
   supportLabel?: string;
@@ -36,7 +37,7 @@ type ProviderPricingPlansProps = {
 };
 
 export function ProviderPricingPlans({ copy }: ProviderPricingPlansProps) {
-  const [selectedPeriod, setSelectedPeriod] = useState<BillingPeriodId>('three');
+  const [selectedPeriod, setSelectedPeriod] = useState<BillingPeriodId>('month');
   const selectedPeriodLabel = useMemo(
     () => copy.periods.find((period) => period.id === selectedPeriod)?.label ?? copy.periods[0]?.label ?? '',
     [copy.periods, selectedPeriod]
@@ -73,8 +74,18 @@ export function ProviderPricingPlans({ copy }: ProviderPricingPlansProps) {
         </div>
 
         <div className="provider-onboarding-pricing-grid" data-selected-period={selectedPeriod}>
-          {copy.plans.map((plan) => (
-            <article className="dm2026-card-glass provider-onboarding-plan" data-plan={plan.id} data-recommended={plan.recommendedLabel ? 'true' : 'false'} key={plan.id}>
+          {copy.plans.map((plan) => {
+            const isMonthlyReference = selectedPeriod === 'month' && plan.id !== 'free';
+            const ctaLabel = isMonthlyReference ? plan.monthlyReferenceCta ?? plan.cta : plan.cta;
+
+            return (
+              <article
+                className="dm2026-card-glass provider-onboarding-plan"
+                data-monthly-reference={isMonthlyReference ? 'true' : 'false'}
+                data-plan={plan.id}
+                data-recommended={plan.recommendedLabel ? 'true' : 'false'}
+                key={plan.id}
+              >
               <div className="provider-onboarding-plan__head">
                 <span className="provider-onboarding-plan__badge">{plan.badge}</span>
                 {plan.recommendedLabel ? <span className="provider-onboarding-plan__recommended">{plan.recommendedLabel}</span> : null}
@@ -106,14 +117,21 @@ export function ProviderPricingPlans({ copy }: ProviderPricingPlansProps) {
                 ))}
               </ul>
 
-              <div className="provider-onboarding-plan__footer">
-                <a className="dm2026-button dm2026-button-secondary provider-onboarding-plan__button" href="#provider-onboarding-form">
-                  {plan.cta}
-                </a>
-                <p>{plan.note}</p>
-              </div>
-            </article>
-          ))}
+                <div className="provider-onboarding-plan__footer">
+                  {isMonthlyReference ? (
+                    <button className="dm2026-button dm2026-button-secondary provider-onboarding-plan__button" disabled type="button">
+                      {ctaLabel}
+                    </button>
+                  ) : (
+                    <a className="dm2026-button dm2026-button-secondary provider-onboarding-plan__button" href="#provider-onboarding-form">
+                      {ctaLabel}
+                    </a>
+                  )}
+                  <p>{plan.note}</p>
+                </div>
+              </article>
+            );
+          })}
         </div>
 
         <p className="dm2026-card-soft provider-onboarding-pricing-note">{copy.disclaimer}</p>

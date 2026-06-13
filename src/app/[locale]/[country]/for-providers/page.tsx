@@ -203,9 +203,10 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
       badge: 'Launch packages',
       title: 'Choose the visibility path that fits your provider presence.',
       subtitle:
-        'Prices are shown as rounded monthly equivalents for easier comparison. Plans are billed by the selected 3-month, 6-month, or annual period and remain subject to review and confirmation.',
-      selectorLabel: 'Select billing period',
+        'Prices are shown as rounded monthly equivalents for easier comparison. Paid plans are billed by the selected 3-month, 6-month, or annual period and remain subject to review and confirmation.',
+      selectorLabel: 'Select pricing view',
       periods: [
+        { id: 'month', label: '1 month' },
         { id: 'three', label: '3 months' },
         { id: 'six', label: '6 months' },
         { id: 'twelve', label: '12 months' }
@@ -220,13 +221,14 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           bestFor: 'New providers who want to express interest before choosing a paid launch package.',
           cta: 'Start with Free',
           note: 'Best for early interest only.',
-          prices: { three: 'Free / month', six: 'Free / month', twelve: 'Free / month' },
+          prices: { month: 'Free / month', three: 'Free / month', six: 'Free / month', twelve: 'Free / month' },
           periodNotes: {
+            month: 'Monthly reference only',
             three: 'No payment required for the selected period',
             six: 'No payment required for the selected period',
             twelve: 'No payment required for the selected period'
           },
-          savings: { three: 'Always free', six: 'Always free', twelve: 'Always free' },
+          savings: { month: 'Always free', three: 'Always free', six: 'Always free', twelve: 'Always free' },
           features: [
             'Onboarding interest request',
             'Basic public information intake',
@@ -249,14 +251,16 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           bestForLabel: 'Best for',
           bestFor: 'Small providers that need a clean public profile foundation.',
           cta: 'Choose Starter',
+          monthlyReferenceCta: 'Select billing period',
           note: 'Subject to review and confirmation.',
-          prices: { three: '16 OMR / month', six: '14.5 OMR / month', twelve: '13 OMR / month' },
+          prices: { month: '16 OMR / month', three: '16 OMR / month', six: '14.5 OMR / month', twelve: '13 OMR / month' },
           periodNotes: {
+            month: 'Monthly billing is not active. Select 3, 6, or 12 months.',
             three: 'Billed 48 OMR every 3 months',
             six: 'Billed 87 OMR every 6 months',
-            twelve: 'Billed 156 OMR yearly'
+            twelve: 'Billed 158 OMR yearly'
           },
-          savings: { three: 'Launch comparison', six: 'Save about 9%', twelve: 'Save about 19%' },
+          savings: { month: 'Monthly reference', three: 'Launch comparison', six: 'Lower monthly cost', twelve: 'Save about 18%' },
           features: [
             'Reviewed public profile preparation',
             'Category and location structure',
@@ -282,14 +286,16 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           bestForLabel: 'Best for',
           bestFor: 'Growing providers that want stronger discovery structure and future offer readiness.',
           cta: 'Choose Growth',
+          monthlyReferenceCta: 'Select billing period',
           note: 'Recommended for active growth planning.',
-          prices: { three: '33 OMR / month', six: '29.5 OMR / month', twelve: '27.5 OMR / month' },
+          prices: { month: '33 OMR / month', three: '33 OMR / month', six: '30 OMR / month', twelve: '27 OMR / month' },
           periodNotes: {
+            month: 'Monthly billing is not active. Select 3, 6, or 12 months.',
             three: 'Billed 99 OMR every 3 months',
-            six: 'Billed 177 OMR every 6 months',
-            twelve: 'Billed 330 OMR yearly'
+            six: 'Billed 180 OMR every 6 months',
+            twelve: 'Billed 325 OMR yearly'
           },
-          savings: { three: 'Strongest value', six: 'Save about 11%', twelve: 'Save about 17%' },
+          savings: { month: 'Monthly reference', three: 'Strongest value', six: 'Lower monthly cost', twelve: 'Save about 18%' },
           features: [
             'Everything in Verified Starter',
             'Up to 15 public photos prepared',
@@ -313,14 +319,16 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           bestForLabel: 'Best for',
           bestFor: 'Providers that need premium onboarding, stronger profile preparation, and broader visibility planning.',
           cta: 'Choose Premium',
+          monthlyReferenceCta: 'Select billing period',
           note: 'For eligible providers after review.',
-          prices: { three: '66 OMR / month', six: '59.5 OMR / month', twelve: '55 OMR / month' },
+          prices: { month: '66 OMR / month', three: '66 OMR / month', six: '60 OMR / month', twelve: '51.5 OMR / month' },
           periodNotes: {
+            month: 'Monthly billing is not active. Select 3, 6, or 12 months.',
             three: 'Billed 198 OMR every 3 months',
-            six: 'Billed 357 OMR every 6 months',
-            twelve: 'Billed 660 OMR yearly'
+            six: 'Billed 360 OMR every 6 months',
+            twelve: 'Billed 618 OMR yearly'
           },
-          savings: { three: 'Premium readiness', six: 'Save about 10%', twelve: 'Save about 17%' },
+          savings: { month: 'Monthly reference', three: 'Premium readiness', six: 'Lower monthly cost', twelve: 'Save about 22%' },
           features: [
             'Everything in Growth Partner',
             'Premium public profile preparation',
@@ -339,7 +347,7 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
         }
       ],
       disclaimer:
-        'Launch packages are subject to review, availability, and confirmation. This page does not activate payment, verified status, ranking, advertising, dashboard access, booking, or guaranteed leads.'
+        'Monthly pricing is shown for comparison only. Monthly billing is not active. Launch packages are subject to review, availability, and confirmation. This page does not activate payment, verified status, ranking, advertising, dashboard access, booking, or guaranteed leads.'
     },
     addons: {
       badge: 'Future request-based add-ons',
@@ -557,9 +565,10 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
       badge: 'باقات الإطلاق',
       title: 'اختر مسار الظهور المناسب لحضور مقدم الخدمة.',
       subtitle:
-        'تُعرض الأسعار كقيمة شهرية تقريبية ومبسّطة لتسهيل المقارنة، بينما يتم الدفع حسب الفترة المحددة: 3 أشهر أو 6 أشهر أو سنوياً، وتبقى الباقات خاضعة للمراجعة والتأكيد.',
-      selectorLabel: 'اختر فترة الدفع',
+        'تُعرض الأسعار كقيمة شهرية تقريبية ومبسّطة لتسهيل المقارنة، بينما يتم دفع الباقات المدفوعة حسب الفترة المحددة: 3 أشهر أو 6 أشهر أو سنوياً، وتبقى خاضعة للمراجعة والتأكيد.',
+      selectorLabel: 'اختر طريقة عرض السعر',
       periods: [
+        { id: 'month', label: 'شهر واحد' },
         { id: 'three', label: '3 أشهر' },
         { id: 'six', label: '6 أشهر' },
         { id: 'twelve', label: '12 شهراً' }
@@ -574,13 +583,14 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           bestFor: 'لمقدمي الخدمة الجدد الذين يريدون إبداء الاهتمام قبل اختيار باقة إطلاق مدفوعة.',
           cta: 'ابدأ مجاناً',
           note: 'مناسب لإبداء الاهتمام الأولي فقط.',
-          prices: { three: 'مجاني / شهرياً', six: 'مجاني / شهرياً', twelve: 'مجاني / شهرياً' },
+          prices: { month: 'مجاني / شهرياً', three: 'مجاني / شهرياً', six: 'مجاني / شهرياً', twelve: 'مجاني / شهرياً' },
           periodNotes: {
+            month: 'مرجع شهري فقط',
             three: 'لا يتطلب دفعاً للفترة المحددة',
             six: 'لا يتطلب دفعاً للفترة المحددة',
             twelve: 'لا يتطلب دفعاً للفترة المحددة'
           },
-          savings: { three: 'مجاني دائماً', six: 'مجاني دائماً', twelve: 'مجاني دائماً' },
+          savings: { month: 'مجاني دائماً', three: 'مجاني دائماً', six: 'مجاني دائماً', twelve: 'مجاني دائماً' },
           features: [
             'إرسال طلب اهتمام بالانضمام',
             'استقبال المعلومات العامة الأساسية',
@@ -603,14 +613,16 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           bestForLabel: 'مناسب لـ',
           bestFor: 'لمقدمي الخدمة الصغار الذين يحتاجون إلى أساس منظم لملف عام.',
           cta: 'اختر الانطلاقة',
+          monthlyReferenceCta: 'اختر فترة الدفع',
           note: 'تخضع للمراجعة والتأكيد.',
-          prices: { three: '16 ر.ع / شهرياً', six: '14.5 ر.ع / شهرياً', twelve: '13 ر.ع / شهرياً' },
+          prices: { month: '16 ر.ع / شهرياً', three: '16 ر.ع / شهرياً', six: '14.5 ر.ع / شهرياً', twelve: '13 ر.ع / شهرياً' },
           periodNotes: {
+            month: 'الدفع الشهري غير مفعّل. اختر 3 أشهر أو 6 أشهر أو 12 شهراً.',
             three: 'تُدفع 48 ر.ع كل 3 أشهر',
             six: 'تُدفع 87 ر.ع كل 6 أشهر',
-            twelve: 'تُدفع 156 ر.ع سنوياً'
+            twelve: 'تُدفع 158 ر.ع سنوياً'
           },
-          savings: { three: 'مقارنة باقات الإطلاق', six: 'وفر حوالي 9%', twelve: 'وفر حوالي 19%' },
+          savings: { month: 'مرجع شهري', three: 'مقارنة باقات الإطلاق', six: 'تكلفة شهرية أقل', twelve: 'وفر حوالي 18%' },
           features: [
             'إعداد ملف عام بعد المراجعة',
             'بنية التصنيف والموقع',
@@ -636,14 +648,16 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           bestForLabel: 'مناسب لـ',
           bestFor: 'لمقدمي الخدمة النامين الذين يريدون بنية أقوى للاكتشاف وجاهزية مستقبلية للعروض.',
           cta: 'اختر شريك النمو',
+          monthlyReferenceCta: 'اختر فترة الدفع',
           note: 'موصى بها لتخطيط النمو النشط.',
-          prices: { three: '33 ر.ع / شهرياً', six: '29.5 ر.ع / شهرياً', twelve: '27.5 ر.ع / شهرياً' },
+          prices: { month: '33 ر.ع / شهرياً', three: '33 ر.ع / شهرياً', six: '30 ر.ع / شهرياً', twelve: '27 ر.ع / شهرياً' },
           periodNotes: {
+            month: 'الدفع الشهري غير مفعّل. اختر 3 أشهر أو 6 أشهر أو 12 شهراً.',
             three: 'تُدفع 99 ر.ع كل 3 أشهر',
-            six: 'تُدفع 177 ر.ع كل 6 أشهر',
-            twelve: 'تُدفع 330 ر.ع سنوياً'
+            six: 'تُدفع 180 ر.ع كل 6 أشهر',
+            twelve: 'تُدفع 325 ر.ع سنوياً'
           },
-          savings: { three: 'أقوى قيمة', six: 'وفر حوالي 11%', twelve: 'وفر حوالي 17%' },
+          savings: { month: 'مرجع شهري', three: 'أقوى قيمة', six: 'تكلفة شهرية أقل', twelve: 'وفر حوالي 18%' },
           features: [
             'كل ما في باقة الانطلاقة الموثقة',
             'إعداد ما يصل إلى 15 صورة عامة',
@@ -667,14 +681,16 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           bestForLabel: 'مناسب لـ',
           bestFor: 'لمقدمي الخدمة الذين يحتاجون إلى إعداد مميز للملف العام وتخطيط أقوى للظهور.',
           cta: 'اختر بريميوم',
+          monthlyReferenceCta: 'اختر فترة الدفع',
           note: 'لمقدمي الخدمة المؤهلين بعد المراجعة.',
-          prices: { three: '66 ر.ع / شهرياً', six: '59.5 ر.ع / شهرياً', twelve: '55 ر.ع / شهرياً' },
+          prices: { month: '66 ر.ع / شهرياً', three: '66 ر.ع / شهرياً', six: '60 ر.ع / شهرياً', twelve: '51.5 ر.ع / شهرياً' },
           periodNotes: {
+            month: 'الدفع الشهري غير مفعّل. اختر 3 أشهر أو 6 أشهر أو 12 شهراً.',
             three: 'تُدفع 198 ر.ع كل 3 أشهر',
-            six: 'تُدفع 357 ر.ع كل 6 أشهر',
-            twelve: 'تُدفع 660 ر.ع سنوياً'
+            six: 'تُدفع 360 ر.ع كل 6 أشهر',
+            twelve: 'تُدفع 618 ر.ع سنوياً'
           },
-          savings: { three: 'جاهزية مميزة', six: 'وفر حوالي 10%', twelve: 'وفر حوالي 17%' },
+          savings: { month: 'مرجع شهري', three: 'جاهزية مميزة', six: 'تكلفة شهرية أقل', twelve: 'وفر حوالي 22%' },
           features: [
             'كل ما في باقة شريك النمو',
             'إعداد ملف عام مميز',
@@ -693,7 +709,7 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
         }
       ],
       disclaimer:
-        'تخضع باقات الإطلاق للمراجعة والتوفر والتأكيد. لا تقوم هذه الصفحة بتفعيل الدفع أو حالة التوثيق أو الترتيب أو الإعلانات أو لوحة التحكم أو الحجز أو ضمان العملاء المحتملين.'
+        'تُعرض الأسعار الشهرية للمقارنة فقط. الدفع الشهري غير مفعّل. تخضع باقات الإطلاق للمراجعة والتوفر والتأكيد. لا تقوم هذه الصفحة بتفعيل الدفع أو حالة التوثيق أو الترتيب أو الإعلانات أو لوحة التحكم أو الحجز أو ضمان العملاء المحتملين.'
     },
     addons: {
       badge: 'إضافات مستقبلية حسب الطلب',
@@ -2152,7 +2168,7 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           display: grid;
           gap: 0.45rem;
           justify-items: start;
-          min-inline-size: min(100%, 20rem);
+          min-inline-size: min(100%, 24rem);
           border: 1px solid rgba(14, 110, 100, 0.18);
           border-radius: 1.35rem;
           background:
@@ -2174,7 +2190,7 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
 
         .provider-onboarding-pricing__segments {
           display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-template-columns: repeat(4, minmax(0, 1fr));
           gap: 0.25rem;
           inline-size: 100%;
           border-radius: 999px;
@@ -2242,6 +2258,16 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           backdrop-filter: blur(14px);
         }
 
+        .provider-onboarding-pricing .provider-onboarding-plan::before {
+          content: '';
+          display: block;
+          block-size: 3px;
+          margin-block: -0.25rem 0.05rem;
+          border-radius: 999px;
+          background: linear-gradient(90deg, transparent, var(--plan-accent), transparent);
+          opacity: 0.62;
+        }
+
         .provider-onboarding-pricing .provider-onboarding-plan[data-plan='free'] {
           --plan-accent: #2aa192;
           --plan-accent-soft: rgba(42, 161, 146, 0.1);
@@ -2275,6 +2301,11 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
             0 24px 58px rgba(11, 40, 38, 0.15),
             0 0 0 3px rgba(42, 161, 146, 0.08),
             inset 0 1px 0 rgba(255, 255, 255, 0.96);
+        }
+
+        .provider-onboarding-pricing .provider-onboarding-plan[data-recommended='true']::before {
+          opacity: 0.9;
+          background: linear-gradient(90deg, transparent, #0f8a78, rgba(42, 161, 146, 0.9), transparent);
         }
 
         .provider-onboarding-plan__head {
@@ -2365,6 +2396,11 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           padding-block: 0.7rem 0.64rem;
         }
 
+        .provider-onboarding-plan[data-monthly-reference='true'] .provider-onboarding-plan__period-note {
+          color: var(--dm-color-brand-strong, #0b4f4a);
+          font-weight: 780;
+        }
+
         .provider-onboarding-plan__price {
           display: flex;
           align-items: baseline;
@@ -2453,6 +2489,17 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           box-shadow: 0 14px 30px rgba(14, 110, 100, 0.22);
         }
 
+        .provider-onboarding-plan__button:disabled {
+          cursor: not-allowed;
+          border-color: rgba(14, 110, 100, 0.13);
+          background: rgba(255, 255, 255, 0.72);
+          color: var(--dm-color-text-muted, #66736f);
+          box-shadow:
+            0 8px 18px rgba(11, 40, 38, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.82);
+          opacity: 0.88;
+        }
+
         .provider-onboarding-pricing .provider-onboarding-plan[data-plan='premium'] .provider-onboarding-plan__name-row h3 {
           border-color: rgba(184, 137, 47, 0.2);
           background:
@@ -2464,6 +2511,15 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           background: linear-gradient(135deg, #0f8a78, var(--dm-color-brand-strong, #0b4f4a));
           color: #ffffff;
           box-shadow: 0 16px 34px rgba(14, 110, 100, 0.28);
+        }
+
+        .provider-onboarding-pricing .provider-onboarding-plan .provider-onboarding-plan__button:disabled {
+          border-color: rgba(14, 110, 100, 0.13);
+          background: rgba(255, 255, 255, 0.72);
+          color: var(--dm-color-text-muted, #66736f);
+          box-shadow:
+            0 8px 18px rgba(11, 40, 38, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.82);
         }
 
         .provider-onboarding-pricing .provider-onboarding-pricing-note {

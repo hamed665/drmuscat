@@ -203,7 +203,7 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
       badge: 'Launch packages',
       title: 'Choose the visibility path that fits your provider presence.',
       subtitle:
-        'Prices are shown as rounded monthly equivalents for easier comparison. Paid plans are billed by the selected 3-month, 6-month, or annual period and remain subject to review and confirmation.',
+        'Prices are shown as monthly references for easier comparison. Paid plans are billed by the selected 3-month, 6-month, or annual period and remain subject to review and confirmation.',
       selectorLabel: 'Select pricing view',
       periods: [
         { id: 'month', label: '1 month' },
@@ -253,14 +253,8 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           cta: 'Choose Starter',
           monthlyReferenceCta: 'Select billing period',
           note: 'Subject to review and confirmation.',
-          prices: { month: '16 OMR / month', three: '16 OMR / month', six: '14.5 OMR / month', twelve: '13 OMR / month' },
-          periodNotes: {
-            month: 'Monthly billing is not active. Select 3, 6, or 12 months.',
-            three: 'Billed 48 OMR every 3 months',
-            six: 'Billed 87 OMR every 6 months',
-            twelve: 'Billed 158 OMR yearly'
-          },
-          savings: { month: 'Monthly reference', three: 'Launch comparison', six: 'Lower monthly cost', twelve: 'Save about 18%' },
+          baseMonthlyOmr: 20,
+          annualDiscount: 0.18,
           features: [
             'Reviewed public profile preparation',
             'Category and location structure',
@@ -288,14 +282,8 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           cta: 'Choose Growth',
           monthlyReferenceCta: 'Select billing period',
           note: 'Recommended for active growth planning.',
-          prices: { month: '33 OMR / month', three: '33 OMR / month', six: '30 OMR / month', twelve: '27 OMR / month' },
-          periodNotes: {
-            month: 'Monthly billing is not active. Select 3, 6, or 12 months.',
-            three: 'Billed 99 OMR every 3 months',
-            six: 'Billed 180 OMR every 6 months',
-            twelve: 'Billed 325 OMR yearly'
-          },
-          savings: { month: 'Monthly reference', three: 'Strongest value', six: 'Lower monthly cost', twelve: 'Save about 18%' },
+          baseMonthlyOmr: 35,
+          annualDiscount: 0.18,
           features: [
             'Everything in Verified Starter',
             'Up to 15 public photos prepared',
@@ -321,14 +309,8 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           cta: 'Choose Premium',
           monthlyReferenceCta: 'Select billing period',
           note: 'For eligible providers after review.',
-          prices: { month: '66 OMR / month', three: '66 OMR / month', six: '60 OMR / month', twelve: '51.5 OMR / month' },
-          periodNotes: {
-            month: 'Monthly billing is not active. Select 3, 6, or 12 months.',
-            three: 'Billed 198 OMR every 3 months',
-            six: 'Billed 360 OMR every 6 months',
-            twelve: 'Billed 618 OMR yearly'
-          },
-          savings: { month: 'Monthly reference', three: 'Premium readiness', six: 'Lower monthly cost', twelve: 'Save about 22%' },
+          baseMonthlyOmr: 70,
+          annualDiscount: 0.25,
           features: [
             'Everything in Growth Partner',
             'Premium public profile preparation',
@@ -565,7 +547,7 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
       badge: 'باقات الإطلاق',
       title: 'اختر مسار الظهور المناسب لحضور مقدم الخدمة.',
       subtitle:
-        'تُعرض الأسعار كقيمة شهرية تقريبية ومبسّطة لتسهيل المقارنة، بينما يتم دفع الباقات المدفوعة حسب الفترة المحددة: 3 أشهر أو 6 أشهر أو سنوياً، وتبقى خاضعة للمراجعة والتأكيد.',
+        'تُعرض الأسعار كمرجع شهري لتسهيل المقارنة، بينما يتم دفع الباقات المدفوعة حسب الفترة المحددة: 3 أشهر أو 6 أشهر أو سنوياً، وتبقى خاضعة للمراجعة والتأكيد.',
       selectorLabel: 'اختر طريقة عرض السعر',
       periods: [
         { id: 'month', label: 'شهر واحد' },
@@ -615,14 +597,8 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           cta: 'اختر الانطلاقة',
           monthlyReferenceCta: 'اختر فترة الدفع',
           note: 'تخضع للمراجعة والتأكيد.',
-          prices: { month: '16 ر.ع / شهرياً', three: '16 ر.ع / شهرياً', six: '14.5 ر.ع / شهرياً', twelve: '13 ر.ع / شهرياً' },
-          periodNotes: {
-            month: 'الدفع الشهري غير مفعّل. اختر 3 أشهر أو 6 أشهر أو 12 شهراً.',
-            three: 'تُدفع 48 ر.ع كل 3 أشهر',
-            six: 'تُدفع 87 ر.ع كل 6 أشهر',
-            twelve: 'تُدفع 158 ر.ع سنوياً'
-          },
-          savings: { month: 'مرجع شهري', three: 'مقارنة باقات الإطلاق', six: 'تكلفة شهرية أقل', twelve: 'وفر حوالي 18%' },
+          baseMonthlyOmr: 20,
+          annualDiscount: 0.18,
           features: [
             'إعداد ملف عام بعد المراجعة',
             'بنية التصنيف والموقع',
@@ -650,14 +626,8 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           cta: 'اختر شريك النمو',
           monthlyReferenceCta: 'اختر فترة الدفع',
           note: 'موصى بها لتخطيط النمو النشط.',
-          prices: { month: '33 ر.ع / شهرياً', three: '33 ر.ع / شهرياً', six: '30 ر.ع / شهرياً', twelve: '27 ر.ع / شهرياً' },
-          periodNotes: {
-            month: 'الدفع الشهري غير مفعّل. اختر 3 أشهر أو 6 أشهر أو 12 شهراً.',
-            three: 'تُدفع 99 ر.ع كل 3 أشهر',
-            six: 'تُدفع 180 ر.ع كل 6 أشهر',
-            twelve: 'تُدفع 325 ر.ع سنوياً'
-          },
-          savings: { month: 'مرجع شهري', three: 'أقوى قيمة', six: 'تكلفة شهرية أقل', twelve: 'وفر حوالي 18%' },
+          baseMonthlyOmr: 35,
+          annualDiscount: 0.18,
           features: [
             'كل ما في باقة الانطلاقة الموثقة',
             'إعداد ما يصل إلى 15 صورة عامة',
@@ -683,14 +653,8 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
           cta: 'اختر بريميوم',
           monthlyReferenceCta: 'اختر فترة الدفع',
           note: 'لمقدمي الخدمة المؤهلين بعد المراجعة.',
-          prices: { month: '66 ر.ع / شهرياً', three: '66 ر.ع / شهرياً', six: '60 ر.ع / شهرياً', twelve: '51.5 ر.ع / شهرياً' },
-          periodNotes: {
-            month: 'الدفع الشهري غير مفعّل. اختر 3 أشهر أو 6 أشهر أو 12 شهراً.',
-            three: 'تُدفع 198 ر.ع كل 3 أشهر',
-            six: 'تُدفع 360 ر.ع كل 6 أشهر',
-            twelve: 'تُدفع 618 ر.ع سنوياً'
-          },
-          savings: { month: 'مرجع شهري', three: 'جاهزية مميزة', six: 'تكلفة شهرية أقل', twelve: 'وفر حوالي 22%' },
+          baseMonthlyOmr: 70,
+          annualDiscount: 0.25,
           features: [
             'كل ما في باقة شريك النمو',
             'إعداد ملف عام مميز',

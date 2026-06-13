@@ -75,8 +75,18 @@ type ProviderPageCopy = {
     badge: string;
     title: string;
     subtitle: string;
-    items: readonly string[];
-    note: string;
+    safetyNote: string;
+    statusLabel: string;
+    groups: readonly {
+      title: string;
+      description: string;
+      items: readonly { title: string; description: string }[];
+    }[];
+    visualLabel: string;
+    visualText: string;
+    cta: string;
+    secondaryNote: string;
+    disclaimer: string;
   };
   formIntro: {
     badge: string;
@@ -314,20 +324,47 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
     },
     addons: {
       badge: 'Future request-based add-ons',
-      title: 'Add-on requests can be discussed later.',
-      subtitle: 'These are future/request-based concepts, not active guaranteed products or automatic placements.',
-      items: [
-        'Homepage featured placement',
-        'Category featured placement',
-        'Area placement',
-        'Homepage offer placement',
-        'Sponsored card request',
-        'WhatsApp lead boost',
-        'Extra doctors',
-        'Extra branches',
-        'Premium onboarding support'
+      title: 'Add-on visibility options can be discussed after review.',
+      subtitle:
+        'Providers can request extra visibility, campaign, or profile support later. These options are not automatic products and must be reviewed, confirmed, and clearly presented before use.',
+      safetyNote: 'No sponsored placement, offer, lead boost, or featured visibility is activated from this page.',
+      statusLabel: 'Request-based',
+      groups: [
+        {
+          title: 'Visibility placements',
+          description: 'Request extra placement opportunities when public profile information is ready.',
+          items: [
+            { title: 'Homepage featured placement', description: 'Request visibility in homepage discovery areas when available.' },
+            { title: 'Category featured placement', description: 'Request placement inside relevant provider or service categories.' },
+            { title: 'Area placement', description: 'Request visibility for a specific city or area discovery page.' },
+            { title: 'Sponsored card request', description: 'Request a sponsored card concept for future review.' }
+          ]
+        },
+        {
+          title: 'Campaign and offer tools',
+          description: 'Prepare future provider-approved campaign ideas without making automatic placement promises.',
+          items: [
+            { title: 'Homepage offer placement', description: 'Request a provider-approved offer placement when the offer flow is available.' },
+            { title: 'Seasonal campaign package', description: 'Request campaign planning around seasonal healthcare, beauty, wellness, or pet-care moments.' },
+            { title: 'WhatsApp lead boost', description: 'Request future visibility support for approved contact actions.' }
+          ]
+        },
+        {
+          title: 'Profile expansion support',
+          description: 'Expand profile structure when provider information is ready and reviewed.',
+          items: [
+            { title: 'Extra doctors', description: 'Request additional doctor or team profile support.' },
+            { title: 'Extra branches', description: 'Request extra branch or location structure.' },
+            { title: 'Premium onboarding support', description: 'Request guided setup support for profile preparation and public information review.' }
+          ]
+        }
       ],
-      note: 'Any future sponsored or featured visibility must be reviewed, confirmed and clearly presented where applicable.'
+      visualLabel: 'Request-based visibility',
+      visualText: 'Extra visibility options can be reviewed after provider information is ready.',
+      cta: 'Request add-on discussion',
+      secondaryNote: 'Add-ons are request-based and subject to review, availability, and confirmation.',
+      disclaimer:
+        'Future sponsored, featured, campaign, offer, or lead-related visibility must be reviewed and confirmed before use. Nothing in this section activates payment, guaranteed placement, ranking, booking, dashboard access, or guaranteed leads.'
     },
     formIntro: {
       badge: 'Provider request form',
@@ -624,20 +661,47 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
     },
     addons: {
       badge: 'إضافات مستقبلية حسب الطلب',
-      title: 'يمكن مناقشة طلبات الإضافات لاحقاً.',
-      subtitle: 'هذه تصورات مستقبلية حسب الطلب، وليست منتجات مفعلة مضمونة أو مواضع تلقائية.',
-      items: [
-        'ظهور مميز في الصفحة الرئيسية',
-        'ظهور مميز في الفئة',
-        'ظهور حسب المنطقة',
-        'موضع عرض في الصفحة الرئيسية',
-        'طلب بطاقة مدعومة',
-        'تعزيز طلبات واتساب',
-        'أطباء إضافيون',
-        'فروع إضافية',
-        'دعم انضمام مميز'
+      title: 'يمكن مناقشة خيارات ظهور إضافية بعد المراجعة.',
+      subtitle:
+        'يمكن لمقدّمي الخدمة طلب خيارات إضافية للظهور أو الحملات أو دعم الملف لاحقًا. هذه الخيارات ليست منتجات مفعّلة تلقائيًا، ويجب مراجعتها وتأكيدها وعرضها بوضوح قبل استخدامها.',
+      safetyNote: 'لا يتم تفعيل أي ظهور مدعوم أو عرض أو تعزيز للتواصل أو ظهور مميز من خلال هذه الصفحة.',
+      statusLabel: 'حسب الطلب',
+      groups: [
+        {
+          title: 'مواضع الظهور',
+          description: 'اطلب فرص ظهور إضافية عندما تكون معلومات الملف العام جاهزة.',
+          items: [
+            { title: 'ظهور مميز في الصفحة الرئيسية', description: 'طلب ظهور ضمن مناطق الاكتشاف في الصفحة الرئيسية عند توفره.' },
+            { title: 'ظهور مميز داخل الفئة', description: 'طلب ظهور داخل الفئات المناسبة لمقدم الخدمة أو الخدمة.' },
+            { title: 'ظهور حسب المنطقة', description: 'طلب ظهور في صفحة اكتشاف خاصة بمدينة أو منطقة محددة.' },
+            { title: 'طلب بطاقة مدعومة', description: 'طلب تصور بطاقة مدعومة للمراجعة المستقبلية.' }
+          ]
+        },
+        {
+          title: 'أدوات الحملات والعروض',
+          description: 'حضّر أفكار حملات مستقبلية بموافقة مقدم الخدمة دون وعود بظهور تلقائي.',
+          items: [
+            { title: 'موضع عرض في الصفحة الرئيسية', description: 'طلب موضع لعرض معتمد من مقدم الخدمة عندما يصبح مسار العروض متاحًا.' },
+            { title: 'باقة حملة موسمية', description: 'طلب تخطيط حملة حول مواسم الرعاية الصحية أو التجميل أو الرفاهية أو رعاية الحيوانات الأليفة.' },
+            { title: 'دعم ظهور واتساب', description: 'طلب دعم ظهور مستقبلي لإجراءات التواصل المعتمدة.' }
+          ]
+        },
+        {
+          title: 'دعم توسيع الملف',
+          description: 'وسّع بنية الملف عندما تكون معلومات مقدم الخدمة جاهزة ومراجعة.',
+          items: [
+            { title: 'أطباء إضافيون', description: 'طلب دعم لإضافة أطباء أو أعضاء فريق إضافيين.' },
+            { title: 'فروع إضافية', description: 'طلب بنية إضافية للفروع أو المواقع.' },
+            { title: 'دعم انضمام مميز', description: 'طلب دعم موجه لإعداد الملف ومراجعة المعلومات العامة.' }
+          ]
+        }
       ],
-      note: 'أي ظهور مدعوم أو مميز مستقبلاً يجب أن يخضع للمراجعة والتأكيد وأن يعرض بوضوح عند الحاجة.'
+      visualLabel: 'ظهور حسب الطلب',
+      visualText: 'يمكن مراجعة خيارات الظهور الإضافية بعد جاهزية معلومات مقدم الخدمة.',
+      cta: 'طلب مناقشة الإضافات',
+      secondaryNote: 'الإضافات حسب الطلب وتخضع للمراجعة والتوفر والتأكيد.',
+      disclaimer:
+        'يجب مراجعة وتأكيد أي ظهور مدعوم أو مميز أو حملة أو عرض أو دعم مرتبط بالتواصل قبل استخدامه. لا يفعّل هذا القسم الدفع أو الظهور المضمون أو الترتيب أو الحجز أو لوحة التحكم أو العملاء المحتملين المضمونين.'
     },
     formIntro: {
       badge: 'نموذج طلب مقدم الخدمة',
@@ -995,20 +1059,62 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
 
       <ProviderPricingPlans copy={copy.pricing} />
 
-      <section className="dm2026-section provider-onboarding-section provider-onboarding-section--compact" aria-labelledby="provider-addons-title">
+      <section className="dm2026-section provider-onboarding-section provider-onboarding-section--compact provider-onboarding-addons-section" aria-labelledby="provider-addons-title">
         <div className="dm2026-container">
           <div className="dm2026-card-glass provider-onboarding-addons">
-            <header className="dm2026-section-header provider-onboarding-section__header">
+            <span className="provider-onboarding-addons__glow provider-onboarding-addons__glow--primary" aria-hidden="true" />
+            <span className="provider-onboarding-addons__glow provider-onboarding-addons__glow--secondary" aria-hidden="true" />
+            <header className="dm2026-section-header provider-onboarding-section__header provider-onboarding-addons__header">
               <span className="dm2026-badge">{copy.addons.badge}</span>
               <h2 id="provider-addons-title">{copy.addons.title}</h2>
               <p>{copy.addons.subtitle}</p>
+              <p className="provider-onboarding-addons__safety">{copy.addons.safetyNote}</p>
             </header>
-            <ul>
-              {copy.addons.items.map((item) => (
-                <li key={item}>{item}</li>
+
+            <div className="provider-onboarding-addons__groups" aria-label={copy.addons.badge}>
+              {copy.addons.groups.map((group) => (
+                <article className="provider-onboarding-addons__group" key={group.title}>
+                  <header className="provider-onboarding-addons__group-header">
+                    <h3>{group.title}</h3>
+                    <p>{group.description}</p>
+                  </header>
+                  <div className="provider-onboarding-addons__cards">
+                    {group.items.map((item) => (
+                      <article className="provider-onboarding-addons__card" key={item.title}>
+                        <span className="provider-onboarding-addons__marker" aria-hidden="true" />
+                        <div className="provider-onboarding-addons__card-copy">
+                          <h4>{item.title}</h4>
+                          <p>{item.description}</p>
+                        </div>
+                        <span className="provider-onboarding-addons__status">{copy.addons.statusLabel}</span>
+                      </article>
+                    ))}
+                  </div>
+                </article>
               ))}
-            </ul>
-            <p>{copy.addons.note}</p>
+            </div>
+
+            <div className="provider-onboarding-addons__visual" aria-label={copy.addons.visualLabel}>
+              <span className="provider-onboarding-addons__visual-orbit provider-onboarding-addons__visual-orbit--one" aria-hidden="true" />
+              <span className="provider-onboarding-addons__visual-orbit provider-onboarding-addons__visual-orbit--two" aria-hidden="true" />
+              <div className="provider-onboarding-addons__visual-map" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+              <div className="provider-onboarding-addons__visual-card">
+                <span>{copy.addons.visualLabel}</span>
+                <p>{copy.addons.visualText}</p>
+              </div>
+            </div>
+
+            <div className="provider-onboarding-addons__cta">
+              <a className="dm2026-button dm2026-button-primary provider-onboarding-addons__button" href="#provider-onboarding-form">
+                {copy.addons.cta}
+              </a>
+              <p>{copy.addons.secondaryNote}</p>
+            </div>
+            <p className="provider-onboarding-addons__disclaimer">{copy.addons.disclaimer}</p>
           </div>
         </div>
       </section>
@@ -2227,19 +2333,353 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           line-height: 1.22;
         }
 
-        .provider-onboarding-addons {
-          display: grid;
-          gap: 1rem;
+        .provider-onboarding-addons-section {
+          padding-block: clamp(2.8rem, 5.5vw, 4.8rem);
         }
 
-        .provider-onboarding-addons .provider-onboarding-section__header {
+        .provider-onboarding-addons {
+          position: relative;
+          isolation: isolate;
+          overflow: hidden;
+          display: grid;
+          gap: clamp(1.2rem, 2.5vw, 1.8rem);
+          padding: clamp(1.15rem, 3vw, 2rem);
+          border: 1px solid rgba(14, 110, 100, 0.14);
+          border-radius: clamp(1.45rem, 3vw, 2.25rem);
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(244, 250, 248, 0.76)),
+            radial-gradient(circle at 12% 0%, rgba(42, 161, 146, 0.16), transparent 34%),
+            radial-gradient(circle at 88% 12%, rgba(14, 110, 100, 0.12), transparent 32%);
+          box-shadow:
+            0 24px 70px rgba(9, 51, 47, 0.12),
+            0 1px 0 rgba(255, 255, 255, 0.78) inset;
+          backdrop-filter: blur(16px);
+        }
+
+        .provider-onboarding-addons__glow {
+          position: absolute;
+          z-index: -1;
+          border-radius: 999px;
+          filter: blur(5px);
+          pointer-events: none;
+        }
+
+        .provider-onboarding-addons__glow--primary {
+          inset-block-start: -5rem;
+          inset-inline-start: -4rem;
+          inline-size: 15rem;
+          block-size: 15rem;
+          background: rgba(42, 161, 146, 0.14);
+        }
+
+        .provider-onboarding-addons__glow--secondary {
+          inset-block-end: 12rem;
+          inset-inline-end: -5rem;
+          inline-size: 18rem;
+          block-size: 18rem;
+          background: rgba(14, 110, 100, 0.11);
+        }
+
+        .provider-onboarding-addons__header {
+          max-inline-size: 52rem;
           margin-block-end: 0;
         }
 
-        .provider-onboarding-addons > p {
+        .provider-onboarding-addons__header h2 {
+          color: var(--dm-teal-950, #07302c);
+          font-family: var(--dm-font-display, var(--dm-font-sans, system-ui));
+          font-size: clamp(1.75rem, 3vw, 2.55rem);
+          font-weight: 800;
+          letter-spacing: -0.045em;
+          line-height: 1.05;
+        }
+
+        .provider-onboarding-addons__header > p:not(.provider-onboarding-addons__safety) {
+          max-inline-size: 46rem;
+          color: var(--dm-ink-700, #2e3a3b);
+          font-size: clamp(0.98rem, 1.35vw, 1.08rem);
+          line-height: 1.68;
+        }
+
+        .provider-onboarding-addons__safety {
+          display: inline-flex;
+          width: fit-content;
+          max-inline-size: 100%;
           margin: 0;
+          border: 1px solid rgba(14, 110, 100, 0.13);
+          border-radius: 999px;
+          padding: 0.56rem 0.78rem;
+          background: rgba(255, 255, 255, 0.72);
+          color: var(--dm-color-brand-strong, #0b4f4a);
+          font-size: 0.82rem;
+          font-weight: 800;
+          line-height: 1.35;
+          box-shadow: 0 10px 26px rgba(11, 40, 38, 0.07);
+        }
+
+        .provider-onboarding-addons__groups {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: clamp(0.85rem, 1.7vw, 1.1rem);
+          align-items: stretch;
+        }
+
+        .provider-onboarding-addons__group {
+          display: grid;
+          align-content: start;
+          gap: 0.82rem;
+          min-block-size: 100%;
+          border: 1px solid rgba(14, 110, 100, 0.12);
+          border-radius: 1.35rem;
+          padding: clamp(0.82rem, 1.7vw, 1rem);
+          background: rgba(255, 255, 255, 0.66);
+          box-shadow:
+            0 16px 36px rgba(11, 40, 38, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.78);
+        }
+
+        .provider-onboarding-addons__group-header {
+          display: grid;
+          gap: 0.32rem;
+        }
+
+        .provider-onboarding-addons__group-header h3,
+        .provider-onboarding-addons__group-header p,
+        .provider-onboarding-addons__card h4,
+        .provider-onboarding-addons__card p {
+          margin: 0;
+        }
+
+        .provider-onboarding-addons__group-header h3 {
+          color: var(--dm-teal-950, #07302c);
+          font-size: 1rem;
+          font-weight: 850;
+          letter-spacing: -0.02em;
+          line-height: 1.18;
+        }
+
+        .provider-onboarding-addons__group-header p {
+          color: var(--dm-color-text-muted, #66736f);
+          font-size: 0.84rem;
+          font-weight: 650;
+          line-height: 1.5;
+        }
+
+        .provider-onboarding-addons__cards {
+          display: grid;
+          gap: 0.58rem;
+        }
+
+        .provider-onboarding-addons__card {
+          position: relative;
+          display: grid;
+          grid-template-columns: auto minmax(0, 1fr);
+          gap: 0.64rem;
+          border: 1px solid rgba(14, 110, 100, 0.11);
+          border-radius: 1.05rem;
+          padding: 0.72rem;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(242, 249, 247, 0.66));
+          box-shadow: 0 10px 24px rgba(11, 40, 38, 0.06);
+        }
+
+        .provider-onboarding-addons__marker {
+          inline-size: 0.78rem;
+          block-size: 0.78rem;
+          margin-block-start: 0.2rem;
+          border: 3px solid rgba(255, 255, 255, 0.95);
+          border-radius: 999px;
+          background: linear-gradient(135deg, var(--dm-color-brand, #0e6e64), var(--dm-color-accent, #2aa192));
+          box-shadow:
+            0 0 0 1px rgba(14, 110, 100, 0.18),
+            0 8px 16px rgba(14, 110, 100, 0.18);
+        }
+
+        .provider-onboarding-addons__card-copy {
+          display: grid;
+          min-inline-size: 0;
+          gap: 0.24rem;
+        }
+
+        .provider-onboarding-addons__card h4 {
+          color: var(--dm-teal-950, #07302c);
           font-size: 0.92rem;
+          font-weight: 850;
+          letter-spacing: -0.012em;
+          line-height: 1.22;
+        }
+
+        .provider-onboarding-addons__card p {
+          color: var(--dm-ink-700, #2e3a3b);
+          font-size: 0.8rem;
+          font-weight: 600;
+          line-height: 1.45;
+        }
+
+        .provider-onboarding-addons__status {
+          grid-column: 2;
+          width: fit-content;
+          border: 1px solid rgba(14, 110, 100, 0.12);
+          border-radius: 999px;
+          padding: 0.24rem 0.5rem;
+          background: rgba(239, 246, 244, 0.86);
+          color: var(--dm-color-brand-strong, #0b4f4a);
+          font-size: 0.68rem;
+          font-weight: 850;
+          line-height: 1;
+        }
+
+        .provider-onboarding-addons__visual {
+          position: relative;
+          overflow: hidden;
+          display: grid;
+          min-block-size: clamp(13rem, 24vw, 18rem);
+          align-items: end;
+          border: 1px solid rgba(14, 110, 100, 0.13);
+          border-radius: clamp(1.2rem, 2.3vw, 1.65rem);
+          padding: clamp(1rem, 2vw, 1.25rem);
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(238, 248, 245, 0.74)),
+            radial-gradient(circle at 22% 26%, rgba(42, 161, 146, 0.2), transparent 26%),
+            radial-gradient(circle at 78% 34%, rgba(14, 110, 100, 0.12), transparent 28%);
+          box-shadow:
+            0 20px 48px rgba(11, 40, 38, 0.09),
+            inset 0 1px 0 rgba(255, 255, 255, 0.74);
+        }
+
+        .provider-onboarding-addons__visual::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          opacity: 0.46;
+          background-image:
+            linear-gradient(rgba(14, 110, 100, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(14, 110, 100, 0.08) 1px, transparent 1px);
+          background-size: 3rem 3rem;
+          mask-image: linear-gradient(135deg, rgba(0, 0, 0, 0.92), transparent 78%);
+        }
+
+        .provider-onboarding-addons__visual-orbit {
+          position: absolute;
+          border: 1px solid rgba(14, 110, 100, 0.12);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.28);
+        }
+
+        .provider-onboarding-addons__visual-orbit--one {
+          inset-block-start: 1.2rem;
+          inset-inline-start: 8%;
+          inline-size: 9rem;
+          block-size: 9rem;
+        }
+
+        .provider-onboarding-addons__visual-orbit--two {
+          inset-block-end: -3rem;
+          inset-inline-end: 12%;
+          inline-size: 13rem;
+          block-size: 13rem;
+        }
+
+        .provider-onboarding-addons__visual-map {
+          position: absolute;
+          inset-block-start: clamp(1rem, 2vw, 1.3rem);
+          inset-inline-end: clamp(1rem, 2vw, 1.4rem);
+          display: grid;
+          grid-template-columns: repeat(3, minmax(5rem, 1fr));
+          gap: 0.65rem;
+          inline-size: min(52%, 25rem);
+        }
+
+        .provider-onboarding-addons__visual-map span {
+          min-block-size: clamp(3.8rem, 8vw, 5.4rem);
+          border: 1px solid rgba(14, 110, 100, 0.12);
+          border-radius: 1.1rem;
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(239, 246, 244, 0.62)),
+            linear-gradient(90deg, rgba(14, 110, 100, 0.11), transparent 56%);
+          box-shadow: 0 16px 36px rgba(11, 40, 38, 0.08);
+        }
+
+        .provider-onboarding-addons__visual-card {
+          position: relative;
+          z-index: 1;
+          max-inline-size: 27rem;
+          border: 1px solid rgba(14, 110, 100, 0.13);
+          border-radius: 1.25rem;
+          padding: clamp(0.9rem, 1.8vw, 1.12rem);
+          background: rgba(255, 255, 255, 0.76);
+          box-shadow:
+            0 18px 42px rgba(11, 40, 38, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.82);
+          backdrop-filter: blur(14px);
+        }
+
+        .provider-onboarding-addons__visual-card span,
+        .provider-onboarding-addons__visual-card p {
+          margin: 0;
+        }
+
+        .provider-onboarding-addons__visual-card span {
+          display: inline-flex;
+          color: var(--dm-color-brand-strong, #0b4f4a);
+          font-size: 0.74rem;
+          font-weight: 900;
+          letter-spacing: 0.05em;
+          line-height: 1;
+          text-transform: uppercase;
+        }
+
+        .provider-onboarding-addons__visual-card p {
+          margin-block-start: 0.38rem;
+          color: var(--dm-teal-950, #07302c);
+          font-size: 1rem;
+          font-weight: 760;
+          line-height: 1.42;
+        }
+
+        .provider-onboarding-addons__cta {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          border: 1px solid rgba(14, 110, 100, 0.12);
+          border-radius: 1.2rem;
+          padding: clamp(0.82rem, 1.8vw, 1rem);
+          background: rgba(255, 255, 255, 0.68);
+          box-shadow: 0 14px 30px rgba(11, 40, 38, 0.07);
+        }
+
+        .provider-onboarding-addons__button {
+          min-block-size: 2.75rem;
+          padding-inline: 1.1rem;
+          box-shadow: 0 14px 30px rgba(14, 110, 100, 0.2);
+        }
+
+        .provider-onboarding-addons__cta p,
+        .provider-onboarding-addons__disclaimer {
+          margin: 0;
+          color: var(--dm-ink-700, #2e3a3b);
+          font-size: 0.86rem;
           font-weight: 700;
+          line-height: 1.55;
+        }
+
+        .provider-onboarding-addons__disclaimer {
+          border-inline-start: 3px solid rgba(14, 110, 100, 0.32);
+          padding-inline-start: 0.82rem;
+          color: var(--dm-color-text-muted, #66736f);
+          font-size: 0.82rem;
+        }
+
+        [dir='rtl'] .provider-onboarding-addons__header h2,
+        [dir='rtl'] .provider-onboarding-addons__group-header h3,
+        [dir='rtl'] .provider-onboarding-addons__card h4 {
+          letter-spacing: 0;
+          line-height: 1.25;
+        }
+
+        [dir='rtl'] .provider-onboarding-addons__visual-card span {
+          letter-spacing: 0;
+          text-transform: none;
         }
 
         .provider-onboarding-form-copy {
@@ -2450,6 +2890,18 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
 
+          .provider-onboarding-addons__groups {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .provider-onboarding-addons__group:last-child {
+            grid-column: 1 / -1;
+          }
+
+          .provider-onboarding-addons__visual-map {
+            inline-size: min(62%, 24rem);
+          }
+
           .provider-onboarding-form-copy {
             position: static;
           }
@@ -2531,6 +2983,69 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           .provider-onboarding-pricing__selector {
             inline-size: 100%;
             min-inline-size: 0;
+          }
+
+          .provider-onboarding-addons {
+            padding: 0.88rem;
+            border-radius: 1.35rem;
+          }
+
+          .provider-onboarding-addons__header h2 {
+            font-size: clamp(1.45rem, 7vw, 2rem);
+            line-height: 1.12;
+          }
+
+          .provider-onboarding-addons__safety {
+            border-radius: 1rem;
+          }
+
+          .provider-onboarding-addons__groups,
+          .provider-onboarding-addons__cards {
+            grid-template-columns: 1fr;
+          }
+
+          .provider-onboarding-addons__group:last-child {
+            grid-column: auto;
+          }
+
+          .provider-onboarding-addons__group {
+            border-radius: 1.1rem;
+            padding: 0.78rem;
+          }
+
+          .provider-onboarding-addons__visual {
+            min-block-size: 14rem;
+            padding: 0.78rem;
+          }
+
+          .provider-onboarding-addons__visual::before {
+            opacity: 0.26;
+            background-size: 2.2rem 2.2rem;
+          }
+
+          .provider-onboarding-addons__visual-map {
+            inset-inline: 0.8rem;
+            inline-size: auto;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            opacity: 0.72;
+          }
+
+          .provider-onboarding-addons__visual-map span {
+            min-block-size: 3.3rem;
+            border-radius: 0.85rem;
+          }
+
+          .provider-onboarding-addons__visual-card {
+            max-inline-size: none;
+          }
+
+          .provider-onboarding-addons__cta {
+            align-items: stretch;
+            flex-direction: column;
+          }
+
+          .provider-onboarding-addons__button {
+            inline-size: 100%;
           }
 
           .provider-onboarding-plan__price {

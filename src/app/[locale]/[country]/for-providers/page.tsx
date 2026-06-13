@@ -123,14 +123,14 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
       badge: 'For providers in Oman',
       title: 'Prepare your public DrMuscat discovery profile for review.',
       description:
-        'A provider-focused DrMuscat onboarding page for clinics, doctors and care businesses that want their public information reviewed for future bilingual discovery surfaces.',
+        'A provider-focused DrMuscat onboarding page for clinics, doctors, labs, pharmacies, hospitals, dental, wellness, and pet-care businesses that want their public information reviewed for future bilingual discovery surfaces.',
       primaryCta: 'Request onboarding review',
       secondaryCta: 'Public discovery only',
-      trustNote: 'No booking, payment, dashboard access, ranking promise or immediate publishing is included in this request.',
+      trustNote: 'No booking, payment, dashboard access, ranking promise, or immediate publishing is included in this request.',
       pills: ['English + Arabic ready', 'Contact details reviewed', 'Oman-first discovery'],
       visualLabel: 'Provider readiness',
       visualTitle: 'Review-ready public information',
-      visualDescription: 'Share core details once so the DrMuscat team can review the public-facing information before any discovery preparation.',
+      visualDescription: 'Share core details so the DrMuscat team can review the public-facing information before any discovery preparation.',
       visualItems: ['Provider category', 'City and area', 'Public contact options'],
       visualActions: ['Call', 'WhatsApp', 'Directions']
     },
@@ -308,18 +308,18 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
     metadataDescription:
       'اطلب مراجعة انضمام مقدم خدمة إلى DrMuscat للعيادات والأطباء والصيدليات والمختبرات والمستشفيات ومقدمي التجميل والرفاهية ورعاية الحيوانات الأليفة في عُمان. اكتشاف عام فقط وليس نصيحة طبية.',
     hero: {
-      badge: 'لمقدمي الخدمة في عُمان',
-      title: 'جهّز ملفك العام في DrMuscat للمراجعة.',
+      badge: 'لمقدّمي الخدمة في عُمان',
+      title: 'جهّز ملفك العام على DrMuscat للمراجعة.',
       description:
-        'صفحة انضمام مخصصة لمقدمي الخدمة في DrMuscat للعيادات والأطباء ومؤسسات الرعاية التي ترغب في مراجعة معلوماتها العامة تمهيداً لظهورها مستقبلاً في تجربة اكتشاف ثنائية اللغة.',
+        'هذه صفحة انضمام مخصّصة لمقدّمي الخدمة على DrMuscat، مثل العيادات والأطباء والمختبرات والصيدليات والمستشفيات وطبّ الأسنان ومراكز الرفاهية وعيادات الحيوانات الأليفة، ممّن يرغبون في مراجعة معلوماتهم العامة تمهيدًا لظهورها مستقبلًا ضمن صفحات اكتشاف ثنائية اللغة.',
       primaryCta: 'اطلب مراجعة الانضمام',
       secondaryCta: 'اكتشاف عام فقط',
-      trustNote: 'لا يشمل هذا الطلب حجزاً أو دفعاً أو لوحة تحكم أو وعداً بالترتيب أو نشراً فورياً.',
-      pills: ['جاهز للعربية والإنجليزية', 'مراجعة معلومات التواصل', 'اكتشاف يركز على عُمان'],
+      trustNote: 'هذا الطلب لا يشمل الحجز أو الدفع أو لوحة تحكّم أو وعودًا بالترتيب أو النشر الفوري.',
+      pills: ['جاهز بالعربية والإنجليزية', 'مراجعة معلومات التواصل', 'اكتشاف يركّز على عُمان'],
       visualLabel: 'جاهزية مقدم الخدمة',
       visualTitle: 'معلومات عامة جاهزة للمراجعة',
-      visualDescription: 'شارك التفاصيل الأساسية مرة واحدة حتى يراجع فريق DrMuscat المعلومات العامة قبل أي تجهيز لصفحات الاكتشاف.',
-      visualItems: ['فئة مقدم الخدمة', 'المدينة والمنطقة', 'خيارات تواصل عامة'],
+      visualDescription: 'شارك التفاصيل الأساسية حتى يتمكن فريق DrMuscat من مراجعة المعلومات العامة قبل أي إعداد لظهورك في صفحات الاكتشاف.',
+      visualItems: ['فئة مقدم الخدمة', 'المدينة والمنطقة', 'وسائل التواصل العامة'],
       visualActions: ['اتصال', 'واتساب', 'الاتجاهات']
     },
     categories: {
@@ -628,12 +628,18 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
             </div>
 
             <aside className="dm2026-provider-cta__visual provider-onboarding-hero__visual" aria-label={copy.hero.visualLabel}>
+              <div className="provider-onboarding-hero__photo" aria-hidden="true">
+                <span className="provider-onboarding-hero__photo-glow provider-onboarding-hero__photo-glow--primary" />
+                <span className="provider-onboarding-hero__photo-glow provider-onboarding-hero__photo-glow--accent" />
+                <span className="provider-onboarding-hero__photo-pane provider-onboarding-hero__photo-pane--main" />
+                <span className="provider-onboarding-hero__photo-pane provider-onboarding-hero__photo-pane--side" />
+              </div>
               <div className="dm2026-provider-cta__preview-card provider-onboarding-hero__preview">
                 <div className="dm2026-provider-cta__preview-head">
                   <span>{copy.hero.visualLabel}</span>
                   <strong>{copy.hero.secondaryCta}</strong>
                 </div>
-                <h2>{copy.hero.visualTitle}</h2>
+                <h3>{copy.hero.visualTitle}</h3>
                 <p>{copy.hero.visualDescription}</p>
                 <ul className="dm2026-provider-cta__preview-items">
                   {copy.hero.visualItems.map((item) => (
@@ -855,11 +861,44 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         }
 
         .provider-onboarding-hero {
-          padding-block-start: clamp(1.2rem, 3vw, 2.4rem);
+          padding-block: clamp(0.75rem, 2vw, 1.25rem) clamp(1.2rem, 3vw, 2.15rem);
         }
 
         .provider-onboarding-hero__shell {
-          align-items: stretch;
+          grid-template-columns: minmax(0, 1.02fr) minmax(18rem, 0.9fr);
+          gap: clamp(0.9rem, 2.4vw, 1.55rem);
+          align-items: center;
+          border-color: rgba(14, 110, 100, 0.14);
+          border-radius: clamp(1.45rem, 2.6vw, 2rem);
+          background:
+            linear-gradient(116deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.9) 45%, rgba(239, 246, 244, 0.72) 100%),
+            radial-gradient(620px circle at 92% 16%, rgba(42, 161, 146, 0.15), transparent 55%),
+            radial-gradient(460px circle at 8% 100%, rgba(201, 162, 75, 0.08), transparent 52%);
+          box-shadow:
+            0 22px 62px rgba(11, 40, 38, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.94);
+          padding: clamp(0.85rem, 2.3vw, 1.45rem);
+        }
+
+        .provider-onboarding-hero .dm2026-provider-cta__copy {
+          gap: clamp(0.52rem, 1.15vw, 0.78rem);
+          max-inline-size: 40rem;
+        }
+
+        .provider-onboarding-hero .dm2026-badge {
+          justify-self: start;
+          min-block-size: 1.65rem;
+          background: rgba(239, 246, 244, 0.88);
+          font-size: var(--dm-type-caption, 0.8125rem);
+          font-weight: var(--dm-weight-semibold, 600);
+          line-height: var(--dm-type-caption-line, 1.45);
+          padding-block: 0.22rem;
+          padding-inline: 0.66rem;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+        }
+
+        .provider-onboarding-hero .dm2026-provider-cta__headline-group {
+          gap: 0.48rem;
         }
 
         .provider-onboarding-hero .dm2026-provider-cta__headline-group h1,
@@ -872,10 +911,92 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         }
 
         .provider-onboarding-hero .dm2026-provider-cta__headline-group h1 {
-          max-inline-size: 15ch;
+          max-inline-size: 16ch;
           margin: 0;
-          font-size: clamp(2.05rem, 5vw, 4rem);
-          line-height: 1.02;
+          font-family: var(--dm-font-display, var(--dm-font-sans, system-ui));
+          font-size: clamp(2rem, 3.8vw, 3.35rem);
+          font-weight: 720;
+          letter-spacing: -0.035em;
+          line-height: 1.045;
+        }
+
+        .provider-onboarding-hero .dm2026-provider-cta__headline-group p {
+          max-inline-size: 42rem;
+          color: var(--dm-ink-700, #2e3a3b);
+          font-size: clamp(0.98rem, 1.25vw, 1.08rem);
+          line-height: 1.62;
+        }
+
+        .provider-onboarding-hero .dm2026-provider-cta__pills {
+          gap: 0.38rem;
+        }
+
+        .provider-onboarding-hero .dm2026-provider-cta__pills li {
+          min-block-size: 1.82rem;
+          border-color: rgba(14, 110, 100, 0.13);
+          background: rgba(255, 255, 255, 0.74);
+          font-size: var(--dm-type-caption, 0.8125rem);
+          font-weight: 720;
+          line-height: var(--dm-type-caption-line, 1.45);
+          padding-block: 0.32rem;
+          padding-inline: 0.58rem;
+        }
+
+        .provider-onboarding-hero .dm2026-provider-cta__actions {
+          gap: 0.52rem;
+          padding-block-start: 0.05rem;
+        }
+
+        .provider-onboarding-hero .dm2026-provider-cta__button {
+          min-block-size: 2.72rem;
+          min-inline-size: 10.2rem;
+          border: 1px solid rgba(255, 255, 255, 0.56);
+          font-size: 0.94rem;
+          font-weight: 780;
+          letter-spacing: -0.005em;
+          padding-block: 0.68rem;
+          padding-inline: 1.08rem;
+          box-shadow:
+            0 12px 30px rgba(11, 40, 38, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.76);
+        }
+
+        .provider-onboarding-hero .dm2026-button-primary {
+          background:
+            linear-gradient(135deg, rgba(18, 126, 114, 0.98) 0%, rgba(9, 82, 76, 0.98) 100%),
+            radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.22), transparent 42%);
+          box-shadow:
+            0 16px 34px rgba(14, 110, 100, 0.22),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .provider-onboarding-hero .dm2026-button-secondary {
+          border-color: rgba(14, 110, 100, 0.16);
+          background: rgba(255, 255, 255, 0.72);
+          color: var(--dm-color-brand-strong, #0b4f4a);
+        }
+
+        @supports ((backdrop-filter: blur(14px)) or (-webkit-backdrop-filter: blur(14px))) {
+          .provider-onboarding-hero .dm2026-provider-cta__button {
+            -webkit-backdrop-filter: blur(14px) saturate(122%);
+            backdrop-filter: blur(14px) saturate(122%);
+          }
+        }
+
+        .provider-onboarding-hero .dm2026-provider-cta__button:hover,
+        .provider-onboarding-hero .dm2026-provider-cta__button:focus-visible {
+          transform: translateY(-1px);
+          box-shadow:
+            var(--dm-focus-ring, 0 0 0 3px rgba(14, 110, 100, 0.22)),
+            0 16px 38px rgba(11, 40, 38, 0.16),
+            inset 0 1px 0 rgba(255, 255, 255, 0.72);
+        }
+
+        .provider-onboarding-hero .dm2026-provider-cta__trust {
+          max-inline-size: 38rem;
+          color: var(--dm-color-text-muted, #66736f);
+          font-size: var(--dm-type-small, 0.875rem);
+          line-height: var(--dm-type-small-line, 1.5);
         }
 
         .provider-onboarding-final .dm2026-provider-cta__headline-group h2,
@@ -887,11 +1008,107 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         }
 
         .provider-onboarding-hero__visual {
-          min-block-size: clamp(17rem, 27vw, 22rem);
+          min-block-size: clamp(17.5rem, 28vw, 21.5rem);
+          align-items: end;
+          justify-items: center;
+          padding: clamp(0.54rem, 1.5vw, 0.85rem);
+          background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(239, 246, 244, 0.46)),
+            radial-gradient(460px circle at 52% 8%, rgba(42, 161, 146, 0.2), transparent 58%);
+        }
+
+        .provider-onboarding-hero__photo {
+          position: absolute;
+          inset: clamp(0.48rem, 1.35vw, 0.78rem);
+          z-index: 0;
+          overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.78);
+          border-radius: clamp(1.05rem, 2vw, 1.55rem);
+          background:
+            linear-gradient(145deg, rgba(255, 255, 255, 0.48), rgba(239, 246, 244, 0.18)),
+            radial-gradient(340px circle at 22% 18%, rgba(255, 255, 255, 0.92), transparent 42%),
+            radial-gradient(420px circle at 74% 18%, rgba(42, 161, 146, 0.22), transparent 48%),
+            linear-gradient(135deg, rgba(226, 239, 236, 0.86) 0%, rgba(249, 247, 238, 0.9) 52%, rgba(213, 232, 228, 0.86) 100%);
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.92),
+            0 18px 46px rgba(11, 40, 38, 0.1);
+        }
+
+        .provider-onboarding-hero__photo::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(115deg, rgba(255, 255, 255, 0.7) 0%, transparent 35%, rgba(255, 255, 255, 0.38) 100%),
+            repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.24) 0 1px, transparent 1px 4.4rem);
+          opacity: 0.78;
+        }
+
+        .provider-onboarding-hero__photo-glow,
+        .provider-onboarding-hero__photo-pane {
+          position: absolute;
+          display: block;
+          pointer-events: none;
+        }
+
+        .provider-onboarding-hero__photo-glow {
+          border-radius: 999px;
+          filter: blur(1px);
+        }
+
+        .provider-onboarding-hero__photo-glow--primary {
+          inset-block-start: 10%;
+          inset-inline-end: 8%;
+          inline-size: 10rem;
+          block-size: 10rem;
+          background: rgba(42, 161, 146, 0.18);
+        }
+
+        .provider-onboarding-hero__photo-glow--accent {
+          inset-block-end: 8%;
+          inset-inline-start: 10%;
+          inline-size: 8rem;
+          block-size: 8rem;
+          background: rgba(201, 162, 75, 0.13);
+        }
+
+        .provider-onboarding-hero__photo-pane {
+          border: 1px solid rgba(255, 255, 255, 0.7);
+          border-radius: 1.05rem;
+          background: rgba(255, 255, 255, 0.34);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+        }
+
+        .provider-onboarding-hero__photo-pane--main {
+          inset-block-start: 12%;
+          inset-inline-start: 10%;
+          inline-size: 48%;
+          block-size: 44%;
+        }
+
+        .provider-onboarding-hero__photo-pane--side {
+          inset-block-start: 24%;
+          inset-inline-end: 10%;
+          inline-size: 28%;
+          block-size: 34%;
+          opacity: 0.72;
         }
 
         .provider-onboarding-hero__preview {
-          inline-size: min(100% - 1.4rem, 24rem);
+          inline-size: min(100% - 1rem, 21.75rem);
+          margin: 0.54rem;
+          gap: 0.54rem;
+          background: rgba(255, 255, 255, 0.84);
+          padding: clamp(0.78rem, 1.8vw, 0.98rem);
+        }
+
+        .provider-onboarding-hero__preview .dm2026-provider-cta__preview-head {
+          direction: ltr;
+        }
+
+        .provider-onboarding-hero__preview h3 {
+          font-size: clamp(1.02rem, 1.55vw, 1.18rem);
+          line-height: 1.18;
         }
 
         .provider-onboarding-section {
@@ -1262,6 +1479,14 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
             grid-template-columns: 1fr;
           }
 
+          .provider-onboarding-hero__shell {
+            grid-template-columns: 1fr;
+          }
+
+          .provider-onboarding-hero__visual {
+            min-block-size: clamp(16rem, 42vw, 20rem);
+          }
+
           .provider-onboarding-form-copy {
             position: static;
           }
@@ -1272,9 +1497,39 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
             padding-block-start: 0.4rem;
           }
 
+          .provider-onboarding-hero {
+            padding-block: 0.55rem 1.45rem;
+          }
+
+          .provider-onboarding-hero__shell {
+            gap: 0.72rem;
+            padding: 0.72rem;
+          }
+
+          .provider-onboarding-hero .dm2026-provider-cta__copy {
+            gap: 0.56rem;
+          }
+
           .provider-onboarding-hero .dm2026-provider-cta__headline-group h1 {
-            max-inline-size: 15ch;
-            font-size: clamp(1.72rem, 8vw, 2.35rem);
+            max-inline-size: 16ch;
+            font-size: clamp(1.76rem, 7.6vw, 2.35rem);
+            line-height: 1.08;
+          }
+
+          .provider-onboarding-hero .dm2026-provider-cta__headline-group p {
+            font-size: 0.95rem;
+            line-height: 1.58;
+          }
+
+          .provider-onboarding-hero .dm2026-provider-cta__visual {
+            min-block-size: 15.6rem;
+            padding: 0.5rem;
+          }
+
+          .provider-onboarding-hero__preview {
+            inline-size: calc(100% - 0.7rem);
+            margin: 0.35rem;
+            padding: 0.74rem;
           }
 
           .provider-onboarding-benefit-grid,

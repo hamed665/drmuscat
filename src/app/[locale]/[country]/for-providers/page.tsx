@@ -152,13 +152,13 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
     },
     benefits: {
       badge: 'Discovery benefits',
-      title: 'A conservative visibility foundation, not a promise of demand.',
-      subtitle: 'DrMuscat prepares public information so users can understand and confirm details directly with providers.',
+      title: 'A reviewed visibility foundation, not a demand promise.',
+      subtitle: 'DrMuscat prepares public provider information so users can understand services, locations, and contact options, then confirm details directly with providers.',
       items: [
-        { title: 'Public discovery profile', description: 'Core information can be shaped into a public profile after review.' },
-        { title: 'Bilingual presence', description: 'English and Arabic wording can be prepared where information is available.' },
-        { title: 'Contact readiness', description: 'Phone, WhatsApp, website, and directions readiness can be checked.' },
-        { title: 'Services visibility', description: 'Public service categories can be organized for easier discovery.' },
+        { title: 'Public discovery profile', description: 'Core provider information can be shaped into a public profile after review.' },
+        { title: 'Bilingual presence', description: 'English and Arabic wording can be prepared when accurate information is available.' },
+        { title: 'Contact readiness', description: 'Phone, WhatsApp, website, and directions details can be checked before publication.' },
+        { title: 'Services visibility', description: 'Public service categories can be organized to make discovery clearer.' },
         { title: 'Reviewed public information', description: 'Submitted details are reviewed before they are prepared for public discovery.' },
         { title: 'Future provider-approved offers', description: 'Offer concepts may be reviewed later only when provider-approved and clearly presented.' }
       ]
@@ -340,15 +340,15 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
     },
     benefits: {
       badge: 'مزايا الظهور',
-      title: 'أساس متحفظ للظهور، وليس وعدًا بالطلب.',
-      subtitle: 'يُعِدّ DrMuscat المعلومات العامة بحيث يتمكّن المستخدمون من فهم التفاصيل وتأكيدها مباشرةً مع مقدّمي الخدمة.',
+      title: 'أساس ظهور خاضع للمراجعة، وليس وعدًا بالطلب.',
+      subtitle: 'يُعِدّ DrMuscat معلومات مقدّمي الخدمة العامة حتى يتمكّن المستخدمون من فهم الخدمات والمواقع ووسائل التواصل، ثم تأكيد التفاصيل مباشرةً مع مقدّم الخدمة.',
       items: [
-        { title: 'الملف العام للاكتشاف', description: 'يمكن تنظيم المعلومات الأساسية ضمن ملف عام بعد المراجعة.' },
-        { title: 'الحضور الثنائي اللغة', description: 'يمكن إعداد الصياغة بالإنجليزية والعربية عندما تكون المعلومات متاحة.' },
-        { title: 'جاهزية التواصل', description: 'يمكن التحقق من جاهزية الهاتف وواتساب والموقع الإلكتروني والاتجاهات.' },
-        { title: 'وضوح الخدمات', description: 'يمكن تنظيم فئات الخدمات العامة لتسهيل اكتشافها.' },
+        { title: 'ملف عام للاكتشاف', description: 'يمكن تنظيم المعلومات الأساسية لمقدّم الخدمة ضمن ملف عام بعد المراجعة.' },
+        { title: 'حضور ثنائي اللغة', description: 'يمكن إعداد الصياغة بالإنجليزية والعربية عندما تكون المعلومات دقيقة ومتاحة.' },
+        { title: 'جاهزية التواصل', description: 'يمكن التحقق من الهاتف وواتساب والموقع الإلكتروني والاتجاهات قبل النشر.' },
+        { title: 'وضوح الخدمات', description: 'يمكن تنظيم فئات الخدمات العامة لجعل الاكتشاف أوضح.' },
         { title: 'معلومات عامة خاضعة للمراجعة', description: 'تُراجَع التفاصيل المرسلة قبل إعدادها للاكتشاف العام.' },
-        { title: 'عروض مستقبلية بموافقة مقدم الخدمة', description: 'قد تُراجَع أفكار العروض لاحقًا فقط عندما تكون معتمدة من مقدم الخدمة ومعروضة بوضوح.' }
+        { title: 'عروض مستقبلية بموافقة المقدّم', description: 'قد تُراجَع أفكار العروض لاحقًا فقط عندما تكون معتمدة من مقدّم الخدمة ومعروضة بوضوح.' }
       ]
     },
     onboarding: {
@@ -1334,7 +1334,8 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
 
 
         .provider-onboarding-benefits {
-          padding-block: clamp(2rem, 5.2vw, 4.2rem);
+          scroll-margin-block-start: clamp(5.75rem, 9vw, 7.5rem);
+          padding-block: clamp(2.8rem, 6vw, 5rem) clamp(2rem, 5.2vw, 4.2rem);
         }
 
         .provider-onboarding-benefits .dm2026-container {
@@ -1347,16 +1348,20 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         }
 
         .provider-onboarding-benefits .dm2026-badge {
-          background: rgba(239, 246, 244, 0.86);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+          border-color: rgba(14, 110, 100, 0.16);
+          background: rgba(232, 246, 243, 0.92);
+          color: var(--dm-color-brand-strong, #0b4f4a);
+          box-shadow:
+            0 8px 20px rgba(14, 110, 100, 0.07),
+            inset 0 1px 0 rgba(255, 255, 255, 0.92);
         }
 
         .provider-onboarding-benefits .provider-onboarding-section__header h2 {
-          max-inline-size: 18ch;
+          max-inline-size: 20ch;
           font-family: var(--dm-font-display, var(--dm-font-sans, system-ui));
-          font-size: clamp(1.7rem, 3.1vw, 2.6rem);
-          font-weight: 720;
-          letter-spacing: -0.038em;
+          font-size: clamp(1.68rem, 3vw, 2.5rem);
+          font-weight: 760;
+          letter-spacing: -0.036em;
           line-height: 1.08;
         }
 
@@ -1378,15 +1383,15 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           align-content: start;
           min-block-size: 12.9rem;
           gap: 0.62rem;
-          border: 1px solid rgba(14, 110, 100, 0.12);
-          border-radius: clamp(1.1rem, 2vw, 1.45rem);
+          border: 1px solid rgba(14, 110, 100, 0.18);
+          border-radius: clamp(1.16rem, 2vw, 1.5rem);
           background:
-            linear-gradient(150deg, rgba(255, 255, 255, 0.9), rgba(248, 252, 251, 0.78)),
-            radial-gradient(170px circle at 18% 0%, rgba(42, 161, 146, 0.12), transparent 62%);
+            linear-gradient(150deg, rgba(255, 255, 255, 0.96), rgba(240, 249, 247, 0.88)),
+            radial-gradient(190px circle at 18% 0%, rgba(42, 161, 146, 0.18), transparent 64%);
           box-shadow:
-            0 14px 34px rgba(11, 40, 38, 0.072),
-            inset 0 1px 0 rgba(255, 255, 255, 0.92);
-          padding: clamp(1rem, 2vw, 1.25rem);
+            0 18px 44px rgba(11, 40, 38, 0.105),
+            inset 0 1px 0 rgba(255, 255, 255, 0.96);
+          padding: clamp(1.05rem, 2vw, 1.32rem);
         }
 
         .provider-onboarding-benefits .provider-onboarding-mini-card::before {
@@ -1395,28 +1400,29 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           inset: 0;
           z-index: -1;
           border-radius: inherit;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 46%, rgba(14, 110, 100, 0.04));
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.56), transparent 46%, rgba(14, 110, 100, 0.075));
           pointer-events: none;
         }
 
         .provider-onboarding-benefits .provider-onboarding-mini-card:hover {
-          border-color: rgba(14, 110, 100, 0.18);
+          border-color: rgba(14, 110, 100, 0.24);
           box-shadow:
-            0 18px 42px rgba(11, 40, 38, 0.095),
+            0 20px 48px rgba(11, 40, 38, 0.125),
             inset 0 1px 0 rgba(255, 255, 255, 0.94);
         }
 
         .provider-onboarding-benefits .provider-onboarding-mini-card__dot {
-          inline-size: 2.15rem;
-          block-size: 2.15rem;
-          border: 1px solid rgba(14, 110, 100, 0.13);
+          inline-size: 2.2rem;
+          block-size: 2.2rem;
+          border: 1px solid rgba(14, 110, 100, 0.24);
           border-radius: 999px;
           background:
-            radial-gradient(circle at 38% 34%, rgba(255, 255, 255, 0.98) 0 24%, rgba(42, 161, 146, 0.2) 25% 42%, transparent 43%),
-            linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(239, 246, 244, 0.9));
+            radial-gradient(circle at 50% 50%, rgba(14, 110, 100, 0.95) 0 18%, rgba(42, 161, 146, 0.32) 19% 38%, transparent 39%),
+            linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(226, 246, 242, 0.96));
           box-shadow:
-            0 8px 18px rgba(14, 110, 100, 0.08),
-            inset 0 1px 0 rgba(255, 255, 255, 0.96);
+            0 10px 22px rgba(14, 110, 100, 0.12),
+            0 0 0 0.38rem rgba(14, 110, 100, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.98);
         }
 
         .provider-onboarding-benefits .provider-onboarding-mini-card h3 {
@@ -1424,16 +1430,16 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           color: var(--dm-teal-950, #07302c);
           font-family: var(--dm-font-display, var(--dm-font-sans, system-ui));
           font-size: clamp(1.02rem, 1.15vw, 1.14rem);
-          font-weight: 720;
+          font-weight: 760;
           letter-spacing: -0.014em;
           line-height: 1.24;
         }
 
         .provider-onboarding-benefits .provider-onboarding-mini-card p {
           margin: 0;
-          color: var(--dm-color-text-muted, #66736f);
+          color: var(--dm-ink-700, #2e3a3b);
           font-size: var(--dm-type-small, 0.875rem);
-          line-height: 1.58;
+          line-height: 1.6;
         }
 
         @supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {

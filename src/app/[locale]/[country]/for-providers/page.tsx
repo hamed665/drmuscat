@@ -419,13 +419,12 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
       },
       providerTypeOptions: [
         { value: 'clinic', label: 'Clinic' },
-        { value: 'other', label: 'Doctor' },
+        { value: 'medical_center', label: 'Medical center / Hospital' },
         { value: 'dental_clinic', label: 'Dental clinic' },
         { value: 'pharmacy', label: 'Pharmacy' },
         { value: 'lab', label: 'Laboratory' },
-        { value: 'medical_center', label: 'Hospital / polyclinic' },
         { value: 'wellness', label: 'Beauty & wellness' },
-        { value: 'other', label: 'Pet clinic' }
+        { value: 'other', label: 'Other / Doctor / Pet clinic' }
       ],
       cityOptions: ['Muscat', 'Seeb', 'Salalah', 'Sohar', 'Nizwa', 'Sur', 'Other'],
       languageOptions: [
@@ -732,13 +731,12 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
       },
       providerTypeOptions: [
         { value: 'clinic', label: 'عيادة' },
-        { value: 'other', label: 'طبيب' },
+        { value: 'medical_center', label: 'مركز طبي / مستشفى' },
         { value: 'dental_clinic', label: 'عيادة أسنان' },
         { value: 'pharmacy', label: 'صيدلية' },
         { value: 'lab', label: 'مختبر' },
-        { value: 'medical_center', label: 'مستشفى / مجمع' },
         { value: 'wellness', label: 'تجميل وعناية' },
-        { value: 'other', label: 'عيادة بيطرية' }
+        { value: 'other', label: 'أخرى / طبيب / عيادة بيطرية' }
       ],
       cityOptions: ['مسقط', 'السيب', 'صلالة', 'صحار', 'نزوى', 'صور', 'أخرى'],
       languageOptions: [

@@ -227,11 +227,6 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
             'Provider category captured',
             'City and area captured',
             'Public contact details submitted',
-            'English / Arabic readiness discussion',
-            'No verified badge',
-            'No paid placement',
-            'No offer placement',
-            'No dashboard access',
             'No publishing guarantee'
           ]
         },
@@ -250,15 +245,10 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
             'Reviewed public profile preparation',
             'Category and location structure',
             'Public phone and WhatsApp readiness',
-            'Website and directions readiness',
             'English / Arabic presentation readiness',
             'Up to 5 public photos prepared',
             'Up to 3 doctors or team members listed',
-            '1 branch/location',
-            '1 provider-approved offer concept eligible for review',
-            'Basic service categories',
-            'No ranking guarantee',
-            'No instant publishing'
+            '1 branch/location'
           ]
         },
         {
@@ -280,13 +270,8 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
             'Up to 10 doctors or team members listed',
             'Up to 3 branches/locations',
             'Up to 5 provider-approved offer concepts eligible for review',
-            'More detailed service category structure',
             'Area/category visibility request eligibility',
-            'Homepage offer placement request eligibility',
-            'Priority onboarding review path',
-            'Basic performance-readiness notes',
-            'No ranking guarantee',
-            'No guaranteed leads'
+            'Priority onboarding review path'
           ]
         },
         {
@@ -305,15 +290,10 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
             'Premium public profile preparation',
             'Multi-branch readiness review',
             'Expanded doctors/team structure',
-            'Expanded service category structure',
             'Premium photo/gallery organization',
             'Featured placement request eligibility',
             'Campaign and offer planning request eligibility',
-            'Premium onboarding support path',
-            'Account support conversation',
-            'Custom visibility planning discussion',
-            'No ranking guarantee',
-            'No guaranteed patient demand'
+            'Premium onboarding support path'
           ]
         }
       ],
@@ -560,11 +540,6 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
             'تسجيل تصنيف مقدم الخدمة',
             'تسجيل المدينة والمنطقة',
             'إرسال وسائل التواصل العامة',
-            'مناقشة جاهزية العربية والإنجليزية',
-            'لا يشمل شارة توثيق',
-            'لا يشمل ظهوراً مدفوعاً',
-            'لا يشمل موضع عروض',
-            'لا يشمل لوحة تحكم',
             'لا يضمن النشر'
           ]
         },
@@ -583,15 +558,10 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
             'إعداد ملف عام بعد المراجعة',
             'بنية التصنيف والموقع',
             'جاهزية الهاتف وواتساب',
-            'جاهزية الموقع الإلكتروني والاتجاهات',
             'جاهزية العرض بالعربية والإنجليزية',
             'إعداد ما يصل إلى 5 صور عامة',
             'إدراج ما يصل إلى 3 أطباء أو أعضاء فريق',
-            'فرع أو موقع واحد',
-            'فكرة عرض واحدة بموافقة مقدم الخدمة قابلة للمراجعة',
-            'فئات خدمات أساسية',
-            'لا يضمن الترتيب',
-            'لا يضمن النشر الفوري'
+            'فرع أو موقع واحد'
           ]
         },
         {
@@ -613,13 +583,8 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
             'إدراج ما يصل إلى 10 أطباء أو أعضاء فريق',
             'ما يصل إلى 3 فروع أو مواقع',
             'ما يصل إلى 5 أفكار عروض بموافقة مقدم الخدمة قابلة للمراجعة',
-            'بنية أكثر تفصيلاً لفئات الخدمات',
             'أهلية طلب ظهور حسب المنطقة أو الفئة',
-            'أهلية طلب موضع عرض في الصفحة الرئيسية',
-            'مسار مراجعة انضمام ذي أولوية',
-            'ملاحظات أساسية لجاهزية الأداء',
-            'لا يضمن الترتيب',
-            'لا يضمن العملاء المحتملين'
+            'مسار مراجعة انضمام ذي أولوية'
           ]
         },
         {
@@ -638,15 +603,10 @@ const copyByLocale: Record<SupportedLocale, ProviderPageCopy> = {
             'إعداد ملف عام مميز',
             'مراجعة جاهزية الفروع المتعددة',
             'بنية موسعة للأطباء أو الفريق',
-            'بنية موسعة لفئات الخدمات',
             'تنظيم مميز للصور والمعرض',
             'أهلية طلب موضع ظهور مميز',
             'أهلية طلب تخطيط حملات وعروض',
-            'مسار دعم مميز للانضمام',
-            'محادثة دعم حساب',
-            'نقاش مخصص لتخطيط الظهور',
-            'لا يضمن الترتيب',
-            'لا يضمن الطلب من المرضى'
+            'مسار دعم مميز للانضمام'
           ]
         }
       ],
@@ -2076,6 +2036,10 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           padding-block: clamp(2.2rem, 5.5vw, 4.6rem);
         }
 
+        .provider-onboarding-pricing {
+          scroll-margin-top: clamp(5.5rem, 9vw, 7rem);
+        }
+
         .provider-onboarding-pricing__topline {
           display: grid;
           grid-template-columns: minmax(0, 1fr) auto;
@@ -2136,8 +2100,10 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           gap: 0.25rem;
           inline-size: 100%;
           border-radius: 999px;
-          background: rgba(223, 244, 240, 0.82);
-          padding: 0.22rem;
+          background:
+            linear-gradient(135deg, rgba(213, 242, 236, 0.94), rgba(238, 249, 246, 0.86));
+          padding: 0.24rem;
+          box-shadow: inset 0 1px 2px rgba(9, 51, 47, 0.08);
         }
 
         .provider-onboarding-pricing__segment {
@@ -2164,8 +2130,8 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
             linear-gradient(135deg, #ffffff, rgba(241, 251, 248, 0.94));
           color: var(--dm-teal-950, #07302c);
           box-shadow:
-            0 10px 22px rgba(11, 40, 38, 0.1),
-            0 0 0 1px rgba(14, 110, 100, 0.1),
+            0 12px 24px rgba(11, 40, 38, 0.13),
+            0 0 0 1px rgba(14, 110, 100, 0.14),
             inset 0 1px 0 rgba(255, 255, 255, 0.96);
         }
 
@@ -2184,6 +2150,9 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           --plan-accent: var(--dm-color-brand, #0e6e64);
           --plan-accent-soft: rgba(42, 161, 146, 0.12);
           --plan-accent-border: rgba(14, 110, 100, 0.16);
+          --plan-accent-glow: rgba(14, 110, 100, 0.1);
+          --plan-cta-shadow: rgba(14, 110, 100, 0.18);
+          --plan-price-surface: rgba(255, 255, 255, 0.7);
           display: flex;
           flex-direction: column;
           min-block-size: 100%;
@@ -2191,10 +2160,13 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           border: 1px solid var(--plan-accent-border);
           border-radius: clamp(1.1rem, 2vw, 1.45rem);
           background:
-            linear-gradient(150deg, rgba(255, 255, 255, 0.95), rgba(241, 250, 248, 0.84)),
-            radial-gradient(220px circle at 20% 0%, var(--plan-accent-soft), transparent 64%);
+            linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(241, 250, 248, 0.86)),
+            radial-gradient(260px circle at 18% 0%, var(--plan-accent-soft), transparent 66%),
+            radial-gradient(180px circle at 100% 18%, rgba(255, 255, 255, 0.66), transparent 62%);
           box-shadow:
-            0 18px 44px rgba(11, 40, 38, 0.09),
+            0 20px 48px rgba(11, 40, 38, 0.1),
+            0 0 0 1px rgba(255, 255, 255, 0.72) inset,
+            0 18px 42px var(--plan-accent-glow),
             inset 0 1px 0 rgba(255, 255, 255, 0.94);
           padding: clamp(0.82rem, 1.25vw, 1rem);
           backdrop-filter: blur(14px);
@@ -2212,36 +2184,47 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
 
         .provider-onboarding-pricing .provider-onboarding-plan[data-plan='free'] {
           --plan-accent: #2aa192;
-          --plan-accent-soft: rgba(42, 161, 146, 0.1);
-          --plan-accent-border: rgba(42, 161, 146, 0.16);
+          --plan-accent-soft: rgba(42, 161, 146, 0.12);
+          --plan-accent-border: rgba(42, 161, 146, 0.18);
+          --plan-accent-glow: rgba(42, 161, 146, 0.07);
+          --plan-price-surface: rgba(241, 251, 248, 0.74);
         }
 
         .provider-onboarding-pricing .provider-onboarding-plan[data-plan='starter'] {
           --plan-accent: #0e6e64;
-          --plan-accent-soft: rgba(14, 110, 100, 0.12);
-          --plan-accent-border: rgba(14, 110, 100, 0.18);
+          --plan-accent-soft: rgba(14, 110, 100, 0.16);
+          --plan-accent-border: rgba(14, 110, 100, 0.24);
+          --plan-accent-glow: rgba(14, 110, 100, 0.1);
+          --plan-price-surface: rgba(235, 249, 245, 0.8);
         }
 
         .provider-onboarding-pricing .provider-onboarding-plan[data-plan='growth'] {
           --plan-accent: #08765f;
-          --plan-accent-soft: rgba(8, 118, 95, 0.18);
-          --plan-accent-border: rgba(8, 118, 95, 0.32);
+          --plan-accent-soft: rgba(8, 118, 95, 0.24);
+          --plan-accent-border: rgba(8, 118, 95, 0.42);
+          --plan-accent-glow: rgba(8, 118, 95, 0.2);
+          --plan-price-surface: rgba(224, 247, 241, 0.86);
+          --plan-cta-shadow: rgba(8, 118, 95, 0.3);
         }
 
         .provider-onboarding-pricing .provider-onboarding-plan[data-plan='premium'] {
           --plan-accent: #07302c;
-          --plan-accent-soft: rgba(184, 137, 47, 0.1);
-          --plan-accent-border: rgba(7, 48, 44, 0.25);
+          --plan-accent-soft: rgba(184, 137, 47, 0.14);
+          --plan-accent-border: rgba(7, 48, 44, 0.3);
+          --plan-accent-glow: rgba(184, 137, 47, 0.11);
+          --plan-price-surface: rgba(252, 247, 237, 0.74);
         }
 
         .provider-onboarding-pricing .provider-onboarding-plan[data-recommended='true'] {
-          border-color: rgba(8, 118, 95, 0.36);
+          border-color: rgba(8, 118, 95, 0.46);
           background:
-            linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(226, 247, 242, 0.94)),
-            radial-gradient(260px circle at 50% 0%, rgba(42, 161, 146, 0.24), transparent 66%);
+            linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(221, 248, 242, 0.96)),
+            radial-gradient(280px circle at 50% 0%, rgba(42, 161, 146, 0.3), transparent 68%),
+            radial-gradient(220px circle at 100% 16%, rgba(14, 110, 100, 0.12), transparent 68%);
           box-shadow:
-            0 24px 58px rgba(11, 40, 38, 0.15),
-            0 0 0 3px rgba(42, 161, 146, 0.08),
+            0 26px 64px rgba(11, 40, 38, 0.17),
+            0 0 0 3px rgba(42, 161, 146, 0.11),
+            0 18px 48px rgba(8, 118, 95, 0.18),
             inset 0 1px 0 rgba(255, 255, 255, 0.96);
         }
 
@@ -2253,9 +2236,9 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         .provider-onboarding-plan__head {
           display: flex;
           align-items: flex-start;
-          justify-content: space-between;
+          justify-content: flex-start;
           gap: 0.5rem;
-          min-block-size: 1.9rem;
+          min-block-size: 2.05rem;
         }
 
         .provider-onboarding-plan__name-row {
@@ -2307,13 +2290,40 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         }
 
         .provider-onboarding-plan__recommended {
-          background: linear-gradient(135deg, rgba(14, 110, 100, 0.14), rgba(42, 161, 146, 0.16));
+          border-color: rgba(8, 118, 95, 0.34);
+          background:
+            linear-gradient(135deg, rgba(8, 118, 95, 0.18), rgba(42, 161, 146, 0.24));
           color: var(--dm-teal-950, #07302c);
+          box-shadow: 0 10px 22px rgba(8, 118, 95, 0.12);
         }
 
         .provider-onboarding-plan__saving {
           width: fit-content;
-          background: rgba(255, 255, 255, 0.78);
+          min-block-size: 1.9rem;
+          border-color: rgba(14, 110, 100, 0.2);
+          background:
+            linear-gradient(135deg, rgba(223, 244, 240, 0.94), rgba(255, 255, 255, 0.9));
+          color: var(--dm-teal-950, #07302c);
+          font-size: 0.76rem;
+          padding: 0.36rem 0.58rem;
+          box-shadow:
+            0 10px 24px rgba(14, 110, 100, 0.11),
+            inset 0 1px 0 rgba(255, 255, 255, 0.92);
+        }
+
+        .provider-onboarding-pricing-grid[data-selected-period='six'] .provider-onboarding-plan:not([data-plan='free']) .provider-onboarding-plan__saving {
+          border-color: rgba(14, 110, 100, 0.28);
+          background: linear-gradient(135deg, rgba(207, 239, 232, 0.98), rgba(255, 255, 255, 0.92));
+        }
+
+        .provider-onboarding-pricing-grid[data-selected-period='twelve'] .provider-onboarding-plan:not([data-plan='free']) .provider-onboarding-plan__saving {
+          border-color: rgba(184, 137, 47, 0.34);
+          background:
+            linear-gradient(135deg, rgba(255, 249, 235, 0.98), rgba(219, 245, 238, 0.94));
+          color: #5f4613;
+          box-shadow:
+            0 12px 28px rgba(184, 137, 47, 0.16),
+            inset 0 1px 0 rgba(255, 255, 255, 0.92);
         }
 
         .provider-onboarding-plan__description,
@@ -2328,15 +2338,18 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         }
 
         .provider-onboarding-plan__description {
-          min-block-size: 5.05rem;
+          min-block-size: 4.65rem;
         }
 
         .provider-onboarding-plan__price-block {
           display: grid;
-          gap: 0.38rem;
-          min-block-size: 9.15rem;
-          border-block: 1px solid rgba(14, 110, 100, 0.1);
-          padding-block: 0.7rem 0.64rem;
+          gap: 0.44rem;
+          min-block-size: 10.45rem;
+          border: 1px solid rgba(14, 110, 100, 0.1);
+          border-radius: 1.05rem;
+          background: var(--plan-price-surface);
+          padding: 0.72rem;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.74);
         }
 
         .provider-onboarding-plan__price {
@@ -2354,6 +2367,23 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           line-height: 1.05;
         }
 
+        .provider-onboarding-plan__billing-row {
+          display: grid;
+          gap: 0.45rem;
+          align-items: start;
+          min-block-size: 4.2rem;
+          border: 1px solid rgba(14, 110, 100, 0.12);
+          border-radius: 0.9rem;
+          background: rgba(255, 255, 255, 0.78);
+          padding: 0.55rem;
+        }
+
+        .provider-onboarding-plan__period-note {
+          color: var(--dm-teal-950, #07302c);
+          font-weight: 820;
+          line-height: 1.35;
+        }
+
         .provider-onboarding-plan__best-for span {
           color: var(--dm-color-text-muted, #66736f);
           font-size: 0.78rem;
@@ -2368,7 +2398,7 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           border-radius: 0.95rem;
           background: rgba(255, 255, 255, 0.62);
           padding: 0.62rem;
-          min-block-size: 5.9rem;
+          min-block-size: 5.35rem;
         }
 
         .provider-onboarding-plan__features {
@@ -2417,6 +2447,7 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
           font-weight: 880;
           box-shadow:
             0 10px 24px rgba(11, 40, 38, 0.08),
+            0 10px 22px var(--plan-cta-shadow),
             inset 0 1px 0 rgba(255, 255, 255, 0.86);
         }
 
@@ -2448,7 +2479,9 @@ export default async function ForProvidersPage({ params }: { params: Promise<Par
         .provider-onboarding-pricing .provider-onboarding-plan[data-recommended='true'] .provider-onboarding-plan__button {
           background: linear-gradient(135deg, #0f8a78, var(--dm-color-brand-strong, #0b4f4a));
           color: #ffffff;
-          box-shadow: 0 16px 34px rgba(14, 110, 100, 0.28);
+          box-shadow:
+            0 18px 38px rgba(8, 118, 95, 0.34),
+            0 0 0 1px rgba(255, 255, 255, 0.18) inset;
         }
 
         .provider-onboarding-pricing .provider-onboarding-plan .provider-onboarding-plan__button:disabled {

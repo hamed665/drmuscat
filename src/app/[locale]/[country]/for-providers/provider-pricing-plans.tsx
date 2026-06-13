@@ -68,7 +68,7 @@ function getPlanPricing(plan: ProviderPricingPlan, period: BillingPeriodId, isAr
 
   if (period === 'three') {
     return {
-      periodNote: isArabic ? `تُدفع ${formattedTotal} ر.ع كل 3 أشهر` : `Billed ${formattedTotal} OMR every 3 months`,
+      periodNote: isArabic ? `تُدفع ${formattedTotal} ر.ع كل 3 أشهر` : `Pay ${formattedTotal} OMR every 3 months`,
       price: isArabic ? `${formattedBaseMonthly} ر.ع / شهرياً` : `${formattedBaseMonthly} OMR / month`,
       priceHelper: isArabic ? 'السعر الشهري الأساسي' : 'Base monthly rate',
       saving: isArabic ? 'بدون خصم' : 'No discount'
@@ -77,7 +77,7 @@ function getPlanPricing(plan: ProviderPricingPlan, period: BillingPeriodId, isAr
 
   if (period === 'six') {
     return {
-      periodNote: isArabic ? `تُدفع ${formattedTotal} ر.ع كل 6 أشهر` : `Billed ${formattedTotal} OMR every 6 months`,
+      periodNote: isArabic ? `تُدفع ${formattedTotal} ر.ع كل 6 أشهر` : `Pay ${formattedTotal} OMR every 6 months`,
       price: isArabic ? `${formattedBaseMonthly} ر.ع / شهرياً` : `${formattedBaseMonthly} OMR / month`,
       priceHelper: isArabic ? 'السعر الشهري الأساسي' : 'Base monthly rate',
       saving: isArabic ? 'وفر 5%' : 'Save 5%'
@@ -85,7 +85,7 @@ function getPlanPricing(plan: ProviderPricingPlan, period: BillingPeriodId, isAr
   }
 
   return {
-    periodNote: isArabic ? `تُدفع ${formattedTotal} ر.ع سنوياً` : `Billed ${formattedTotal} OMR yearly`,
+    periodNote: isArabic ? `تُدفع ${formattedTotal} ر.ع سنوياً` : `Pay ${formattedTotal} OMR yearly`,
     price: isArabic ? `${formattedBaseMonthly} ر.ع / شهرياً` : `${formattedBaseMonthly} OMR / month`,
     priceHelper: isArabic ? 'السعر الشهري الأساسي' : 'Base monthly rate',
     saving: isArabic ? `وفر ${Math.round((plan.annualDiscount ?? 0) * 100)}%` : `Save ${Math.round((plan.annualDiscount ?? 0) * 100)}%`
@@ -137,8 +137,11 @@ export function ProviderPricingPlans({ copy }: ProviderPricingPlansProps) {
             return (
               <article className="dm2026-card-glass provider-onboarding-plan" data-plan={plan.id} data-recommended={plan.recommendedLabel ? 'true' : 'false'} key={plan.id}>
                 <div className="provider-onboarding-plan__head">
-                  <span className="provider-onboarding-plan__badge">{plan.badge}</span>
-                  {plan.recommendedLabel ? <span className="provider-onboarding-plan__recommended">{plan.recommendedLabel}</span> : null}
+                  {plan.recommendedLabel ? (
+                    <span className="provider-onboarding-plan__recommended">{plan.recommendedLabel}</span>
+                  ) : (
+                    <span className="provider-onboarding-plan__badge">{plan.badge}</span>
+                  )}
                 </div>
 
                 <div className="provider-onboarding-plan__name-row">
@@ -153,8 +156,10 @@ export function ProviderPricingPlans({ copy }: ProviderPricingPlansProps) {
                     <strong>{selectedPricing.price}</strong>
                   </div>
                   {selectedPricing.priceHelper ? <p className="provider-onboarding-plan__price-helper">{selectedPricing.priceHelper}</p> : null}
-                  <p className="provider-onboarding-plan__period-note">{selectedPricing.periodNote}</p>
-                  <span className="provider-onboarding-plan__saving">{selectedPricing.saving}</span>
+                  <div className="provider-onboarding-plan__billing-row">
+                    <p className="provider-onboarding-plan__period-note">{selectedPricing.periodNote}</p>
+                    <span className="provider-onboarding-plan__saving">{selectedPricing.saving}</span>
+                  </div>
                 </div>
 
                 <div className="provider-onboarding-plan__best-for">

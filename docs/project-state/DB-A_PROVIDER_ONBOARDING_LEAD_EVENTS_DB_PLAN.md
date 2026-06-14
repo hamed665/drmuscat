@@ -56,7 +56,7 @@ Recommended future table name:
 public.provider_onboarding_lead_events
 ```
 
-This is the preferred future table name unless a later DB implementation PR finds a hard conflict during migration design or validation.
+This is the preferred future table name unless a later DB implementation PR finds a hard conflict during migration design or validation. Do not create a parallel `provider_onboarding_lead_notes` table in the first implementation unless a later approved task explicitly changes the data model.
 
 ## 5. Proposed columns
 
@@ -126,6 +126,28 @@ Optional event-specific constraints:
 - `status_changed` and `priority_changed` should not require `note_text`.
 
 Recommendation: if event-specific database constraints become too complex for the first migration, start with simple conservative database constraints and enforce detailed event-shape validation in server-side TypeScript. The database should still reject invalid enum-like values, blank notes, and HTML/script-like note text.
+
+A future migration may use constraints shaped like the following, adjusted only after validating against the final SQL style of that implementation phase:
+
+```sql
+CONSTRAINT provider_onboarding_lead_events_event_type_check
+  CHECK (event_type IN ('status_changed', 'priority_changed', 'note_added')),
+CONSTRAINT provider_onboarding_lead_events_old_status_check
+  CHECK (old_status IS NULL OR old_status IN ('new', 'reviewing', 'contacted', 'qualified', 'rejected', 'converted', 'closed')),
+CONSTRAINT provider_onboarding_lead_events_new_status_check
+  CHECK (new_status IS NULL OR new_status IN ('new', 'reviewing', 'contacted', 'qualified', 'rejected', 'converted', 'closed')),
+CONSTRAINT provider_onboarding_lead_events_old_priority_check
+  CHECK (old_priority IS NULL OR old_priority IN ('low', 'normal', 'high')),
+CONSTRAINT provider_onboarding_lead_events_new_priority_check
+  CHECK (new_priority IS NULL OR new_priority IN ('low', 'normal', 'high')),
+CONSTRAINT provider_onboarding_lead_events_note_text_check
+  CHECK (
+    note_text IS NULL
+    OR (char_length(btrim(note_text)) BETWEEN 1 AND 1000 AND note_text !~* '<[^>]+>')
+  )
+```
+
+If event-shape constraints are included in the first migration, keep them conservative and readable; do not add triggers or procedural mutation logic in the initial table migration unless explicitly approved.
 
 ## 8. Indexes
 
@@ -208,7 +230,7 @@ A future DB implementation PR should:
 - Avoid public grants.
 - Avoid anon/authenticated policies unless explicitly approved.
 - Update migration validators if required by repo convention.
-- Update generated Supabase types if the project workflow requires checked-in generated types.
+- Update generated Supabase types if the project workflow requires checked-in generated types, using `pnpm db:types` when Supabase CLI/local database prerequisites are available.
 - Run DB and RLS validation commands.
 
 Do not pick the migration number in this document. The future implementation PR should use the next sequential migration number based on the repository state at that time.
@@ -270,7 +292,11 @@ A future DB implementation PR must run:
 - `pnpm lint`
 - `pnpm build`
 
-If generated types are updated, use the documented project command if one exists at that time. This DB-A phase did not confirm an exact checked-in generated-types command beyond the validation gate reference to `db:types`/Supabase type generation, so a future implementation PR should confirm the exact command before updating generated types.
+If generated types are updated, the documented project command is:
+
+- `pnpm db:types`
+
+That script runs the Supabase CLI availability check and writes local generated types to `supabase/types/database.types.ts`. A future DB implementation PR should run it only in an approved migration/types phase and should report honestly if local Supabase CLI/database prerequisites are unavailable.
 
 ## 16. Risks and blockers
 
@@ -305,5 +331,7 @@ Because DB-A is documentation-only, required validation for this phase is:
 - `pnpm routes:check`
 - `pnpm typecheck`
 - `pnpm lint`
+
+DB-A does not require `pnpm db:validate:migrations` or `pnpm test:db:rls` because it does not create SQL, migrations, policies, grants, generated types, or validators. Those commands are required for the future DB-B implementation phase.
 
 Validation results must be reported honestly in the PR and final response. If validation is skipped or fails, do not claim success.

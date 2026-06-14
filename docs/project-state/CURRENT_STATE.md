@@ -35,8 +35,8 @@
 - Protected root-level `/admin` baseline exists.
 - Admin routes are root-level routes and are not localized.
 - Read-only admin provider onboarding lead list/detail exists.
-- Admin provider onboarding mutation/status/update actions are not implemented and remain out of scope.
-- Admin lead assignment, conversion, contact-action, and audit-write workflows remain out of scope.
+- Admin provider onboarding lead status/priority mutation baseline exists.
+- Admin lead assignment, conversion, contact-action, and audit-write workflows remain out of scope and are not implemented.
 
 ## Data/RLS foundations
 
@@ -63,7 +63,7 @@
 - AI chat is not implemented.
 - Real seed rows are not implemented.
 - Provider dashboard mutations are not implemented.
-- Admin lead mutation workflows are not implemented.
+- Admin lead mutation workflow scope is limited to the provider onboarding lead status/priority baseline.
 - Full review moderation UI, public review display workflow, provider reply workflow, and complete review operations are not implemented.
 - Sales, referral, billing, analytics, SEO AI, provider dashboard, payment, and admin mutation features remain out of scope unless explicitly approved.
 - Business expansion features remain out of scope unless explicitly approved.

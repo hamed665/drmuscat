@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 
 import Link from "next/link";
 
+import { ProviderOnboardingLeadStatusPriorityForm } from "@/components/admin/provider-onboarding-lead-status-priority-form";
+
 type ProviderLeadStatus =
   | "new"
   | "reviewing"
@@ -241,11 +243,38 @@ export function ProviderOnboardingLeadDetail({
       </header>
 
       <section className="rounded-3xl border border-cyan-100 bg-cyan-50/80 p-5 text-sm leading-6 text-cyan-950">
-        <span className="font-bold">Read-only safety note:</span> this page does
-        not update status, contact the provider, convert the lead, create center
-        or provider records, delete data, send notifications, or write audit
-        events.
+        <span className="font-bold">Admin mutation safety note:</span> this page
+        only updates the internal lead status and priority after platform-admin
+        authorization. It does not contact the provider, convert the lead, create
+        center or provider records, delete data, send notifications, publish
+        listings, activate billing or badges, or write audit events.
       </section>
+
+      <DetailSection title="Status and priority update">
+        <div className="mb-4 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              Current status
+            </p>
+            <div className="mt-2">
+              <StatusBadge status={lead.status} />
+            </div>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              Current priority
+            </p>
+            <div className="mt-2">
+              <PriorityBadge priority={lead.priority} />
+            </div>
+          </div>
+        </div>
+        <ProviderOnboardingLeadStatusPriorityForm
+          leadId={lead.id}
+          currentStatus={lead.status}
+          currentPriority={lead.priority}
+        />
+      </DetailSection>
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">

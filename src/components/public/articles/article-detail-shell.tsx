@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HomeWhatsAppFloat2026 } from '@/components/home/HomeSupportContact2026';
 import type { SupportedCountry, SupportedLocale } from '@/lib/i18n/config';
 import { articleShellContent, getArticleShellCard } from '@/lib/articles/article-shell-content';
 
@@ -89,22 +90,22 @@ export function ArticleDetailShell({ locale, country, slug, dir }: ArticleDetail
             <section className="related-care-section" aria-labelledby="related-care-title">
               <h2 id="related-care-title">{detail.relatedSectionTitle}</h2>
               <div className="related-grid">
-              <article>
+                <article>
                 <span>{locale === 'ar' ? 'أطباء' : 'Doctors'}</span>
                 <h3>{detail.relatedDoctors}</h3>
                 <p>{detail.relatedDoctorsBody}</p>
-              </article>
-              <article>
+                </article>
+                <article>
                 <span>{locale === 'ar' ? 'مراكز' : 'Centers'}</span>
                 <h3>{detail.relatedCenters}</h3>
                 <p>{detail.relatedCentersBody}</p>
-              </article>
-              <article className="sponsored-card">
+                </article>
+                <article className="sponsored-card">
                 <span>{detail.sponsored}</span>
                 <h3>{detail.featuredClinic}</h3>
                 <p>{detail.promotedDoctor}</p>
                 <p>{detail.sponsoredBody}</p>
-              </article>
+                </article>
               </div>
             </section>
 
@@ -133,6 +134,7 @@ export function ArticleDetailShell({ locale, country, slug, dir }: ArticleDetail
         <h2 id="article-disclaimer-title">{copy.disclaimerTitle}</h2>
         <p>{copy.disclaimerBody}</p>
       </section>
+      <HomeWhatsAppFloat2026 locale={locale} dir={dir} />
     </main>
   );
 }

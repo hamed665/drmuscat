@@ -115,3 +115,4 @@ Current validation gate:
 - No article CMS, database, or admin editor exists yet.
 - ART-A3 refined the public articles shell UI with a smaller first-viewport hero, stronger image-ready guide cards, cleaned category cards, polished media/video/detail placeholders, and safe FAQ sections while keeping the shell static and non-clinical.
 - ART-A4 polished the public articles UI copy and presentation to reduce internal placeholder language, replace letter category marks with inline topic icons, strengthen editorial cards, and upgrade FAQ/detail layouts while preserving static route-only scope.
+- ART-A5 finalized articles hub polish with stronger section typography, category/card spacing refinements, a static grid-first future browsing CTA, FAQ visual upgrades, and reuse of the existing homepage floating WhatsApp/contact CTA without adding backend logic.

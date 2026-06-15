@@ -38,6 +38,9 @@ export type ArticleShellCopy = {
   latestLabel: string;
   sectionLabel: string;
   categorySectionTitle: string;
+  listFooterTitle: string;
+  listFooterBody: string;
+  listFooterCta: string;
   faqEyebrow: string;
   faqTitle: string;
   faqIntro: string;
@@ -101,23 +104,26 @@ export const articleShellContent: Record<SupportedLocale, ArticleShellCopy> = {
     filterLabel: 'Browse by topic',
     categories: [
       { title: 'Dental', description: 'Clinic-choice questions, service pages, and booking preparation.', icon: 'dental' },
-      { title: 'Dermatology / Beauty', description: 'Consultation preparation and treatment-type research guides.', icon: 'beauty' },
+      { title: 'Dermatology / Beauty', description: 'Consultation preparation and service-type research guides.', icon: 'beauty' },
       { title: 'Clinics & Hospitals', description: 'How to compare services, locations, and practical care options.', icon: 'clinic' },
-      { title: 'Wellness', description: 'Safe appointment-prep prompts for wellness services.', icon: 'wellness' },
+      { title: 'Wellness', description: 'Clear appointment-prep prompts for wellness services.', icon: 'wellness' },
       { title: 'Pharmacies / Labs', description: 'Practical explainers for service discovery in Oman.', icon: 'lab' }
     ],
     featuredLabel: 'Featured guide',
     latestLabel: 'Latest health guides',
     sectionLabel: 'Health guides',
     categorySectionTitle: 'Browse by topic',
+    listFooterTitle: 'Explore more guides as the library grows',
+    listFooterBody: 'The grid stays easy to scan today and is ready for category filters, pagination, or load-more controls in a future content phase.',
+    listFooterCta: 'Browse all guides',
     faqEyebrow: 'Articles FAQ',
     faqTitle: 'Helpful answers before you read',
-    faqIntro: 'A clear overview of how DrMuscat articles support informed care decisions without replacing professional medical advice.',
+    faqIntro: 'Clear notes on how DrMuscat articles support informed care decisions without replacing professional medical advice.',
     faqs: [
       { question: 'Are DrMuscat articles medical advice?', answer: 'No. They are informational guides and do not replace advice from a qualified healthcare professional.' },
-      { question: 'Will articles include doctors and clinics?', answer: 'Approved article pages can connect to related doctors, centers, offers, and clearly labeled sponsored placements after approval.' },
-      { question: 'Will videos be included?', answer: 'Yes. The layout is prepared for YouTube/video guides in a later content phase.' },
-      { question: 'Are sponsored placements labeled?', answer: 'Yes. Sponsored or promoted placements should be clearly labeled.' }
+      { question: 'Will articles include doctors and clinics?', answer: 'Approved article pages can connect to related doctors, centers, offers, and clearly labeled sponsored placements.' },
+      { question: 'Will videos be included?', answer: 'Yes. The article layout is prepared for YouTube and short video guides in a later content phase.' },
+      { question: 'Are sponsored placements labeled?', answer: 'Yes. Sponsored or promoted placements should always be clearly labeled.' }
     ],
     updatesEyebrow: 'Editorial updates',
     newsletterTitle: 'Follow upcoming guides',
@@ -227,14 +233,17 @@ export const articleShellContent: Record<SupportedLocale, ArticleShellCopy> = {
     latestLabel: 'أحدث الأدلة الصحية',
     sectionLabel: 'الأدلة الصحية',
     categorySectionTitle: 'تصفح حسب الموضوع',
+    listFooterTitle: 'استكشف المزيد من الأدلة مع نمو المكتبة',
+    listFooterBody: 'يبقى العرض شبكياً وسهل التصفح الآن، ويمكن دعمه لاحقاً بتصفية أو تحميل المزيد في مرحلة محتوى معتمدة.',
+    listFooterCta: 'تصفح كل الأدلة',
     faqEyebrow: 'أسئلة المقالات',
     faqTitle: 'إجابات مفيدة قبل القراءة',
-    faqIntro: 'ملخص واضح لكيفية دعم مقالات DrMuscat لاختيار الرعاية دون أن تكون بديلاً عن المشورة الطبية المتخصصة.',
+    faqIntro: 'ملاحظات واضحة حول دور مقالات DrMuscat في دعم القرار دون أن تكون بديلاً عن المشورة الطبية المتخصصة.',
     faqs: [
       { question: 'هل مقالات DrMuscat نصيحة طبية؟', answer: 'لا. هي أدلة معلوماتية ولا تغني عن استشارة مختص صحي مؤهل.' },
-      { question: 'هل ستتضمن المقالات أطباء وعيادات؟', answer: 'يمكن للصفحات مستقبلاً ربط أطباء ومراكز وعروض ومساحات رعاية واضحة بعد الاعتماد.' },
-      { question: 'هل ستتوفر فيديوهات؟', answer: 'نعم. التصميم مجهز لمساحات فيديو أو YouTube في مرحلة محتوى لاحقة.' },
-      { question: 'هل يتم توضيح المحتوى الممول؟', answer: 'نعم. يجب تمييز أي مساحة رعاية أو ترويج بوضوح.' }
+      { question: 'هل ستتضمن المقالات أطباء وعيادات؟', answer: 'يمكن للصفحات المعتمدة ربط أطباء ومراكز وعروض ومساحات رعاية واضحة.' },
+      { question: 'هل ستتوفر فيديوهات؟', answer: 'نعم. تصميم المقال مجهز لفيديوهات YouTube ومقاطع قصيرة في مرحلة محتوى لاحقة.' },
+      { question: 'هل يتم توضيح المحتوى الممول؟', answer: 'نعم. يجب دائماً تمييز أي مساحة رعاية أو ترويج بوضوح.' }
     ],
     updatesEyebrow: 'تحديثات تحريرية',
     newsletterTitle: 'تابع الأدلة القادمة',

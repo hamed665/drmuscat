@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HomeWhatsAppFloat2026 } from '@/components/home/HomeSupportContact2026';
 import type { SupportedCountry, SupportedLocale } from '@/lib/i18n/config';
 import { articleShellContent, getArticleShellCard, type ArticleCategoryIcon } from '@/lib/articles/article-shell-content';
 
@@ -139,6 +140,13 @@ export function ArticlesHubShell({ locale, country, dir }: ArticlesHubShellProps
               </article>
             ))}
           </div>
+          <div className="articles-list-footer">
+            <div>
+              <h3>{copy.listFooterTitle}</h3>
+              <p>{copy.listFooterBody}</p>
+            </div>
+            <Link className="articles-list-footer__link" href="#latest-guides-title">{copy.listFooterCta}</Link>
+          </div>
         </div>
       </section>
 
@@ -172,6 +180,7 @@ export function ArticlesHubShell({ locale, country, dir }: ArticlesHubShellProps
         <h2 id="articles-disclaimer-title">{copy.disclaimerTitle}</h2>
         <p>{copy.disclaimerBody}</p>
       </section>
+      <HomeWhatsAppFloat2026 locale={locale} dir={dir} />
     </main>
   );
 }
@@ -206,9 +215,9 @@ export function ArticlesShellStyles() {
       .articles-feature-card__link { display: inline-flex; margin-top: .35rem; color: white; }
       .articles-section { padding: 1.85rem 0; }
       .articles-section--tight { padding-top: 1rem; }
-      .articles-section__header { margin-bottom: 1rem; }
+      .articles-section__header { margin-bottom: 1.1rem; max-width: 760px; }
       .articles-section__header--split { display: flex; justify-content: space-between; gap: 1rem; align-items: end; }
-      .articles-section__header h2, .articles-cta h2, .articles-disclaimer h2, .article-body-card h2, .article-sidebar h2, .video-guide h2, .faq-card h2, .related-articles-card h2, .articles-faq-panel h2, .related-care-section h2 { color: #092f2a; font-size: clamp(1.45rem, 2.4vw, 2.15rem); line-height: 1.12; margin: .65rem 0; letter-spacing: -.03em; }
+      .articles-section__header h2, .articles-cta h2, .articles-disclaimer h2, .article-body-card h2, .article-sidebar h2, .video-guide h2, .faq-card h2, .related-articles-card h2, .articles-faq-panel h2, .related-care-section h2 { color: #092f2a; font-size: clamp(1.75rem, 3vw, 2.6rem); line-height: 1.04; margin: .65rem 0; letter-spacing: -.045em; font-weight: 950; }
       .articles-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.05rem; }
       .areas-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .9rem; }
       .article-card, .area-card { min-height: 100%; }
@@ -225,23 +234,29 @@ export function ArticlesShellStyles() {
       .article-card__cover-link--rose .article-card__media { background: radial-gradient(circle at 78% 22%, rgba(255,255,255,.26), transparent 7rem), linear-gradient(135deg, rgba(190,93,126,.34), rgba(14,116,105,.28)); }
       .article-card__cover-link--mint .article-card__media { background: radial-gradient(circle at 78% 22%, rgba(255,255,255,.26), transparent 7rem), linear-gradient(135deg, rgba(92,197,171,.38), rgba(217,164,65,.25)); }
       .article-card__format { border-radius: 999px; padding: .38rem .62rem; background: rgba(217,164,65,.14); color: #8a6217; font-size: .73rem; font-weight: 900; }
-      .article-card__content { display: flex; flex: 1; flex-direction: column; padding: 1rem; }
+      .article-card__content { display: flex; flex: 1; flex-direction: column; padding: 1.1rem; }
       .article-card__topline { display: flex; align-items: center; justify-content: space-between; gap: .75rem; color: #6a817d; font-size: .78rem; font-weight: 800; }
       .article-card h3, .area-card h3 { color: #113b35; font-size: 1.08rem; line-height: 1.22; margin: .8rem 0 .45rem; letter-spacing: -.015em; font-weight: 900; }
       .article-card p, .area-card p, .related-grid p, .faq-card p, .related-articles-card p, .faq-item p { color: #55706b; line-height: 1.62; font-size: .92rem; }
       .article-card__footer { margin-top: auto; padding-top: 1rem; display: flex; align-items: center; justify-content: space-between; color: #0e7469; font-weight: 900; }
-      .area-card { padding: 1rem; position: relative; overflow: hidden; }
+      .area-card { padding: 1.15rem; position: relative; overflow: hidden; display: grid; gap: .35rem; }
       .area-card::after { content: ''; position: absolute; inset-inline-end: -18px; top: -22px; width: 72px; height: 72px; border-radius: 999px; background: rgba(14,116,105,.06); }
       .area-card__mark { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 18px; background: linear-gradient(135deg, rgba(14,116,105,.16), rgba(217,164,65,.22)); color: #0e7469; box-shadow: inset 0 1px 12px rgba(255,255,255,.8), 0 14px 30px rgba(15,68,60,.08); }
       .area-card__mark svg { width: 25px; height: 25px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
-      .articles-faq-panel { padding: clamp(1rem, 2.5vw, 1.5rem); display: grid; grid-template-columns: .85fr 1.15fr; gap: 1rem; }
+      .articles-faq-panel { padding: clamp(1.15rem, 3vw, 2rem); display: grid; grid-template-columns: .82fr 1.18fr; gap: 1.15rem; background: radial-gradient(circle at 8% 10%, rgba(217,164,65,.16), transparent 18rem), rgba(255,255,255,.82); position: relative; overflow: hidden; }
+      .articles-faq-panel::before { content: ''; position: absolute; inset-inline-start: 1.2rem; top: 1.2rem; width: 54px; height: 5px; border-radius: 999px; background: linear-gradient(90deg, #0e7469, #d9a441); }
+      .articles-faq-panel__intro { padding-top: 1rem; }
       .articles-faq-list { display: grid; gap: .75rem; }
       .faq-item { border: 1px solid rgba(14,116,105,.12); border-radius: 22px; padding: 0; background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(247,255,252,.74)); box-shadow: 0 12px 30px rgba(15,68,60,.06); overflow: hidden; }
-      .faq-item summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem; color: #103a35; font-weight: 900; }
+      .faq-item summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.05rem 1.1rem; color: #103a35; font-weight: 950; }
       .faq-item summary::-webkit-details-marker { display: none; }
       .faq-item summary span:last-child { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; background: rgba(14,116,105,.1); color: #0e7469; flex: 0 0 auto; }
       .faq-item p { padding: 0 1rem 1rem; margin: 0; }
       .faq-item h3 { margin: 0 0 .35rem; color: #103a35; font-size: 1rem; }
+      .articles-list-footer { margin-top: 1.1rem; border: 1px solid rgba(14,116,105,.12); background: rgba(255,255,255,.72); border-radius: 24px; padding: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; box-shadow: 0 16px 42px rgba(15,68,60,.07); }
+      .articles-list-footer h3 { margin: 0 0 .25rem; color: #103a35; font-size: 1.05rem; font-weight: 950; }
+      .articles-list-footer p { margin: 0; color: #55706b; line-height: 1.55; font-size: .93rem; }
+      .articles-list-footer__link { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; min-height: 42px; border-radius: 999px; padding: .7rem 1rem; background: #0e7469; color: white; font-weight: 900; text-decoration: none; box-shadow: 0 14px 30px rgba(14,116,105,.18); }
       .articles-cta, .articles-disclaimer { padding: 1.35rem; margin-top: 1rem; }
       .articles-disclaimer { background: #fff9ea; border-color: rgba(217,164,65,.28); }
       .article-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin-top: 1.2rem; }
@@ -275,7 +290,7 @@ export function ArticlesShellStyles() {
       [dir='rtl'] .article-sidebar ol { padding-inline-start: 0; padding-inline-end: 1.15rem; }
       @media (max-width: 1040px) { .articles-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .areas-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .article-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
       @media (max-width: 900px) { .articles-hero__grid, .article-detail-hero__grid, .article-layout, .video-guide, .articles-faq-panel { grid-template-columns: 1fr; } .article-sidebar { position: static; } .articles-feature-card { min-height: 0; } .articles-hero h1, .article-detail-hero h1 { max-width: none; } }
-      @media (max-width: 560px) { .articles-container { width: min(100% - 1rem, 1120px); } .articles-hero__copy, .articles-feature-card, .article-body-card, .article-sidebar, .video-guide, .faq-card, .related-articles-card, .articles-cta, .articles-disclaimer, .articles-faq-panel, .related-care-section { border-radius: 22px; } .articles-grid, .areas-grid, .article-meta, .related-grid { grid-template-columns: 1fr; } .articles-hero { padding-top: 1.25rem; } .articles-hero h1, .article-detail-hero h1 { font-size: clamp(2.05rem, 11vw, 2.65rem); } .articles-section__header--split { display: block; } }
+      @media (max-width: 560px) { .articles-list-footer { display: grid; } .articles-list-footer__link { width: 100%; } .articles-container { width: min(100% - 1rem, 1120px); } .articles-hero__copy, .articles-feature-card, .article-body-card, .article-sidebar, .video-guide, .faq-card, .related-articles-card, .articles-cta, .articles-disclaimer, .articles-faq-panel, .related-care-section { border-radius: 22px; } .articles-grid, .areas-grid, .article-meta, .related-grid { grid-template-columns: 1fr; } .articles-hero { padding-top: 1.25rem; } .articles-hero h1, .article-detail-hero h1 { font-size: clamp(2.05rem, 11vw, 2.65rem); } .articles-section__header--split { display: block; } }
     `}</style>
   );
 }

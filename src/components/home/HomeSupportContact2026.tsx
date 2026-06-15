@@ -101,6 +101,39 @@ function SupportAction({ href, copy, unavailable }: { href: string | null; copy:
   );
 }
 
+export function HomeWhatsAppFloat2026({ locale, dir }: HomeSupportContact2026Props) {
+  const copy = supportContactCopy[locale];
+  const whatsAppNumber = normalizeWhatsAppNumber(process.env.NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER);
+  const userHref = buildWhatsAppUrl(whatsAppNumber, copy.user.message);
+  const whatsAppState = userHref ? 'active' : 'disabled';
+
+  return (
+    <div className="dm2026-home-whatsapp-float" dir={dir} data-whatsapp-state={whatsAppState}>
+      {userHref ? (
+        <a
+          className="dm2026-home-whatsapp-float__fab dm2026-home-whatsapp-float__fab--active"
+          href={userHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={copy.quickAriaLabel}
+          data-whatsapp-state="active"
+        >
+          <WhatsAppLogoMark />
+        </a>
+      ) : (
+        <span
+          className="dm2026-home-whatsapp-float__fab dm2026-home-whatsapp-float__fab--disabled"
+          aria-disabled="true"
+          data-whatsapp-state="disabled"
+          title={copy.unavailable}
+        >
+          <WhatsAppLogoMark />
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function HomeSupportContact2026({ locale, dir }: HomeSupportContact2026Props) {
   const copy = supportContactCopy[locale];
   const titleId = `dm2026-home-support-title-${locale}`;
@@ -141,30 +174,7 @@ export function HomeSupportContact2026({ locale, dir }: HomeSupportContact2026Pr
           </div>
         </div>
       </section>
-
-      <div className="dm2026-home-whatsapp-float" dir={dir} data-whatsapp-state={whatsAppState}>
-        {userHref ? (
-          <a
-            className="dm2026-home-whatsapp-float__fab dm2026-home-whatsapp-float__fab--active"
-            href={userHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={copy.quickAriaLabel}
-            data-whatsapp-state="active"
-          >
-            <WhatsAppLogoMark />
-          </a>
-        ) : (
-          <span
-            className="dm2026-home-whatsapp-float__fab dm2026-home-whatsapp-float__fab--disabled"
-            aria-disabled="true"
-            data-whatsapp-state="disabled"
-            title={copy.unavailable}
-          >
-            <WhatsAppLogoMark />
-          </span>
-        )}
-      </div>
+      <HomeWhatsAppFloat2026 locale={locale} dir={dir} />
     </>
   );
 }

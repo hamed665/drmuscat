@@ -52,7 +52,7 @@ type ProviderOnboardingFormProps = {
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 type ProviderOnboardingLeadApiResponse =
-  | { ok: true; leadId?: string; message?: string }
+  | { ok: true; message?: string }
   | { ok: false; message?: string; fieldErrors?: Record<string, string> };
 
 function stringValue(formData: FormData, name: string): string {

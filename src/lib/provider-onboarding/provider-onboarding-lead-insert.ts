@@ -8,7 +8,7 @@ import type { NormalizedProviderOnboardingLeadPayload } from './provider-onboard
 export type ProviderOnboardingLeadInsertInput = NormalizedProviderOnboardingLeadPayload | { spam: true };
 
 export type ProviderOnboardingLeadCreateResult =
-  | { ok: true; accepted: true; leadId: string | null; duplicate?: boolean; spam?: boolean }
+  | { ok: true; accepted: true; duplicate?: boolean; spam?: boolean }
   | { ok: false; reason: 'unavailable' };
 
 type ProviderOnboardingLeadInsert = Database['public']['Tables']['provider_onboarding_leads']['Insert'];
@@ -37,7 +37,7 @@ async function isDuplicateProviderOnboardingLead(value: NormalizedProviderOnboar
   return (data ?? []).length > 0;
 }
 
-async function insertProviderOnboardingLead(value: NormalizedProviderOnboardingLeadPayload): Promise<string | null> {
+async function insertProviderOnboardingLead(value: NormalizedProviderOnboardingLeadPayload): Promise<boolean> {
   const supabase = createSupabaseServiceRoleClient();
   const insertValue: ProviderOnboardingLeadInsert = {
     country_code: value.countryCode,
@@ -59,24 +59,22 @@ async function insertProviderOnboardingLead(value: NormalizedProviderOnboardingL
     metadata: {}
   };
 
-  const { data, error } = await supabase.from('provider_onboarding_leads').insert(insertValue).select('id').single();
+  const { error } = await supabase.from('provider_onboarding_leads').insert(insertValue);
 
-  if (error) return null;
-
-  return data.id;
+  return error === null;
 }
 
 export async function createProviderOnboardingLead(
   input: ProviderOnboardingLeadInsertInput
 ): Promise<ProviderOnboardingLeadCreateResult> {
-  if (isSpamInput(input)) return { ok: true, accepted: true, leadId: null, spam: true };
+  if (isSpamInput(input)) return { ok: true, accepted: true, spam: true };
 
   const isDuplicate = await isDuplicateProviderOnboardingLead(input);
   if (isDuplicate === null) return { ok: false, reason: 'unavailable' };
-  if (isDuplicate) return { ok: true, accepted: true, leadId: null, duplicate: true };
+  if (isDuplicate) return { ok: true, accepted: true, duplicate: true };
 
-  const leadId = await insertProviderOnboardingLead(input);
-  if (leadId === null) return { ok: false, reason: 'unavailable' };
+  const inserted = await insertProviderOnboardingLead(input);
+  if (!inserted) return { ok: false, reason: 'unavailable' };
 
-  return { ok: true, accepted: true, leadId };
+  return { ok: true, accepted: true };
 }

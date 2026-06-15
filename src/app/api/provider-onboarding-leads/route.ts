@@ -10,11 +10,8 @@ function isJsonContentType(contentType: string | null): boolean {
   return mediaType === 'application/json' || Boolean(mediaType?.endsWith('+json'));
 }
 
-function acceptedResponse(leadId: string | null): NextResponse<{ ok: true; leadId: string; message: string }> {
-  return NextResponse.json(
-    { ok: true, leadId: leadId ?? '', message: 'Your request has been received.' },
-    { status: 201 }
-  );
+function acceptedResponse(): NextResponse<{ ok: true; message: string }> {
+  return NextResponse.json({ ok: true, message: 'Your request has been received.' }, { status: 201 });
 }
 
 function invalidRequestResponse(): NextResponse<{ ok: false; message: string }> {
@@ -46,7 +43,7 @@ export async function POST(request: Request) {
         reason: 'unavailable' as const
       }));
 
-      if (result.ok) return acceptedResponse(result.leadId);
+      if (result.ok) return acceptedResponse();
       return unavailableResponse();
     }
 
@@ -58,7 +55,7 @@ export async function POST(request: Request) {
     reason: 'unavailable' as const
   }));
 
-  if (result.ok) return acceptedResponse(result.leadId);
+  if (result.ok) return acceptedResponse();
 
   return unavailableResponse();
 }

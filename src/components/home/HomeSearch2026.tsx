@@ -63,6 +63,7 @@ type SearchCopy = {
   contentTypeLabel: string;
   searchLabel: string;
   providerLabel: string;
+  articlesLabel: string;
   staticPreviewLabel: string;
   staticPreviewNote: string;
   moreLabel: string;
@@ -83,6 +84,7 @@ type HomeSearch2026Props = {
   dir: 'ltr' | 'rtl';
   searchHref: string;
   providerHref: string;
+  articlesHref: string;
 };
 
 type SearchChipOption = {
@@ -309,7 +311,7 @@ const safeSetIfAvailable = (value: string | undefined, values: readonly string[]
   }
 };
 
-export function HomeSearch2026({ copy, dir, searchHref, providerHref }: HomeSearch2026Props) {
+export function HomeSearch2026({ copy, dir, searchHref, providerHref, articlesHref }: HomeSearch2026Props) {
   const defaultProviderType = firstValue(copy.providerTypes);
   const defaultCountry = firstValue(copy.countries).label;
   const defaultCity = firstValue(copy.cities);
@@ -556,6 +558,9 @@ export function HomeSearch2026({ copy, dir, searchHref, providerHref }: HomeSear
             </button>
             <Link href={providerHref} className="dm2026-button dm2026-button-secondary">
               {copy.providerLabel}
+            </Link>
+            <Link href={articlesHref} className="dm2026-button dm2026-button-ghost">
+              {copy.articlesLabel}
             </Link>
           </div>
 

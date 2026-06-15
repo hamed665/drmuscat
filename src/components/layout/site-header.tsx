@@ -15,6 +15,7 @@ export function SiteHeader() {
   const copy = headerCopy[locale];
   const homeHref = homeRoute(locale, country);
   const providerHref = publicProviderRoute(locale, country);
+  const articlesHref = `/${locale}/${country}/articles`;
   const mobileMenuId = `dm2026-mobile-menu-${locale}`;
   const accountPopoverId = `dm2026-account-menu-${locale}`;
   const accountLabel = locale === 'ar' ? 'دخول' : 'Login';
@@ -24,9 +25,10 @@ export function SiteHeader() {
     { href: publicDiscoveryRoute(locale, country, 'centers'), label: copy.centers },
     { href: publicDiscoveryRoute(locale, country, 'labs'), label: copy.labs },
     { href: publicDiscoveryRoute(locale, country, 'pharmacies'), label: copy.pharmacies },
-    { href: publicDiscoveryRoute(locale, country, 'services'), label: copy.services }
+    { href: publicDiscoveryRoute(locale, country, 'services'), label: copy.services },
+    { href: articlesHref, label: copy.articles }
   ] as const;
-  const pendingNavItems = [copy.hospitals, copy.offers, copy.articles] as const;
+  const pendingNavItems = [copy.hospitals, copy.offers] as const;
 
   useEffect(() => {
     const closeMenu = (target: EventTarget | null) => {

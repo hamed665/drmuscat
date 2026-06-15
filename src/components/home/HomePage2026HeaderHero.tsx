@@ -57,6 +57,7 @@ const home2026Copy: Record<SupportedLocale, HeaderHeroCopy> = {
       contentTypeLabel: 'Content type',
       searchLabel: 'Search',
       providerLabel: 'List your center',
+      articlesLabel: 'Read health guides',
       staticPreviewLabel: 'General example suggestions',
       staticPreviewNote: 'Suggestions are general examples. Confirm details directly with providers.',
       moreLabel: 'More',
@@ -129,6 +130,7 @@ const home2026Copy: Record<SupportedLocale, HeaderHeroCopy> = {
       contentTypeLabel: 'نوع المحتوى',
       searchLabel: 'بحث',
       providerLabel: 'أدرج مركزك',
+      articlesLabel: 'اقرأ الأدلة الصحية',
       staticPreviewLabel: 'اقتراحات عامة',
       staticPreviewNote: 'الاقتراحات أمثلة عامة فقط. يرجى تأكيد التفاصيل مباشرة مع مقدّمي الخدمة.',
       moreLabel: 'المزيد',
@@ -181,11 +183,12 @@ export function HomePage2026HeaderHero({ locale, country, dir }: HomePage2026Hea
   const copy = home2026Copy[locale];
   const searchHref = publicDiscoveryRoute(locale, country, 'search');
   const providerHref = publicProviderRoute(locale, country);
+  const articlesHref = `/${locale}/${country}/articles`;
 
   return (
     <section className="dm2026-home-top dm2026-shell" dir={dir} aria-label={copy.search.title}>
       <div className="dm2026-container dm2026-home-top__container dm2026-home-top__container--search-first">
-        <HomeSearch2026 copy={copy.search} dir={dir} searchHref={searchHref} providerHref={providerHref} />
+        <HomeSearch2026 copy={copy.search} dir={dir} searchHref={searchHref} providerHref={providerHref} articlesHref={articlesHref} />
 
         <div className="dm2026-home-safety dm2026-home-safety--compact dm2026-card-soft" aria-label={copy.safetyTitle}>
           <strong>{copy.safetyTitle}</strong>

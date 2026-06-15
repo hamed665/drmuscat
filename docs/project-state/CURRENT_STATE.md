@@ -108,3 +108,13 @@ Current validation gate:
 - Stop on blockers, conflicts, missing dependencies, unclear requirements, route ambiguity, schema conflict, or RLS ambiguity.
 - Do not fake passing tests.
 - Do not weaken TypeScript, lint, build, route, env, migration, seed, SEO, RLS, or validation checks to force progress.
+
+## ART-A public articles shell
+
+- Article route contract and premium public article shell were added for English/Arabic Oman routes at `/:locale/:country/articles` and `/:locale/:country/articles/:slug`.
+- No article CMS, database, or admin editor exists yet.
+- ART-A3 refined the public articles shell UI with a smaller first-viewport hero, stronger image-ready guide cards, cleaned category cards, polished media/video/detail placeholders, and safe FAQ sections while keeping the shell static and non-clinical.
+- ART-A4 polished the public articles UI copy and presentation to reduce internal placeholder language, replace letter category marks with inline topic icons, strengthen editorial cards, and upgrade FAQ/detail layouts while preserving static route-only scope.
+- ART-A5 finalized articles hub polish with stronger section typography, category/card spacing refinements, a static grid-first future browsing CTA, FAQ visual upgrades, and reuse of the existing homepage floating WhatsApp/contact CTA without adding backend logic.
+- ART-A6 fixed the Articles FAQ accordion default/toggle behavior, added plus/minus state styling, and improved FAQ/article/card color accents without adding backend or dynamic content logic.
+- ART-A7 fixed article detail slug handling so unknown static article slugs fail closed with `notFound()` and removed backend/phase-oriented wording from visible article UI copy.

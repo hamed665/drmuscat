@@ -113,3 +113,4 @@ Current validation gate:
 
 - Article route contract and premium public article shell were added for English/Arabic Oman routes at `/:locale/:country/articles` and `/:locale/:country/articles/:slug`.
 - No article CMS, database, or admin editor exists yet.
+- ART-A3 refined the public articles shell UI with a smaller first-viewport hero, stronger image-ready guide cards, cleaned category cards, polished media/video/detail placeholders, and safe FAQ sections while keeping the shell static and non-clinical.

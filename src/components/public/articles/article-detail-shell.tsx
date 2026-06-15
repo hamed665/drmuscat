@@ -13,6 +13,12 @@ export function ArticleDetailShell({ locale, country, slug, dir }: ArticleDetail
   const copy = articleShellContent[locale];
   const detail = copy.detail;
   const card = getArticleShellCard(locale, slug);
+  const articleMeta = [
+    { label: detail.authorLabel, value: detail.authorValue },
+    { label: detail.reviewerLabel, value: detail.reviewerValue },
+    { label: detail.updatedLabel, value: detail.updatedValue },
+    { label: detail.readingLabel, value: detail.readingValue }
+  ];
 
   return (
     <main className="articles-shell article-detail-shell" dir={dir} data-locale={locale} data-country={country}>
@@ -24,14 +30,19 @@ export function ArticleDetailShell({ locale, country, slug, dir }: ArticleDetail
               <h1 id="article-title">{detail.titlePrefix} {card.title}</h1>
               <p>{detail.excerpt}</p>
               <dl className="article-meta">
-                {[detail.author, detail.reviewer, detail.updated, detail.readingTime].map((item) => (
-                  <div key={item}><dt>{locale === 'ar' ? 'تفصيل' : 'Detail'}</dt><dd>{item}</dd></div>
+                {articleMeta.map((item) => (
+                  <div key={item.label}>
+                    <dt>{item.label}</dt>
+                    <dd>{item.value}</dd>
+                  </div>
                 ))}
               </dl>
             </div>
             <figure className="media-placeholder hero-media-placeholder">
-              <div aria-hidden="true" />
-              <figcaption>{detail.heroImage}</figcaption>
+              <div className="media-placeholder__art" aria-hidden="true">
+                <span className="articles-badge">{detail.heroImage}</span>
+              </div>
+              <figcaption>{detail.heroCaption}</figcaption>
             </figure>
           </div>
         </section>
@@ -43,7 +54,9 @@ export function ArticleDetailShell({ locale, country, slug, dir }: ArticleDetail
               <li>{detail.videoTitle}</li>
               <li>{detail.bodyTitle}</li>
               <li>{detail.relatedDoctors}</li>
-              <li>{detail.faq}</li>
+              <li>{detail.relatedCenters}</li>
+              <li>{detail.sponsored}</li>
+              <li>{detail.faqTitle}</li>
             </ol>
           </aside>
 
@@ -60,28 +73,54 @@ export function ArticleDetailShell({ locale, country, slug, dir }: ArticleDetail
             <section className="article-body-card" aria-labelledby="body-title">
               <h2 id="body-title">{detail.bodyTitle}</h2>
               <p>{detail.bodyLead}</p>
-              <div className="body-placeholder-lines" aria-hidden="true"><span /><span /><span /></div>
+              <ul className="article-section-list">
+                {detail.bodySections.map((section) => (
+                  <li key={section}>{section}</li>
+                ))}
+              </ul>
               <figure className="media-placeholder inline-media-placeholder">
-                <div aria-hidden="true" />
-                <figcaption>{detail.inlineImage}</figcaption>
+                <div className="media-placeholder__art" aria-hidden="true">
+                  <span className="articles-badge">{detail.inlineImage}</span>
+                </div>
+                <figcaption>{detail.inlineCaption}</figcaption>
               </figure>
             </section>
 
             <section className="related-grid" aria-label={locale === 'ar' ? 'مساحات ذات صلة' : 'Related placeholders'}>
-              <article><span>{locale === 'ar' ? 'أطباء' : 'Doctors'}</span><h3>{detail.relatedDoctors}</h3></article>
-              <article><span>{locale === 'ar' ? 'مراكز' : 'Centers'}</span><h3>{detail.relatedCenters}</h3></article>
-              <article className="sponsored-card"><span>Sponsored</span><strong>{detail.sponsored}</strong><p>{detail.featuredClinic}</p><p>{detail.promotedDoctor}</p></article>
+              <article>
+                <span>{locale === 'ar' ? 'أطباء' : 'Doctors'}</span>
+                <h3>{detail.relatedDoctors}</h3>
+                <p>{detail.relatedDoctorsBody}</p>
+              </article>
+              <article>
+                <span>{locale === 'ar' ? 'مراكز' : 'Centers'}</span>
+                <h3>{detail.relatedCenters}</h3>
+                <p>{detail.relatedCentersBody}</p>
+              </article>
+              <article className="sponsored-card">
+                <span>{detail.sponsored}</span>
+                <h3>{detail.featuredClinic}</h3>
+                <p>{detail.promotedDoctor}</p>
+                <p>{detail.sponsoredBody}</p>
+              </article>
             </section>
 
             <section className="faq-card" aria-labelledby="faq-title">
-              <h2 id="faq-title">{locale === 'ar' ? 'أسئلة شائعة' : 'FAQ'}</h2>
-              <p>{detail.faq}</p>
+              <h2 id="faq-title">{detail.faqTitle}</h2>
+              <div className="articles-faq-list">
+                {copy.faqs.map((faq) => (
+                  <article className="faq-item" key={faq.question}>
+                    <h3>{faq.question}</h3>
+                    <p>{faq.answer}</p>
+                  </article>
+                ))}
+              </div>
             </section>
 
             <section className="related-articles-card" aria-labelledby="related-articles-title">
               <h2 id="related-articles-title">{locale === 'ar' ? 'مقالات ذات صلة' : 'Related articles'}</h2>
               <p>{detail.relatedArticles}</p>
-              <Link href={`/${locale}/${country}/articles`}>{locale === 'ar' ? 'العودة إلى المقالات' : 'Back to articles'}</Link>
+              <Link href={`/${locale}/${country}/articles`}>{detail.backToArticles}</Link>
             </section>
           </div>
         </div>

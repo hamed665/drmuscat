@@ -114,20 +114,20 @@ export const articleShellContent: Record<SupportedLocale, ArticleShellCopy> = {
     sectionLabel: 'Health guides',
     categorySectionTitle: 'Browse by topic',
     listFooterTitle: 'Explore more guides as the library grows',
-    listFooterBody: 'The grid stays easy to scan today and is ready for category filters, pagination, or load-more controls in a future content phase.',
+    listFooterBody: 'The grid stays easy to scan as the DrMuscat library grows, with room for category browsing and more guide navigation.',
     listFooterCta: 'Browse all guides',
     faqEyebrow: 'Articles FAQ',
     faqTitle: 'Helpful answers before you read',
     faqIntro: 'Clear notes on how DrMuscat articles support informed care decisions without replacing professional medical advice.',
     faqs: [
       { question: 'Are DrMuscat articles medical advice?', answer: 'No. They are informational guides and do not replace advice from a qualified healthcare professional.' },
-      { question: 'Will articles include doctors and clinics?', answer: 'Approved article pages can connect to related doctors, centers, offers, and clearly labeled sponsored placements.' },
-      { question: 'Will videos be included?', answer: 'Yes. The article layout is prepared for YouTube and short video guides in a later content phase.' },
+      { question: 'Will articles include doctors and clinics?', answer: 'Article pages can connect to related doctors, centers, offers, and clearly labeled sponsored placements when available.' },
+      { question: 'Will videos be included?', answer: 'Yes. Article pages are designed to support YouTube and short video guides when editorial media is available.' },
       { question: 'Are sponsored placements labeled?', answer: 'Yes. Sponsored or promoted placements should always be clearly labeled.' }
     ],
     updatesEyebrow: 'Editorial updates',
     newsletterTitle: 'Follow upcoming guides',
-    newsletterBody: 'A future approved contact or newsletter experience can connect readers to new guides. No subscription backend is active in this phase.',
+    newsletterBody: 'Readers will be able to follow upcoming guides when article updates are available on DrMuscat.',
     disclaimerTitle: 'Medical disclaimer',
     disclaimerBody:
       'These article pages are informational only. They do not diagnose, treat, prescribe, rank providers, or replace advice from a qualified healthcare professional.',
@@ -180,36 +180,36 @@ export const articleShellContent: Record<SupportedLocale, ArticleShellCopy> = {
     detail: {
       badge: 'Health guide',
       titlePrefix: '',
-      excerpt: 'A premium article template for reviewed guidance, editorial media, related care options, and clearly labeled sponsored placements without publishing medical advice.',
+      excerpt: 'A polished health guide format for reviewed information, editorial media, related care options, and clearly labeled sponsored placements without publishing medical advice.',
       authorLabel: 'By',
       authorValue: 'DrMuscat editorial team',
       reviewerLabel: 'Medical reviewer',
-      reviewerValue: 'Review workflow pending',
+      reviewerValue: 'Reviewer to be assigned',
       updatedLabel: 'Last updated',
-      updatedValue: 'Set when approved content is published',
+      updatedValue: 'Added when the guide is published',
       readingLabel: 'Reading time',
       readingValue: '5 min read',
       heroImage: 'Editorial image area',
-      heroCaption: 'Image area prepared for approved editorial media with alt text and caption support.',
+      heroCaption: 'Image area prepared for editorial media with alt text and caption support.',
       videoTitle: 'Video guide area',
-      videoBody: 'Prepared for a YouTube embed or thumbnail preview in a later approved content phase. No video integration is active.',
+      videoBody: 'Designed for a YouTube embed or thumbnail preview when an editorial video is available.',
       tocTitle: 'In this guide',
       bodyTitle: 'Guide preview',
-      bodyLead: 'Approved editorial content can explain how to compare provider information, what questions to prepare, and when to speak directly with a qualified professional.',
+      bodyLead: 'Editorial guides can explain how to compare provider information, what questions to prepare, and when to speak directly with a qualified professional.',
       bodySections: ['Provider information checklist', 'Questions to prepare before booking', 'When to contact a qualified professional'],
       inlineImage: 'Editorial media area',
-      inlineCaption: 'Inline image area prepared for future reviewed media and captions.',
+      inlineCaption: 'Inline image area prepared for reviewed media and captions.',
       relatedSectionTitle: 'Related doctors and centers',
       relatedDoctors: 'Related doctors',
-      relatedDoctorsBody: 'Approved provider links can appear here in a later phase. No recommendations are active yet.',
+      relatedDoctorsBody: 'Related provider links can appear here when available. No recommendations are active yet.',
       relatedCenters: 'Related centers',
-      relatedCentersBody: 'Approved center links can appear here in a later phase. No clinic recommendations are active yet.',
+      relatedCentersBody: 'Related center links can appear here when available. No clinic recommendations are active yet.',
       sponsored: 'Sponsored',
       featuredClinic: 'Featured clinic',
       promotedDoctor: 'Promoted doctor',
       sponsoredBody: 'Sponsored placements must remain clearly labeled and visually separated from editorial guidance.',
       faqTitle: 'Article FAQ',
-      relatedArticles: 'Related articles can appear here when approved content is available.',
+      relatedArticles: 'Related articles can appear here when more guides are available.',
       backToArticles: 'Back to articles'
     }
   },
@@ -234,20 +234,20 @@ export const articleShellContent: Record<SupportedLocale, ArticleShellCopy> = {
     sectionLabel: 'الأدلة الصحية',
     categorySectionTitle: 'تصفح حسب الموضوع',
     listFooterTitle: 'استكشف المزيد من الأدلة مع نمو المكتبة',
-    listFooterBody: 'يبقى العرض شبكياً وسهل التصفح الآن، ويمكن دعمه لاحقاً بتصفية أو تحميل المزيد في مرحلة محتوى معتمدة.',
+    listFooterBody: 'يبقى العرض شبكياً وسهل التصفح مع نمو مكتبة DrMuscat، مع مساحة لتصفح الموضوعات والمزيد من الأدلة.',
     listFooterCta: 'تصفح كل الأدلة',
     faqEyebrow: 'أسئلة المقالات',
     faqTitle: 'إجابات مفيدة قبل القراءة',
     faqIntro: 'ملاحظات واضحة حول دور مقالات DrMuscat في دعم قراراتك دون أن تكون بديلاً عن الاستشارة الطبية المتخصصة.',
     faqs: [
       { question: 'هل مقالات DrMuscat نصيحة طبية؟', answer: 'لا. هي أدلة معلوماتية ولا تغني عن استشارة مختص صحي مؤهل.' },
-      { question: 'هل ستتضمن المقالات أطباء وعيادات؟', answer: 'يمكن للصفحات المعتمدة ربط أطباء ومراكز وعروض ومساحات رعاية واضحة.' },
-      { question: 'هل ستتوفر فيديوهات؟', answer: 'نعم. تصميم المقال مجهز لفيديوهات YouTube ومقاطع قصيرة في مرحلة محتوى لاحقة.' },
+      { question: 'هل ستتضمن المقالات أطباء وعيادات؟', answer: 'يمكن لصفحات المقالات ربط أطباء ومراكز وعروض ومساحات رعاية واضحة عند توفرها.' },
+      { question: 'هل ستتوفر فيديوهات؟', answer: 'نعم. صفحات المقالات مصممة لدعم فيديوهات YouTube والمقاطع القصيرة عند توفر الوسائط التحريرية.' },
       { question: 'هل يتم توضيح المحتوى الممول؟', answer: 'نعم. يجب دائماً تمييز أي مساحة رعاية أو ترويج بوضوح.' }
     ],
     updatesEyebrow: 'تحديثات تحريرية',
     newsletterTitle: 'تابع الأدلة القادمة',
-    newsletterBody: 'يمكن لاحقاً ربط تجربة تواصل أو نشرة بريدية معتمدة لإبلاغ القراء بالأدلة الجديدة. لا توجد خدمة اشتراك مفعلة في هذه المرحلة.',
+    newsletterBody: 'يمكن للقراء متابعة الأدلة القادمة عند توفر تحديثات المقالات على DrMuscat.',
     disclaimerTitle: 'تنبيه طبي',
     disclaimerBody:
       'هذه الصفحات معلوماتية فقط. لا تقدم تشخيصاً أو علاجاً أو وصفات أو ترتيباً لمقدمي الخدمة، ولا تغني عن استشارة مختص مؤهل.',
@@ -300,40 +300,44 @@ export const articleShellContent: Record<SupportedLocale, ArticleShellCopy> = {
     detail: {
       badge: 'دليل صحي',
       titlePrefix: '',
-      excerpt: 'قالب مقال مصقول للإرشاد المراجع والوسائط التحريرية وخيارات الرعاية ذات الصلة ومساحات الرعاية الواضحة دون نشر نصائح طبية.',
+      excerpt: 'صيغة دليل صحية مصقولة للمعلومات المراجعة والوسائط التحريرية وخيارات الرعاية ذات الصلة ومساحات الرعاية الواضحة دون نشر نصائح طبية.',
       authorLabel: 'بقلم',
       authorValue: 'فريق DrMuscat التحريري',
       reviewerLabel: 'المراجع الطبي',
-      reviewerValue: 'مسار المراجعة قيد الاعتماد',
+      reviewerValue: 'يحدد عند تجهيز الدليل',
       updatedLabel: 'آخر تحديث',
-      updatedValue: 'يحدد عند نشر محتوى معتمد',
+      updatedValue: 'يضاف عند نشر الدليل',
       readingLabel: 'مدة القراءة',
       readingValue: '٥ دقائق قراءة',
       heroImage: 'مساحة صورة تحريرية',
-      heroCaption: 'مساحة صورة مجهزة لوسائط تحريرية معتمدة مع نص بديل وتعليق.',
+      heroCaption: 'مساحة صورة مجهزة لوسائط تحريرية مع نص بديل وتعليق.',
       videoTitle: 'مساحة فيديو إرشادي',
-      videoBody: 'مجهزة لتضمين YouTube أو معاينة مصغرة في مرحلة محتوى معتمدة لاحقاً. لا يوجد تكامل فيديو حالياً.',
+      videoBody: 'مجهزة لتضمين YouTube أو معاينة مصغرة عند توفر فيديو تحريري.',
       tocTitle: 'داخل هذا الدليل',
       bodyTitle: 'معاينة الدليل',
-      bodyLead: 'يمكن للمحتوى المعتمد توضيح كيفية مقارنة معلومات مقدمي الخدمة والأسئلة المناسبة ومتى يجب التواصل مع مختص مؤهل.',
+      bodyLead: 'يمكن للأدلة التحريرية توضيح كيفية مقارنة معلومات مقدمي الخدمة والأسئلة المناسبة ومتى يجب التواصل مع مختص مؤهل.',
       bodySections: ['قائمة تحقق لمعلومات مقدم الخدمة', 'أسئلة للتحضير قبل الحجز', 'متى تتواصل مع مختص مؤهل'],
       inlineImage: 'مساحة وسائط تحريرية',
-      inlineCaption: 'مساحة صورة داخلية مجهزة لوسائط وتعليقات مراجعة لاحقاً.',
+      inlineCaption: 'مساحة صورة داخلية مجهزة لوسائط تحريرية وتعليقات.',
       relatedSectionTitle: 'أطباء ومراكز ذات صلة',
       relatedDoctors: 'أطباء ذو صلة',
-      relatedDoctorsBody: 'يمكن ظهور روابط أطباء معتمدة في مرحلة لاحقة. لا توجد توصيات نشطة حالياً.',
+      relatedDoctorsBody: 'يمكن ظهور روابط أطباء ذات صلة عند توفرها. لا توجد توصيات نشطة حالياً.',
       relatedCenters: 'مراكز ذات صلة',
-      relatedCentersBody: 'يمكن ظهور روابط مراكز معتمدة في مرحلة لاحقة. لا توجد توصيات عيادات نشطة حالياً.',
+      relatedCentersBody: 'يمكن ظهور روابط مراكز ذات صلة عند توفرها. لا توجد توصيات عيادات نشطة حالياً.',
       sponsored: 'Sponsored',
       featuredClinic: 'Featured clinic',
       promotedDoctor: 'Promoted doctor',
       sponsoredBody: 'يجب أن تبقى مساحات الرعاية واضحة ومنفصلة بصرياً عن الإرشاد التحريري.',
       faqTitle: 'أسئلة شائعة عن المقال',
-      relatedArticles: 'يمكن عرض مقالات ذات صلة هنا عند توفر محتوى معتمد.',
+      relatedArticles: 'يمكن عرض مقالات ذات صلة هنا عند توفر المزيد من الأدلة.',
       backToArticles: 'العودة إلى المقالات'
     }
   }
 };
+
+export function findArticleShellCard(locale: SupportedLocale, slug: string): ArticleShellCard | undefined {
+  return articleShellContent[locale].cards.find((card) => card.slug === slug);
+}
 
 export function getArticleShellCard(locale: SupportedLocale, slug: string): ArticleShellCard {
   const fallback = articleShellContent[locale].cards[0];
@@ -342,5 +346,5 @@ export function getArticleShellCard(locale: SupportedLocale, slug: string): Arti
     throw new Error('Article shell content requires at least one shell card.');
   }
 
-  return articleShellContent[locale].cards.find((card) => card.slug === slug) ?? fallback;
+  return findArticleShellCard(locale, slug) ?? fallback;
 }

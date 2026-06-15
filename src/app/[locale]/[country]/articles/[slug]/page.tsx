@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArticleDetailShell } from '@/components/public/articles/article-detail-shell';
 import { ArticlesShellStyles } from '@/components/public/articles/articles-hub-shell';
-import { articleShellContent, getArticleShellCard } from '@/lib/articles/article-shell-content';
+import { articleShellContent, findArticleShellCard } from '@/lib/articles/article-shell-content';
 import { isSupportedCountry, isSupportedLocale, localeDirection, type SupportedCountry, type SupportedLocale } from '@/lib/i18n/config';
 import { buildLocalizedMetadata } from '@/lib/seo/metadata';
 
@@ -16,7 +16,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   }
 
   const safeLocale = locale as SupportedLocale;
-  const card = getArticleShellCard(safeLocale, slug);
+  const card = findArticleShellCard(safeLocale, slug);
+
+  if (!card) {
+    return {};
+  }
 
   return buildLocalizedMetadata({
     locale: safeLocale,
@@ -36,6 +40,10 @@ export default async function ArticleDetailPage({ params }: { params: Promise<Pa
 
   const safeLocale = locale as SupportedLocale;
   const safeCountry = country as SupportedCountry;
+
+  if (!findArticleShellCard(safeLocale, slug)) {
+    notFound();
+  }
 
   return (
     <>

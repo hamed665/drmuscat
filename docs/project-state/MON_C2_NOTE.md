@@ -30,6 +30,8 @@ This initializer uses existing server-side admin write patterns and the existing
 
 It is intentionally not a migration and not a seed file because the current migration and seed validators remain locked against product-catalog data rows.
 
+When plans exist but centers do not, the admin UI shows the initialized plan catalog by name and status so the operator can verify that plan creation worked before moving on to center creation.
+
 ## Write behavior
 
 The admin assignment form can:
@@ -74,6 +76,7 @@ The selected plan currency is used as `currency_code`.
 
 - The existing read-only list remains visible.
 - If plans are missing, the admin sees an initializer button instead of dead dropdowns.
+- If plans exist but centers are missing, the admin sees the initialized plan catalog list and the remaining center prerequisite.
 - The assignment form is visible when at least one center and one plan are available.
 - The form explains that it does not charge, invoice, publish badges, activate ads, activate offers, enable add-ons, or unlock provider dashboard access.
 - Save returns a safe success or failure message.

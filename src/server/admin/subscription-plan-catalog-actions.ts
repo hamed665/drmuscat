@@ -95,12 +95,12 @@ const baseSubscriptionPlans: SubscriptionPlanInsert[] = [
   },
   {
     slug: "premium-ads-pro",
-    name_en: "Premium / Ads Pro",
-    name_ar: "بريميوم / إعلانات برو",
+    name_en: "Premium Partner",
+    name_ar: "الشريك المميز",
     description_en:
-      "Premium commercial plan for high-visibility providers that need advanced profile support, analytics, and ad operations.",
+      "Premium commercial plan for providers that need advanced profile support, richer capacity, analytics, and account operations. Paid ads and special offer placements remain separate add-ons available across plans.",
     description_ar:
-      "خطة تجارية متقدمة للمراكز التي تحتاج إلى ظهور أعلى ودعم ملف متقدم وتحليلات وتشغيل إعلانات.",
+      "خطة تجارية مميزة للمراكز التي تحتاج إلى دعم ملف متقدم وسعة أكبر وتحليلات وتشغيل حساب. الإعلانات المدفوعة ومواضع العروض الخاصة تبقى إضافات منفصلة متاحة عبر الخطط.",
     price_amount: 0,
     currency_code: "OMR",
     interval: "annual",
@@ -113,7 +113,8 @@ const baseSubscriptionPlans: SubscriptionPlanInsert[] = [
     max_services: 100,
     sort_order: 40,
     metadata: {
-      plan_key: "premium_ads_pro",
+      plan_key: "premium_partner",
+      legacy_slug_note: "premium-ads-pro slug kept temporarily to update existing preview rows without creating duplicates.",
       commercial_model_version: "PLAN-A",
       pricing_status: "pending_final_pricing",
       paid_add_ons_available: true,

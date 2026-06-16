@@ -7,12 +7,21 @@ import {
   type CenterSubscriptionAssignmentState,
 } from "@/server/admin/center-subscription-actions";
 import type { AdminCenterSubscriptionAssignmentOptionsResult } from "@/server/admin/center-subscription-options";
+import {
+  initializeBaseSubscriptionPlanCatalog,
+  type BaseSubscriptionPlanCatalogState,
+} from "@/server/admin/subscription-plan-catalog-actions";
 
 type CenterSubscriptionAssignmentFormProps = {
   options: AdminCenterSubscriptionAssignmentOptionsResult;
 };
 
-const initialState: CenterSubscriptionAssignmentState = {
+const initialAssignmentState: CenterSubscriptionAssignmentState = {
+  ok: false,
+  message: null,
+};
+
+const initialCatalogState: BaseSubscriptionPlanCatalogState = {
   ok: false,
   message: null,
 };
@@ -72,9 +81,13 @@ function AssignmentHeader({
 export function CenterSubscriptionAssignmentForm({
   options,
 }: CenterSubscriptionAssignmentFormProps) {
-  const [state, formAction, isPending] = useActionState(
+  const [assignmentState, assignmentAction, isAssignmentPending] = useActionState(
     upsertCenterSubscriptionAssignment,
-    initialState,
+    initialAssignmentState,
+  );
+  const [catalogState, catalogAction, isCatalogPending] = useActionState(
+    initializeBaseSubscriptionPlanCatalog,
+    initialCatalogState,
   );
 
   if (!options.ok) {
@@ -111,6 +124,33 @@ export function CenterSubscriptionAssignmentForm({
             <li>Centers available: {options.centers.length}</li>
             <li>Plans available: {options.plans.length}</li>
           </ul>
+
+          {options.plans.length === 0 ? (
+            <form action={catalogAction} className="mt-5 space-y-3">
+              <p className="text-sm leading-6">
+                The official DrMuscat base plan catalog can be initialized here
+                by a platform admin. This does not create providers, centers,
+                subscriptions, payments, invoices, ads, offers, or public badges.
+              </p>
+              <button
+                type="submit"
+                disabled={isCatalogPending}
+                className="inline-flex justify-center rounded-2xl bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+              >
+                {isCatalogPending
+                  ? "Initializing…"
+                  : "Initialize base plan catalog"}
+              </button>
+              {catalogState.message !== null ? (
+                <p
+                  className={`text-sm font-semibold ${catalogState.ok ? "text-emerald-700" : "text-rose-700"}`}
+                  role="status"
+                >
+                  {catalogState.message}
+                </p>
+              ) : null}
+            </form>
+          ) : null}
         </div>
       </section>
     );
@@ -123,14 +163,14 @@ export function CenterSubscriptionAssignmentForm({
         planCount={options.plans.length}
       />
 
-      <form action={formAction} className="mt-5 space-y-5">
+      <form action={assignmentAction} className="mt-5 space-y-5">
         <div className="grid gap-4 lg:grid-cols-2">
           <label className="block text-sm font-semibold text-slate-800">
             Center
             <select
               name="centerId"
               defaultValue=""
-              disabled={isPending}
+              disabled={isAssignmentPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
               required
             >
@@ -150,7 +190,7 @@ export function CenterSubscriptionAssignmentForm({
             <select
               name="subscriptionPlanId"
               defaultValue=""
-              disabled={isPending}
+              disabled={isAssignmentPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
               required
             >
@@ -172,7 +212,7 @@ export function CenterSubscriptionAssignmentForm({
             <select
               name="status"
               defaultValue="active"
-              disabled={isPending}
+              disabled={isAssignmentPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
               required
             >
@@ -189,7 +229,7 @@ export function CenterSubscriptionAssignmentForm({
             <select
               name="billingInterval"
               defaultValue={defaultInterval}
-              disabled={isPending}
+              disabled={isAssignmentPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
               required
             >
@@ -209,7 +249,7 @@ export function CenterSubscriptionAssignmentForm({
               min="0"
               step="0.001"
               placeholder="Optional"
-              disabled={isPending}
+              disabled={isAssignmentPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             />
           </label>
@@ -221,7 +261,7 @@ export function CenterSubscriptionAssignmentForm({
             <input
               name="startsAt"
               type="date"
-              disabled={isPending}
+              disabled={isAssignmentPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             />
           </label>
@@ -230,7 +270,7 @@ export function CenterSubscriptionAssignmentForm({
             <input
               name="endsAt"
               type="date"
-              disabled={isPending}
+              disabled={isAssignmentPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             />
           </label>
@@ -239,7 +279,7 @@ export function CenterSubscriptionAssignmentForm({
             <input
               name="trialEndsAt"
               type="date"
-              disabled={isPending}
+              disabled={isAssignmentPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             />
           </label>
@@ -252,7 +292,7 @@ export function CenterSubscriptionAssignmentForm({
             rows={3}
             maxLength={2000}
             placeholder="Optional internal note"
-            disabled={isPending}
+            disabled={isAssignmentPending}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
           />
         </label>
@@ -260,18 +300,18 @@ export function CenterSubscriptionAssignmentForm({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isAssignmentPending}
             className="inline-flex justify-center rounded-2xl bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:bg-slate-400"
           >
-            {isPending ? "Saving…" : "Save subscription assignment"}
+            {isAssignmentPending ? "Saving…" : "Save subscription assignment"}
           </button>
 
-          {state.message !== null ? (
+          {assignmentState.message !== null ? (
             <p
-              className={`text-sm font-semibold ${state.ok ? "text-emerald-700" : "text-rose-700"}`}
+              className={`text-sm font-semibold ${assignmentState.ok ? "text-emerald-700" : "text-rose-700"}`}
               role="status"
             >
-              {state.message}
+              {assignmentState.message}
             </p>
           ) : null}
         </div>

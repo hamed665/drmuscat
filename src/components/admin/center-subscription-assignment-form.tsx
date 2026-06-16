@@ -27,7 +27,6 @@ const initialCatalogState: BaseSubscriptionPlanCatalogState = {
 };
 
 const statusOptions = ["pending", "active", "paused", "cancelled", "expired"];
-const intervalOptions = ["monthly", "quarterly", "semi_annual", "annual"];
 
 function formatLabel(value: string): string {
   return value
@@ -103,7 +102,6 @@ export function CenterSubscriptionAssignmentForm({
   }
 
   const canSubmit = options.centers.length > 0 && options.plans.length > 0;
-  const defaultInterval = options.plans.at(0)?.interval ?? "monthly";
 
   if (!canSubmit) {
     return (
@@ -145,7 +143,7 @@ export function CenterSubscriptionAssignmentForm({
                       {plan.name_en}
                     </span>
                     <span className="mt-0.5 block text-xs text-slate-600">
-                      {plan.slug} · {formatLabel(plan.status)} · {formatPrice(
+                      {plan.slug} · {formatLabel(plan.status)} · {formatLabel(plan.interval)} · {formatPrice(
                         plan.price_amount,
                         plan.currency_code,
                       )}
@@ -280,23 +278,6 @@ export function CenterSubscriptionAssignmentForm({
           </label>
 
           <label className="block text-sm font-semibold text-slate-800">
-            Billing interval
-            <select
-              name="billingInterval"
-              defaultValue={defaultInterval}
-              disabled={isAssignmentPending}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
-              required
-            >
-              {intervalOptions.map((interval) => (
-                <option key={interval} value={interval}>
-                  {formatLabel(interval)}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block text-sm font-semibold text-slate-800">
             Agreed price
             <input
               name="agreedPriceAmount"
@@ -308,6 +289,14 @@ export function CenterSubscriptionAssignmentForm({
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             />
           </label>
+
+          <div className="rounded-2xl border border-cyan-200 bg-white/80 p-4 text-sm leading-6 text-cyan-950 xl:col-span-2">
+            <p className="font-bold">Billing interval follows the selected plan.</p>
+            <p className="mt-1 text-cyan-900">
+              In this phase the subscription billing interval is copied from the
+              chosen plan to avoid annual-plan/quarterly-billing mismatches.
+            </p>
+          </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">

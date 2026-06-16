@@ -25,6 +25,21 @@ export type AdminCommercialAddOnCenterOption = Pick<
   "id" | "name_en" | "slug" | "status" | "verification_status"
 >;
 
+type CampaignSelectedRow = Pick<
+  CampaignRow,
+  | "id"
+  | "center_id"
+  | "title_en"
+  | "status"
+  | "starts_at"
+  | "ends_at"
+  | "budget_amount"
+  | "currency_code"
+  | "metadata"
+  | "created_at"
+  | "updated_at"
+>;
+
 export type AdminCommercialAddOnItem = {
   id: string;
   center: AdminCommercialAddOnCenterOption | null;
@@ -75,17 +90,23 @@ function metadataString(metadata: unknown, key: string): string | null {
 }
 
 function normalizeAddOnType(value: string | null): CommercialAddOnType | "unknown" {
-  if (value === "homepage_ads" || value === "special_offer_placement") return value;
+  if (value === "homepage_ads" || value === "special_offer_placement") {
+    return value;
+  }
+
   return "unknown";
 }
 
 function normalizeTerm(value: string | null): CommercialAddOnTerm | "unknown" {
-  if (value === "weekly" || value === "monthly" || value === "quarterly") return value;
+  if (value === "weekly" || value === "monthly" || value === "quarterly") {
+    return value;
+  }
+
   return "unknown";
 }
 
 function buildItems(
-  campaigns: Array<Pick<CampaignRow, "id" | "center_id" | "title_en" | "status" | "starts_at" | "ends_at" | "budget_amount" | "currency_code" | "metadata" | "created_at" | "updated_at">>,
+  campaigns: CampaignSelectedRow[],
   centers: AdminCommercialAddOnCenterOption[],
 ): AdminCommercialAddOnItem[] {
   const centersById = new Map(centers.map((center) => [center.id, center]));
@@ -99,7 +120,9 @@ function buildItems(
         metadataString(campaign.metadata, "commercial_add_on_term"),
       );
 
-      if (addOnType === "unknown" || term === "unknown") return null;
+      if (addOnType === "unknown" || term === "unknown") {
+        return null;
+      }
 
       return {
         id: campaign.id,
@@ -155,10 +178,13 @@ export async function listAdminCommercialAddOns(): Promise<AdminCommercialAddOns
     };
   }
 
+  const centers = centersResult.data;
+  const campaigns = campaignsResult.data;
+
   return {
     ok: true,
-    centers: centersResult.data,
-    items: buildItems(campaignsResult.data, centersResult.data),
+    centers,
+    items: buildItems(campaigns, centers),
     limit: fixedLimit,
   };
 }

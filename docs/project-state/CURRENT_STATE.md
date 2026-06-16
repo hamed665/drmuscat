@@ -7,14 +7,14 @@
 
 ## Current completed state
 
-- Current repo state is after the admin provider onboarding lead detail baseline.
-- The current repository includes approved public catalog/detail foundations, provider onboarding lead capture, callback request capture, protected admin shell, and read-only admin provider onboarding lead list/detail.
+- Current repo state is after ADDON-A commercial add-on assignment shell and CENTER-A lead history event-type fix.
+- The current repository includes approved public catalog/detail foundations, public article shell routes, provider onboarding lead capture, callback request capture, protected admin shell, admin provider onboarding lead operations baseline, center subscription assignment foundation, and admin commercial add-on assignment shell.
 - Future phases must remain narrowly scoped and explicitly approved.
 
 ## Completed migration range
 
-- Completed migration set: `0001` through `0052`.
-- Migration validation is expected through `0052_review_companion_tables.sql`.
+- Completed migration set: `0001` through `0053`.
+- Migration validation is expected through `0053_provider_onboarding_lead_events.sql`.
 - Existing SQL migrations must not be modified unless explicitly approved.
 
 ## Implemented public app surface
@@ -26,27 +26,37 @@
 - Public center detail pages exist.
 - Public doctor detail pages exist.
 - Public `/:locale/:country/for-providers` page exists.
+- Public article shell routes exist at `/:locale/:country/articles` and `/:locale/:country/articles/:slug`.
 - Contact/callback, media, and license foundations exist.
 - Public callback request API exists.
 - Public provider onboarding lead capture API exists.
-- Provider onboarding public form success/error handling has been corrected so successful submissions show success instead of a false generic error.
+- Provider onboarding public form success/error handling has been corrected.
 
 ## Implemented admin surface
 
 - Protected root-level `/admin` baseline exists.
-- Minimal platform-admin sign-in exists at `/admin/login` using Supabase Auth magic links and the server-side `/auth/callback` session exchange.
+- Minimal platform-admin sign-in exists at `/admin/login` using Supabase Auth magic links and `/auth/callback`.
 - Admin routes are root-level routes and are not localized.
 - Read-only admin provider onboarding lead list/detail exists.
 - Admin provider onboarding lead status/priority mutation baseline exists.
-- Admin lead assignment, conversion, contact-action, and audit-write workflows remain out of scope and are not implemented.
+- Read-only admin provider onboarding lead history UI exists.
+- Admin status/priority lead history event writes exist.
+- Admin draft center creation from provider onboarding lead exists.
+- Draft center creation history uses the allowed `note_added` event type with `event_kind: "draft_center_created"` metadata.
+- Read-only admin center subscriptions view exists.
+- Admin center subscription assignment foundation exists.
+- Base subscription plan catalog initializer exists.
+- Admin quick navigation links exist for provider leads, center subscriptions, and commercial add-ons.
+- Admin commercial add-on assignment shell exists at `/admin/commercial-addons` for Homepage Ads and Special Offer Placement.
+- Admin lead contact-action, sales automation, full audit-write, provider dashboard, billing, payment, invoice, and public activation workflows remain out of scope and are not implemented.
 
 ## Data/RLS foundations
 
-- Database foundations now validate through `0053_provider_onboarding_lead_events.sql`.
+- Database foundations validate through `0053_provider_onboarding_lead_events.sql`.
 - Contact visibility, callback request, provider license verification, media public visibility/RLS hardening, provider onboarding leads, provider onboarding lead event-history DB foundation, landing content foundations, and review companion table foundations exist.
-- Provider onboarding lead event read/write UI/actions remain out of scope and are not implemented.
+- Provider onboarding lead event history supports the currently allowed event types: `status_changed`, `priority_changed`, and `note_added`.
 - Legacy/current review foundations already exist in `0020_reviews.sql` and `0021_review_reports.sql`; `0052_review_companion_tables.sql` adds review companion tables only.
-- Further review system work remains incomplete and blocked until explicitly approved: no full moderation UI, no public review display workflow, no provider reply workflow, and no complete review operations are implemented yet.
+- Further review system work remains incomplete and blocked until explicitly approved.
 - Private-data access remains phase-gated.
 - `CREATE POLICY` and `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` remain allowed only in explicitly approved RLS phases.
 - No real seed rows are allowed unless a seed phase is explicitly approved.
@@ -63,13 +73,16 @@
 ## Out-of-scope / not implemented
 
 - Payment gateways, invoices, checkout, and billing integrations are not implemented.
-- AI chat is not implemented.
+- AI chat and AI article generation are not implemented.
 - Real seed rows are not implemented.
 - Provider dashboard mutations are not implemented.
-- Admin lead mutation workflow scope is limited to the provider onboarding lead status/priority baseline.
+- Official Offers admin/data model is not implemented.
+- Public ads rendering is not implemented.
+- Public special-offer rendering is not implemented.
+- Article CMS, admin article editor, DB-backed article rendering, and article placement engine are not implemented.
+- Article ads and article special-offer placement rendering are not implemented.
 - Full review moderation UI, public review display workflow, provider reply workflow, and complete review operations are not implemented.
-- Sales, referral, billing, analytics, SEO AI, provider dashboard, payment, and admin mutation features remain out of scope unless explicitly approved.
-- Business expansion features remain out of scope unless explicitly approved.
+- Sales, referral, billing, analytics, SEO AI, provider dashboard, payment, and business expansion features remain out of scope unless explicitly approved.
 
 ## Ops workflow state
 
@@ -82,21 +95,21 @@ Current validation gate:
 
 - `pnpm env:check`
 - `pnpm db:validate:migrations`
+- `pnpm db:validate:seeds`
 - `pnpm test:db:rls`
+- `pnpm test:db:seed`
 - `pnpm routes:check`
+- `pnpm seo:check`
 - `pnpm typecheck`
 - `pnpm build`
 - `pnpm lint`
 
 ## Last known validation status
 
-- Environment check passes.
-- Migration validation passes through `0052_review_companion_tables.sql`.
-- RLS static tests pass.
-- Route contract check passes.
-- Typecheck passes.
-- Build passes.
-- Lint has warnings only, with no errors.
+- PR #225 passed the full GitHub CI gate before merge.
+- PR #226 passed the full GitHub CI gate before merge.
+- Migration validation passes through `0053_provider_onboarding_lead_events.sql`.
+- Env, seed validation, static RLS, static seed, routes, SEO, typecheck, build, and lint gates pass in CI.
 
 ## Future phase rules
 
@@ -112,9 +125,13 @@ Current validation gate:
 ## ART-A public articles shell
 
 - Article route contract and premium public article shell were added for English/Arabic Oman routes at `/:locale/:country/articles` and `/:locale/:country/articles/:slug`.
-- No article CMS, database, or admin editor exists yet.
-- ART-A3 refined the public articles shell UI with a smaller first-viewport hero, stronger image-ready guide cards, cleaned category cards, polished media/video/detail placeholders, and safe FAQ sections while keeping the shell static and non-clinical.
-- ART-A4 polished the public articles UI copy and presentation to reduce internal placeholder language, replace letter category marks with inline topic icons, strengthen editorial cards, and upgrade FAQ/detail layouts while preserving static route-only scope.
-- ART-A5 finalized articles hub polish with stronger section typography, category/card spacing refinements, a static grid-first future browsing CTA, FAQ visual upgrades, and reuse of the existing homepage floating WhatsApp/contact CTA without adding backend logic.
-- ART-A6 fixed the Articles FAQ accordion default/toggle behavior, added plus/minus state styling, and improved FAQ/article/card color accents without adding backend or dynamic content logic.
-- ART-A7 fixed article detail slug handling so unknown static article slugs fail closed with `notFound()` and removed backend/phase-oriented wording from visible article UI copy.
+- No article CMS, database, admin editor, or article placement engine exists yet.
+- ART-A3 through ART-A7 refined the static public articles shell, FAQ behavior, detail slug handling, media placeholders, and visible copy while preserving static route-only scope.
+
+## Monetization/admin placement baseline
+
+- MON-C1 added a read-only admin center subscriptions view.
+- MON-C2 added admin center subscription assignment foundations and the base subscription plan catalog initializer.
+- ADDON-A added an admin-only commercial add-on assignment shell for Homepage Ads and Special Offer Placement using existing `sponsored_campaigns` and `sponsored_placements` tables.
+- ADDON-A creates draft/internal records only and does not add payment, invoice, public activation, public rendering, or offer content workflows.
+- Official Offers, fuller Ads options, public placement rendering, article placements, billing, and analytics remain future phase-gated work.

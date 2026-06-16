@@ -13,12 +13,6 @@ const allowedStatuses = [
   "cancelled",
   "expired",
 ] as const;
-const allowedIntervals = [
-  "monthly",
-  "quarterly",
-  "semi_annual",
-  "annual",
-] as const;
 const maxNotesLength = 2000;
 
 export type CenterSubscriptionAssignmentState = {
@@ -27,7 +21,6 @@ export type CenterSubscriptionAssignmentState = {
 };
 
 type CenterSubscriptionStatus = (typeof allowedStatuses)[number];
-type PlanInterval = (typeof allowedIntervals)[number];
 type CenterSubscriptionInsert =
   Database["public"]["Tables"]["center_subscriptions"]["Insert"];
 type CenterSubscriptionUpdate =
@@ -57,10 +50,6 @@ function isUuid(value: string): boolean {
 
 function isAllowedStatus(value: string): value is CenterSubscriptionStatus {
   return allowedStatuses.some((status) => status === value);
-}
-
-function isAllowedInterval(value: string): value is PlanInterval {
-  return allowedIntervals.some((interval) => interval === value);
 }
 
 function parseOptionalAmount(value: string | null): number | null | undefined {
@@ -120,7 +109,6 @@ export async function upsertCenterSubscriptionAssignment(
   const centerId = readFormString(formData, "centerId");
   const subscriptionPlanId = readFormString(formData, "subscriptionPlanId");
   const status = readFormString(formData, "status");
-  const billingInterval = readFormString(formData, "billingInterval");
   const agreedPriceAmount = parseOptionalAmount(
     readFormString(formData, "agreedPriceAmount"),
   );
@@ -133,11 +121,9 @@ export async function upsertCenterSubscriptionAssignment(
     centerId === null ||
     subscriptionPlanId === null ||
     status === null ||
-    billingInterval === null ||
     !isUuid(centerId) ||
     !isUuid(subscriptionPlanId) ||
     !isAllowedStatus(status) ||
-    !isAllowedInterval(billingInterval) ||
     agreedPriceAmount === undefined ||
     startsAt === undefined ||
     endsAt === undefined ||
@@ -162,7 +148,7 @@ export async function upsertCenterSubscriptionAssignment(
 
   const { data: plan, error: planError } = await supabase
     .from("subscription_plans")
-    .select("id, currency_code")
+    .select("id, currency_code, interval")
     .eq("id", subscriptionPlanId)
     .is("deleted_at", null)
     .maybeSingle();
@@ -187,11 +173,13 @@ export async function upsertCenterSubscriptionAssignment(
   const existingSubscriptionId = existingSubscriptions.at(0)?.id ?? null;
   const writePayload: CenterSubscriptionInsert & CenterSubscriptionUpdate = {
     agreed_price_amount: agreedPriceAmount,
-    billing_interval: billingInterval,
+    billing_interval: plan.interval,
     center_id: centerId,
     currency_code: plan.currency_code,
     ends_at: endsAt,
-    metadata: {},
+    metadata: {
+      billing_interval_source: "subscription_plan",
+    },
     notes,
     sales_profile_id: platformAdmin.id,
     starts_at: startsAt,

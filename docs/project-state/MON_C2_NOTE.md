@@ -17,10 +17,24 @@ Data source:
 - `centers`
 - `profiles`
 
+## PLAN-A initializer
+
+This PR also includes a platform-admin-only initializer for the official base subscription plan catalog:
+
+- Free Listing
+- Verified Starter
+- Growth Partner
+- Premium / Ads Pro
+
+This initializer uses existing server-side admin write patterns and the existing `subscription_plans` table.
+
+It is intentionally not a migration and not a seed file because the current migration/seed validators remain locked against product-catalog data rows.
+
 ## Write behavior
 
 The admin assignment form can:
 
+- initialize the official base plan catalog when no plans are available
 - select a center
 - select a subscription plan
 - set subscription status
@@ -54,11 +68,13 @@ The selected plan currency is used as `currency_code`.
 - No special offers.
 - No media upload.
 - No AI features.
+- No center or provider records are created by the plan initializer.
 
 ## UI behavior
 
 - The existing read-only list remains visible.
-- The assignment form is visible even when the list is empty, provided centers and plans are available.
+- If plans are missing, the admin sees an initializer button instead of dead dropdowns.
+- The assignment form is visible when at least one center and one plan are available.
 - The form explains that it does not charge, invoice, publish badges, activate ads, activate offers, enable add-ons, or unlock provider dashboard access.
 - Save returns a safe success or failure message.
 - Raw database errors are not exposed.

@@ -12,6 +12,7 @@ Canonical specification path:
 - `docs/platform/DRMUSCAT_KEYWORD_UNIVERSE_CONTENT_INTELLIGENCE_SPEC_V1.md` — documentation-only keyword universe and content intelligence planning specification.
 - `docs/platform/DRMUSCAT_AI_BRIEF_DRAFT_WORKFLOW_SPEC_V1.md` — documentation-only AI brief and draft workflow, prompt governance, output validation, review, and approval specification.
 - `docs/platform/DRMUSCAT_EXISTING_REVIEW_SCHEMA_RECONCILIATION_SPEC_V1.md` — documentation-only reconciliation of existing review tables, policies, migration numbering, conflicts, and safe future review implementation paths.
+- `docs/master-spec/82_COMMERCIAL_CONTENT_PLACEMENT_AI_OPERATING_MODEL.md` — documentation-only commercial content, placement, article, media, and AI operating model.
 
 Build mode:
 
@@ -19,9 +20,9 @@ Build mode:
 
 ## Current project phase status
 
-- Current repo state: **after the admin provider onboarding lead detail baseline**
-- Database/migration status: **validates through `0052_review_companion_tables.sql`**
-- Completed migration set: **`0001` through `0052`** (expected to exist)
+- Current repo state: **after ADDON-A commercial add-on assignment shell and CENTER-A lead history event-type fix**.
+- Database/migration status: **validates through `0053_provider_onboarding_lead_events.sql`**.
+- Completed migration set: **`0001` through `0053`**.
 - Implementation remains phase-gated. Do not infer approval for new business features from the existence of current public/admin baselines.
 
 ## Completed database and platform foundation scope
@@ -51,6 +52,7 @@ Build mode:
 - provider onboarding lead database/RLS foundation through `0050_provider_onboarding_leads.sql`
 - landing content foundation through `0051_landing_page_contents.sql`
 - review companion table foundation through `0052_review_companion_tables.sql` only; this does not complete the review feature
+- provider onboarding lead event-history database foundation through `0053_provider_onboarding_lead_events.sql`
 
 ## Current implemented app surface
 
@@ -63,11 +65,23 @@ The repository now includes approved public and admin baselines. These are not p
 - public center detail pages
 - public doctor detail pages
 - public provider plans/onboarding page at `/:locale/:country/for-providers`
+- public articles shell routes at `/:locale/:country/articles` and `/:locale/:country/articles/:slug`
 - contact/callback, media, and license display foundations
 - public callback request API
 - public provider onboarding lead capture API
+- provider onboarding form success/error handling baseline
 - protected root-level `/admin` baseline
+- minimal platform-admin sign-in at `/admin/login` using Supabase Auth magic links and `/auth/callback`
 - read-only admin provider onboarding lead list/detail baseline
+- admin provider onboarding lead status/priority mutation baseline
+- read-only admin provider onboarding lead history UI
+- status/priority lead history event writes
+- admin draft center creation from provider onboarding lead, with lead history stored through allowed event types
+- read-only admin center subscriptions view
+- admin center subscription assignment foundation
+- base subscription plan catalog initializer
+- admin quick navigation links for provider leads, center subscriptions, and commercial add-ons
+- admin commercial add-on assignment shell for Homepage Ads and Special Offer Placement using existing sponsored campaign tables
 
 ## Route and locale contract
 
@@ -83,11 +97,14 @@ The repository now includes approved public and admin baselines. These are not p
 
 - no payment gateways, invoices, checkout, or billing integrations yet
 - no AI chat yet
+- no AI article assistant or AI draft generation workflow yet
 - no real seed rows yet unless a seed phase is explicitly approved
 - no Persian/Hindi public SEO routes
 - no provider dashboard mutation workflows yet
-- no admin provider onboarding lead mutation/status/update actions yet
-- no admin lead assignment, conversion, contact-action, or audit-write workflows yet
+- no Official Offers admin/data model yet
+- no public ads rendering or public special-offer rendering yet
+- no article CMS, article admin editor, article placement engine, or DB-backed article rendering yet
+- no public article ads or article special-offer placements yet
 - no full review moderation UI, public review display workflow, provider reply workflow, or complete review operations yet
 - no broad sales, referral, billing, analytics, SEO AI, provider dashboard, or business expansion features unless explicitly approved
 - no medical records/diagnoses/prescriptions/lab results yet
@@ -129,13 +146,14 @@ The repository now includes approved public and admin baselines. These are not p
   - doctors
   - clinics
   - pharmacies
-  - gyms
-  - healthy restaurants
+  - labs
   - wellness centers
   - services
   - reviews
   - media galleries
+  - offers
   - sponsored/featured placements
+  - articles and editorial media
 
 ## SEO-first requirements (future public pages)
 
@@ -152,7 +170,7 @@ The repository now includes approved public and admin baselines. These are not p
   - internal linking
   - fast server-rendered/indexable content
   - no client-only SEO-critical content
-- Future public catalog pages must protect Core Web Vitals:
+- Future public catalog and article pages must protect Core Web Vitals:
   - fast LCP
   - low CLS
   - low INP
@@ -164,21 +182,42 @@ The repository now includes approved public and admin baselines. These are not p
 
 ## Validation commands
 
-Run the relevant validation gate after each approved phase. For this documentation alignment, the full current validation set is:
+Run the relevant validation gate after each approved phase. The current validation set is:
 
 - `pnpm env:check`
 - `pnpm db:validate:migrations`
+- `pnpm db:validate:seeds`
 - `pnpm test:db:rls`
+- `pnpm test:db:seed`
 - `pnpm routes:check`
+- `pnpm seo:check`
 - `pnpm typecheck`
 - `pnpm build`
 - `pnpm lint`
 
 `pnpm lint` may report warnings only, but must not report errors. Do not fake passing tests or weaken validation commands to force progress.
 
+## Last known validation status
+
+- PR #225 passed the full GitHub CI gate before merge.
+- PR #226 passed the full GitHub CI gate before merge.
+- Migration validation is expected through `0053_provider_onboarding_lead_events.sql`.
+- Static RLS and static seed tests pass in the current CI gate.
+- Route, SEO, env, typecheck, build, and lint gates pass in the current CI gate.
+
 ## Next recommended phases
 
-Future implementation must remain explicitly phase-approved and narrowly scoped. Do not implement sales, referral, billing, analytics, SEO AI, provider dashboard, payment, admin mutation, seed, or other business expansion features unless a future phase specifically approves that scope.
+Future implementation must remain explicitly phase-approved and narrowly scoped.
+
+Recommended next planning order:
+
+1. `OFF-A` — Official Offers admin/data model planning.
+2. `ADS-B` / `MON-D` — fuller Ads and paid placement options planning.
+3. `ART-B` — Article CMS data model planning.
+4. `PLAC-A` — Article placement slot engine planning.
+5. `AI-A` — read-only content intelligence planning only after article/offer/placement foundations are approved.
+
+Do not implement sales, referral, billing, analytics, SEO AI, provider dashboard, payment, admin mutation, seed, or other business expansion features unless a future phase specifically approves that scope.
 
 ## Agent workflow reminder
 

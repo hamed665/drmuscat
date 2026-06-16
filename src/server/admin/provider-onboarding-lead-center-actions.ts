@@ -10,7 +10,14 @@ type CenterInsert = Database["public"]["Tables"]["centers"]["Insert"];
 type LeadUpdate = Database["public"]["Tables"]["provider_onboarding_leads"]["Update"];
 type LeadEventInsert = Database["public"]["Tables"]["provider_onboarding_lead_events"]["Insert"];
 type CenterType = Database["public"]["Enums"]["center_type"];
-type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue | undefined };
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonObject
+  | JsonValue[];
+type JsonObject = { [key: string]: JsonValue | undefined };
 
 type DraftCenterLead = {
   center_name: string;
@@ -62,7 +69,7 @@ function slugify(value: string): string {
   return slug || "center";
 }
 
-function metadataObject(metadata: JsonValue): Record<string, JsonValue> {
+function metadataObject(metadata: JsonValue): JsonObject {
   return typeof metadata === "object" && metadata !== null && !Array.isArray(metadata)
     ? metadata
     : {};
@@ -136,7 +143,7 @@ export async function createDraftCenterFromLead(
 
   if (leadError !== null || lead === null) return failure;
 
-  const leadMetadata = metadataObject(lead.metadata);
+  const leadMetadata = metadataObject(lead.metadata as JsonValue);
   const linkedCenterId = leadMetadata.draft_center_id;
 
   if (typeof linkedCenterId === "string" && isUuid(linkedCenterId)) {
@@ -162,7 +169,7 @@ export async function createDraftCenterFromLead(
   if (centerId === null) {
     const { data: insertedCenter, error: insertError } = await supabase
       .from("centers")
-      .insert(centerPayload(lead, slug))
+      .insert(centerPayload(lead as DraftCenterLead, slug))
       .select("id")
       .maybeSingle();
 
@@ -171,7 +178,7 @@ export async function createDraftCenterFromLead(
   }
 
   const now = new Date().toISOString();
-  const updatedMetadata: Record<string, JsonValue> = {
+  const updatedMetadata: JsonObject = {
     ...leadMetadata,
     draft_center_id: centerId,
     draft_center_slug: slug,

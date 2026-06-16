@@ -132,7 +132,8 @@ export function CenterSubscriptionAssignmentForm({
               </h4>
               <p className="mt-1 leading-6 text-slate-600">
                 The plan catalog is ready. A center record is still required
-                before assignment can be saved.
+                before assignment can be saved. Homepage ads and Special Offer
+                placements remain separate paid add-ons available across plans.
               </p>
               <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                 {options.plans.map((plan) => (
@@ -144,11 +145,33 @@ export function CenterSubscriptionAssignmentForm({
                       {plan.name_en}
                     </span>
                     <span className="mt-0.5 block text-xs text-slate-600">
-                      {formatLabel(plan.status)} · {formatPrice(plan.price_amount, plan.currency_code)}
+                      {plan.slug} · {formatLabel(plan.status)} · {formatPrice(
+                        plan.price_amount,
+                        plan.currency_code,
+                      )}
                     </span>
                   </li>
                 ))}
               </ul>
+              <form action={catalogAction} className="mt-4 space-y-2">
+                <button
+                  type="submit"
+                  disabled={isCatalogPending}
+                  className="inline-flex justify-center rounded-2xl border border-emerald-200 bg-white px-4 py-2 text-sm font-bold text-emerald-900 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500"
+                >
+                  {isCatalogPending ? "Syncing…" : "Sync base plan catalog"}
+                </button>
+                {catalogState.message !== null ? (
+                  <p
+                    className={`text-sm font-semibold ${
+                      catalogState.ok ? "text-emerald-700" : "text-rose-700"
+                    }`}
+                    role="status"
+                  >
+                    {catalogState.message}
+                  </p>
+                ) : null}
+              </form>
             </div>
           ) : null}
 
@@ -170,7 +193,9 @@ export function CenterSubscriptionAssignmentForm({
               </button>
               {catalogState.message !== null ? (
                 <p
-                  className={`text-sm font-semibold ${catalogState.ok ? "text-emerald-700" : "text-rose-700"}`}
+                  className={`text-sm font-semibold ${
+                    catalogState.ok ? "text-emerald-700" : "text-rose-700"
+                  }`}
                   role="status"
                 >
                   {catalogState.message}
@@ -226,7 +251,10 @@ export function CenterSubscriptionAssignmentForm({
               </option>
               {options.plans.map((plan) => (
                 <option key={plan.id} value={plan.id}>
-                  {plan.name_en} · {formatLabel(plan.interval)} · {formatPrice(plan.price_amount, plan.currency_code)}
+                  {plan.name_en} · {formatLabel(plan.interval)} · {formatPrice(
+                    plan.price_amount,
+                    plan.currency_code,
+                  )}
                 </option>
               ))}
             </select>
@@ -335,7 +363,9 @@ export function CenterSubscriptionAssignmentForm({
 
           {assignmentState.message !== null ? (
             <p
-              className={`text-sm font-semibold ${assignmentState.ok ? "text-emerald-700" : "text-rose-700"}`}
+              className={`text-sm font-semibold ${
+                assignmentState.ok ? "text-emerald-700" : "text-rose-700"
+              }`}
               role="status"
             >
               {assignmentState.message}

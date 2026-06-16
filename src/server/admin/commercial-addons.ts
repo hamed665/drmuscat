@@ -8,8 +8,7 @@ export type CommercialAddOnType = "homepage_ads" | "special_offer_placement";
 export type CommercialAddOnTerm = "weekly" | "monthly" | "quarterly";
 
 type CenterRow = Database["public"]["Tables"]["centers"]["Row"];
-type SponsoredCampaignRow =
-  Database["public"]["Tables"]["sponsored_campaigns"]["Row"];
+type CampaignRow = Database["public"]["Tables"]["sponsored_campaigns"]["Row"];
 
 type JsonValue =
   | string
@@ -31,7 +30,7 @@ export type AdminCommercialAddOnItem = {
   center: AdminCommercialAddOnCenterOption | null;
   addOnType: CommercialAddOnType | "unknown";
   term: CommercialAddOnTerm | "unknown";
-  status: SponsoredCampaignRow["status"];
+  status: CampaignRow["status"];
   titleEn: string;
   budgetAmount: number | null;
   currencyCode: string;
@@ -76,23 +75,17 @@ function metadataString(metadata: unknown, key: string): string | null {
 }
 
 function normalizeAddOnType(value: string | null): CommercialAddOnType | "unknown" {
-  if (value === "homepage_ads" || value === "special_offer_placement") {
-    return value;
-  }
-
+  if (value === "homepage_ads" || value === "special_offer_placement") return value;
   return "unknown";
 }
 
 function normalizeTerm(value: string | null): CommercialAddOnTerm | "unknown" {
-  if (value === "weekly" || value === "monthly" || value === "quarterly") {
-    return value;
-  }
-
+  if (value === "weekly" || value === "monthly" || value === "quarterly") return value;
   return "unknown";
 }
 
 function buildItems(
-  campaigns: SponsoredCampaignRow[],
+  campaigns: Array<Pick<CampaignRow, "id" | "center_id" | "title_en" | "status" | "starts_at" | "ends_at" | "budget_amount" | "currency_code" | "metadata" | "created_at" | "updated_at">>,
   centers: AdminCommercialAddOnCenterOption[],
 ): AdminCommercialAddOnItem[] {
   const centersById = new Map(centers.map((center) => [center.id, center]));
@@ -106,9 +99,7 @@ function buildItems(
         metadataString(campaign.metadata, "commercial_add_on_term"),
       );
 
-      if (addOnType === "unknown" || term === "unknown") {
-        return null;
-      }
+      if (addOnType === "unknown" || term === "unknown") return null;
 
       return {
         id: campaign.id,
@@ -164,13 +155,10 @@ export async function listAdminCommercialAddOns(): Promise<AdminCommercialAddOns
     };
   }
 
-  const centers = centersResult.data;
-  const campaigns = campaignsResult.data;
-
   return {
     ok: true,
-    centers,
-    items: buildItems(campaigns, centers),
+    centers: centersResult.data,
+    items: buildItems(campaignsResult.data, centersResult.data),
     limit: fixedLimit,
   };
 }

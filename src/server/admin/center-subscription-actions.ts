@@ -13,23 +13,37 @@ const allowedStatuses = [
   "cancelled",
   "expired",
 ] as const;
+const allowedPlanTiers = [
+  "free_listing",
+  "verified_starter",
+  "growth_partner",
+  "premium_partner",
+] as const;
+const allowedBillingTerms = ["quarterly", "semi_annual", "annual"] as const;
 const maxNotesLength = 2000;
+
+type PlanTier = (typeof allowedPlanTiers)[number];
+type BillingTerm = (typeof allowedBillingTerms)[number];
+type CenterSubscriptionStatus = (typeof allowedStatuses)[number];
+type CenterSubscriptionInsert =
+  Database["public"]["Tables"]["center_subscriptions"]["Insert"];
+type CenterSubscriptionUpdate =
+  Database["public"]["Tables"]["center_subscriptions"]["Update"];
+type SubscriptionPlanInsert =
+  Database["public"]["Tables"]["subscription_plans"]["Insert"];
 
 export type CenterSubscriptionAssignmentState = {
   ok: boolean;
   message: string | null;
 };
 
-type CenterSubscriptionStatus = (typeof allowedStatuses)[number];
-type CenterSubscriptionInsert =
-  Database["public"]["Tables"]["center_subscriptions"]["Insert"];
-type CenterSubscriptionUpdate =
-  Database["public"]["Tables"]["center_subscriptions"]["Update"];
-
 const genericFailureState: CenterSubscriptionAssignmentState = {
   ok: false,
   message: "Center subscription assignment could not be saved.",
 };
+
+const addOnPolicy =
+  "Homepage ads and Special Offer placements are separate paid products available across plans.";
 
 function readFormString(formData: FormData, key: string): string | null {
   const value = formData.get(key);
@@ -50,6 +64,14 @@ function isUuid(value: string): boolean {
 
 function isAllowedStatus(value: string): value is CenterSubscriptionStatus {
   return allowedStatuses.some((status) => status === value);
+}
+
+function isPlanTier(value: string): value is PlanTier {
+  return allowedPlanTiers.some((tier) => tier === value);
+}
+
+function isBillingTerm(value: string): value is BillingTerm {
+  return allowedBillingTerms.some((term) => term === value);
 }
 
 function parseOptionalAmount(value: string | null): number | null | undefined {
@@ -100,6 +122,143 @@ function parseOptionalNotes(value: string | null): string | null | undefined {
   return trimmedValue;
 }
 
+function planSlug(planTier: PlanTier, billingTerm: BillingTerm): string | null {
+  if (planTier === "free_listing") {
+    return billingTerm === "annual" ? "free-listing" : null;
+  }
+
+  const baseSlugByTier: Record<Exclude<PlanTier, "free_listing">, string> = {
+    verified_starter: "verified-starter",
+    growth_partner: "growth-partner",
+    premium_partner: "premium-partner",
+  };
+
+  const baseSlug = baseSlugByTier[planTier];
+  if (billingTerm === "annual") return baseSlug;
+  if (billingTerm === "semi_annual") return `${baseSlug}-semi-annual`;
+
+  return `${baseSlug}-${billingTerm}`;
+}
+
+function planPayload(planTier: PlanTier, billingTerm: BillingTerm): SubscriptionPlanInsert | null {
+  const slug = planSlug(planTier, billingTerm);
+  if (slug === null) return null;
+
+  const tierConfig = {
+    free_listing: {
+      nameEn: "Free Listing",
+      nameAr: "القائمة المجانية",
+      descriptionEn:
+        "Basic approved directory presence for providers that should be discoverable without paid subscription features.",
+      descriptionAr:
+        "ظهور أساسي معتمد في الدليل للمراكز التي يجب أن تكون قابلة للاكتشاف بدون مزايا اشتراك مدفوع.",
+      includesClaimBadge: false,
+      includesMediaGallery: false,
+      maxDoctors: 0,
+      maxLocations: 1,
+      maxServices: 3,
+      planKey: "free_listing",
+      sortGroup: 10,
+      status: "active" as const,
+    },
+    verified_starter: {
+      nameEn: "Verified Starter",
+      nameAr: "البداية الموثقة",
+      descriptionEn:
+        "Trust-focused starter plan for verified providers with richer profile presentation and controlled media support.",
+      descriptionAr:
+        "خطة بداية تركز على الثقة للمراكز الموثقة مع عرض ملف أفضل ودعم وسائط مضبوط.",
+      includesClaimBadge: true,
+      includesMediaGallery: true,
+      maxDoctors: 5,
+      maxLocations: 1,
+      maxServices: 10,
+      planKey: "verified_starter",
+      sortGroup: 20,
+      status: "draft" as const,
+    },
+    growth_partner: {
+      nameEn: "Growth Partner",
+      nameAr: "شريك النمو",
+      descriptionEn:
+        "Growth plan for providers that need stronger profile depth, offer capacity, analytics, and lead support.",
+      descriptionAr:
+        "خطة نمو للمراكز التي تحتاج إلى ملف أعمق وسعة عروض وتحليلات ودعم للطلبات.",
+      includesClaimBadge: true,
+      includesMediaGallery: true,
+      maxDoctors: 15,
+      maxLocations: 3,
+      maxServices: 30,
+      planKey: "growth_partner",
+      sortGroup: 30,
+      status: "draft" as const,
+    },
+    premium_partner: {
+      nameEn: "Premium Partner",
+      nameAr: "الشريك المميز",
+      descriptionEn:
+        "Premium commercial plan for providers that need advanced profile support, richer capacity, analytics, and account operations. Paid ads and Special Offer placements remain separate add-ons available across plans.",
+      descriptionAr:
+        "خطة تجارية مميزة للمراكز التي تحتاج إلى دعم ملف متقدم وسعة أكبر وتحليلات وتشغيل حساب. الإعلانات المدفوعة ومواضع العروض الخاصة تبقى إضافات منفصلة متاحة عبر الخطط.",
+      includesClaimBadge: true,
+      includesMediaGallery: true,
+      maxDoctors: 50,
+      maxLocations: 10,
+      maxServices: 100,
+      planKey: "premium_partner",
+      sortGroup: 40,
+      status: "draft" as const,
+    },
+  }[planTier];
+
+  const intervalLabel = {
+    quarterly: "Quarterly",
+    semi_annual: "Semi Annual",
+    annual: "Annual",
+  }[billingTerm];
+  const intervalSort = {
+    quarterly: 2,
+    semi_annual: 3,
+    annual: 4,
+  }[billingTerm];
+
+  return {
+    slug,
+    name_en:
+      billingTerm === "annual"
+        ? tierConfig.nameEn
+        : `${tierConfig.nameEn} · ${intervalLabel}`,
+    name_ar:
+      billingTerm === "annual"
+        ? tierConfig.nameAr
+        : `${tierConfig.nameAr} · ${intervalLabel}`,
+    description_en: tierConfig.descriptionEn,
+    description_ar: tierConfig.descriptionAr,
+    price_amount: 0,
+    currency_code: "OMR",
+    interval: billingTerm,
+    status: tierConfig.status,
+    includes_claim_badge: tierConfig.includesClaimBadge,
+    includes_featured_listing: false,
+    includes_media_gallery: tierConfig.includesMediaGallery,
+    max_doctors: tierConfig.maxDoctors,
+    max_locations: tierConfig.maxLocations,
+    max_services: tierConfig.maxServices,
+    sort_order: tierConfig.sortGroup * 100 + intervalSort,
+    metadata: {
+      add_on_policy: addOnPolicy,
+      billing_term: billingTerm,
+      commercial_model_version: "PLAN-A2",
+      paid_add_ons_available: true,
+      plan_key: `${tierConfig.planKey}_${billingTerm}`,
+      plan_tier: planTier,
+      pricing_status:
+        planTier === "free_listing" ? "final" : "pending_final_pricing",
+      storefront_visibility: "admin_assignment_available",
+    },
+  };
+}
+
 export async function upsertCenterSubscriptionAssignment(
   _previousState: CenterSubscriptionAssignmentState,
   formData: FormData,
@@ -107,7 +266,8 @@ export async function upsertCenterSubscriptionAssignment(
   const platformAdmin = await requirePlatformAdmin();
 
   const centerId = readFormString(formData, "centerId");
-  const subscriptionPlanId = readFormString(formData, "subscriptionPlanId");
+  const planTier = readFormString(formData, "planTier");
+  const billingTerm = readFormString(formData, "billingTerm");
   const status = readFormString(formData, "status");
   const agreedPriceAmount = parseOptionalAmount(
     readFormString(formData, "agreedPriceAmount"),
@@ -119,10 +279,12 @@ export async function upsertCenterSubscriptionAssignment(
 
   if (
     centerId === null ||
-    subscriptionPlanId === null ||
+    planTier === null ||
+    billingTerm === null ||
     status === null ||
     !isUuid(centerId) ||
-    !isUuid(subscriptionPlanId) ||
+    !isPlanTier(planTier) ||
+    !isBillingTerm(billingTerm) ||
     !isAllowedStatus(status) ||
     agreedPriceAmount === undefined ||
     startsAt === undefined ||
@@ -130,6 +292,11 @@ export async function upsertCenterSubscriptionAssignment(
     trialEndsAt === undefined ||
     notes === undefined
   ) {
+    return genericFailureState;
+  }
+
+  const selectedPlanPayload = planPayload(planTier, billingTerm);
+  if (selectedPlanPayload === null) {
     return genericFailureState;
   }
 
@@ -148,9 +315,8 @@ export async function upsertCenterSubscriptionAssignment(
 
   const { data: plan, error: planError } = await supabase
     .from("subscription_plans")
+    .upsert(selectedPlanPayload, { onConflict: "slug" })
     .select("id, currency_code, interval")
-    .eq("id", subscriptionPlanId)
-    .is("deleted_at", null)
     .maybeSingle();
 
   if (planError !== null || plan === null) {
@@ -178,13 +344,14 @@ export async function upsertCenterSubscriptionAssignment(
     currency_code: plan.currency_code,
     ends_at: endsAt,
     metadata: {
-      billing_interval_source: "subscription_plan",
+      billing_interval_source: "subscription_plan_variant",
+      plan_tier: planTier,
     },
     notes,
     sales_profile_id: platformAdmin.id,
     starts_at: startsAt,
     status,
-    subscription_plan_id: subscriptionPlanId,
+    subscription_plan_id: plan.id,
     trial_ends_at: trialEndsAt,
     updated_at: updatedAt,
   };

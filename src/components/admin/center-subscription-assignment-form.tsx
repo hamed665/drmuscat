@@ -40,6 +40,35 @@ function formatPrice(amount: number, currencyCode: string): string {
   }
 }
 
+function AssignmentHeader({
+  centerCount,
+  planCount,
+}: {
+  centerCount: number;
+  planCount: number;
+}) {
+  return (
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-800">
+          MON-C2
+        </p>
+        <h2 className="mt-2 text-xl font-bold text-slate-950">
+          Assign center subscription
+        </h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
+          Creates or updates one center subscription record. This does not
+          charge, invoice, publish badges, activate ads, activate offers, or
+          unlock provider dashboard access.
+        </p>
+      </div>
+      <div className="rounded-2xl border border-cyan-200 bg-white/80 px-4 py-3 text-sm font-medium text-cyan-900">
+        {centerCount} centers · {planCount} plans
+      </div>
+    </div>
+  );
+}
+
 export function CenterSubscriptionAssignmentForm({
   options,
 }: CenterSubscriptionAssignmentFormProps) {
@@ -63,33 +92,36 @@ export function CenterSubscriptionAssignmentForm({
   const canSubmit = options.centers.length > 0 && options.plans.length > 0;
   const defaultInterval = options.plans.at(0)?.interval ?? "monthly";
 
+  if (!canSubmit) {
+    return (
+      <section className="rounded-3xl border border-cyan-100 bg-cyan-50/70 p-5 shadow-sm">
+        <AssignmentHeader
+          centerCount={options.centers.length}
+          planCount={options.plans.length}
+        />
+        <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
+          <h3 className="text-base font-bold">Plan assignment is not ready yet</h3>
+          <p className="mt-2 max-w-3xl text-sm leading-6">
+            This form needs at least one non-deleted center and one active or
+            draft subscription plan before an assignment can be created. Create
+            the base plan catalog and at least one center record first, then
+            return here to assign the plan.
+          </p>
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-6">
+            <li>Centers available: {options.centers.length}</li>
+            <li>Plans available: {options.plans.length}</li>
+          </ul>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="rounded-3xl border border-cyan-100 bg-cyan-50/70 p-5 shadow-sm">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-800">
-            MON-C2
-          </p>
-          <h2 className="mt-2 text-xl font-bold text-slate-950">
-            Assign center subscription
-          </h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
-            Creates or updates one center subscription record. This does not
-            charge, invoice, publish badges, activate ads, activate offers, or
-            unlock provider dashboard access.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-cyan-200 bg-white/80 px-4 py-3 text-sm font-medium text-cyan-900">
-          {options.centers.length} centers · {options.plans.length} plans
-        </div>
-      </div>
-
-      {!canSubmit ? (
-        <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-          Add at least one non-deleted center and one active or draft plan before
-          creating assignments.
-        </div>
-      ) : null}
+      <AssignmentHeader
+        centerCount={options.centers.length}
+        planCount={options.plans.length}
+      />
 
       <form action={formAction} className="mt-5 space-y-5">
         <div className="grid gap-4 lg:grid-cols-2">
@@ -98,7 +130,7 @@ export function CenterSubscriptionAssignmentForm({
             <select
               name="centerId"
               defaultValue=""
-              disabled={isPending || !canSubmit}
+              disabled={isPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
               required
             >
@@ -118,7 +150,7 @@ export function CenterSubscriptionAssignmentForm({
             <select
               name="subscriptionPlanId"
               defaultValue=""
-              disabled={isPending || !canSubmit}
+              disabled={isPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
               required
             >
@@ -140,7 +172,7 @@ export function CenterSubscriptionAssignmentForm({
             <select
               name="status"
               defaultValue="active"
-              disabled={isPending || !canSubmit}
+              disabled={isPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
               required
             >
@@ -157,7 +189,7 @@ export function CenterSubscriptionAssignmentForm({
             <select
               name="billingInterval"
               defaultValue={defaultInterval}
-              disabled={isPending || !canSubmit}
+              disabled={isPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
               required
             >
@@ -177,7 +209,7 @@ export function CenterSubscriptionAssignmentForm({
               min="0"
               step="0.001"
               placeholder="Optional"
-              disabled={isPending || !canSubmit}
+              disabled={isPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             />
           </label>
@@ -189,7 +221,7 @@ export function CenterSubscriptionAssignmentForm({
             <input
               name="startsAt"
               type="date"
-              disabled={isPending || !canSubmit}
+              disabled={isPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             />
           </label>
@@ -198,7 +230,7 @@ export function CenterSubscriptionAssignmentForm({
             <input
               name="endsAt"
               type="date"
-              disabled={isPending || !canSubmit}
+              disabled={isPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             />
           </label>
@@ -207,7 +239,7 @@ export function CenterSubscriptionAssignmentForm({
             <input
               name="trialEndsAt"
               type="date"
-              disabled={isPending || !canSubmit}
+              disabled={isPending}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             />
           </label>
@@ -220,7 +252,7 @@ export function CenterSubscriptionAssignmentForm({
             rows={3}
             maxLength={2000}
             placeholder="Optional internal note"
-            disabled={isPending || !canSubmit}
+            disabled={isPending}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
           />
         </label>
@@ -228,7 +260,7 @@ export function CenterSubscriptionAssignmentForm({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="submit"
-            disabled={isPending || !canSubmit}
+            disabled={isPending}
             className="inline-flex justify-center rounded-2xl bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:bg-slate-400"
           >
             {isPending ? "Saving…" : "Save subscription assignment"}

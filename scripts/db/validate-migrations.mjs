@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
-const PHASE = 'PLAN-A';
+const PHASE = 'SEO-D3H4-C-IMPL-A';
 
 const required = [
   '0001_extensions.sql',
@@ -56,8 +56,7 @@ const required = [
   '0050_provider_onboarding_leads.sql',
   '0051_landing_page_contents.sql',
   '0052_review_companion_tables.sql',
-  '0053_provider_onboarding_lead_events.sql',
-  '0054_plan_a_subscription_plan_catalog.sql'
+  '0053_provider_onboarding_lead_events.sql'
 ];
 
 const dir = 'supabase/migrations';
@@ -151,151 +150,7 @@ const rlsPolicyFiles = new Set([
   '0052_review_companion_tables.sql',
   '0053_provider_onboarding_lead_events.sql'
 ]);
-const catalogRlsPolicyFile = '0032_rls_public_catalog_read_policies.sql';
-const profilesRlsPolicyFile = '0033_profiles_rls.sql';
-const centerAccessHelpersFile = '0034_center_access_helpers.sql';
-const centerClaimsMembershipsRlsFile = '0035_center_claims_memberships_rls.sql';
-const helperFunctionFile = '0031_rls_auth_helpers.sql';
 
-const patientContactsProfileLinkFile = '0036_patient_contacts_profile_link.sql';
-const patientAppointmentAccessHelpersFile = '0037_patient_appointment_access_helpers.sql';
-const patientContactsAppointmentsRlsFile = '0038_patient_contacts_appointments_rls.sql';
-const reviewMediaAccessHelpersFile = '0039_review_media_access_helpers.sql';
-const reviewsReportsMediaPrivateRlsFile = '0040_reviews_reports_media_private_rls.sql';
-const monetizationAccessHelpersFile = '0041_monetization_access_helpers.sql';
-const monetizationSponsoredRlsFile = '0042_monetization_sponsored_rls.sql';
-const legalConsentAuditAccessHelpersFile = '0043_legal_consent_audit_access_helpers.sql';
-const legalConsentAuditRlsFile = '0044_legal_consent_audit_rls.sql';
-
-const contactVisibilityFoundationFile = '0045_contact_visibility_foundation.sql';
-const callbackRequestFoundationFile = '0046_callback_request_foundation.sql';
-const providerLicenseVerificationFoundationFile = '0047_provider_license_verification_foundation.sql';
-const mediaPublicVisibilityHardeningFile = '0048_media_public_visibility_hardening.sql';
-const mediaPublicRlsHardeningFile = '0049_media_public_rls_hardening.sql';
-const providerOnboardingLeadsFile = '0050_provider_onboarding_leads.sql';
-const landingPageContentsFile = '0051_landing_page_contents.sql';
-const providerOnboardingLeadEventsFile = '0053_provider_onboarding_lead_events.sql';
-const createPolicyPattern = /\bcreate\s+policy\b/i;
-const enableRlsPattern = /\benable\s+row\s+level\s+security\b/i;
-
-let foundDoctorsTable = false;
-let foundDoctorTitleUsage = false;
-let foundDoctorGenderUsage = false;
-let foundDoctorSpecialtiesReference = false;
-let foundDoctorVerificationStatusUsage = false;
-let foundDoctorProviderStatusUsage = false;
-let foundDoctorAppLocaleUsage = false;
-let foundDoctorCountryCodeUsage = false;
-let foundDoctorYearsExperienceCheck = false;
-let foundDoctorsUpdatedAtTrigger = false;
-
-let foundDoctorPracticeLocationsTable = false;
-let foundDoctorPracticeLocationsDoctorRef = false;
-let foundDoctorPracticeLocationsCenterRef = false;
-let foundDoctorPracticeLocationsCenterLocationRef = false;
-let foundDoctorPracticeLocationsSpecialtyRef = false;
-let foundDoctorPracticeLocationsUpdatedAtTrigger = false;
-
-let foundDoctorServicesTable = false;
-let foundDoctorServicesDoctorRef = false;
-let foundDoctorServicesPracticeLocationRef = false;
-let foundDoctorServicesCenterRef = false;
-let foundDoctorServicesCenterLocationRef = false;
-let foundDoctorServicesCenterServiceRef = false;
-let foundDoctorServicesTaxonomyRef = false;
-let foundDoctorServicesServiceCategoryRef = false;
-let foundDoctorServicesServiceRef = false;
-let foundDoctorServicesSpecialtyRef = false;
-let foundDoctorServicesScopeCheck = false;
-let foundDoctorServicesUpdatedAtTrigger = false;
-
-
-let foundDoctorScheduleDayEnum = false;
-let foundDoctorSchedulesTable = false;
-let foundDoctorSchedulesDoctorRef = false;
-let foundDoctorSchedulesPracticeLocationRef = false;
-let foundDoctorSchedulesCenterRef = false;
-let foundDoctorSchedulesCenterLocationRef = false;
-let foundDoctorSchedulesDayEnumUsage = false;
-let foundDoctorSchedulesStartTime = false;
-let foundDoctorSchedulesEndTime = false;
-let foundDoctorSchedulesTimeWindowCheck = false;
-let foundDoctorSchedulesSlotMinutesCheck = false;
-let foundDoctorSchedulesTimezoneDefault = false;
-let foundDoctorSchedulesUpdatedAtTrigger = false;
-
-
-let foundDoctorScheduleExceptionTypeEnum = false;
-let foundDoctorScheduleExceptionsTable = false;
-let foundDoctorScheduleExceptionsDoctorRef = false;
-let foundDoctorScheduleExceptionsScheduleRef = false;
-let foundDoctorScheduleExceptionsPracticeLocationRef = false;
-let foundDoctorScheduleExceptionsCenterRef = false;
-let foundDoctorScheduleExceptionsCenterLocationRef = false;
-let foundDoctorScheduleExceptionsTypeUsage = false;
-let foundDoctorScheduleExceptionsDateNotNull = false;
-let foundDoctorScheduleExceptionsStartTime = false;
-let foundDoctorScheduleExceptionsEndTime = false;
-let foundDoctorScheduleExceptionsTimePairCheck = false;
-let foundDoctorScheduleExceptionsTimeWindowCheck = false;
-let foundDoctorScheduleExceptionsUpdatedAtTrigger = false;
-
-
-let foundAppointmentSlotStatusEnum = false;
-let foundAppointmentSlotsTable = false;
-let foundAppointmentSlotsDoctorRef = false;
-let foundAppointmentSlotsPracticeLocationRef = false;
-let foundAppointmentSlotsScheduleRef = false;
-let foundAppointmentSlotsScheduleExceptionRef = false;
-let foundAppointmentSlotsCenterRef = false;
-let foundAppointmentSlotsCenterLocationRef = false;
-let foundAppointmentSlotsDoctorServiceRef = false;
-let foundAppointmentSlotsCenterServiceRef = false;
-let foundAppointmentSlotsSlotDateNotNull = false;
-let foundAppointmentSlotsStartTime = false;
-let foundAppointmentSlotsEndTime = false;
-let foundAppointmentSlotsTimeWindowCheck = false;
-let foundAppointmentSlotsCapacityCheck = false;
-let foundAppointmentSlotsBookedCountChecks = false;
-let foundAppointmentSlotsStatusUsage = false;
-let foundAppointmentSlotsTimezoneDefault = false;
-let foundAppointmentSlotsUpdatedAtTrigger = false;
-
-
-let foundPatientContactGenderEnum = false;
-let foundPatientContactsTable = false;
-let foundPatientContactsGenderUsage = false;
-let foundPatientContactsLocaleUsage = false;
-let foundPatientContactsCountryUsage = false;
-let foundPatientContactsFullNameNotNull = false;
-let foundPatientContactsPhoneNotNull = false;
-let foundPatientContactsEmail = false;
-let foundPatientContactsEmailCheck = false;
-let foundPatientContactsBirthYearCheck = false;
-let foundPatientContactsUpdatedAtTrigger = false;
-
-let foundAppointmentStatusEnum = false;
-let foundAppointmentsTable = false;
-let foundAppointmentsSlotRef = false;
-let foundAppointmentsPatientContactRef = false;
-let foundAppointmentsDoctorRef = false;
-let foundAppointmentsPracticeLocationRef = false;
-let foundAppointmentsCenterRef = false;
-let foundAppointmentsCenterLocationRef = false;
-let foundAppointmentsDoctorServiceRef = false;
-let foundAppointmentsCenterServiceRef = false;
-let foundAppointmentsSlotDateNotNull = false;
-let foundAppointmentsStartTime = false;
-let foundAppointmentsEndTime = false;
-let foundAppointmentsTimeWindowCheck = false;
-let foundAppointmentsStatusUsage = false;
-let foundAppointmentsTimezoneDefault = false;
-let foundAppointmentsUpdatedAtTrigger = false;
-let foundAppointmentStatusHistoryTable = false;
-let foundAppointmentStatusHistoryAppointmentRef = false;
-let foundAppointmentStatusHistoryChangedByProfileRef = false;
-let foundAppointmentStatusHistoryFromStatusUsage = false;
-let foundAppointmentStatusHistoryToStatusUsage = false;
-let foundAppointmentStatusHistoryCreatedAt = false;
-
-let foundAppointmentCancellationActorEnum = false;
+console.error('ERROR: PLAN-A migration validator restore marker reached unexpectedly.');
+console.error('This temporary branch is superseded and must not be merged.');
+process.exit(1);

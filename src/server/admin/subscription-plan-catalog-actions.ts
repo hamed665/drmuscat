@@ -14,6 +14,9 @@ export type BaseSubscriptionPlanCatalogState = {
   message: string | null;
 };
 
+const legacyPremiumAdsProSlug = "premium-ads-pro";
+const premiumPartnerSlug = "premium-partner";
+
 const baseSubscriptionPlans: SubscriptionPlanInsert[] = [
   {
     slug: "free-listing",
@@ -39,6 +42,8 @@ const baseSubscriptionPlans: SubscriptionPlanInsert[] = [
       commercial_model_version: "PLAN-A",
       pricing_status: "final",
       paid_add_ons_available: true,
+      add_on_policy:
+        "Homepage ads and Special Offer placements are separate paid products available across plans.",
     },
   },
   {
@@ -65,6 +70,8 @@ const baseSubscriptionPlans: SubscriptionPlanInsert[] = [
       commercial_model_version: "PLAN-A",
       pricing_status: "pending_final_pricing",
       paid_add_ons_available: true,
+      add_on_policy:
+        "Homepage ads and Special Offer placements are separate paid products available across plans.",
     },
   },
   {
@@ -91,14 +98,16 @@ const baseSubscriptionPlans: SubscriptionPlanInsert[] = [
       commercial_model_version: "PLAN-A",
       pricing_status: "pending_final_pricing",
       paid_add_ons_available: true,
+      add_on_policy:
+        "Homepage ads and Special Offer placements are separate paid products available across plans.",
     },
   },
   {
-    slug: "premium-ads-pro",
+    slug: premiumPartnerSlug,
     name_en: "Premium Partner",
     name_ar: "الشريك المميز",
     description_en:
-      "Premium commercial plan for providers that need advanced profile support, richer capacity, analytics, and account operations. Paid ads and special offer placements remain separate add-ons available across plans.",
+      "Premium commercial plan for providers that need advanced profile support, richer capacity, analytics, and account operations. Paid ads and Special Offer placements remain separate add-ons available across plans.",
     description_ar:
       "خطة تجارية مميزة للمراكز التي تحتاج إلى دعم ملف متقدم وسعة أكبر وتحليلات وتشغيل حساب. الإعلانات المدفوعة ومواضع العروض الخاصة تبقى إضافات منفصلة متاحة عبر الخطط.",
     price_amount: 0,
@@ -114,10 +123,12 @@ const baseSubscriptionPlans: SubscriptionPlanInsert[] = [
     sort_order: 40,
     metadata: {
       plan_key: "premium_partner",
-      legacy_slug_note: "premium-ads-pro slug kept temporarily to update existing preview rows without creating duplicates.",
       commercial_model_version: "PLAN-A",
       pricing_status: "pending_final_pricing",
       paid_add_ons_available: true,
+      add_on_policy:
+        "Homepage ads and Special Offer placements are separate paid products available across plans.",
+      renamed_from: legacyPremiumAdsProSlug,
     },
   },
 ];
@@ -129,6 +140,54 @@ export async function initializeBaseSubscriptionPlanCatalog(
   await requirePlatformAdmin();
 
   const supabase = createSupabaseServiceRoleClient();
+  const now = new Date().toISOString();
+
+  const { data: existingPremiumPartner, error: existingPremiumPartnerError } =
+    await supabase
+      .from("subscription_plans")
+      .select("id")
+      .eq("slug", premiumPartnerSlug)
+      .is("deleted_at", null)
+      .maybeSingle();
+
+  if (existingPremiumPartnerError !== null) {
+    return {
+      ok: false,
+      message: "Base subscription plan catalog could not be initialized.",
+    };
+  }
+
+  if (existingPremiumPartner === null) {
+    const { error: legacyRenameError } = await supabase
+      .from("subscription_plans")
+      .update({ slug: premiumPartnerSlug, updated_at: now })
+      .eq("slug", legacyPremiumAdsProSlug)
+      .is("deleted_at", null);
+
+    if (legacyRenameError !== null) {
+      return {
+        ok: false,
+        message: "Base subscription plan catalog could not be initialized.",
+      };
+    }
+  } else {
+    const { error: legacyArchiveError } = await supabase
+      .from("subscription_plans")
+      .update({
+        deleted_at: now,
+        status: "archived",
+        updated_at: now,
+      })
+      .eq("slug", legacyPremiumAdsProSlug)
+      .is("deleted_at", null);
+
+    if (legacyArchiveError !== null) {
+      return {
+        ok: false,
+        message: "Base subscription plan catalog could not be initialized.",
+      };
+    }
+  }
 
   const { error } = await supabase
     .from("subscription_plans")
@@ -146,6 +205,6 @@ export async function initializeBaseSubscriptionPlanCatalog(
   return {
     ok: true,
     message:
-      "Base subscription plan catalog was initialized. Refresh the page to load the plan options.",
+      "Base subscription plan catalog was synced. Refresh the page to load the current plan options.",
   };
 }

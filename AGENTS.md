@@ -40,16 +40,17 @@ Before planning or implementing any future task, agents must read the following 
 19. `docs/platform/DRMUSCAT_TAXONOMY_AND_PROVIDER_PROFILE_MODEL_SPEC_V1.md`
 20. `docs/platform/DRMUSCAT_TAXONOMY_SCHEMA_PLAN_SPEC_V1.md`
 21. `docs/platform/DRMUSCAT_TAX_C1_VERTICAL_CATEGORY_MIGRATION_PLAN_V1.md`
-22. `docs/platform/DRMUSCAT_SEO_AI_CONTENT_OPERATING_SYSTEM_SPEC_V1.md`
-23. `docs/platform/DRMUSCAT_KEYWORD_UNIVERSE_CONTENT_INTELLIGENCE_SPEC_V1.md`
-24. `docs/platform/DRMUSCAT_AI_BRIEF_DRAFT_WORKFLOW_SPEC_V1.md`
-25. `docs/platform/DRMUSCAT_EXISTING_REVIEW_SCHEMA_RECONCILIATION_SPEC_V1.md`
+22. `docs/platform/DRMUSCAT_TAXONOMY_SEED_PLAN_V1.md`
+23. `docs/platform/DRMUSCAT_SEO_AI_CONTENT_OPERATING_SYSTEM_SPEC_V1.md`
+24. `docs/platform/DRMUSCAT_KEYWORD_UNIVERSE_CONTENT_INTELLIGENCE_SPEC_V1.md`
+25. `docs/platform/DRMUSCAT_AI_BRIEF_DRAFT_WORKFLOW_SPEC_V1.md`
+26. `docs/platform/DRMUSCAT_EXISTING_REVIEW_SCHEMA_RECONCILIATION_SPEC_V1.md`
 
 ### E. V10.5 addendums
 
-26. `docs/addendums/V10_5_BUSINESS_GROWTH_REVENUE_ADDENDUM.md`
-27. `docs/addendums/V10_5_SEO_AI_SEARCH_EXPANSION_ADDENDUM.md`
-28. `docs/addendums/V10_5_MONETIZATION_SALES_REFERRAL_ADDENDUM.md`
+27. `docs/addendums/V10_5_BUSINESS_GROWTH_REVENUE_ADDENDUM.md`
+28. `docs/addendums/V10_5_SEO_AI_SEARCH_EXPANSION_ADDENDUM.md`
+29. `docs/addendums/V10_5_MONETIZATION_SALES_REFERRAL_ADDENDUM.md`
 
 Future tasks must still use the four-axis mapping model:
 
@@ -68,11 +69,11 @@ Use `PHASED_BUILD_ONLY` mode.
 
 Do not build the full platform in one pass.
 
-Current repo state: **after ADDON-A commercial add-on assignment shell and CENTER-A lead history event-type fix**.
+Current repo state: **after TAX-RLS-A taxonomy public RLS and TAX-SEED-A planning**.
 
-Completed migrations: **`0001` through `0053`**. Migration validation is expected through `0053_provider_onboarding_lead_events.sql`.
+Completed migrations: **`0001` through `0055`**. Migration validation is expected through `0055_taxonomy_public_rls.sql`.
 
-Approved current surfaces include localized public catalog/detail surfaces, static public article shell routes, contact/callback/media/license foundations, provider onboarding lead capture, protected root `/admin`, minimal admin login, admin provider onboarding lead list/detail, limited status/priority lead mutation, read-only lead history UI, status/priority lead history writes, draft center creation from provider onboarding lead, admin center subscription view/assignment foundation, base plan catalog initializer, admin quick navigation, and admin commercial add-on assignment shell.
+Approved current surfaces include localized public catalog/detail surfaces, static public article shell routes, contact/callback/media/license foundations, provider onboarding lead capture, protected root `/admin`, minimal admin login, admin provider onboarding lead list/detail, limited status/priority lead mutation, read-only lead history UI, status/priority lead history writes, draft center creation from provider onboarding lead, admin center subscription view/assignment foundation, base plan catalog initializer, admin quick navigation, admin commercial add-on assignment shell, healthcare vertical/category taxonomy foundation, and public read RLS for approved public taxonomy rows.
 
 Do not infer approval for broader business features from the current foundations.
 

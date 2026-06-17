@@ -81,7 +81,7 @@ for (const required of [
   /'diagnostics'/i,
   /'pharmacy'/i,
   /'veterinary'/i,
-  /'healthy_food'/i,
+  /'healthy-food'/i,
   /'medical-laboratory'/i,
   /'dental-clinic'/i,
   /'pet-clinic'/i,
@@ -90,6 +90,16 @@ for (const required of [
   /where\s+not\s+exists/i,
 ]) {
   assert(required.test(seedContent), `Missing required approved seed pattern: ${required}`);
+}
+
+for (const forbiddenSlug of [
+  /'home_care'/i,
+  /'mental_health'/i,
+  /'optical_eye_care'/i,
+  /'healthy_food'/i,
+  /'other_health'/i,
+]) {
+  assert(!forbiddenSlug.test(seedContent), `Underscore vertical slug is not allowed: ${forbiddenSlug}`);
 }
 
 const packageJson = readFileSync(packageJsonPath, 'utf8');

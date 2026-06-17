@@ -212,11 +212,12 @@ Future implementation must remain explicitly phase-approved and narrowly scoped.
 
 Recommended next planning order:
 
-1. `OFF-A` — Official Offers admin/data model planning.
-2. `ADS-B` / `MON-D` — fuller Ads and paid placement options planning.
-3. `ART-B` — Article CMS data model planning.
-4. `PLAC-A` — Article placement slot engine planning.
-5. `AI-A` — read-only content intelligence planning only after article/offer/placement foundations are approved.
+1. `TAX-A` / `MODEL-A` — taxonomy, provider profile, doctor, specialty, service, insurance, license, media, review, WhatsApp CTA, and bilingual label planning.
+2. `OFF-A` — Official Offers admin/data model planning.
+3. `ADS-B` / `MON-D` — fuller Ads and paid placement options planning.
+4. `ART-B` — Article CMS data model planning.
+5. `PLAC-A` — Article placement slot engine planning.
+6. `AI-A` — read-only content intelligence planning only after article/offer/placement foundations are approved.
 
 Do not implement sales, referral, billing, analytics, SEO AI, provider dashboard, payment, admin mutation, seed, or other business expansion features unless a future phase specifically approves that scope.
 

@@ -23,13 +23,13 @@ with vertical_seed (
     ('wellness', 'Wellness', 'العافية', 'Wellness, preventive health, and wellbeing services.', 'خدمات العافية والصحة الوقائية والرفاه.', true, false, true, false, false, true, true, true, 60),
     ('fitness', 'Fitness', 'اللياقة', 'Fitness and sports health services.', 'خدمات اللياقة والصحة الرياضية.', false, false, true, false, false, false, true, true, 70),
     ('nutrition', 'Nutrition', 'التغذية', 'Nutrition, diet, and weight management services.', 'خدمات التغذية والحمية وإدارة الوزن.', true, false, true, false, false, true, true, true, 80),
-    ('home_care', 'Home Care', 'الرعاية المنزلية', 'Home healthcare and home support services.', 'خدمات الرعاية الصحية والدعم المنزلي.', true, true, true, false, false, true, true, true, 90),
+    ('home-care', 'Home Care', 'الرعاية المنزلية', 'Home healthcare and home support services.', 'خدمات الرعاية الصحية والدعم المنزلي.', true, true, true, false, false, true, true, true, 90),
     ('rehabilitation', 'Rehabilitation', 'التأهيل', 'Rehabilitation, recovery, and therapy services.', 'خدمات التأهيل والتعافي والعلاج.', true, true, true, false, false, true, true, true, 100),
-    ('mental_health', 'Mental Health', 'الصحة النفسية', 'Mental health, counseling, and psychology services.', 'خدمات الصحة النفسية والاستشارات وعلم النفس.', true, true, true, false, false, true, true, true, 110),
-    ('optical_eye_care', 'Optical & Eye Care', 'البصريات ورعاية العيون', 'Optical, vision, and eye care services.', 'خدمات البصريات والنظر ورعاية العيون.', true, true, true, false, false, true, true, true, 120),
+    ('mental-health', 'Mental Health', 'الصحة النفسية', 'Mental health, counseling, and psychology services.', 'خدمات الصحة النفسية والاستشارات وعلم النفس.', true, true, true, false, false, true, true, true, 110),
+    ('optical-eye-care', 'Optical & Eye Care', 'البصريات ورعاية العيون', 'Optical, vision, and eye care services.', 'خدمات البصريات والنظر ورعاية العيون.', true, true, true, false, false, true, true, true, 120),
     ('veterinary', 'Veterinary / Pet Health', 'الطب البيطري ورعاية الحيوانات', 'Veterinary and pet health services. Planned but not public yet.', 'خدمات الطب البيطري ورعاية الحيوانات. مخطط لها ولم يتم إطلاقها للعامة بعد.', false, false, false, true, false, false, false, false, 900),
-    ('healthy_food', 'Healthy Food', 'الطعام الصحي', 'Healthy food services. Planned but not public yet.', 'خدمات الطعام الصحي. مخطط لها ولم يتم إطلاقها للعامة بعد.', false, false, true, false, true, false, false, false, 910),
-    ('other_health', 'Other Health Services', 'خدمات صحية أخرى', 'Other approved health-related services.', 'خدمات صحية أخرى معتمدة.', false, false, true, false, false, false, true, true, 990)
+    ('healthy-food', 'Healthy Food', 'الطعام الصحي', 'Healthy food services. Planned but not public yet.', 'خدمات الطعام الصحي. مخطط لها ولم يتم إطلاقها للعامة بعد.', false, false, true, false, true, false, false, false, 910),
+    ('other-health', 'Other Health Services', 'خدمات صحية أخرى', 'Other approved health-related services.', 'خدمات صحية أخرى معتمدة.', false, false, true, false, false, false, true, true, 990)
 ), updated_verticals as (
   update public.healthcare_verticals target
   set
@@ -124,18 +124,18 @@ with category_seed (
     ('fitness', 'gym-fitness-center', 'Gym / Fitness Center', 'نادي رياضي / مركز لياقة', 'Fitness and sports activity services.', 'خدمات اللياقة والأنشطة الرياضية.', 'other'::center_type, false, false, false, true, true, 120),
     ('nutrition', 'nutrition-center', 'Nutrition Center', 'مركز تغذية', 'Nutrition, diet, and weight management services.', 'خدمات التغذية والحمية وإدارة الوزن.', 'wellness_center'::center_type, true, false, true, true, true, 130),
     ('nutrition', 'dietitian-clinic', 'Dietitian Clinic', 'عيادة أخصائي تغذية', 'Dietitian and nutrition consultation services.', 'خدمات الاستشارات الغذائية وأخصائي التغذية.', 'clinic'::center_type, true, false, true, true, true, 140),
-    ('home_care', 'home-healthcare', 'Home Healthcare', 'رعاية صحية منزلية', 'Home healthcare and support services.', 'خدمات الرعاية الصحية والدعم المنزلي.', 'other'::center_type, true, true, true, true, true, 150),
+    ('home-care', 'home-healthcare', 'Home Healthcare', 'رعاية صحية منزلية', 'Home healthcare and support services.', 'خدمات الرعاية الصحية والدعم المنزلي.', 'other'::center_type, true, true, true, true, true, 150),
     ('rehabilitation', 'physiotherapy-center', 'Physiotherapy Center', 'مركز علاج طبيعي', 'Physiotherapy and movement therapy services.', 'خدمات العلاج الطبيعي والعلاج الحركي.', 'physiotherapy_center'::center_type, true, true, true, true, true, 160),
     ('rehabilitation', 'rehabilitation-center', 'Rehabilitation Center', 'مركز تأهيل', 'Rehabilitation and recovery services.', 'خدمات التأهيل والتعافي.', 'physiotherapy_center'::center_type, true, true, true, true, true, 170),
-    ('mental_health', 'psychology-clinic', 'Psychology Clinic', 'عيادة نفسية', 'Psychology and counseling services.', 'خدمات علم النفس والاستشارات.', 'clinic'::center_type, true, true, true, true, true, 180),
-    ('mental_health', 'psychiatry-clinic', 'Psychiatry Clinic', 'عيادة طب نفسي', 'Psychiatry and mental health medical services.', 'خدمات الطب النفسي والصحة النفسية.', 'clinic'::center_type, true, true, true, true, true, 190),
-    ('optical_eye_care', 'eye-clinic', 'Eye Clinic', 'عيادة عيون', 'Eye care and ophthalmology services.', 'خدمات رعاية العيون وطب العيون.', 'clinic'::center_type, true, true, true, true, true, 200),
-    ('optical_eye_care', 'optical-store', 'Optical Store', 'محل بصريات', 'Optical and vision product services.', 'خدمات البصريات ومنتجات النظر.', 'other'::center_type, false, false, true, true, true, 210),
+    ('mental-health', 'psychology-clinic', 'Psychology Clinic', 'عيادة نفسية', 'Psychology and counseling services.', 'خدمات علم النفس والاستشارات.', 'clinic'::center_type, true, true, true, true, true, 180),
+    ('mental-health', 'psychiatry-clinic', 'Psychiatry Clinic', 'عيادة طب نفسي', 'Psychiatry and mental health medical services.', 'خدمات الطب النفسي والصحة النفسية.', 'clinic'::center_type, true, true, true, true, true, 190),
+    ('optical-eye-care', 'eye-clinic', 'Eye Clinic', 'عيادة عيون', 'Eye care and ophthalmology services.', 'خدمات رعاية العيون وطب العيون.', 'clinic'::center_type, true, true, true, true, true, 200),
+    ('optical-eye-care', 'optical-store', 'Optical Store', 'محل بصريات', 'Optical and vision product services.', 'خدمات البصريات ومنتجات النظر.', 'other'::center_type, false, false, true, true, true, 210),
     ('veterinary', 'pet-clinic', 'Pet Clinic', 'عيادة حيوانات أليفة', 'Pet care services. Planned but disabled.', 'خدمات رعاية الحيوانات الأليفة. مخطط لها وغير مفعلة.', 'other'::center_type, false, false, false, false, false, 900),
     ('veterinary', 'veterinary-clinic', 'Veterinary Clinic', 'عيادة بيطرية', 'Veterinary services. Planned but disabled.', 'خدمات الطب البيطري. مخطط لها وغير مفعلة.', 'other'::center_type, false, false, false, false, false, 910),
-    ('healthy_food', 'healthy-restaurant', 'Healthy Restaurant', 'مطعم صحي', 'Healthy food services. Planned but disabled.', 'خدمات الطعام الصحي. مخطط لها وغير مفعلة.', 'other'::center_type, false, false, false, false, false, 920),
-    ('healthy_food', 'healthy-cafe', 'Healthy Cafe', 'مقهى صحي', 'Healthy cafe services. Planned but disabled.', 'خدمات المقاهي الصحية. مخطط لها وغير مفعلة.', 'other'::center_type, false, false, false, false, false, 930),
-    ('other_health', 'other-health-service', 'Other Health Service', 'خدمة صحية أخرى', 'Other approved health-related services.', 'خدمات صحية أخرى معتمدة.', 'other'::center_type, false, false, false, true, true, 990)
+    ('healthy-food', 'healthy-restaurant', 'Healthy Restaurant', 'مطعم صحي', 'Healthy food services. Planned but disabled.', 'خدمات الطعام الصحي. مخطط لها وغير مفعلة.', 'other'::center_type, false, false, false, false, false, 920),
+    ('healthy-food', 'healthy-cafe', 'Healthy Cafe', 'مقهى صحي', 'Healthy cafe services. Planned but disabled.', 'خدمات المقاهي الصحية. مخطط لها وغير مفعلة.', 'other'::center_type, false, false, false, false, false, 930),
+    ('other-health', 'other-health-service', 'Other Health Service', 'خدمة صحية أخرى', 'Other approved health-related services.', 'خدمات صحية أخرى معتمدة.', 'other'::center_type, false, false, false, true, true, 990)
 ), category_rows as (
   select
     verticals.id as vertical_id,

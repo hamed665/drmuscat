@@ -13,13 +13,13 @@ const expectedVerticalSlugs = [
   'wellness',
   'fitness',
   'nutrition',
-  'home_care',
+  'home-care',
   'rehabilitation',
-  'mental_health',
-  'optical_eye_care',
+  'mental-health',
+  'optical-eye-care',
   'veterinary',
-  'healthy_food',
-  'other_health',
+  'healthy-food',
+  'other-health',
 ];
 const expectedCategorySlugs = [
   'clinic',
@@ -122,27 +122,23 @@ for (const [pattern, message] of [
 }
 
 for (const slug of expectedVerticalSlugs) {
-  requirePattern(
-    content,
-    new RegExp(`'${slug}'`, 'i'),
-    `Missing expected vertical slug in seed: ${slug}`,
-  );
+  requirePattern(content, new RegExp(`'${slug}'`, 'i'), `Missing expected vertical slug in seed: ${slug}`);
 }
 
 for (const slug of expectedCategorySlugs) {
-  requirePattern(
-    content,
-    new RegExp(`'${slug}'`, 'i'),
-    `Missing expected category slug in seed: ${slug}`,
-  );
+  requirePattern(content, new RegExp(`'${slug}'`, 'i'), `Missing expected category slug in seed: ${slug}`);
 }
 
-for (const disabledSlug of ['veterinary', 'healthy_food', 'pet-clinic', 'veterinary-clinic', 'healthy-restaurant', 'healthy-cafe']) {
+for (const disabledSlug of ['veterinary', 'healthy-food', 'pet-clinic', 'veterinary-clinic', 'healthy-restaurant', 'healthy-cafe']) {
   requirePattern(
     content,
     new RegExp(`'${disabledSlug}'[\\s\\S]*?false[\\s\\S]*?false[\\s\\S]*?false`, 'i'),
     `Disabled taxonomy seed must keep ${disabledSlug} inactive/non-public.`,
   );
+}
+
+for (const underscoreSlug of ['home_care', 'mental_health', 'optical_eye_care', 'healthy_food', 'other_health']) {
+  forbidPattern(content, new RegExp(`'${underscoreSlug}'`, 'i'), `Seed must not use underscore slug: ${underscoreSlug}`);
 }
 
 console.log('Seed protocol validated.');

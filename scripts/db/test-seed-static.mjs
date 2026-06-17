@@ -9,7 +9,10 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..', '..');
 const seedDir = path.join(repoRoot, 'supabase', 'seed');
 const packageJsonPath = path.join(repoRoot, 'package.json');
-const expectedSeedFile = '0001_taxonomy_verticals_center_categories.sql';
+const expectedSeedFiles = [
+  '0000_oman_geo_foundation.sql',
+  '0001_taxonomy_verticals_center_categories.sql',
+];
 
 function fail(message) {
   console.error(`❌ ${message}`);
@@ -44,13 +47,15 @@ if (!statSync(seedDir).isDirectory()) {
 }
 
 const allSqlUnderSeed = walkForSql(seedDir);
-const expectedRelativePath = `supabase/seed/${expectedSeedFile}`;
+const expectedRelativePaths = expectedSeedFiles.map((fileName) => `supabase/seed/${fileName}`);
 assert(
-  allSqlUnderSeed.length === 1 && allSqlUnderSeed[0] === expectedRelativePath,
-  `Expected only approved TAX-SEED-B SQL file ${expectedRelativePath}; found: ${allSqlUnderSeed.join(', ') || '(none)'}`,
+  JSON.stringify(allSqlUnderSeed) === JSON.stringify(expectedRelativePaths),
+  `Expected only approved SQL seed files ${expectedRelativePaths.join(', ')}; found: ${allSqlUnderSeed.join(', ') || '(none)'}`,
 );
 
-const seedContent = readFileSync(path.join(seedDir, expectedSeedFile), 'utf8');
+const geoSeedContent = readFileSync(path.join(seedDir, expectedSeedFiles[0]), 'utf8');
+const taxonomySeedContent = readFileSync(path.join(seedDir, expectedSeedFiles[1]), 'utf8');
+const allSeedContent = `${geoSeedContent}\n${taxonomySeedContent}`;
 
 for (const forbidden of [
   /insert\s+into\s+public\.centers\b/i,
@@ -68,7 +73,20 @@ for (const forbidden of [
   /\bcreate\s+table\b/i,
   /\bdrop\b/i,
 ]) {
-  assert(!forbidden.test(seedContent), `Forbidden seed scope found: ${forbidden}`);
+  assert(!forbidden.test(allSeedContent), `Forbidden seed scope found: ${forbidden}`);
+}
+
+for (const required of [
+  /insert\s+into\s+public\.geo_countries/i,
+  /insert\s+into\s+public\.geo_regions/i,
+  /insert\s+into\s+public\.geo_cities/i,
+  /insert\s+into\s+public\.geo_areas/i,
+  /'oman'/i,
+  /'muscat-governorate'/i,
+  /'muscat'/i,
+  /'al-khuwair'/i,
+]) {
+  assert(required.test(geoSeedContent), `Missing required approved geo seed pattern: ${required}`);
 }
 
 for (const required of [
@@ -89,7 +107,7 @@ for (const required of [
   /schema_org_hint\s*=\s*null/i,
   /where\s+not\s+exists/i,
 ]) {
-  assert(required.test(seedContent), `Missing required approved seed pattern: ${required}`);
+  assert(required.test(taxonomySeedContent), `Missing required approved taxonomy seed pattern: ${required}`);
 }
 
 for (const forbiddenSlug of [
@@ -99,7 +117,7 @@ for (const forbiddenSlug of [
   /'healthy_food'/i,
   /'other_health'/i,
 ]) {
-  assert(!forbiddenSlug.test(seedContent), `Underscore vertical slug is not allowed: ${forbiddenSlug}`);
+  assert(!forbiddenSlug.test(taxonomySeedContent), `Underscore vertical slug is not allowed: ${forbiddenSlug}`);
 }
 
 const packageJson = readFileSync(packageJsonPath, 'utf8');
@@ -107,4 +125,4 @@ if (/Seed test placeholder/i.test(packageJson)) {
   fail('Placeholder string "Seed test placeholder" still present in package.json.');
 }
 
-console.log(`✅ Seed static harness checks passed: approved seed file ${expectedRelativePath} only.`);
+console.log(`✅ Seed static harness checks passed: approved seed files ${expectedRelativePaths.join(', ')} only.`);

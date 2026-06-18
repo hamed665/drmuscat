@@ -32,8 +32,8 @@ for (const country of ['ae', 'qa', 'bh', 'kw', 'sa', 'iq', 'sy', 'jo', 'lb', 'ps
   );
 }
 
-requirePattern(i18nConfig, /supportedCountries\s*=\s*publicMarketCountries/, 'i18n supportedCountries must come from publicMarketCountries.');
-requirePattern(i18nConfig, /isSupportedCountry\s*=\s*isPublicMarketCountry/, 'i18n isSupportedCountry must use market gate.');
+requirePattern(i18nConfig, /supportedCountries\s*=\s*\['om'\]\s+as\s+const\s+satisfies\s+typeof\s+publicMarketCountries/, 'i18n supportedCountries must stay Oman-only and type-tied to publicMarketCountries.');
+requirePattern(i18nConfig, /isSupportedCountry\s*=\s*\([^)]*\)\s*:[^{]+=>\s*\n?\s*isPublicMarketCountry\(/, 'i18n isSupportedCountry must use market gate.');
 forbidPattern(i18nConfig, /supportedCountries\s*=\s*\[[^\]]*'ae'/, 'i18n must not directly expose non-Oman countries.');
 forbidPattern(i18nConfig, /supportedCountries\s*=\s*\[[^\]]*'sa'/, 'i18n must not directly expose non-Oman countries.');
 forbidPattern(i18nConfig, /supportedCountries\s*=\s*\[[^\]]*'ir'/, 'i18n must not directly expose non-Oman countries.');

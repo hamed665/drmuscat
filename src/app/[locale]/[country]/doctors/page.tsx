@@ -1,29 +1,58 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { DoctorsSearch2026 } from '@/components/public/doctors/DoctorsSearch2026';
 import { PublicDirectoryListingContent } from '@/components/public/public-directory-listing-content';
-import { PublicPageShell } from '@/components/public/public-page-shell';
 import { listPublicDoctors } from '@/lib/catalog/public-queries';
 import {
   isSupportedCountry,
   isSupportedLocale,
   localeDirection,
+  type SupportedCountry,
   type SupportedLocale
 } from '@/lib/i18n/config';
+import { buildWhatsAppUrl, normalizeWhatsAppNumber } from '@/lib/contact/whatsapp';
 import { buildLocalizedMetadata } from '@/lib/seo/metadata';
 
 type Params = { locale: string; country: string };
-type RouteCopy = { title: string; description: string; badge: string };
+
+type RouteCopy = {
+  metadataTitle: string;
+  metadataDescription: string;
+  badge: string;
+  title: string;
+  description: string;
+  searchCta: string;
+  listCta: string;
+  whatsappCta: string;
+  whatsappMessage: string;
+  whatsappUnavailable: string;
+};
 
 const copyByLocale: Record<SupportedLocale, RouteCopy> = {
   en: {
-    title: 'Doctors in Oman | DrMuscat',
-    description: 'Browse public doctor listings in Oman with bilingual-ready, server-rendered pages.',
-    badge: 'Public doctor listings'
+    metadataTitle: 'Doctors in Oman | DrMuscat',
+    metadataDescription: 'Browse doctors, specialties, clinics and care paths in Oman. Public discovery only, not medical advice.',
+    badge: 'Doctors in Oman',
+    title: 'Find doctors in Oman.',
+    description: 'Browse doctors, specialties, clinics and care paths across Oman. Public discovery only, not medical advice.',
+    searchCta: 'Search doctors',
+    listCta: 'List your center',
+    whatsappCta: 'WhatsApp',
+    whatsappMessage: 'Hello DrMuscat, I need help with doctor discovery in Oman.',
+    whatsappUnavailable: 'WhatsApp activation pending'
   },
   ar: {
-    title: 'الأطباء في عُمان | DrMuscat',
-    description: 'تصفح القوائم العامة للأطباء في عُمان ضمن صفحات خادمية ثنائية اللغة.',
-    badge: 'قوائم الأطباء العامة'
+    metadataTitle: 'الأطباء في عُمان | DrMuscat',
+    metadataDescription: 'تصفح الأطباء والتخصصات والعيادات ومسارات الرعاية في عُمان. اكتشاف عام فقط وليس نصيحة طبية.',
+    badge: 'الأطباء في عُمان',
+    title: 'ابحث عن أطباء في عُمان.',
+    description: 'تصفح الأطباء والتخصصات والعيادات ومسارات الرعاية في عُمان. اكتشاف عام فقط وليس نصيحة طبية.',
+    searchCta: 'ابحث عن الأطباء',
+    listCta: 'أدرج مركزك',
+    whatsappCta: 'واتساب',
+    whatsappMessage: 'مرحباً DrMuscat، أحتاج مساعدة في اكتشاف الأطباء في عُمان.',
+    whatsappUnavailable: 'تفعيل واتساب قيد الإعداد'
   }
 };
 
@@ -31,25 +60,54 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { locale, country } = await params;
   if (!isSupportedLocale(locale) || !isSupportedCountry(country)) return {};
   const copy = copyByLocale[locale];
-  return buildLocalizedMetadata({ locale, country, pathname: '/doctors', title: copy.title, description: copy.description });
+
+  return buildLocalizedMetadata({
+    locale,
+    country,
+    pathname: '/doctors',
+    title: copy.metadataTitle,
+    description: copy.metadataDescription
+  });
 }
 
 export default async function PublicDoctorsPage({ params }: { params: Promise<Params> }) {
   const { locale, country } = await params;
   if (!isSupportedLocale(locale) || !isSupportedCountry(country)) notFound();
 
-  const copy = copyByLocale[locale];
-  const result = await listPublicDoctors({ country });
-
-  const content = <PublicDirectoryListingContent locale={locale} variant="doctor" result={result} />;
+  const safeLocale = locale as SupportedLocale;
+  const safeCountry = country as SupportedCountry;
+  const dir = localeDirection(safeLocale);
+  const copy = copyByLocale[safeLocale];
+  const result = await listPublicDoctors({ country: safeCountry });
+  const whatsAppNumber = normalizeWhatsAppNumber(process.env.NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER);
+  const whatsAppHref = buildWhatsAppUrl(whatsAppNumber, copy.whatsappMessage);
 
   return (
-    <PublicPageShell
-      dir={localeDirection(locale)}
-      heroBadge={copy.badge}
-      heroTitle={copy.title}
-      heroDescription={copy.description}
-      content={content}
-    />
+    <main className="home-foundation dm2026-home-page dm2026-doctors-page" dir={dir} data-country={safeCountry} data-locale={safeLocale}>
+      <section className="dm2026-doctors-first-fold dm-container" aria-labelledby="dm2026-doctors-title">
+        <div className="dm2026-doctors-hero dm2026-search-surface">
+          <div className="dm2026-doctors-hero__copy">
+            <span className="dm2026-badge">{copy.badge}</span>
+            <h1 id="dm2026-doctors-title">{copy.title}</h1>
+            <p>{copy.description}</p>
+          </div>
+          <div className="dm2026-doctors-hero__actions" aria-label={copy.badge}>
+            <a className="dm2026-button dm2026-button-primary" href="#dm2026-doctors-search-title">{copy.searchCta}</a>
+            <Link className="dm2026-button dm2026-button-secondary" href={`/${safeLocale}/${safeCountry}/for-providers`}>{copy.listCta}</Link>
+            {whatsAppHref ? (
+              <a className="dm2026-button dm2026-button-ghost" href={whatsAppHref} target="_blank" rel="noopener noreferrer">{copy.whatsappCta}</a>
+            ) : (
+              <span className="dm2026-button dm2026-button-ghost" aria-disabled="true" title={copy.whatsappUnavailable}>{copy.whatsappCta}</span>
+            )}
+          </div>
+        </div>
+
+        <DoctorsSearch2026 locale={safeLocale} country={safeCountry} dir={dir} />
+      </section>
+
+      <section className="dm-container dm2026-doctors-listings" aria-label={copy.metadataTitle}>
+        <PublicDirectoryListingContent locale={safeLocale} variant="doctor" result={result} />
+      </section>
+    </main>
   );
 }

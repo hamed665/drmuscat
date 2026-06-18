@@ -15,12 +15,14 @@ const expectedSeedFiles = [
   '0002_geo_regions_c3_north_africa.sql',
   '0003_geo_cities_d1a_oman.sql',
   '0004_geo_cities_d1b_gulf.sql',
+  '0005_geo_cities_d2a_saudi.sql',
 ];
 const geoSeedFiles = [
   '0000_oman_geo_foundation.sql',
   '0002_geo_regions_c3_north_africa.sql',
   '0003_geo_cities_d1a_oman.sql',
   '0004_geo_cities_d1b_gulf.sql',
+  '0005_geo_cities_d2a_saudi.sql',
 ];
 const taxonomySeedFile = '0001_taxonomy_verticals_center_categories.sql';
 
@@ -114,6 +116,16 @@ for (const required of [
   /'manama'/i,
   /'kuwait-city'/i,
   /'salmiya'/i,
+  /'riyadh'/i,
+  /'jeddah'/i,
+  /'makkah'/i,
+  /'madinah'/i,
+  /'dammam'/i,
+  /'al-khobar'/i,
+  /'abha'/i,
+  /'tabuk'/i,
+  /'buraydah'/i,
+  /'sakaka'/i,
 ]) {
   assert(required.test(geoSeedContent), `Missing required approved geo seed pattern: ${required}`);
 }

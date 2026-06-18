@@ -8,7 +8,26 @@ with country_seed (
   sort_order
 ) as (
   values
-    ('om'::country_code, 'oman', 'Oman', 'عُمان', '968', 'OMR', 10)
+    ('om'::country_code, 'oman', 'Oman', 'عُمان', '968', 'OMR', 10),
+    ('ae'::country_code, 'united-arab-emirates', 'United Arab Emirates', 'الإمارات العربية المتحدة', '971', 'AED', 20),
+    ('qa'::country_code, 'qatar', 'Qatar', 'قطر', '974', 'QAR', 30),
+    ('bh'::country_code, 'bahrain', 'Bahrain', 'البحرين', '973', 'BHD', 40),
+    ('kw'::country_code, 'kuwait', 'Kuwait', 'الكويت', '965', 'KWD', 50),
+    ('sa'::country_code, 'saudi-arabia', 'Saudi Arabia', 'المملكة العربية السعودية', '966', 'SAR', 60),
+    ('iq'::country_code, 'iraq', 'Iraq', 'العراق', '964', 'IQD', 70),
+    ('sy'::country_code, 'syria', 'Syria', 'سوريا', '963', 'SYP', 80),
+    ('jo'::country_code, 'jordan', 'Jordan', 'الأردن', '962', 'JOD', 90),
+    ('lb'::country_code, 'lebanon', 'Lebanon', 'لبنان', '961', 'LBP', 100),
+    ('ps'::country_code, 'palestine', 'Palestine', 'فلسطين', '970', null, 110),
+    ('eg'::country_code, 'egypt', 'Egypt', 'مصر', '20', 'EGP', 120),
+    ('ye'::country_code, 'yemen', 'Yemen', 'اليمن', '967', 'YER', 130),
+    ('ma'::country_code, 'morocco', 'Morocco', 'المغرب', '212', 'MAD', 140),
+    ('dz'::country_code, 'algeria', 'Algeria', 'الجزائر', '213', 'DZD', 150),
+    ('tn'::country_code, 'tunisia', 'Tunisia', 'تونس', '216', 'TND', 160),
+    ('ly'::country_code, 'libya', 'Libya', 'ليبيا', '218', 'LYD', 170),
+    ('sd'::country_code, 'sudan', 'Sudan', 'السودان', '249', 'SDG', 180),
+    ('mr'::country_code, 'mauritania', 'Mauritania', 'موريتانيا', '222', 'MRU', 190),
+    ('ir'::country_code, 'iran', 'Iran', 'إيران', '98', 'IRR', 200)
 ), updated_countries as (
   update public.geo_countries target
   set
@@ -20,7 +39,7 @@ with country_seed (
     is_active = true,
     sort_order = seed.sort_order,
     deleted_at = null,
-    metadata = jsonb_build_object('seed_key', seed.slug, 'seed_phase', 'GEO-SEED-A'),
+    metadata = jsonb_build_object('seed_key', seed.slug, 'seed_phase', 'GEO-FULL-B'),
     updated_at = now()
   from country_seed seed
   where target.code = seed.code
@@ -46,7 +65,7 @@ select
   seed.currency_code,
   true,
   seed.sort_order,
-  jsonb_build_object('seed_key', seed.slug, 'seed_phase', 'GEO-SEED-A')
+  jsonb_build_object('seed_key', seed.slug, 'seed_phase', 'GEO-FULL-B')
 from country_seed seed
 where not exists (
   select 1 from public.geo_countries existing where existing.code = seed.code

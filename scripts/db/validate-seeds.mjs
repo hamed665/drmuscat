@@ -7,11 +7,13 @@ const expectedSeedFiles = [
   '0000_oman_geo_foundation.sql',
   '0001_taxonomy_verticals_center_categories.sql',
   '0002_geo_regions_c3_north_africa.sql',
+  '0003_geo_cities_d1a_oman.sql',
 ];
 const taxonomySeedFile = '0001_taxonomy_verticals_center_categories.sql';
 const geoSeedFiles = [
   '0000_oman_geo_foundation.sql',
   '0002_geo_regions_c3_north_africa.sql',
+  '0003_geo_cities_d1a_oman.sql',
 ];
 const expectedVerticalSlugs = [
   'medical',
@@ -136,6 +138,11 @@ for (const [pattern, message] of [
   [/'tripoli-district'/i, 'GEO-FULL-C3 seed must include Tripoli District.'],
   [/'khartoum-state'/i, 'GEO-FULL-C3 seed must include Khartoum State.'],
   [/'nouakchott-nord-region'/i, 'GEO-FULL-C3 seed must include Nouakchott-Nord.'],
+  [/'jabal-akhdar'/i, 'GEO-FULL-D1A seed must include Jabal Akhdar.'],
+  [/'sinaw'/i, 'GEO-FULL-D1A seed must include Sinaw.'],
+  [/'sohar'/i, 'GEO-FULL-D1A seed must include Sohar.'],
+  [/'salalah'/i, 'GEO-FULL-D1A seed must include Salalah.'],
+  [/'shalim-and-the-hallaniyat-islands'/i, 'GEO-FULL-D1A seed must include Shalim and the Hallaniyat Islands.'],
 ]) {
   requirePattern(geoContent, pattern, message);
 }

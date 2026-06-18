@@ -149,7 +149,7 @@ with region_seed (
     ('ir'::country_code, 'isfahan-province', 'Isfahan Province', 'أصفهان', 60),
     ('ir'::country_code, 'fars-province', 'Fars Province', 'فارس', 70),
     ('ir'::country_code, 'gilan-province', 'Gilan Province', 'جيلان', 80),
-    ('ir'::country_code, 'golestan-province', 'غلستان Province', 'غلستان', 90),
+    ('ir'::country_code, 'golestan-province', 'Golestan Province', 'غلستان', 90),
     ('ir'::country_code, 'hamadan-province', 'Hamadan Province', 'همدان', 100),
     ('ir'::country_code, 'hormozgan-province', 'Hormozgan Province', 'هرمزغان', 110),
     ('ir'::country_code, 'ilam-province', 'Ilam Province', 'إيلام', 120),
@@ -171,7 +171,7 @@ with region_seed (
     ('ir'::country_code, 'tehran-province', 'Tehran Province', 'طهران', 280),
     ('ir'::country_code, 'west-azerbaijan-province', 'West Azerbaijan Province', 'أذربيجان الغربية', 290),
     ('ir'::country_code, 'yazd-province', 'Yazd Province', 'يزد', 300),
-    ('ir'::country_code, 'zanjan-province', 'زنجان Province', 'زنجان', 310)
+    ('ir'::country_code, 'zanjan-province', 'Zanjan Province', 'زنجان', 310)
 ), region_rows as (
   select
     countries.id as country_id,

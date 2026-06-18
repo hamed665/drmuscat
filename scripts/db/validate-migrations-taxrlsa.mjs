@@ -17,10 +17,16 @@ const migrationsDir = path.join(repoRoot, 'supabase', 'migrations');
 const taxC1Validator = path.join(repoRoot, 'scripts', 'db', 'validate-migrations-taxc1.mjs');
 const taxC1Migration = '0054_healthcare_verticals_center_categories.sql';
 const taxRlsMigration = '0055_taxonomy_public_rls.sql';
+const geoFullBCountryCodeMigration = '0056_country_code_regional_expansion.sql';
 const taxRlsMigrationPath = path.join(migrationsDir, taxRlsMigration);
+const geoFullBCountryCodeMigrationPath = path.join(migrationsDir, geoFullBCountryCodeMigration);
 const hiddenTaxRlsMigrationPath = path.join(
   migrationsDir,
   `.taxrlsa-${taxRlsMigration}.hidden`,
+);
+const hiddenGeoFullBCountryCodeMigrationPath = path.join(
+  migrationsDir,
+  `.geofullb-${geoFullBCountryCodeMigration}.hidden`,
 );
 
 const expectedMigrations = [
@@ -79,6 +85,7 @@ const expectedMigrations = [
   '0053_provider_onboarding_lead_events.sql',
   taxC1Migration,
   taxRlsMigration,
+  geoFullBCountryCodeMigration,
 ];
 
 function fail(message) {
@@ -116,7 +123,7 @@ function validateMigrationInventory() {
     if (missing.length > 0) console.error(`Missing required files: ${missing.join(', ')}`);
     if (unexpected.length > 0) console.error(`Unexpected SQL migration files: ${unexpected.join(', ')}`);
 
-    fail('Migration inventory must be exactly 0001 through 0055 for TAX-RLS-A.');
+    fail('Migration inventory must be exactly 0001 through 0056 for GEO-FULL-B.');
   }
 }
 
@@ -171,10 +178,41 @@ function validateTaxRlsMigration() {
   }
 }
 
-function runTaxC1ValidatorWithoutTaxRls() {
+function validateGeoFullBCountryCodeMigration() {
+  requireCondition(existsSync(geoFullBCountryCodeMigrationPath), `${geoFullBCountryCodeMigration} is missing.`);
+
+  const content = readFileSync(geoFullBCountryCodeMigrationPath, 'utf8');
+
+  for (const [pattern, message] of [
+    [/\binsert\s+into\b/i, '0056 must not seed rows or use INSERT INTO.'],
+    [/\bcreate\s+table\b/i, '0056 must not create tables.'],
+    [/\bdrop\b/i, '0056 must not contain DROP statements.'],
+    [/\bcreate\s+policy\b/i, '0056 must not create policies.'],
+    [/\benable\s+row\s+level\s+security\b/i, '0056 must not alter RLS.'],
+    [/\bpayments?\b/i, '0056 must not include payment scope.'],
+    [/\binsurance\b/i, '0056 must not include insurance scope.'],
+    [/\blicense\b/i, '0056 must not include license scope.'],
+    [/\bmedia\b/i, '0056 must not include media scope.'],
+    [/\bai\b/i, '0056 must not include AI scope.'],
+  ]) {
+    forbidPattern(content, pattern, message);
+  }
+
+  for (const code of ['ae', 'qa', 'bh', 'kw', 'sa', 'iq', 'sy', 'jo', 'lb', 'ps', 'eg', 'ye', 'ma', 'dz', 'tn', 'ly', 'sd', 'mr', 'ir']) {
+    requirePattern(
+      content,
+      new RegExp(`alter\\s+type\\s+country_code\\s+add\\s+value\\s+if\\s+not\\s+exists\\s+'${code}'`, 'i'),
+      `0056 must add country_code value '${code}'.`,
+    );
+  }
+}
+
+function runTaxC1ValidatorWithoutLaterMigrations() {
   requireCondition(!existsSync(hiddenTaxRlsMigrationPath), 'Hidden TAX-RLS-A migration file already exists.');
+  requireCondition(!existsSync(hiddenGeoFullBCountryCodeMigrationPath), 'Hidden GEO-FULL-B migration file already exists.');
 
   renameSync(taxRlsMigrationPath, hiddenTaxRlsMigrationPath);
+  renameSync(geoFullBCountryCodeMigrationPath, hiddenGeoFullBCountryCodeMigrationPath);
 
   try {
     execFileSync(process.execPath, [taxC1Validator], {
@@ -182,6 +220,10 @@ function runTaxC1ValidatorWithoutTaxRls() {
       stdio: 'inherit',
     });
   } finally {
+    if (existsSync(hiddenGeoFullBCountryCodeMigrationPath)) {
+      renameSync(hiddenGeoFullBCountryCodeMigrationPath, geoFullBCountryCodeMigrationPath);
+    }
+
     if (existsSync(hiddenTaxRlsMigrationPath)) {
       renameSync(hiddenTaxRlsMigrationPath, taxRlsMigrationPath);
     }
@@ -190,6 +232,7 @@ function runTaxC1ValidatorWithoutTaxRls() {
 
 validateMigrationInventory();
 validateTaxRlsMigration();
-runTaxC1ValidatorWithoutTaxRls();
+validateGeoFullBCountryCodeMigration();
+runTaxC1ValidatorWithoutLaterMigrations();
 
-console.log('TAX-RLS-A migration validation passed.');
+console.log('GEO-FULL-B migration validation passed.');

@@ -14,11 +14,13 @@ const expectedSeedFiles = [
   '0001_taxonomy_verticals_center_categories.sql',
   '0002_geo_regions_c3_north_africa.sql',
   '0003_geo_cities_d1a_oman.sql',
+  '0004_geo_cities_d1b_gulf.sql',
 ];
 const geoSeedFiles = [
   '0000_oman_geo_foundation.sql',
   '0002_geo_regions_c3_north_africa.sql',
   '0003_geo_cities_d1a_oman.sql',
+  '0004_geo_cities_d1b_gulf.sql',
 ];
 const taxonomySeedFile = '0001_taxonomy_verticals_center_categories.sql';
 
@@ -104,6 +106,14 @@ for (const required of [
   /'sohar'/i,
   /'salalah'/i,
   /'shalim-and-the-hallaniyat-islands'/i,
+  /'abu-dhabi'/i,
+  /'al-ain'/i,
+  /'dubai'/i,
+  /'doha'/i,
+  /'lusail'/i,
+  /'manama'/i,
+  /'kuwait-city'/i,
+  /'salmiya'/i,
 ]) {
   assert(required.test(geoSeedContent), `Missing required approved geo seed pattern: ${required}`);
 }
@@ -144,4 +154,4 @@ if (/Seed test placeholder/i.test(packageJson)) {
   fail('Placeholder string "Seed test placeholder" still present in package.json.');
 }
 
-console.log(`✅ Seed static harness checks passed: approved seed files ${expectedRelativePaths.join(', ')} only.`);
+console.log(`✅ Seed static harness checks passed: approved seed files ${expectedRelativePaths.join(', ')}`);

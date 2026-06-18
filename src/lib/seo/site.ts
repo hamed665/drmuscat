@@ -1,8 +1,10 @@
+import { publicMarketCountries, type PublicMarketCountry } from '@/lib/market/public-market';
+
 export const supportedLocales = ['en', 'ar'] as const;
 export type SiteLocale = (typeof supportedLocales)[number];
 
-export const supportedCountries = ['om'] as const;
-export type SiteCountry = (typeof supportedCountries)[number];
+export const supportedCountries = publicMarketCountries;
+export type SiteCountry = PublicMarketCountry;
 
 export type LocaleCountry = {
   locale: SiteLocale;

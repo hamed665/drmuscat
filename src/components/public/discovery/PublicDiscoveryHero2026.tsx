@@ -25,7 +25,6 @@ export function PublicDiscoveryHero2026({ config, whatsAppHref }: Props) {
             <p>{config.subtitle}</p>
           </div>
           <div className="dm2026-doctors-hero__actions dm2026-public-discovery-hero__actions" aria-label={config.badge}>
-            <a className="dm2026-button dm2026-button-primary" href={`#${config.searchId}`}>{config.primaryCta}</a>
             <Link className="dm2026-button dm2026-button-secondary" href={`/${config.locale}/${config.country}/for-providers`}>{config.providerCta}</Link>
             {whatsAppHref ? <a className="dm2026-button dm2026-button-ghost" href={whatsAppHref} target="_blank" rel="noopener noreferrer">{config.whatsAppCta}</a> : <span className="dm2026-button dm2026-button-ghost" aria-disabled="true" title={config.whatsAppUnavailable}>{config.whatsAppCta}</span>}
           </div>

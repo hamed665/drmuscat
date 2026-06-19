@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { DoctorsHeroCarousel } from '@/components/public/doctors/DoctorsHeroCarousel';
 import { DoctorsSearch2026 } from '@/components/public/doctors/DoctorsSearch2026';
 import { PublicDirectoryListingContent } from '@/components/public/public-directory-listing-content';
 import { listPublicDoctors } from '@/lib/catalog/public-queries';
@@ -27,6 +28,8 @@ type RouteCopy = {
   whatsappCta: string;
   whatsappMessage: string;
   whatsappUnavailable: string;
+  resultsHeading: string;
+  resultsSubtext: string;
 };
 
 const copyByLocale: Record<SupportedLocale, RouteCopy> = {
@@ -40,7 +43,9 @@ const copyByLocale: Record<SupportedLocale, RouteCopy> = {
     listCta: 'List your center',
     whatsappCta: 'WhatsApp',
     whatsappMessage: 'Hello DrMuscat, I need help with doctor discovery in Oman.',
-    whatsappUnavailable: 'WhatsApp activation pending'
+    whatsappUnavailable: 'WhatsApp activation pending',
+    resultsHeading: 'Browse doctors',
+    resultsSubtext: 'Search results and public doctor listings appear here.'
   },
   ar: {
     metadataTitle: 'الأطباء في عُمان | DrMuscat',
@@ -52,7 +57,9 @@ const copyByLocale: Record<SupportedLocale, RouteCopy> = {
     listCta: 'أدرج مركزك',
     whatsappCta: 'واتساب',
     whatsappMessage: 'مرحباً DrMuscat، أحتاج مساعدة في اكتشاف الأطباء في عُمان.',
-    whatsappUnavailable: 'تفعيل واتساب قيد الإعداد'
+    whatsappUnavailable: 'تفعيل واتساب قيد الإعداد',
+    resultsHeading: 'تصفح الأطباء',
+    resultsSubtext: 'تظهر هنا نتائج البحث وقوائم الأطباء العامة.'
   }
 };
 
@@ -85,27 +92,36 @@ export default async function PublicDoctorsPage({ params }: { params: Promise<Pa
   return (
     <main className="home-foundation dm2026-home-page dm2026-doctors-page" dir={dir} data-country={safeCountry} data-locale={safeLocale}>
       <section className="dm2026-doctors-first-fold dm-container" aria-labelledby="dm2026-doctors-title">
-        <div className="dm2026-doctors-hero dm2026-search-surface">
-          <div className="dm2026-doctors-hero__copy">
-            <span className="dm2026-badge">{copy.badge}</span>
-            <h1 id="dm2026-doctors-title">{copy.title}</h1>
-            <p>{copy.description}</p>
+        <div className="dm2026-doctors-hero-shell dm2026-search-surface">
+          <div className="dm2026-doctors-hero-content">
+            <div className="dm2026-doctors-hero__copy">
+              <span className="dm2026-badge">{copy.badge}</span>
+              <h1 id="dm2026-doctors-title">{copy.title}</h1>
+              <p>{copy.description}</p>
+            </div>
+            <div className="dm2026-doctors-hero__actions" aria-label={copy.badge}>
+              <a className="dm2026-button dm2026-button-primary" href="#doctor-search">{copy.searchCta}</a>
+              <Link className="dm2026-button dm2026-button-secondary" href={`/${safeLocale}/${safeCountry}/for-providers`}>{copy.listCta}</Link>
+              {whatsAppHref ? (
+                <a className="dm2026-button dm2026-button-ghost" href={whatsAppHref} target="_blank" rel="noopener noreferrer">{copy.whatsappCta}</a>
+              ) : (
+                <span className="dm2026-button dm2026-button-ghost" aria-disabled="true" title={copy.whatsappUnavailable}>{copy.whatsappCta}</span>
+              )}
+            </div>
+            <div id="doctor-search" className="dm2026-doctors-hero__search">
+              <DoctorsSearch2026 locale={safeLocale} country={safeCountry} dir={dir} resultsId="doctor-results" />
+            </div>
           </div>
-          <div className="dm2026-doctors-hero__actions" aria-label={copy.badge}>
-            <a className="dm2026-button dm2026-button-primary" href="#dm2026-doctors-search-title">{copy.searchCta}</a>
-            <Link className="dm2026-button dm2026-button-secondary" href={`/${safeLocale}/${safeCountry}/for-providers`}>{copy.listCta}</Link>
-            {whatsAppHref ? (
-              <a className="dm2026-button dm2026-button-ghost" href={whatsAppHref} target="_blank" rel="noopener noreferrer">{copy.whatsappCta}</a>
-            ) : (
-              <span className="dm2026-button dm2026-button-ghost" aria-disabled="true" title={copy.whatsappUnavailable}>{copy.whatsappCta}</span>
-            )}
-          </div>
-        </div>
 
-        <DoctorsSearch2026 locale={safeLocale} country={safeCountry} dir={dir} />
+          <DoctorsHeroCarousel locale={safeLocale} dir={dir} />
+        </div>
       </section>
 
-      <section className="dm-container dm2026-doctors-listings" aria-label={copy.metadataTitle}>
+      <section id="doctor-results" className="dm-container dm2026-doctors-listings" aria-labelledby="doctor-results-title">
+        <div className="dm2026-doctors-results-header dm2026-card-soft">
+          <h2 id="doctor-results-title">{copy.resultsHeading}</h2>
+          <p>{copy.resultsSubtext}</p>
+        </div>
         <PublicDirectoryListingContent locale={safeLocale} variant="doctor" result={result} />
       </section>
     </main>

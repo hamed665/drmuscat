@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type FormEvent } from 'react';
 import type { SupportedCountry, SupportedLocale } from '@/lib/i18n/config';
 
 type DoctorsSearch2026Props = {
   locale: SupportedLocale;
   country: SupportedCountry;
   dir: 'ltr' | 'rtl';
+  resultsId: string;
 };
 
 type Suggestion = {
@@ -107,7 +108,7 @@ const normalizeArabic = (value: string) => value
 
 const normalizeSearch = (value: string) => normalizeArabic(value).trim().toLocaleLowerCase();
 
-export function DoctorsSearch2026({ locale, country, dir }: DoctorsSearch2026Props) {
+export function DoctorsSearch2026({ locale, country, dir, resultsId }: DoctorsSearch2026Props) {
   const copy = copyByLocale[locale];
   const providerHref = `/${locale}/${country}/for-providers`;
   const [query, setQuery] = useState('');
@@ -162,12 +163,29 @@ export function DoctorsSearch2026({ locale, country, dir }: DoctorsSearch2026Pro
     setShowSuggestions(false);
   };
 
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const params = new URLSearchParams();
+    if (query.trim()) params.set('q', query.trim());
+    params.set('contentType', copy.contentType);
+    params.set('country', selectedCountry);
+    params.set('city', selectedCity);
+    params.set('area', selectedArea);
+    params.set('specialty', selectedSpecialty);
+
+    const nextUrl = `/${locale}/${country}/doctors?${params.toString()}#${resultsId}`;
+    window.history.replaceState(null, '', nextUrl);
+    document.getElementById(resultsId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setShowSuggestions(false);
+  };
+
   const panelId = 'dm2026-doctors-search-smart-panel';
   const activeLabel = locale === 'ar' ? activeSuggestion.ar : activeSuggestion.en;
 
   return (
     <section className="dm2026-home-search dm2026-search dm2026-doctors-search" dir={dir} aria-labelledby="dm2026-doctors-search-title">
-      <form className="dm2026-search-surface dm2026-home-search__surface" action={`/${locale}/${country}/search`} method="get">
+      <form className="dm2026-search-surface dm2026-home-search__surface" action={`/${locale}/${country}/doctors#${resultsId}`} method="get" onSubmit={handleSubmit}>
         <input type="hidden" name="contentType" value={copy.contentType} />
         <div className="dm2026-home-search__main">
           <div className="dm2026-home-search__header">

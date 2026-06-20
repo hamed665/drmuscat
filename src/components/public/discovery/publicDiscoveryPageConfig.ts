@@ -122,7 +122,7 @@ export function buildDiscoveryFaq(
   > = {
     doctors: isAr
       ? {
-          headline: "أسئلة حول اكتشاف الأطباء",
+          headline: "أسئلة شائعة عن الأطباء في عُمان",
           items: [
             {
               question: "ماذا أجد في صفحة الأطباء؟",
@@ -152,7 +152,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Doctor discovery questions",
+          headline: "Questions about doctors in Oman",
           items: [
             {
               question: "What can I find on the Doctors page?",
@@ -183,7 +183,7 @@ export function buildDiscoveryFaq(
         },
     dental: isAr
       ? {
-          headline: "أسئلة حول اكتشاف الأسنان",
+          headline: "أسئلة شائعة عن عيادات الأسنان في عُمان",
           items: [
             {
               question: "ماذا أجد في صفحة الأسنان؟",
@@ -213,7 +213,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Dental discovery questions",
+          headline: "Questions about dental clinics in Oman",
           items: [
             {
               question: "What can I find on the Dental page?",
@@ -244,7 +244,7 @@ export function buildDiscoveryFaq(
         },
     labs: isAr
       ? {
-          headline: "أسئلة حول اكتشاف المختبرات",
+          headline: "أسئلة شائعة عن المختبرات في عُمان",
           items: [
             {
               question: "ماذا أجد في صفحة المختبرات؟",
@@ -273,7 +273,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Lab discovery questions",
+          headline: "Questions about labs in Oman",
           items: [
             {
               question: "What can I find on the Labs page?",
@@ -304,7 +304,7 @@ export function buildDiscoveryFaq(
         },
     centers: isAr
       ? {
-          headline: "أسئلة حول اكتشاف المراكز",
+          headline: "أسئلة شائعة عن العيادات والمراكز الطبية في عُمان",
           items: [
             {
               question: "ماذا تعرض صفحة المراكز؟",
@@ -334,7 +334,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Center discovery questions",
+          headline: "Questions about clinics and medical centers in Oman",
           items: [
             {
               question: "What does the Centers page show?",
@@ -365,7 +365,7 @@ export function buildDiscoveryFaq(
         },
     pharmacies: isAr
       ? {
-          headline: "أسئلة حول اكتشاف الصيدليات",
+          headline: "أسئلة شائعة عن الصيدليات في عُمان",
           items: [
             {
               question: "ماذا أجد في صفحة الصيدليات؟",
@@ -395,7 +395,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Pharmacy discovery questions",
+          headline: "Questions about pharmacies in Oman",
           items: [
             {
               question: "What can I find on the Pharmacies page?",
@@ -427,7 +427,7 @@ export function buildDiscoveryFaq(
         },
     beauty: isAr
       ? {
-          headline: "أسئلة حول اكتشاف التجميل",
+          headline: "أسئلة شائعة عن مراكز التجميل والصالونات في عُمان",
           items: [
             {
               question: "ماذا أجد في صفحة التجميل؟",
@@ -456,7 +456,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Beauty discovery questions",
+          headline: "Questions about beauty centers and salons in Oman",
           items: [
             {
               question: "What can I find on the Beauty page?",
@@ -487,7 +487,7 @@ export function buildDiscoveryFaq(
         },
     "pet-clinics": isAr
       ? {
-          headline: "أسئلة حول العيادات البيطرية",
+          headline: "أسئلة شائعة عن العيادات البيطرية في عُمان",
           items: [
             {
               question: "ماذا أجد في صفحة العيادات البيطرية؟",
@@ -517,7 +517,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Pet clinic discovery questions",
+          headline: "Questions about pet clinics in Oman",
           items: [
             {
               question: "What can I find on the Pet Clinics page?",
@@ -548,7 +548,7 @@ export function buildDiscoveryFaq(
         },
     "pet-shops": isAr
       ? {
-          headline: "أسئلة حول متاجر الحيوانات",
+          headline: "أسئلة شائعة عن متاجر الحيوانات في عُمان",
           items: [
             {
               question: "ماذا أجد في صفحة متاجر الحيوانات؟",
@@ -578,7 +578,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Pet shop discovery questions",
+          headline: "Questions about pet shops in Oman",
           items: [
             {
               question: "What can I find on the Pet Shops page?",
@@ -609,7 +609,7 @@ export function buildDiscoveryFaq(
         },
     hospitals: isAr
       ? {
-          headline: "أسئلة حول اكتشاف المستشفيات",
+          headline: "أسئلة شائعة عن المستشفيات في عُمان",
           items: [
             {
               question: "ماذا تعرض صفحة المستشفيات؟",
@@ -639,7 +639,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Hospital discovery questions",
+          headline: "Questions about hospitals in Oman",
           items: [
             {
               question: "What does the Hospitals page show?",
@@ -670,7 +670,7 @@ export function buildDiscoveryFaq(
         },
     offers: isAr
       ? {
-          headline: "أسئلة حول العروض",
+          headline: "أسئلة شائعة عن العروض على DrMuscat",
           items: [
             {
               question: "ماذا تعرض صفحة العروض؟",
@@ -700,7 +700,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Offer discovery questions",
+          headline: "Questions about offers on DrMuscat",
           items: [
             {
               question: "What does the Offers page show?",
@@ -731,7 +731,7 @@ export function buildDiscoveryFaq(
         },
     services: isAr
       ? {
-          headline: "أسئلة حول الخدمات",
+          headline: "أسئلة شائعة عن الخدمات على DrMuscat",
           items: [
             {
               question: "ماذا أجد في صفحة الخدمات؟",
@@ -758,7 +758,7 @@ export function buildDiscoveryFaq(
           ],
         }
       : {
-          headline: "Service discovery questions",
+          headline: "Questions about services on DrMuscat",
           items: [
             {
               question: "What can I find on the Services page?",
@@ -788,11 +788,31 @@ export function buildDiscoveryFaq(
           ],
         },
   };
+  const trustChips = (() => {
+    if (category === "offers") {
+      return isAr
+        ? ["عروض معتمدة فقط", "أكد الشروط", "ليست ترتيباً طبياً"]
+        : ["Approved offers only", "Confirm terms", "No medical ranking"];
+    }
+    if (category === "pet-clinics" || category === "pet-shops") {
+      return isAr
+        ? ["اكتشاف عام فقط", "أكد مباشرة", "ليست نصيحة بيطرية"]
+        : [
+            "Public discovery only",
+            "Confirm directly",
+            "Not veterinary advice",
+          ];
+    }
+    return isAr
+      ? ["اكتشاف عام فقط", "أكد مباشرة", "ليست نصيحة طبية"]
+      : ["Public discovery only", "Confirm directly", "Not medical advice"];
+  })();
+
   return {
     badge: shared.badge,
     headline: content[category].headline,
     subtitle: shared.subtitle,
-    trustChips: shared.chips,
+    trustChips,
     items: content[category].items,
   };
 }

@@ -8408,14 +8408,14 @@
 
 .dm2026-public-discovery-faq .dm2026-home-faq__headline-group h2,
 .dm2026-public-discovery-faq__headline-group h2 {
-  font-size: clamp(2rem, 4vw, 3.25rem);
-  line-height: 1;
-  letter-spacing: -0.045em;
+  font-size: clamp(1.9rem, 3.2vw, 2.75rem);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
 }
 
 @media (max-width: 768px) {
   .dm2026-public-discovery-faq .dm2026-home-faq__headline-group h2,
   .dm2026-public-discovery-faq__headline-group h2 {
-    font-size: clamp(1.75rem, 8vw, 2.45rem);
+    font-size: clamp(1.65rem, 7vw, 2.25rem);
   }
 }

@@ -5,7 +5,10 @@ export default async function AdminSettingsPage() {
   const admin = await requireAdminPermission("admin.settings.read");
   const permissionSet = new Set(admin.permissions);
   const adminName =
-    admin.profile.display_name ?? admin.profile.full_name ?? admin.profile.email ?? admin.profile.id;
+    admin.profile.display_name ??
+    admin.profile.full_name ??
+    admin.profile.email ??
+    admin.profile.id;
 
   return (
     <section className="space-y-6">

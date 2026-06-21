@@ -6,7 +6,10 @@ export default async function AdminAuditLogPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = (await searchParams) ?? {};
-  const value = (key: string) => (typeof params[key] === "string" ? params[key] : undefined);
+  const value = (key: string) => {
+    const param = params[key];
+    return typeof param === "string" ? param : undefined;
+  };
   const result = await listAdminAuditEvents({
     action: value("action"),
     entityType: value("entityType"),

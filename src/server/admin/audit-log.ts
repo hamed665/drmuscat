@@ -81,6 +81,12 @@ export async function writeAdminAuditEvent(input: WriteAdminAuditEventInput): Pr
   }
 }
 
+/**
+ * Lists audit events for the read-only admin audit page.
+ *
+ * This helper intentionally performs its own permission check so it cannot be
+ * reused by another admin surface without the `admin.audit.read` gate.
+ */
 export async function listAdminAuditEvents(
   filters: AdminAuditFilters = {},
 ): Promise<{ ok: true; items: AdminAuditEvent[] } | { ok: false }> {
@@ -131,7 +137,22 @@ export async function listAdminAuditEvents(
   }
 }
 
-function mapAdminAuditEvent(row: Pick<AdminAuditEventRow, "id" | "created_at" | "actor_profile_id" | "actor_auth_user_id" | "actor_email" | "permission_key" | "action" | "entity_type" | "entity_id" | "summary" | "reason">): AdminAuditEvent {
+type AdminAuditEventListRow = Pick<
+  AdminAuditEventRow,
+  | "id"
+  | "created_at"
+  | "actor_profile_id"
+  | "actor_auth_user_id"
+  | "actor_email"
+  | "permission_key"
+  | "action"
+  | "entity_type"
+  | "entity_id"
+  | "summary"
+  | "reason"
+>;
+
+function mapAdminAuditEvent(row: AdminAuditEventListRow): AdminAuditEvent {
   return {
     id: row.id,
     createdAt: row.created_at,

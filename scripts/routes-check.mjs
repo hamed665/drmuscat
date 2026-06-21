@@ -1132,13 +1132,14 @@ checks.push({
 });
 
 checks.push({
-  name: "admin permission guard requires platform admin profile",
+  name: "admin permission guard requires authenticated allowlisted admin email",
   pass:
     typeof adminPermissionsSource === "string" &&
     /requirePlatformAdmin/.test(adminPermissionsSource) &&
     /auth\.getUser\(\)/.test(adminPermissionsSource) &&
-    /is_platform_admin/.test(adminPermissionsSource) &&
-    /redirect\(\s*["']\/["']\s*\)/.test(adminPermissionsSource),
+    /ADMIN_EMAIL_ALLOWLIST/.test(adminPermissionsSource) &&
+    /isEmailAllowedForAdmin/.test(adminPermissionsSource) &&
+    /redirect\(\s*["']\/admin\/login["']\s*\)/.test(adminPermissionsSource),
 });
 
 checks.push({

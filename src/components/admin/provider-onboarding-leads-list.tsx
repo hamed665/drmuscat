@@ -137,8 +137,8 @@ function buildPageHref(filters: ProviderLeadFilters, page: number): string {
 
   const query = params.toString();
   return query.length > 0
-    ? `/admin/provider-onboarding-leads?${query}`
-    : "/admin/provider-onboarding-leads";
+    ? `/admin/provider-leads?${query}`
+    : "/admin/provider-leads";
 }
 
 function StatusBadge({ status }: { status: ProviderLeadStatus }) {
@@ -244,7 +244,7 @@ export function ProviderOnboardingLeadsList({
     <div className="space-y-6">
       <header className="space-y-3">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">
-          Phase 5.2A-3D
+          Admin foundation
         </p>
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -264,7 +264,7 @@ export function ProviderOnboardingLeadsList({
       </header>
 
       <form
-        action="/admin/provider-onboarding-leads"
+        action="/admin/provider-leads"
         method="get"
         className="rounded-3xl border border-slate-200 bg-slate-50/80 p-4"
       >
@@ -329,7 +329,7 @@ export function ProviderOnboardingLeadsList({
               Apply filters
             </button>
             <Link
-              href="/admin/provider-onboarding-leads"
+              href="/admin/provider-leads"
               className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
             >
               Reset
@@ -342,19 +342,12 @@ export function ProviderOnboardingLeadsList({
         <section className="rounded-3xl border border-amber-200 bg-amber-50 p-6 text-amber-950">
           <h3 className="text-lg font-bold">Lead list unavailable</h3>
           <p className="mt-2 max-w-2xl text-sm leading-6">
-            The read-only lead list could not be loaded right now. No raw
-            database error is exposed here; retry after checking the admin data
-            service and environment configuration.
+            Provider leads could not be loaded.
           </p>
         </section>
       ) : result.items.length === 0 ? (
         <section className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
-          <h3 className="text-xl font-bold text-slate-950">No leads found</h3>
-          <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            There are no provider onboarding leads matching the current filters.
-            Adjust the read-only filters or reset them to review all submitted
-            leads.
-          </p>
+          <h3 className="text-xl font-bold text-slate-950">No provider onboarding leads yet.</h3>
         </section>
       ) : (
         <>

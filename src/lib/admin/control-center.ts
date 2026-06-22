@@ -62,40 +62,40 @@ export const adminModuleGroups: AdminModuleGroup[] = [
   {
     title: "Content & CMS",
     description:
-      "Read-only inventory and planned editorial controls. No live publishing in this foundation.",
+      "Site content foundations and admin-only CMS pilots. No live public CMS publishing.",
     modules: [
       {
         title: "Site Content",
         description:
-          "Inventory current public content areas and access the internal CMS draft/revision foundation. No live public publishing.",
+          "Partial / active foundation for content inventory plus the internal CMS draft/revision foundation. No live public publishing.",
         status: "Partial",
         href: "/admin/content",
       },
       {
         title: "FAQs",
         description:
-          "Planned FAQ management model for bilingual questions, answers, ordering, and JSON-LD validation.",
-        status: "Planned",
+          "Pilot active admin-only FAQ CMS workflow for bilingual questions, answers, review, archive, and preview. Public FAQ rendering and publishing are not active.",
+        status: "Partial",
         href: "/admin/content/faqs",
       },
       {
         title: "Articles / Wiki",
         description:
-          "Planned article and wiki controls for medical review, media, SEO fields, and preview workflow.",
+          "Planned article and wiki controls. Article CMS and public article publishing are not active.",
         status: "Planned",
         href: "/admin/content/articles",
       },
       {
         title: "SEO Metadata",
         description:
-          "Planned SEO control surface for page metadata, canonical, hreflang, schema status, and validation.",
+          "Planned SEO metadata editor. Live SEO editing is not active.",
         status: "Planned",
         href: "/admin/content/seo",
       },
       {
         title: "Navigation / Menus",
         description:
-          "Planned header and footer navigation management without changing public navigation in this PR.",
+          "Planned navigation/menu editor. Live navigation editing is not active.",
         status: "Planned",
         href: "/admin/content/navigation",
       },

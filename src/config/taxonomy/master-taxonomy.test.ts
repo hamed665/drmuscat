@@ -47,4 +47,53 @@ describe('master taxonomy registry', () => {
     expect(taxonomyVerticals.find((item) => item.slug === 'beauty-nonmedical')?.scope).not.toBe('core');
     expect(entityTypes.find((item) => item.slug === 'pet-shop')?.scope).not.toBe('core');
   });
+
+  it('enforces semantic mappings for physiotherapy, counseling, women-health, IVF, and dental services', () => {
+    const specialtyBySlug = new Map<string, (typeof specialties)[number]>(specialties.map((item) => [item.slug, item]));
+    const serviceBySlug = new Map<string, (typeof services)[number]>(services.map((item) => [item.slug, item]));
+    const entityTypeBySlug = new Map<string, (typeof entityTypes)[number]>(entityTypes.map((item) => [item.slug, item]));
+
+    expect(specialtyBySlug.get('physiotherapy')).toMatchObject({
+      verticals: ['physiotherapy-rehabilitation'],
+      isMentalHealth: false,
+      relatedEntityTypes: ['physiotherapy-center', 'rehabilitation-center'],
+    });
+
+    expect(entityTypeBySlug.get('counseling-center')).toMatchObject({
+      requiresLicense: 'required',
+      requiresMedicalReview: 'required_before_index',
+      medicalRiskLevel: 'medium',
+      isHumanHealthcare: true,
+    });
+
+    for (const slug of ['gynecology-consultation', 'pregnancy-follow-up', 'antenatal-care', 'postnatal-care']) {
+      expect(serviceBySlug.get(slug)?.relatedSpecialtySlugs).toContain('obstetrics-gynecology');
+    }
+
+    for (const slug of ['fertility-consultation', 'ivf', 'icsi', 'semen-analysis', 'ovulation-tracking']) {
+      expect(serviceBySlug.get(slug)).toMatchObject({
+        family: 'ivf-fertility',
+        verticals: ['ivf-fertility'],
+        relatedSpecialtySlugs: ['reproductive-medicine', 'infertility-ivf'],
+        relatedEntityTypes: ['ivf-center', 'fertility-clinic'],
+      });
+    }
+
+    for (const slug of [
+      'scaling-polishing',
+      'tooth-extraction',
+      'wisdom-tooth-extraction',
+      'teeth-whitening',
+      'gum-treatment',
+      'pediatric-dentistry',
+    ]) {
+      expect(serviceBySlug.get(slug)).toMatchObject({
+        family: 'dental-care',
+        verticals: ['dental'],
+        relatedSpecialtySlugs: ['dentistry'],
+        relatedEntityTypes: ['dental-clinic'],
+      });
+    }
+  });
+
 });

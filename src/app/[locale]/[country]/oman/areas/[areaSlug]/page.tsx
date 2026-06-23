@@ -25,10 +25,17 @@ export default async function OmanAreaPage({ params }: { params: Promise<Params>
 
   const wilayat = OMAN_WILAYATS.find((item) => item.slug === area.wilayatSlug);
   const governorate = OMAN_GOVERNORATES.find((item) => item.slug === area.governorateSlug);
-  const parentParts = [wilayat, governorate]
-    .filter(Boolean)
-    .map((item) => (locale === 'ar' ? item.labelAr : item.labelEn));
-  const parentLabel = parentParts.length > 0 ? parentParts.join(' · ') : undefined;
+  const parentParts: string[] = [];
+
+  if (wilayat) {
+    parentParts.push(locale === 'ar' ? wilayat.labelAr : wilayat.labelEn);
+  }
+
+  if (governorate) {
+    parentParts.push(locale === 'ar' ? governorate.labelAr : governorate.labelEn);
+  }
+
+  const parentLabel = parentParts.length > 0 ? parentParts.join(' · ') : null;
 
   return (
     <OmanGeoRuntimeScaffold
@@ -36,7 +43,7 @@ export default async function OmanAreaPage({ params }: { params: Promise<Params>
       country={country}
       entity="area"
       item={area}
-      parentLabel={parentLabel}
+      {...(parentLabel ? { parentLabel } : {})}
     />
   );
 }

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 const geoPath = 'src/config/geo/oman.ts';
 const contractPath = 'src/config/geo/route-contract.ts';
 const metadataHelperPath = 'src/lib/seo/geo-route-metadata.ts';
+const indexPromotionPolicyPath = 'src/config/geo/index-promotion-policy.ts';
 
 const expectedRouteNames = [
   'oman-governorate',
@@ -52,6 +53,7 @@ function assert(condition, message) {
 const geoSource = readFile(geoPath);
 const contractSource = readFile(contractPath);
 const metadataHelperSource = readFile(metadataHelperPath);
+const indexPromotionPolicySource = readFile(indexPromotionPolicyPath);
 
 assert(contractSource.includes("status: 'metadata-noindex'"), 'Route contract must be metadata-noindex.');
 assert(contractSource.includes('runtimeRoutesEnabled: true'), 'Runtime routes must stay enabled.');
@@ -63,6 +65,17 @@ assert(contractSource.includes('jsonLdEnabled: false'), 'JSON-LD must remain dis
 assert(metadataHelperSource.includes('buildOmanGeoNoindexMetadata'), 'Missing noindex metadata helper.');
 assert(metadataHelperSource.includes('index: false'), 'Metadata helper must set index false.');
 assert(metadataHelperSource.includes('follow: true'), 'Metadata helper must keep follow true.');
+
+assert(indexPromotionPolicySource.includes('OMAN_GEO_INDEX_PROMOTION_POLICY'), 'Missing Oman geo index promotion policy export.');
+assert(indexPromotionPolicySource.includes("defaultStatus: 'blocked-until-content-ready'"), 'Geo index promotion must stay blocked by default.');
+assert(indexPromotionPolicySource.includes('noindexRequiredByDefault: true'), 'Geo index promotion policy must require noindex by default.');
+assert(indexPromotionPolicySource.includes('sitemapAllowedByDefault: false'), 'Geo index promotion policy must block sitemap by default.');
+assert(indexPromotionPolicySource.includes('jsonLdAllowedByDefault: false'), 'Geo index promotion policy must block JSON-LD by default.');
+assert(indexPromotionPolicySource.includes('promotionRequiresApprovedPr: true'), 'Geo index promotion must require an approved PR.');
+
+for (const entity of ['governorate', 'wilayat', 'area']) {
+  assert(indexPromotionPolicySource.includes(`entity: '${entity}'`), `Missing index promotion policy for ${entity}.`);
+}
 
 const routeNames = collectProp(contractSource, 'routeName');
 const duplicateRouteNames = routeNames.filter((routeName, index) => routeNames.indexOf(routeName) !== index);
@@ -99,7 +112,8 @@ const summary = {
   noindexEnabled: true,
   sitemapEnabled: false,
   jsonLdEnabled: false,
+  indexPromotionDefault: 'blocked-until-content-ready',
 };
 
-console.log('Oman geo noindex metadata guardrails validated.');
+console.log('Oman geo noindex metadata and index promotion guardrails validated.');
 console.log(summary);

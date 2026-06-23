@@ -24,7 +24,7 @@ export default async function OmanWilayatPage({ params }: { params: Promise<Para
   }
 
   const governorate = OMAN_GOVERNORATES.find((item) => item.slug === wilayat.governorateSlug);
-  const parentLabel = governorate ? (locale === 'ar' ? governorate.labelAr : governorate.labelEn) : undefined;
+  const parentLabel = governorate ? (locale === 'ar' ? governorate.labelAr : governorate.labelEn) : null;
 
   return (
     <OmanGeoRuntimeScaffold
@@ -32,7 +32,7 @@ export default async function OmanWilayatPage({ params }: { params: Promise<Para
       country={country}
       entity="wilayat"
       item={wilayat}
-      parentLabel={parentLabel}
+      {...(parentLabel ? { parentLabel } : {})}
     />
   );
 }

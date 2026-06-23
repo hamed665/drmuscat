@@ -4,12 +4,15 @@ const geoPath = 'src/config/geo/oman.ts';
 const contractPath = 'src/config/geo/route-contract.ts';
 
 const expectedRouteNames = [
-  'oman-governorate-en',
-  'oman-governorate-ar',
-  'oman-wilayat-en',
-  'oman-wilayat-ar',
-  'oman-area-en',
-  'oman-area-ar',
+  'oman-governorate',
+  'oman-wilayat',
+  'oman-area',
+];
+
+const expectedRouteFiles = [
+  'src/app/[locale]/[country]/oman/governorates/[governorateSlug]/page.tsx',
+  'src/app/[locale]/[country]/oman/wilayats/[wilayatSlug]/page.tsx',
+  'src/app/[locale]/[country]/oman/areas/[areaSlug]/page.tsx',
 ];
 
 function readFile(filePath) {
@@ -48,10 +51,11 @@ function assert(condition, message) {
 const geoSource = readFile(geoPath);
 const contractSource = readFile(contractPath);
 
-assert(contractSource.includes("status: 'planned-only'"), 'Route contract must stay planned-only.');
-assert(contractSource.includes('runtimeRoutesEnabled: false'), 'Route contract must not enable runtime routes.');
-assert(!contractSource.includes('runtimeRoutesEnabled: true'), 'Runtime routes must not be enabled by this contract.');
-assert(!contractSource.includes('runtimeEnabled: true'), 'Route templates must not enable runtime routes.');
+assert(contractSource.includes("status: 'runtime-scaffold'"), 'Route contract must be runtime-scaffold.');
+assert(contractSource.includes('runtimeRoutesEnabled: true'), 'Runtime routes must be enabled by this scaffold.');
+assert(contractSource.includes('metadataEnabled: false'), 'Metadata must remain disabled in this scaffold.');
+assert(contractSource.includes('sitemapEnabled: false'), 'Sitemap must remain disabled in this scaffold.');
+assert(contractSource.includes('jsonLdEnabled: false'), 'JSON-LD must remain disabled in this scaffold.');
 
 const routeNames = collectProp(contractSource, 'routeName');
 const duplicateRouteNames = routeNames.filter((routeName, index) => routeNames.indexOf(routeName) !== index);
@@ -62,20 +66,31 @@ for (const routeName of expectedRouteNames) {
   assert(routeNames.includes(routeName), `Missing route template: ${routeName}`);
 }
 
-assert(contractSource.includes('/en-om/oman/governorates/[governorateSlug]'), 'Missing English governorate route template.');
-assert(contractSource.includes('/ar-om/oman/governorates/[governorateSlug]'), 'Missing Arabic governorate route template.');
-assert(contractSource.includes('/en-om/oman/wilayats/[wilayatSlug]'), 'Missing English wilayat route template.');
-assert(contractSource.includes('/ar-om/oman/wilayats/[wilayatSlug]'), 'Missing Arabic wilayat route template.');
-assert(contractSource.includes('/en-om/oman/areas/[areaSlug]'), 'Missing English area route template.');
-assert(contractSource.includes('/ar-om/oman/areas/[areaSlug]'), 'Missing Arabic area route template.');
+for (const routeFile of expectedRouteFiles) {
+  assert(contractSource.includes(`routeFile: '${routeFile}'`), `Missing route file in contract: ${routeFile}`);
+
+  const routeSource = readFile(routeFile);
+  assert(routeSource.includes('notFound'), `Route file must guard invalid params: ${routeFile}`);
+  assert(!routeSource.includes('generateMetadata'), `Route scaffold must not generate metadata yet: ${routeFile}`);
+  assert(!routeSource.includes('sitemap'), `Route scaffold must not generate sitemap behavior yet: ${routeFile}`);
+  assert(!routeSource.includes('jsonLd'), `Route scaffold must not generate JSON-LD yet: ${routeFile}`);
+}
+
+assert(contractSource.includes('/[locale]/[country]/oman/governorates/[governorateSlug]'), 'Missing governorate path template.');
+assert(contractSource.includes('/[locale]/[country]/oman/wilayats/[wilayatSlug]'), 'Missing wilayat path template.');
+assert(contractSource.includes('/[locale]/[country]/oman/areas/[areaSlug]'), 'Missing area path template.');
 
 const summary = {
   governorates: countRegistryItems(geoSource, 'OMAN_GOVERNORATES'),
   wilayats: countRegistryItems(geoSource, 'OMAN_WILAYATS'),
   areas: countRegistryItems(geoSource, 'OMAN_AREAS'),
   routeTemplates: routeNames.length,
-  runtimeRoutesEnabled: false,
+  routeFiles: expectedRouteFiles.length,
+  runtimeRoutesEnabled: true,
+  metadataEnabled: false,
+  sitemapEnabled: false,
+  jsonLdEnabled: false,
 };
 
-console.log('Oman geo route contract validated.');
+console.log('Oman geo runtime route scaffold validated.');
 console.log(summary);

@@ -2,17 +2,17 @@
 
 ## Purpose
 
-Define the planned route shapes for Oman geo discovery before any runtime routes are implemented.
+Define and guard the first runtime route scaffold for Oman geo discovery.
 
-This contract is intentionally static. It allows DrMuscat to agree on URL shape, locale handling, entity hierarchy, and future SEO expectations without creating Next.js route files yet.
+This contract now allows runtime route files for governorate, wilayat, and area discovery pages while still blocking SEO-heavy behavior such as sitemap entries, metadata generation, JSON-LD, provider queries, and database access.
 
 ## Status
 
 ```text
-planned-only
+runtime-scaffold
 ```
 
-Runtime routes are not enabled by this PR.
+Runtime route files are enabled. SEO runtime behavior is not enabled.
 
 ## Canonical source
 
@@ -28,27 +28,43 @@ The route contract lives in:
 src/config/geo/route-contract.ts
 ```
 
-## Planned route templates
+The shared runtime scaffold component lives in:
+
+```text
+src/components/geo/oman-geo-runtime-scaffold.tsx
+```
+
+## Runtime route templates
+
+The route scaffold follows the existing DrMuscat locale/country structure:
+
+```text
+/[locale]/[country]/...
+```
 
 ### Governorates
 
 ```text
-/en-om/oman/governorates/[governorateSlug]
-/ar-om/oman/governorates/[governorateSlug]
+/[locale]/[country]/oman/governorates/[governorateSlug]
 ```
 
 ### Wilayats
 
 ```text
-/en-om/oman/wilayats/[wilayatSlug]
-/ar-om/oman/wilayats/[wilayatSlug]
+/[locale]/[country]/oman/wilayats/[wilayatSlug]
 ```
 
 ### Areas
 
 ```text
-/en-om/oman/areas/[areaSlug]
-/ar-om/oman/areas/[areaSlug]
+/[locale]/[country]/oman/areas/[areaSlug]
+```
+
+Supported route params remain limited to:
+
+```text
+locale: en | ar
+country: om
 ```
 
 ## Validation command
@@ -59,31 +75,33 @@ pnpm geo:routes:validate
 
 The validator checks that:
 
-- The contract remains planned-only.
-- Runtime routes remain disabled.
-- All six English/Arabic route templates exist.
-- Route names are unique.
-- The contract can see the current Oman geo registry counts.
+- The contract is in `runtime-scaffold` status.
+- Runtime route files exist.
+- Runtime routes are enabled only for the scaffold.
+- Metadata remains disabled.
+- Sitemap remains disabled.
+- JSON-LD remains disabled.
+- The route files guard invalid params with `notFound()`.
+- The route files do not define `generateMetadata` yet.
 
-## Implementation gates
+## Implementation gates still pending
 
-Future runtime route work must be done in a separate approved PR and must include:
+Future SEO route work must be done in separate approved PRs and must include:
 
-- Next.js route files
 - metadata behavior
 - hreflang behavior
 - canonical behavior
 - sitemap behavior
 - empty state behavior
 - noindex/index policy for thin pages
+- provider listing behavior
 
 ## Explicit non-goals
 
-- No Next.js route files
-- No runtime pages
 - No sitemap entries
 - No metadata generation
 - No JSON-LD generation
 - No provider queries
 - No database migrations
 - No generated JSON committed
+- No claim that thin pages are indexable yet

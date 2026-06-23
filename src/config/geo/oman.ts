@@ -126,6 +126,18 @@ export const OMAN_AREAS: readonly OmanArea[] = [
   { slug: 'al-khoud', governorateSlug: 'muscat', wilayatSlug: 'al-seeb', labelEn: 'Al Khoud', labelAr: 'الخوض', scope: 'core', publicLaunchPhase: 1, isMvp: true },
   { slug: 'al-mawaleh', governorateSlug: 'muscat', wilayatSlug: 'al-seeb', labelEn: 'Al Mawaleh', labelAr: 'الموالح', scope: 'core', publicLaunchPhase: 1, isMvp: true },
   { slug: 'al-seeb', governorateSlug: 'muscat', wilayatSlug: 'al-seeb', labelEn: 'Al Seeb', labelAr: 'السيب', scope: 'core', publicLaunchPhase: 1, isMvp: true },
+  { slug: 'salalah', governorateSlug: 'dhofar', wilayatSlug: 'salalah', labelEn: 'Salalah', labelAr: 'صلالة', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'sohar', governorateSlug: 'al-batinah-north', wilayatSlug: 'sohar', labelEn: 'Sohar', labelAr: 'صحار', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'nizwa', governorateSlug: 'ad-dakhiliyah', wilayatSlug: 'nizwa', labelEn: 'Nizwa', labelAr: 'نزوى', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'sur', governorateSlug: 'ash-sharqiyah-south', wilayatSlug: 'sur', labelEn: 'Sur', labelAr: 'صور', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'ibri', governorateSlug: 'ad-dhahirah', wilayatSlug: 'ibri', labelEn: 'Ibri', labelAr: 'عبري', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'al-buraimi', governorateSlug: 'al-buraimi', wilayatSlug: 'al-buraimi', labelEn: 'Al Buraimi', labelAr: 'البريمي', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'khasab', governorateSlug: 'musandam', wilayatSlug: 'khasab', labelEn: 'Khasab', labelAr: 'خصب', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'rustaq', governorateSlug: 'al-batinah-south', wilayatSlug: 'rustaq', labelEn: 'Rustaq', labelAr: 'الرستاق', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'barka', governorateSlug: 'al-batinah-south', wilayatSlug: 'barka', labelEn: 'Barka', labelAr: 'بركاء', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'ibra', governorateSlug: 'ash-sharqiyah-north', wilayatSlug: 'ibra', labelEn: 'Ibra', labelAr: 'إبراء', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'al-duqm', governorateSlug: 'al-wusta', wilayatSlug: 'al-duqm', labelEn: 'Al Duqm', labelAr: 'الدقم', scope: 'core', publicLaunchPhase: 2, isMvp: false },
+  { slug: 'haima', governorateSlug: 'al-wusta', wilayatSlug: 'haima', labelEn: 'Haima', labelAr: 'هيماء', scope: 'core', publicLaunchPhase: 2, isMvp: false },
 ] as const;
 
 export const OMAN_GEO_REGISTRY = {

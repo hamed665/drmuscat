@@ -107,9 +107,9 @@ export default async function AdminImportBatchDetailPage({
             <ul className="mt-4 space-y-3">
               {result.validationIssues.map((issue) => (
                 <li key={issue.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm">
-                  <p className="font-semibold text-slate-950">{formatLabel(issue.severity)} · {issue.issueCode}</p>
-                  <p className="mt-1 text-slate-700">{issue.issueMessage}</p>
-                  {issue.fieldName ? <p className="mt-1 text-xs text-slate-500">Field: {issue.fieldName}</p> : null}
+                  <p className="font-semibold text-slate-950">{formatLabel(issue.severity)} · {issue.issue_code}</p>
+                  <p className="mt-1 text-slate-700">{issue.issue_message}</p>
+                  {issue.field_name ? <p className="mt-1 text-xs text-slate-500">Field: {issue.field_name}</p> : null}
                 </li>
               ))}
             </ul>
@@ -124,9 +124,9 @@ export default async function AdminImportBatchDetailPage({
             <ul className="mt-4 space-y-3">
               {result.duplicateCandidates.map((candidate) => (
                 <li key={candidate.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm">
-                  <p className="font-semibold text-slate-950">{candidate.matchScore}% · {formatLabel(candidate.resolutionStatus)}</p>
-                  <p className="mt-1 text-slate-700">{candidate.matchReason}</p>
-                  <p className="mt-1 text-xs text-slate-500">Matched: {formatLabel(candidate.matchedEntityType)}</p>
+                  <p className="font-semibold text-slate-950">{candidate.match_score}% · {formatLabel(candidate.resolution_status)}</p>
+                  <p className="mt-1 text-slate-700">{candidate.match_reason}</p>
+                  <p className="mt-1 text-xs text-slate-500">Matched: {formatLabel(candidate.matched_entity_type)}</p>
                 </li>
               ))}
             </ul>

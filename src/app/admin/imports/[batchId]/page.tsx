@@ -1,11 +1,28 @@
+import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getAdminImportBatchDetail } from "@/server/admin/imports";
+import {
+  getAdminImportBatchDetail,
+  normalizeAdminImportBatchRows,
+} from "@/server/admin/imports";
 
 type AdminImportBatchDetailPageProps = {
   params: Promise<{ batchId: string }>;
 };
+
+async function normalizeBatchAction(formData: FormData) {
+  "use server";
+
+  const batchIdValue = formData.get("batchId");
+  if (typeof batchIdValue !== "string") return;
+
+  const result = await normalizeAdminImportBatchRows(batchIdValue);
+  if (result.ok) {
+    revalidatePath("/admin/imports");
+    revalidatePath(`/admin/imports/${batchIdValue}`);
+  }
+}
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en", {
@@ -42,6 +59,7 @@ export default async function AdminImportBatchDetailPage({
   }
 
   const { batch } = result;
+  const canNormalize = result.rawRows.length > 0;
 
   return (
     <div className="space-y-6">
@@ -57,7 +75,7 @@ export default async function AdminImportBatchDetailPage({
           <div>
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-slate-950">{batch.batchName}</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Read-only batch inspection. Review actions, Excel parsing, duplicate resolution, and public publishing are deferred to later phases.
+              Batch inspection and staging controls. Normalization updates protected staging rows only; review actions, duplicate resolution, public publishing, sitemap promotion, and indexing remain deferred.
             </p>
           </div>
           <span className="w-fit rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
@@ -78,8 +96,8 @@ export default async function AdminImportBatchDetailPage({
             <p className="mt-2 font-mono text-lg text-slate-950">{batch.invalidRows}</p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Duplicates</p>
-            <p className="mt-2 font-mono text-lg text-slate-950">{batch.duplicateSuspectedRows}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Ready for review</p>
+            <p className="mt-2 font-mono text-lg text-slate-950">{batch.readyForReviewRows}</p>
           </div>
         </div>
         <dl className="mt-5 grid gap-3 text-sm text-slate-700 md:grid-cols-3">
@@ -96,6 +114,28 @@ export default async function AdminImportBatchDetailPage({
             <dd>{formatDate(batch.updatedAt)}</dd>
           </div>
         </dl>
+      </section>
+
+      <section className="rounded-3xl border border-cyan-100 bg-cyan-50/70 p-5 text-cyan-950 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-800">ADM-IMPORT-C</p>
+            <h3 className="mt-2 text-xl font-bold text-slate-950">Normalize staged rows</h3>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
+              Cleans names, source fields, Oman phone numbers, WhatsApp, Google Maps URLs, dates, geo text, specialty/service text, languages, and quality flags into normalized_payload. This does not publish or index any provider.
+            </p>
+          </div>
+          <form action={normalizeBatchAction}>
+            <input type="hidden" name="batchId" value={batch.id} />
+            <button
+              type="submit"
+              disabled={!canNormalize}
+              className="rounded-2xl bg-cyan-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400"
+            >
+              Normalize staging rows
+            </button>
+          </form>
+        </div>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">

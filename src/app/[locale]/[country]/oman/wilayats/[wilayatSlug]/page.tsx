@@ -6,7 +6,7 @@ import { OMAN_GOVERNORATES, OMAN_WILAYATS } from '@/config/geo/oman';
 import { getOmanGeoPublicationGates } from '@/lib/geo/oman-publication-gates';
 import { getOmanGeoReadiness } from '@/lib/geo/oman-readiness';
 import { isSupportedCountry, isSupportedLocale } from '@/lib/i18n/config';
-import { buildOmanGeoNoindexMetadata } from '@/lib/seo/geo-route-metadata';
+import { buildOmanGeoGatedMetadata } from '@/lib/seo/oman-geo-gated-metadata';
 
 type Params = {
   locale: string;
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
   const parentLabel = getParentLabel(locale, wilayat.governorateSlug);
 
-  return buildOmanGeoNoindexMetadata({
+  return buildOmanGeoGatedMetadata({
     locale,
     country,
     entity: 'wilayat',

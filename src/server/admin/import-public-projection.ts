@@ -195,6 +195,22 @@ function candidateQualityScore(projection: PublicSafeProjectionPayload): number 
   return Math.max(0, Math.min(100, projection.quality.score));
 }
 
+function buildCandidateInsertPayload(
+  batchId: string,
+  row: ImportRowForProjection,
+  projection: PublicSafeProjectionPayload,
+): MutationPayload {
+  return {
+    batch_id: batchId,
+    raw_row_id: row.id,
+    entity_type: row.entity_type,
+    candidate_payload: projection,
+    candidate_status: "approved",
+    quality_score: candidateQualityScore(projection),
+    review_note: "Projected from approved import row. Public publishing remains deferred.",
+  };
+}
+
 export async function projectAdminImportBatchRows(batchId: string): Promise<ProjectImportRowsResult> {
   const admin = await requireAdminPermission("imports.review");
 
@@ -242,22 +258,14 @@ export async function projectAdminImportBatchRows(batchId: string): Promise<Proj
 
   const existingRawRowIds = new Set(existingResult.data.map((row) => row.raw_row_id));
   const projectedAt = new Date().toISOString();
-  const candidateRows = rowsResult.data
-    .filter((row) => !existingRawRowIds.has(row.id))
-    .map((row) => {
-      const projection = buildPublicSafeProjection(row, projectedAt);
-      if (projection === null) return null;
-      return {
-        batch_id: batchId,
-        raw_row_id: row.id,
-        entity_type: row.entity_type,
-        candidate_payload: projection,
-        candidate_status: "approved",
-        quality_score: candidateQualityScore(projection),
-        review_note: "Projected from approved import row. Public publishing remains deferred.",
-      };
-    })
-    .filter((row): row is MutationPayload => row !== null);
+  const candidateRows: MutationPayload[] = [];
+
+  for (const row of rowsResult.data) {
+    if (existingRawRowIds.has(row.id)) continue;
+    const projection = buildPublicSafeProjection(row, projectedAt);
+    if (projection === null) continue;
+    candidateRows.push(buildCandidateInsertPayload(batchId, row, projection));
+  }
 
   if (candidateRows.length > 0) {
     const insertResult = await supabase.from("import_entity_candidates").insert(candidateRows);

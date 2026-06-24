@@ -3,9 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { OmanGeoRuntimeScaffold } from '@/components/geo/oman-geo-runtime-scaffold';
 import { OMAN_AREAS, OMAN_GOVERNORATES, OMAN_WILAYATS } from '@/config/geo/oman';
-import { getOmanGeoEditorialContent } from '@/lib/geo/oman-editorial-content';
-import { getOmanGeoIndexPromotionEligibility } from '@/lib/geo/oman-index-promotion-eligibility';
-import { getOmanGeoProviderInventoryContract } from '@/lib/geo/oman-provider-inventory';
+import { getOmanGeoReadiness } from '@/lib/geo/oman-readiness';
 import { isSupportedCountry, isSupportedLocale } from '@/lib/i18n/config';
 import { buildOmanGeoNoindexMetadata } from '@/lib/seo/geo-route-metadata';
 
@@ -15,20 +13,15 @@ type Params = {
   areaSlug: string;
 };
 
-function buildParentParts(locale: 'en' | 'ar', area: (typeof OMAN_AREAS)[number]): string[] {
+function buildParentLabel(locale: 'en' | 'ar', area: (typeof OMAN_AREAS)[number]): string | null {
   const wilayat = OMAN_WILAYATS.find((item) => item.slug === area.wilayatSlug);
   const governorate = OMAN_GOVERNORATES.find((item) => item.slug === area.governorateSlug);
-  const parentParts: string[] = [];
+  const parentParts = [
+    wilayat ? (locale === 'ar' ? wilayat.labelAr : wilayat.labelEn) : null,
+    governorate ? (locale === 'ar' ? governorate.labelAr : governorate.labelEn) : null,
+  ].filter(Boolean);
 
-  if (wilayat) {
-    parentParts.push(locale === 'ar' ? wilayat.labelAr : wilayat.labelEn);
-  }
-
-  if (governorate) {
-    parentParts.push(locale === 'ar' ? governorate.labelAr : governorate.labelEn);
-  }
-
-  return parentParts;
+  return parentParts.length > 0 ? parentParts.join(' · ') : null;
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
@@ -44,8 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     return {};
   }
 
-  const parentParts = buildParentParts(locale, area);
-  const parentLabel = parentParts.length > 0 ? parentParts.join(' · ') : null;
+  const parentLabel = buildParentLabel(locale, area);
 
   return buildOmanGeoNoindexMetadata({
     locale,
@@ -70,19 +62,8 @@ export default async function OmanAreaPage({ params }: { params: Promise<Params>
     notFound();
   }
 
-  const parentParts = buildParentParts(locale, area);
-  const parentLabel = parentParts.length > 0 ? parentParts.join(' · ') : null;
-  const editorialContent = getOmanGeoEditorialContent({
-    entity: 'area',
-    slug: area.slug,
-    locale,
-  });
-  const providerInventory = getOmanGeoProviderInventoryContract({ entity: 'area' });
-  const indexPromotionEligibility = getOmanGeoIndexPromotionEligibility({
-    entity: 'area',
-    slug: area.slug,
-    locale,
-  });
+  const parentLabel = buildParentLabel(locale, area);
+  const readiness = getOmanGeoReadiness({ entity: 'area', slug: area.slug, locale });
 
   return (
     <OmanGeoRuntimeScaffold
@@ -90,9 +71,10 @@ export default async function OmanAreaPage({ params }: { params: Promise<Params>
       country={country}
       entity="area"
       item={area}
-      editorialContent={editorialContent}
-      providerInventory={providerInventory}
-      indexPromotionEligibility={indexPromotionEligibility}
+      editorialContent={readiness.editorialContent}
+      providerInventory={readiness.providerInventory}
+      indexPromotionEligibility={readiness.indexPromotionEligibility}
+      readiness={readiness}
       {...(parentLabel ? { parentLabel } : {})}
     />
   );

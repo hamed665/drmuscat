@@ -3,9 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { OmanGeoRuntimeScaffold } from '@/components/geo/oman-geo-runtime-scaffold';
 import { OMAN_GOVERNORATES, OMAN_WILAYATS } from '@/config/geo/oman';
-import { getOmanGeoEditorialContent } from '@/lib/geo/oman-editorial-content';
-import { getOmanGeoIndexPromotionEligibility } from '@/lib/geo/oman-index-promotion-eligibility';
-import { getOmanGeoProviderInventoryContract } from '@/lib/geo/oman-provider-inventory';
+import { getOmanGeoReadiness } from '@/lib/geo/oman-readiness';
 import { isSupportedCountry, isSupportedLocale } from '@/lib/i18n/config';
 import { buildOmanGeoNoindexMetadata } from '@/lib/seo/geo-route-metadata';
 
@@ -14,6 +12,11 @@ type Params = {
   country: string;
   wilayatSlug: string;
 };
+
+function getParentLabel(locale: 'en' | 'ar', governorateSlug: string): string | null {
+  const governorate = OMAN_GOVERNORATES.find((item) => item.slug === governorateSlug);
+  return governorate ? (locale === 'ar' ? governorate.labelAr : governorate.labelEn) : null;
+}
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { locale, country, wilayatSlug } = await params;
@@ -28,8 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     return {};
   }
 
-  const governorate = OMAN_GOVERNORATES.find((item) => item.slug === wilayat.governorateSlug);
-  const parentLabel = governorate ? (locale === 'ar' ? governorate.labelAr : governorate.labelEn) : null;
+  const parentLabel = getParentLabel(locale, wilayat.governorateSlug);
 
   return buildOmanGeoNoindexMetadata({
     locale,
@@ -54,19 +56,8 @@ export default async function OmanWilayatPage({ params }: { params: Promise<Para
     notFound();
   }
 
-  const governorate = OMAN_GOVERNORATES.find((item) => item.slug === wilayat.governorateSlug);
-  const parentLabel = governorate ? (locale === 'ar' ? governorate.labelAr : governorate.labelEn) : null;
-  const editorialContent = getOmanGeoEditorialContent({
-    entity: 'wilayat',
-    slug: wilayat.slug,
-    locale,
-  });
-  const providerInventory = getOmanGeoProviderInventoryContract({ entity: 'wilayat' });
-  const indexPromotionEligibility = getOmanGeoIndexPromotionEligibility({
-    entity: 'wilayat',
-    slug: wilayat.slug,
-    locale,
-  });
+  const parentLabel = getParentLabel(locale, wilayat.governorateSlug);
+  const readiness = getOmanGeoReadiness({ entity: 'wilayat', slug: wilayat.slug, locale });
 
   return (
     <OmanGeoRuntimeScaffold
@@ -74,9 +65,10 @@ export default async function OmanWilayatPage({ params }: { params: Promise<Para
       country={country}
       entity="wilayat"
       item={wilayat}
-      editorialContent={editorialContent}
-      providerInventory={providerInventory}
-      indexPromotionEligibility={indexPromotionEligibility}
+      editorialContent={readiness.editorialContent}
+      providerInventory={readiness.providerInventory}
+      indexPromotionEligibility={readiness.indexPromotionEligibility}
+      readiness={readiness}
       {...(parentLabel ? { parentLabel } : {})}
     />
   );

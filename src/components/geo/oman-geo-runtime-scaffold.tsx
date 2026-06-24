@@ -2,6 +2,7 @@ import type { GeoLaunchPhase, GeoScope } from '@/config/geo/oman';
 import type { OmanGeoEditorialContentEntry } from '@/config/geo/editorial-content-contract';
 import type { OmanGeoProviderInventoryEntityContract } from '@/config/geo/provider-inventory-contract';
 import type { OmanGeoIndexPromotionEligibility } from '@/lib/geo/oman-index-promotion-eligibility';
+import type { OmanGeoReadinessRuntimeState } from '@/lib/geo/oman-readiness';
 import type { SupportedCountry, SupportedLocale } from '@/lib/i18n/config';
 
 export type OmanGeoScaffoldEntity = 'governorate' | 'wilayat' | 'area';
@@ -26,12 +27,20 @@ type OmanGeoRuntimeScaffoldProps = {
   editorialContent?: OmanGeoEditorialContentEntry | null;
   providerInventory?: OmanGeoProviderInventoryEntityContract | null;
   indexPromotionEligibility?: OmanGeoIndexPromotionEligibility | null;
+  readiness?: OmanGeoReadinessRuntimeState | null;
 };
 
 type PageCopy = {
   eyebrow: string;
   description: string;
   status: string;
+  readinessTitle: string;
+  readinessStatus: string;
+  promotionReview: string;
+  providerReady: string;
+  editorialReady: string;
+  qaReady: string;
+  indexReady: string;
   editorialTitle: string;
   editorialEmpty: string;
   providerTitle: string;
@@ -72,6 +81,13 @@ const pageCopy: Record<SupportedLocale, PageCopy> = {
     eyebrow: 'DrMuscat Geo Discovery',
     description: 'This geo discovery page is a runtime scaffold. Provider inventory, provider listings, editorial content, metadata, sitemap entries and structured data will be added in later approved phases.',
     status: 'Runtime scaffold only',
+    readinessTitle: 'Unified readiness',
+    readinessStatus: 'Readiness status',
+    promotionReview: 'Promotion review',
+    providerReady: 'Provider ready',
+    editorialReady: 'Editorial ready',
+    qaReady: 'QA ready',
+    indexReady: 'Index gate ready',
     editorialTitle: 'Editorial content',
     editorialEmpty: 'No published human-reviewed editorial content is available for this geo page yet.',
     providerTitle: 'Provider inventory',
@@ -97,6 +113,13 @@ const pageCopy: Record<SupportedLocale, PageCopy> = {
     eyebrow: 'اكتشاف المناطق في DrMuscat',
     description: 'هذه الصفحة هي هيكل أولي للتشغيل فقط. ستتم إضافة مخزون مقدمي الخدمة والقوائم والمحتوى التحريري والبيانات الوصفية وخرائط الموقع والبيانات المنظمة في مراحل لاحقة معتمدة.',
     status: 'هيكل تشغيل أولي فقط',
+    readinessTitle: 'جاهزية موحدة',
+    readinessStatus: 'حالة الجاهزية',
+    promotionReview: 'مراجعة الترقية',
+    providerReady: 'جاهزية مقدمي الخدمة',
+    editorialReady: 'جاهزية المحتوى',
+    qaReady: 'جاهزية المراجعة',
+    indexReady: 'جاهزية بوابة الفهرسة',
     editorialTitle: 'المحتوى التحريري',
     editorialEmpty: 'لا يوجد محتوى تحريري منشور ومراجع بشرياً لهذه الصفحة الجغرافية حتى الآن.',
     providerTitle: 'مخزون مقدمي الخدمة',
@@ -133,6 +156,7 @@ export function OmanGeoRuntimeScaffold({
   editorialContent = null,
   providerInventory = null,
   indexPromotionEligibility = null,
+  readiness = null,
 }: OmanGeoRuntimeScaffoldProps) {
   const copy = pageCopy[locale];
   const title = localizedLabel(item, locale);
@@ -147,6 +171,8 @@ export function OmanGeoRuntimeScaffold({
       data-editorial-content-status={editorialContent?.status ?? 'none'}
       data-provider-inventory-status={providerInventory?.status ?? 'none'}
       data-index-promotion-eligible={String(indexPromotionEligibility?.eligibleForIndexPromotion ?? false)}
+      data-readiness-status={readiness?.status ?? 'none'}
+      data-ready-for-promotion-review={String(readiness?.readyForPromotionReview ?? false)}
     >
       <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">{copy.eyebrow}</p>
@@ -156,6 +182,58 @@ export function OmanGeoRuntimeScaffold({
           {parentLabel ? <p className="text-base text-slate-600">{parentLabel}</p> : null}
           <p className="max-w-3xl text-base leading-7 text-slate-700">{copy.description}</p>
         </div>
+      </section>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-slate-950">{copy.readinessTitle}</h2>
+        {readiness ? (
+          <div className="mt-4 flex flex-col gap-4">
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.readinessStatus}</p>
+                <p className="mt-2 font-mono text-sm text-slate-900">{readiness.status}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.promotionReview}</p>
+                <p className="mt-2 text-sm text-slate-900">{readiness.readyForPromotionReview ? copy.available : copy.blocked}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.noindexStatus}</p>
+                <p className="mt-2 text-sm text-slate-900">{readiness.noindexRemovalAllowed ? copy.notRequired : copy.required}</p>
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-4">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.providerReady}</p>
+                <p className="mt-2 text-sm text-slate-900">{readiness.providerInventoryReady ? copy.available : copy.blocked}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.editorialReady}</p>
+                <p className="mt-2 text-sm text-slate-900">{readiness.editorialContentReady ? copy.available : copy.blocked}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.qaReady}</p>
+                <p className="mt-2 text-sm text-slate-900">{readiness.qaEvidenceReady ? copy.available : copy.blocked}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.indexReady}</p>
+                <p className="mt-2 text-sm text-slate-900">{readiness.indexPromotionEligibilityReady ? copy.available : copy.blocked}</p>
+              </div>
+            </div>
+            {readiness.blockedReasons.length > 0 ? (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.blockedReasons}</p>
+                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-800">
+                  {readiness.blockedReasons.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <p className="mt-3 text-sm leading-6 text-slate-600">{copy.blocked}</p>
+        )}
       </section>
 
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">

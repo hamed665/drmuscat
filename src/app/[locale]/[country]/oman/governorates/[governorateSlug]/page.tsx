@@ -3,9 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { OmanGeoRuntimeScaffold } from '@/components/geo/oman-geo-runtime-scaffold';
 import { OMAN_GOVERNORATES } from '@/config/geo/oman';
-import { getOmanGeoEditorialContent } from '@/lib/geo/oman-editorial-content';
-import { getOmanGeoIndexPromotionEligibility } from '@/lib/geo/oman-index-promotion-eligibility';
-import { getOmanGeoProviderInventoryContract } from '@/lib/geo/oman-provider-inventory';
+import { getOmanGeoReadiness } from '@/lib/geo/oman-readiness';
 import { isSupportedCountry, isSupportedLocale } from '@/lib/i18n/config';
 import { buildOmanGeoNoindexMetadata } from '@/lib/seo/geo-route-metadata';
 
@@ -50,13 +48,7 @@ export default async function OmanGovernoratePage({ params }: { params: Promise<
     notFound();
   }
 
-  const editorialContent = getOmanGeoEditorialContent({
-    entity: 'governorate',
-    slug: governorate.slug,
-    locale,
-  });
-  const providerInventory = getOmanGeoProviderInventoryContract({ entity: 'governorate' });
-  const indexPromotionEligibility = getOmanGeoIndexPromotionEligibility({
+  const readiness = getOmanGeoReadiness({
     entity: 'governorate',
     slug: governorate.slug,
     locale,
@@ -68,9 +60,10 @@ export default async function OmanGovernoratePage({ params }: { params: Promise<
       country={country}
       entity="governorate"
       item={governorate}
-      editorialContent={editorialContent}
-      providerInventory={providerInventory}
-      indexPromotionEligibility={indexPromotionEligibility}
+      editorialContent={readiness.editorialContent}
+      providerInventory={readiness.providerInventory}
+      indexPromotionEligibility={readiness.indexPromotionEligibility}
+      readiness={readiness}
     />
   );
 }

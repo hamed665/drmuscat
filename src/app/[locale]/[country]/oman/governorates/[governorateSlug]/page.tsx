@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { OmanGeoRuntimeScaffold } from '@/components/geo/oman-geo-runtime-scaffold';
 import { OMAN_GOVERNORATES } from '@/config/geo/oman';
+import { buildOmanGeoPath, isOmanCountryRoute } from '@/lib/geo/oman-country-adapter';
 import { getOmanGeoPublicationGates } from '@/lib/geo/oman-publication-gates';
 import { getOmanGeoReadiness } from '@/lib/geo/oman-readiness';
 import { isSupportedCountry, isSupportedLocale } from '@/lib/i18n/config';
@@ -17,7 +18,7 @@ type Params = {
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { locale, country, governorateSlug } = await params;
 
-  if (!isSupportedLocale(locale) || !isSupportedCountry(country) || country !== 'om') {
+  if (!isSupportedLocale(locale) || !isSupportedCountry(country) || !isOmanCountryRoute(country)) {
     return {};
   }
 
@@ -32,14 +33,14 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     country,
     entity: 'governorate',
     item: governorate,
-    pathname: `/oman/governorates/${governorate.slug}`,
+    pathname: buildOmanGeoPath('governorate', governorate.slug),
   });
 }
 
 export default async function OmanGovernoratePage({ params }: { params: Promise<Params> }) {
   const { locale, country, governorateSlug } = await params;
 
-  if (!isSupportedLocale(locale) || !isSupportedCountry(country) || country !== 'om') {
+  if (!isSupportedLocale(locale) || !isSupportedCountry(country) || !isOmanCountryRoute(country)) {
     notFound();
   }
 

@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { resolveAdminImportDuplicateCandidate } from "@/server/admin/import-duplicate-resolution";
 import {
   detectAdminImportBatchDuplicates,
   getAdminImportBatchDetail,
@@ -38,6 +39,28 @@ async function detectDuplicatesAction(formData: FormData) {
   }
 }
 
+async function resolveDuplicateAction(formData: FormData) {
+  "use server";
+
+  const duplicateCandidateId = formData.get("duplicateCandidateId");
+  const resolutionStatus = formData.get("resolutionStatus");
+  const batchIdValue = formData.get("batchId");
+
+  if (
+    typeof duplicateCandidateId !== "string" ||
+    typeof resolutionStatus !== "string" ||
+    typeof batchIdValue !== "string"
+  ) {
+    return;
+  }
+
+  const result = await resolveAdminImportDuplicateCandidate(duplicateCandidateId, resolutionStatus);
+  if (result.ok) {
+    revalidatePath("/admin/imports");
+    revalidatePath(`/admin/imports/${batchIdValue}`);
+  }
+}
+
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en", {
     dateStyle: "medium",
@@ -51,6 +74,32 @@ function formatLabel(value: string): string {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function DuplicateResolutionButton({
+  batchId,
+  duplicateCandidateId,
+  resolutionStatus,
+  label,
+}: {
+  batchId: string;
+  duplicateCandidateId: string;
+  resolutionStatus: string;
+  label: string;
+}) {
+  return (
+    <form action={resolveDuplicateAction}>
+      <input type="hidden" name="batchId" value={batchId} />
+      <input type="hidden" name="duplicateCandidateId" value={duplicateCandidateId} />
+      <input type="hidden" name="resolutionStatus" value={resolutionStatus} />
+      <button
+        type="submit"
+        className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-bold text-slate-700 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+      >
+        {label}
+      </button>
+    </form>
+  );
 }
 
 export default async function AdminImportBatchDetailPage({
@@ -90,7 +139,7 @@ export default async function AdminImportBatchDetailPage({
           <div>
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-slate-950">{batch.batchName}</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Batch inspection and staging controls. Normalization and duplicate detection update protected staging records only; review actions, public publishing, sitemap promotion, and indexing remain deferred.
+              Batch inspection and staging controls. Normalization, duplicate detection, and duplicate resolution update protected staging records only; public publishing, sitemap promotion, and indexing remain deferred.
             </p>
           </div>
           <span className="w-fit rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
@@ -195,9 +244,41 @@ export default async function AdminImportBatchDetailPage({
             <ul className="mt-4 space-y-3">
               {result.duplicateCandidates.map((candidate) => (
                 <li key={candidate.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm">
-                  <p className="font-semibold text-slate-950">{candidate.match_score}% · {formatLabel(candidate.resolution_status)}</p>
-                  <p className="mt-1 text-slate-700">{candidate.match_reason}</p>
-                  <p className="mt-1 text-xs text-slate-500">Matched: {formatLabel(candidate.matched_entity_type)}</p>
+                  <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                    <div>
+                      <p className="font-semibold text-slate-950">{candidate.match_score}% · {formatLabel(candidate.resolution_status)}</p>
+                      <p className="mt-1 text-slate-700">{candidate.match_reason}</p>
+                      <p className="mt-1 text-xs text-slate-500">Matched: {formatLabel(candidate.matched_entity_type)}</p>
+                    </div>
+                    {candidate.resolution_status === "pending" ? (
+                      <div className="flex flex-wrap gap-2">
+                        <DuplicateResolutionButton
+                          batchId={batch.id}
+                          duplicateCandidateId={candidate.id}
+                          resolutionStatus="same_entity"
+                          label="Same entity"
+                        />
+                        <DuplicateResolutionButton
+                          batchId={batch.id}
+                          duplicateCandidateId={candidate.id}
+                          resolutionStatus="different_entity"
+                          label="Different"
+                        />
+                        <DuplicateResolutionButton
+                          batchId={batch.id}
+                          duplicateCandidateId={candidate.id}
+                          resolutionStatus="needs_manual_review"
+                          label="Manual review"
+                        />
+                        <DuplicateResolutionButton
+                          batchId={batch.id}
+                          duplicateCandidateId={candidate.id}
+                          resolutionStatus="ignored"
+                          label="Ignore"
+                        />
+                      </div>
+                    ) : null}
+                  </div>
                 </li>
               ))}
             </ul>

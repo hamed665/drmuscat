@@ -36,7 +36,7 @@ schemaPolicy: disabled-until-approved
 
 ## Disabled country drafts
 
-Examples:
+GCC drafts:
 
 ```text
 ae
@@ -44,8 +44,17 @@ qa
 sa
 kw
 bh
-ir
 ```
+
+North America and UK drafts:
+
+```text
+Canada: ca - province, city, area
+United States: us - state, city, area
+United Kingdom: gb - nation, city, area
+```
+
+Other internal drafts remain disabled too.
 
 These are not public-enabled by this foundation.
 

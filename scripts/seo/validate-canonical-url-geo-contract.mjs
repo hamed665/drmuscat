@@ -24,6 +24,13 @@ const requiredPhrases = [
   "Internal links must point to canonical URLs",
   "Sitemap must not include:",
   "No raw import, admin notes, private metadata, or unapproved entity facts may appear in LLM-facing files.",
+  "`/areas/{areaSlug}` is not allowed as an indexable canonical route because area slugs are not globally unique.",
+];
+
+const forbiddenPermissionPhrases = [
+  "`/areas/{areaSlug}` is allowed as an indexable canonical route",
+  "global area slug canonical routes are allowed",
+  "area slugs are globally unique",
 ];
 
 if (!existsSync(contractPath)) {
@@ -33,6 +40,7 @@ if (!existsSync(contractPath)) {
 
 const source = readFileSync(contractPath, "utf8");
 const missing = requiredPhrases.filter((phrase) => !source.includes(phrase));
+const forbidden = forbiddenPermissionPhrases.filter((phrase) => source.includes(phrase));
 
 if (missing.length > 0) {
   console.error("Canonical URL and geo contract is missing required phrases:");
@@ -42,8 +50,11 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-if (/\/areas\/\{areaSlug\}[^\n]*indexable canonical/i.test(source)) {
-  console.error("Contract must not permit global area slug canonical routes.");
+if (forbidden.length > 0) {
+  console.error("Canonical URL and geo contract contains forbidden permission phrases:");
+  for (const phrase of forbidden) {
+    console.error(`- ${phrase}`);
+  }
   process.exit(1);
 }
 

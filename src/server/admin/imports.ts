@@ -1,6 +1,12 @@
 import "server-only";
 
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
+import { writeAdminAuditEvent } from "@/server/admin/audit-log";
+import {
+  normalizeImportRawPayload,
+  type ImportJsonRecord,
+  type ImportJsonValue,
+} from "@/server/admin/import-row-normalizer";
 import { requireAdminPermission } from "@/server/admin/permissions";
 
 export type AdminImportEntityType =
@@ -42,6 +48,7 @@ type ImportQueryBuilder<T> = PromiseLike<QueryResult<T>> & {
   eq(column: string, value: string | number | boolean): ImportQueryBuilder<T>;
   order(column: string, options?: { ascending?: boolean }): ImportQueryBuilder<T>;
   limit(count: number): ImportQueryBuilder<T>;
+  update(values: ImportJsonRecord): ImportQueryBuilder<T>;
   maybeSingle(): Promise<SingleQueryResult<T>>;
 };
 
@@ -78,6 +85,10 @@ type ImportRawRow = {
   last_checked_at: string | null;
   created_at: string;
   updated_at: string;
+};
+
+type ImportRawRowForNormalization = ImportRawRow & {
+  raw_payload: ImportJsonValue;
 };
 
 type ImportValidationIssueRow = {
@@ -164,8 +175,13 @@ export type AdminImportBatchDetailResult =
   | ({ ok: true } & AdminImportBatchDetail)
   | { ok: false; reason: "not_found" | "unavailable" };
 
+export type AdminImportBatchNormalizeResult =
+  | { ok: true; normalizedRows: number; readyForReviewRows: number }
+  | { ok: false; reason: "not_found" | "unavailable" | "empty" };
+
 const batchLimit = 50;
 const detailLimit = 100;
+const normalizationLimit = 500;
 const batchColumns =
   "id, batch_name, entity_type, source_type, source_name, file_name, file_hash, status, total_rows, valid_rows, invalid_rows, duplicate_suspected_rows, ready_for_review_rows, created_at, updated_at";
 
@@ -195,6 +211,15 @@ function mapBatch(row: ImportBatchRow): AdminImportBatchSummary {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+}
+
+function nextNormalizedRowStatus(currentStatus: string, readyForReview: boolean): string {
+  if (currentStatus === "rejected" || currentStatus === "published_noindex" || currentStatus === "index_eligible") {
+    return currentStatus;
+  }
+
+  if (currentStatus === "validation_failed") return "validation_failed";
+  return readyForReview ? "normalized" : "needs_review";
 }
 
 export async function listAdminImportBatches(): Promise<AdminImportBatchListResult> {
@@ -306,4 +331,125 @@ export async function getAdminImportBatchDetail(
     mappingResults: mappingResultsResult.data,
     publishQueue: publishQueueResult.data,
   };
+}
+
+export async function normalizeAdminImportBatchRows(
+  batchId: string,
+): Promise<AdminImportBatchNormalizeResult> {
+  const admin = await requireAdminPermission("imports.validate");
+
+  if (!isUuid(batchId)) {
+    return { ok: false, reason: "not_found" };
+  }
+
+  const supabase = createImportAdminClient();
+  const batchResult = await supabase
+    .from<ImportBatchRow>("import_batches")
+    .select(batchColumns)
+    .eq("id", batchId)
+    .maybeSingle();
+
+  if (batchResult.error !== null) {
+    return { ok: false, reason: "unavailable" };
+  }
+
+  if (batchResult.data === null) {
+    return { ok: false, reason: "not_found" };
+  }
+
+  const rowsResult = await supabase
+    .from<ImportRawRowForNormalization>("import_raw_rows")
+    .select(
+      "id, row_number, entity_type, external_id, row_status, validation_score, source_url, last_checked_at, raw_payload, created_at, updated_at",
+    )
+    .eq("batch_id", batchId)
+    .order("row_number", { ascending: true })
+    .limit(normalizationLimit);
+
+  if (rowsResult.error !== null || rowsResult.data === null) {
+    return { ok: false, reason: "unavailable" };
+  }
+
+  if (rowsResult.data.length === 0) {
+    return { ok: false, reason: "empty" };
+  }
+
+  let normalizedRows = 0;
+  let readyForReviewRows = 0;
+  const statusCounts: Record<string, number> = {};
+
+  for (const row of rowsResult.data) {
+    const normalized = normalizeImportRawPayload(
+      row.raw_payload,
+      row.external_id,
+      row.source_url,
+      row.last_checked_at,
+    );
+    const rowStatus = nextNormalizedRowStatus(row.row_status, normalized.readyForReview);
+    const nextScore = Math.max(row.validation_score, normalized.qualityScore);
+
+    const updateResult = await supabase
+      .from("import_raw_rows")
+      .update({
+        normalized_payload: normalized.normalizedPayload as unknown as ImportJsonValue,
+        row_status: rowStatus,
+        validation_score: nextScore,
+        external_id: normalized.normalizedPayload.identity.externalId ?? row.external_id,
+        source_url: normalized.normalizedPayload.source.sourceUrl ?? row.source_url,
+        last_checked_at: normalized.normalizedPayload.source.lastCheckedAt ?? row.last_checked_at,
+        metadata: {
+          normalizer_version: "v1",
+          normalized_at: normalized.normalizedPayload.normalizedAt,
+          quality_flags: normalized.normalizedPayload.quality.flags,
+        },
+      })
+      .eq("id", row.id);
+
+    if (updateResult.error !== null) {
+      return { ok: false, reason: "unavailable" };
+    }
+
+    normalizedRows += 1;
+    if (rowStatus === "normalized") readyForReviewRows += 1;
+    statusCounts[rowStatus] = (statusCounts[rowStatus] ?? 0) + 1;
+  }
+
+  const nextBatchStatus = readyForReviewRows > 0 ? "normalized" : "reviewing";
+  const batchUpdateResult = await supabase
+    .from("import_batches")
+    .update({
+      status: nextBatchStatus,
+      ready_for_review_rows: readyForReviewRows,
+      metadata: {
+        normalizer_version: "v1",
+        normalized_rows: normalizedRows,
+        ready_for_review_rows: readyForReviewRows,
+        status_counts: statusCounts,
+        max_rows_per_run: normalizationLimit,
+      },
+    })
+    .eq("id", batchId);
+
+  if (batchUpdateResult.error !== null) {
+    return { ok: false, reason: "unavailable" };
+  }
+
+  await writeAdminAuditEvent({
+    admin,
+    permissionKey: "imports.validate",
+    action: "import_review.status_changed",
+    entityType: "import_batch",
+    entityId: batchId,
+    targetTable: "import_raw_rows",
+    summary: "Import rows normalized into protected staging payloads.",
+    metadata: {
+      normalizedRows,
+      readyForReviewRows,
+      statusCounts,
+      previousBatchStatus: batchResult.data.status,
+      nextBatchStatus,
+    },
+  });
+
+  return { ok: true, normalizedRows, readyForReviewRows };
 }

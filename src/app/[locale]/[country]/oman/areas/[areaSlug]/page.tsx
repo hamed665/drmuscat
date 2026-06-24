@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { OmanGeoRuntimeScaffold } from '@/components/geo/oman-geo-runtime-scaffold';
 import { OMAN_AREAS, OMAN_GOVERNORATES, OMAN_WILAYATS } from '@/config/geo/oman';
+import { buildOmanGeoPath, isOmanCountryRoute } from '@/lib/geo/oman-country-adapter';
 import { getOmanGeoPublicationGates } from '@/lib/geo/oman-publication-gates';
 import { getOmanGeoReadiness } from '@/lib/geo/oman-readiness';
 import { isSupportedCountry, isSupportedLocale } from '@/lib/i18n/config';
@@ -28,7 +29,7 @@ function buildParentLabel(locale: 'en' | 'ar', area: (typeof OMAN_AREAS)[number]
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { locale, country, areaSlug } = await params;
 
-  if (!isSupportedLocale(locale) || !isSupportedCountry(country) || country !== 'om') {
+  if (!isSupportedLocale(locale) || !isSupportedCountry(country) || !isOmanCountryRoute(country)) {
     return {};
   }
 
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     country,
     entity: 'area',
     item: area,
-    pathname: `/oman/areas/${area.slug}`,
+    pathname: buildOmanGeoPath('area', area.slug),
     ...(parentLabel ? { parentLabel } : {}),
   });
 }
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 export default async function OmanAreaPage({ params }: { params: Promise<Params> }) {
   const { locale, country, areaSlug } = await params;
 
-  if (!isSupportedLocale(locale) || !isSupportedCountry(country) || country !== 'om') {
+  if (!isSupportedLocale(locale) || !isSupportedCountry(country) || !isOmanCountryRoute(country)) {
     notFound();
   }
 

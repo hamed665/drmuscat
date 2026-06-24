@@ -8,13 +8,15 @@ import { writeAdminAuditEvent } from "@/server/admin/audit-log";
 import { requireAdminPermission } from "@/server/admin/permissions";
 import {
   parseImportSpreadsheet,
+  type ParsedCellValue,
+  type ParsedImportSpreadsheet,
   type ParsedImportSpreadsheetRow,
 } from "@/server/admin/import-spreadsheet-parser";
 import type { AdminImportEntityType } from "@/server/admin/imports";
 
 type ImportTemplateKey = "doctor_profile_v3" | "pharmacy_v1" | "hospital_v1";
 
-type JsonPrimitive = string | number | boolean | null;
+type JsonPrimitive = ParsedCellValue;
 type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
 type JsonRecord = Record<string, JsonValue>;
 
@@ -167,8 +169,8 @@ function inferLastChecked(row: ParsedImportSpreadsheetRow): string | null {
   if (text === null) return null;
   if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
 
-  const parsed = new Date(text);
-  if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+  const parsedDate = new Date(text);
+  if (!Number.isNaN(parsedDate.getTime())) return parsedDate.toISOString().slice(0, 10);
 
   return null;
 }
@@ -299,7 +301,7 @@ export async function uploadImportSpreadsheet(
   const config = templateConfigs[templateKey];
   const bytes = new Uint8Array(await fileValue.arrayBuffer());
   const hash = fileHash(bytes);
-  let parsed;
+  let parsed: ParsedImportSpreadsheet;
 
   try {
     parsed = parseImportSpreadsheet(bytes, fileValue.name);
@@ -379,6 +381,8 @@ export async function uploadImportSpreadsheet(
 
   for (let index = 0; index < limitedRows.length; index += 1) {
     const row = limitedRows[index];
+    if (row === undefined) continue;
+
     const rawRowId = randomUUID();
     const validation = validateParsedRow(row, templateKey);
 

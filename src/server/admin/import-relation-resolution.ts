@@ -76,6 +76,7 @@ export async function resolveAdminImportRelationCandidate(
     return { ok: false, reason: "invalid" };
   }
 
+  const nextResolutionStatus: RelationResolutionStatus = resolutionStatus;
   const supabase = createImportRelationResolutionClient();
   const candidateResult = await supabase
     .from<RelationCandidateForResolution>("import_relation_candidates")
@@ -98,14 +99,14 @@ export async function resolveAdminImportRelationCandidate(
   const updateResult = await supabase
     .from("import_relation_candidates")
     .update({
-      resolution_status: resolutionStatus,
+      resolution_status: nextResolutionStatus,
       resolved_by_profile_id: admin.profile.id,
       resolved_at: now,
       metadata: {
         ...oldMetadata,
         admin_relation_resolution_version: "v1",
         previous_resolution_status: oldStatus,
-        resolved_status: resolutionStatus,
+        resolved_status: nextResolutionStatus,
         resolved_at: now,
       },
     })
@@ -137,7 +138,7 @@ export async function resolveAdminImportRelationCandidate(
     .update({
       metadata: {
         relation_resolution_version: "v1",
-        last_relation_resolution_status: resolutionStatus,
+        last_relation_resolution_status: nextResolutionStatus,
         last_relation_candidate_id: relationCandidateId,
         relation_candidates_pending: pendingCount,
         relation_candidates_approved: approvedCount,
@@ -161,7 +162,7 @@ export async function resolveAdminImportRelationCandidate(
     targetTable: "import_relation_candidates",
     summary: "Import relation candidate resolution status changed.",
     oldValues: { resolutionStatus: oldStatus },
-    newValues: { resolutionStatus },
+    newValues: { resolutionStatus: nextResolutionStatus },
     metadata: {
       batchId: candidateResult.data.batch_id,
       rawRowId: candidateResult.data.raw_row_id,
@@ -180,6 +181,6 @@ export async function resolveAdminImportRelationCandidate(
   return {
     ok: true,
     batchId: candidateResult.data.batch_id,
-    resolutionStatus,
+    resolutionStatus: nextResolutionStatus,
   };
 }

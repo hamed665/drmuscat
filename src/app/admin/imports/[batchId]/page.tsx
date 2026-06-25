@@ -17,6 +17,17 @@ type AdminImportBatchDetailPageProps = {
   params: Promise<{ batchId: string }>;
 };
 
+type RelationCandidatePreview = {
+  id: string;
+  relation_type: string;
+  source_entity_type: string;
+  target_entity_type: string;
+  target_entity_id: string | null;
+  match_score: number;
+  match_reason: string;
+  resolution_status: string;
+};
+
 async function normalizeBatchAction(formData: FormData) {
   "use server";
 
@@ -244,6 +255,7 @@ export default async function AdminImportBatchDetailPage({
   }
 
   const { batch } = result;
+  const relationCandidates = (result as { relationCandidates?: RelationCandidatePreview[] }).relationCandidates ?? [];
   const canNormalize = result.rawRows.length > 0;
   const canDetectDuplicates = result.rawRows.length > 1;
   const canProjectRows = result.rawRows.some((row) => row.row_status === "ready_for_publish");
@@ -428,11 +440,11 @@ export default async function AdminImportBatchDetailPage({
 
       <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
         <h3 className="text-lg font-bold text-slate-950">Relation candidates</h3>
-        {result.relationCandidates.length === 0 ? (
+        {relationCandidates.length === 0 ? (
           <p className="mt-3 text-sm leading-6 text-slate-600">No relation candidates recorded yet.</p>
         ) : (
           <ul className="mt-4 space-y-3">
-            {result.relationCandidates.map((candidate) => (
+            {relationCandidates.map((candidate) => (
               <li key={candidate.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm">
                 <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
                   <div>

@@ -1,4 +1,25 @@
-import type { PublicImportProfile } from "@/server/public/import-doctor-profile-guard";
+type PublicImportProfile = {
+  family: "doctors" | "hospitals";
+  canonicalPath: string;
+  entityType: string;
+  name: string;
+  nameAr: string | null;
+  area: string | null;
+  wilayat: string | null;
+  governorate: string | null;
+  primarySpecialty: string | null;
+  services: string[];
+  departments: string[];
+  languages: string[];
+  phoneE164: string | null;
+  whatsappE164: string | null;
+  websiteUrl: string | null;
+  googleMapsUrl: string | null;
+  directionUrl: string | null;
+  sourceName: string | null;
+  lastCheckedAt: string | null;
+  qualityScore: number;
+};
 
 type GuardedImportProfilePageProps = {
   profile: PublicImportProfile;
@@ -17,6 +38,8 @@ function profileTypeLabel(profile: PublicImportProfile): string {
   switch (profile.entityType) {
     case "doctor":
       return "Doctor profile";
+    case "hospital":
+      return "Hospital profile";
     default:
       return formatLabel(profile.entityType);
   }

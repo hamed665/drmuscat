@@ -1,5 +1,6 @@
 -- ADM-REL-A: import relation candidates foundation
 -- Scope: protected admin-only relation staging. No public policies, public publishing, sitemap, crawler, or runtime profile activation.
+-- Guardrails: doctor_practices_at_facility doctor_member_of_department facility_has_department department_service service_available_in_area.
 
 CREATE TABLE IF NOT EXISTS public.import_relation_candidates (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

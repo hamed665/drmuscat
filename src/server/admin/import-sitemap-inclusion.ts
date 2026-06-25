@@ -7,46 +7,31 @@ import { requireAdminPermission } from "@/server/admin/permissions";
 
 type QueryResult<T> = { data: T[] | null; error: unknown | null };
 type SingleQueryResult<T> = { data: T | null; error: unknown | null };
+type JsonRecord = Record<string, unknown>;
 type MutationPayload = Record<string, unknown>;
 
-type ImportSitemapInclusionQueryBuilder<T> = PromiseLike<QueryResult<T>> & {
-  select(columns: string): ImportSitemapInclusionQueryBuilder<T>;
-  eq(column: string, value: string | number | boolean): ImportSitemapInclusionQueryBuilder<T>;
-  order(column: string, options?: { ascending?: boolean }): ImportSitemapInclusionQueryBuilder<T>;
-  limit(count: number): ImportSitemapInclusionQueryBuilder<T>;
-  update(values: MutationPayload): ImportSitemapInclusionQueryBuilder<T>;
+type QueryBuilder<T> = PromiseLike<QueryResult<T>> & {
+  select(columns: string): QueryBuilder<T>;
+  eq(column: string, value: string | number | boolean): QueryBuilder<T>;
+  order(column: string, options?: { ascending?: boolean }): QueryBuilder<T>;
+  limit(count: number): QueryBuilder<T>;
+  update(values: MutationPayload): QueryBuilder<T>;
   maybeSingle(): Promise<SingleQueryResult<T>>;
 };
 
-type ImportSitemapInclusionClient = {
-  from<T extends object = Record<string, unknown>>(table: string): ImportSitemapInclusionQueryBuilder<T>;
-};
+type Client = { from<T extends object = Record<string, unknown>>(table: string): QueryBuilder<T> };
 
-type ImportBatchForSitemapInclusion = {
+type BatchRow = { id: string; status: string; metadata: unknown };
+type QueueRow = {
   id: string;
-  status: string;
-  metadata: unknown;
-};
-
-type PublishQueueForSitemapInclusion = {
-  id: string;
-  batch_id: string;
   raw_row_id: string;
   publish_status: string;
   index_policy: string;
   sitemap_policy: string;
-  quality_score: number;
-  updated_at: string;
   metadata: unknown;
 };
 
-type JsonRecord = Record<string, unknown>;
-
-type IncludedSitemapItem = {
-  publishQueueId: string;
-  rawRowId: string;
-  canonicalPath: string;
-};
+type IncludedItem = { publishQueueId: string; rawRowId: string; entityType: string; canonicalPath: string };
 
 export type IncludeSitemapEligibleImportCandidatesResult =
   | {
@@ -60,11 +45,12 @@ export type IncludeSitemapEligibleImportCandidatesResult =
     }
   | { ok: false; reason: "not_found" | "unavailable" | "empty" };
 
-const sitemapInclusionLimit = 500;
-const sitemapInclusionGateVersion = "v1";
+const inclusionLimit = 500;
+const inclusionVersion = "v1";
+const routedEntityType = "doctor";
 
-function createImportSitemapInclusionClient(): ImportSitemapInclusionClient {
-  return createSupabaseServiceRoleClient() as unknown as ImportSitemapInclusionClient;
+function client(): Client {
+  return createSupabaseServiceRoleClient() as unknown as Client;
 }
 
 function isUuid(value: string): boolean {
@@ -76,28 +62,29 @@ function isRecord(value: unknown): value is JsonRecord {
 }
 
 function mergeMetadata(existing: unknown, patch: JsonRecord): JsonRecord {
-  return {
-    ...(isRecord(existing) ? existing : {}),
-    ...patch,
-  };
+  return { ...(isRecord(existing) ? existing : {}), ...patch };
 }
 
 function uniqueReasons(reasons: string[]): string[] {
   return [...new Set(reasons.filter((reason) => reason.trim().length > 0))];
 }
 
-async function markSitemapInclusionBlocked(
-  supabase: ImportSitemapInclusionClient,
-  queueRow: PublishQueueForSitemapInclusion,
-  blockedAt: string,
+function isRoutedDoctorPath(path: string): boolean {
+  return /^\/(en|ar)\/om\/doctor\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path);
+}
+
+async function markBlocked(
+  supabase: Client,
+  queueRow: QueueRow,
+  checkedAt: string,
   reasons: string[],
 ): Promise<boolean> {
-  const updateResult = await supabase
+  const result = await supabase
     .from("import_publish_queue")
     .update({
       metadata: mergeMetadata(queueRow.metadata, {
-        sitemap_inclusion_gate_version: sitemapInclusionGateVersion,
-        sitemap_inclusion_checked_at: blockedAt,
+        sitemap_inclusion_gate_version: inclusionVersion,
+        sitemap_inclusion_checked_at: checkedAt,
         sitemap_inclusion_status: "blocked",
         sitemap_inclusion_reasons: uniqueReasons(reasons),
         sitemap_included: false,
@@ -105,81 +92,66 @@ async function markSitemapInclusionBlocked(
     })
     .eq("id", queueRow.id);
 
-  return updateResult.error === null;
+  return result.error === null;
 }
 
 export async function includeSitemapEligibleImportCandidates(
   batchId: string,
 ): Promise<IncludeSitemapEligibleImportCandidatesResult> {
   const admin = await requireAdminPermission("imports.review");
+  if (!isUuid(batchId)) return { ok: false, reason: "not_found" };
 
-  if (!isUuid(batchId)) {
-    return { ok: false, reason: "not_found" };
-  }
-
-  const supabase = createImportSitemapInclusionClient();
+  const supabase = client();
   const batchResult = await supabase
-    .from<ImportBatchForSitemapInclusion>("import_batches")
+    .from<BatchRow>("import_batches")
     .select("id, status, metadata")
     .eq("id", batchId)
     .maybeSingle();
 
-  if (batchResult.error !== null) {
-    return { ok: false, reason: "unavailable" };
-  }
-
-  if (batchResult.data === null) {
-    return { ok: false, reason: "not_found" };
-  }
+  if (batchResult.error !== null) return { ok: false, reason: "unavailable" };
+  if (batchResult.data === null) return { ok: false, reason: "not_found" };
 
   const eligibilityResult = await listAdminImportSitemapEligibleCandidates(batchId);
-  if (!eligibilityResult.ok) {
-    return { ok: false, reason: eligibilityResult.reason };
-  }
-
-  if (eligibilityResult.items.length === 0) {
-    return { ok: false, reason: "empty" };
-  }
+  if (!eligibilityResult.ok) return { ok: false, reason: eligibilityResult.reason };
+  if (eligibilityResult.items.length === 0) return { ok: false, reason: "empty" };
 
   const queueResult = await supabase
-    .from<PublishQueueForSitemapInclusion>("import_publish_queue")
-    .select("id, batch_id, raw_row_id, publish_status, index_policy, sitemap_policy, quality_score, updated_at, metadata")
+    .from<QueueRow>("import_publish_queue")
+    .select("id, raw_row_id, publish_status, index_policy, sitemap_policy, metadata")
     .eq("batch_id", batchId)
     .eq("publish_status", "index_eligible")
     .eq("index_policy", "index_eligible")
     .eq("sitemap_policy", "eligible")
     .order("updated_at", { ascending: false })
-    .limit(sitemapInclusionLimit);
+    .limit(inclusionLimit);
 
-  if (queueResult.error !== null || queueResult.data === null) {
-    return { ok: false, reason: "unavailable" };
-  }
+  if (queueResult.error !== null || queueResult.data === null) return { ok: false, reason: "unavailable" };
 
-  const queueRowsById = new Map(queueResult.data.map((queueRow) => [queueRow.id, queueRow]));
+  const queueRowsById = new Map(queueResult.data.map((row) => [row.id, row]));
   const checkedAt = new Date().toISOString();
-  const includedItems: IncludedSitemapItem[] = [];
+  const includedItems: IncludedItem[] = [];
   let blockedRows = 0;
   let skippedRows = 0;
 
   for (const item of eligibilityResult.items) {
     const queueRow = queueRowsById.get(item.publishQueueId);
-
     if (!queueRow) {
       skippedRows += 1;
       continue;
     }
 
-    const blockReasons = [...item.reasons];
-    if (item.robotsPolicy !== "index_candidate") blockReasons.push("robots_policy_not_index_candidate");
-    if (item.sitemapIncluded !== false) blockReasons.push("already_marked_as_sitemap_included");
-    if (item.canonicalPath === null || item.canonicalUrlCandidate === null) blockReasons.push("missing_canonical_url_candidate");
+    const reasons = [...item.reasons];
+    if (item.robotsPolicy !== "index_candidate") reasons.push("robots_policy_not_index_candidate");
+    if (item.sitemapIncluded !== false) reasons.push("already_marked_as_sitemap_included");
+    if (item.canonicalPath === null || item.canonicalUrlCandidate === null) reasons.push("missing_canonical_url_candidate");
+    if (item.entityType !== routedEntityType) reasons.push("public_profile_route_not_enabled_for_entity_type");
+    if (item.canonicalPath !== null && !isRoutedDoctorPath(item.canonicalPath)) {
+      reasons.push("canonical_route_not_enabled_for_public_sitemap");
+    }
 
-    if (blockReasons.length > 0 || item.canonicalPath === null || item.canonicalUrlCandidate === null) {
+    if (reasons.length > 0 || item.canonicalPath === null || item.canonicalUrlCandidate === null) {
       blockedRows += 1;
-      const blocked = await markSitemapInclusionBlocked(supabase, queueRow, checkedAt, blockReasons);
-      if (!blocked) {
-        return { ok: false, reason: "unavailable" };
-      }
+      if (!(await markBlocked(supabase, queueRow, checkedAt, reasons))) return { ok: false, reason: "unavailable" };
       continue;
     }
 
@@ -189,7 +161,7 @@ export async function includeSitemapEligibleImportCandidates(
         index_policy: "index",
         sitemap_policy: "included",
         metadata: mergeMetadata(queueRow.metadata, {
-          sitemap_inclusion_gate_version: sitemapInclusionGateVersion,
+          sitemap_inclusion_gate_version: inclusionVersion,
           sitemap_inclusion_checked_at: checkedAt,
           sitemap_inclusion_status: "included",
           sitemap_inclusion_reasons: [],
@@ -197,40 +169,39 @@ export async function includeSitemapEligibleImportCandidates(
           robots_policy: "index",
           canonical_path: item.canonicalPath,
           canonical_url_candidate: item.canonicalUrlCandidate,
+          routed_public_profile_entity_type: routedEntityType,
         }),
       })
       .eq("id", queueRow.id);
 
-    if (updateResult.error !== null) {
-      return { ok: false, reason: "unavailable" };
-    }
+    if (updateResult.error !== null) return { ok: false, reason: "unavailable" };
 
     includedItems.push({
       publishQueueId: queueRow.id,
       rawRowId: queueRow.raw_row_id,
+      entityType: item.entityType,
       canonicalPath: item.canonicalPath,
     });
   }
 
-  const oldBatchMetadata = isRecord(batchResult.data.metadata) ? batchResult.data.metadata : {};
+  const previousMetadata = isRecord(batchResult.data.metadata) ? batchResult.data.metadata : {};
   const batchUpdate = await supabase
     .from("import_batches")
     .update({
       metadata: {
-        ...oldBatchMetadata,
-        sitemap_inclusion_gate_version: sitemapInclusionGateVersion,
+        ...previousMetadata,
+        sitemap_inclusion_gate_version: inclusionVersion,
         sitemap_inclusion_checked_at: checkedAt,
         sitemap_inclusion_read_rows: eligibilityResult.items.length,
         sitemap_inclusion_included_rows: includedItems.length,
         sitemap_inclusion_blocked_rows: blockedRows,
         sitemap_inclusion_skipped_rows: skippedRows,
+        routed_public_profile_entity_type: routedEntityType,
       },
     })
     .eq("id", batchId);
 
-  if (batchUpdate.error !== null) {
-    return { ok: false, reason: "unavailable" };
-  }
+  if (batchUpdate.error !== null) return { ok: false, reason: "unavailable" };
 
   await writeAdminAuditEvent({
     admin,
@@ -239,19 +210,14 @@ export async function includeSitemapEligibleImportCandidates(
     entityType: "import_batch",
     entityId: batchId,
     targetTable: "import_publish_queue",
-    summary: "Sitemap-eligible import queue rows were evaluated for sitemap inclusion.",
-    oldValues: {
-      batchStatus: batchResult.data.status,
-    },
-    newValues: {
-      includedRows: includedItems.length,
-      blockedRows,
-      skippedRows,
-    },
+    summary: "Sitemap-eligible import queue rows were evaluated for routed doctor sitemap inclusion.",
+    oldValues: { batchStatus: batchResult.data.status },
+    newValues: { includedRows: includedItems.length, blockedRows, skippedRows },
     metadata: {
-      sitemapInclusionGateVersion,
+      sitemapInclusionGateVersion: inclusionVersion,
       publicSitemapRouteCreated: false,
       sitemapPolicyForIncludedRows: "included",
+      routedPublicProfileEntityType: routedEntityType,
       includedItems,
     },
   });

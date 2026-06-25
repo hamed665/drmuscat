@@ -38,10 +38,6 @@ type RelationCandidateCounterRow = {
   resolution_status: string;
 };
 
-type ResolveImportRelationResult =
-  | { ok: true; batchId: string; resolutionStatus: RelationResolutionStatus }
-  | { ok: false; reason: "invalid" | "not_found" | "unavailable" };
-
 function createImportRelationResolutionClient(): ImportRelationResolutionClient {
   return createSupabaseServiceRoleClient() as unknown as ImportRelationResolutionClient;
 }
@@ -69,11 +65,11 @@ function countStatuses(rows: RelationCandidateCounterRow[]): Record<string, numb
 export async function resolveAdminImportRelationCandidate(
   relationCandidateId: string,
   resolutionStatus: string,
-): Promise<ResolveImportRelationResult> {
+) {
   const admin = await requireAdminPermission("imports.review");
 
   if (!isUuid(relationCandidateId) || !isRelationResolutionStatus(resolutionStatus)) {
-    return { ok: false, reason: "invalid" };
+    return { ok: false as const, reason: "invalid" as const };
   }
 
   const nextResolutionStatus: RelationResolutionStatus = resolutionStatus;
@@ -85,11 +81,11 @@ export async function resolveAdminImportRelationCandidate(
     .maybeSingle();
 
   if (candidateResult.error !== null) {
-    return { ok: false, reason: "unavailable" };
+    return { ok: false as const, reason: "unavailable" as const };
   }
 
   if (candidateResult.data === null) {
-    return { ok: false, reason: "not_found" };
+    return { ok: false as const, reason: "not_found" as const };
   }
 
   const now = new Date().toISOString();
@@ -113,7 +109,7 @@ export async function resolveAdminImportRelationCandidate(
     .eq("id", relationCandidateId);
 
   if (updateResult.error !== null) {
-    return { ok: false, reason: "unavailable" };
+    return { ok: false as const, reason: "unavailable" as const };
   }
 
   const relationCandidatesResult = await supabase
@@ -123,7 +119,7 @@ export async function resolveAdminImportRelationCandidate(
     .limit(5000);
 
   if (relationCandidatesResult.error !== null || relationCandidatesResult.data === null) {
-    return { ok: false, reason: "unavailable" };
+    return { ok: false as const, reason: "unavailable" as const };
   }
 
   const statusCounts = countStatuses(relationCandidatesResult.data);
@@ -150,7 +146,7 @@ export async function resolveAdminImportRelationCandidate(
     .eq("id", candidateResult.data.batch_id);
 
   if (batchUpdateResult.error !== null) {
-    return { ok: false, reason: "unavailable" };
+    return { ok: false as const, reason: "unavailable" as const };
   }
 
   await writeAdminAuditEvent({
@@ -179,7 +175,7 @@ export async function resolveAdminImportRelationCandidate(
   });
 
   return {
-    ok: true,
+    ok: true as const,
     batchId: candidateResult.data.batch_id,
     resolutionStatus: nextResolutionStatus,
   };

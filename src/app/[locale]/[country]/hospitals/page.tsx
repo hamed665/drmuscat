@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { GuardedImportProfilePage } from "@/components/public/import-profile/GuardedImportProfilePage";
 import { PublicDiscoveryHero2026 } from "@/components/public/discovery/PublicDiscoveryHero2026";
 import { PublicDiscoveryFaq2026 } from "@/components/public/discovery/PublicDiscoveryFaq2026";
 import { PublicDiscoveryResultsShell2026 } from "@/components/public/discovery/PublicDiscoveryResultsShell2026";
@@ -15,8 +16,10 @@ import {
 } from "@/lib/i18n/config";
 import { buildLocalizedMetadata } from "@/lib/seo/metadata";
 import { buildFaqJsonLd } from "@/lib/seo/faq-jsonld";
+import { getPublicImportHospitalProfile } from "@/server/public/import-hospital-profile-guard";
 
 type Params = { locale: string; country: string };
+type SearchParams = { profileSlug?: string | string[] };
 
 const metadataCopyByLocale: Record<
   SupportedLocale,
@@ -39,13 +42,47 @@ const compactEmptyCopyByLocale: Record<SupportedLocale, string> = {
   ar: "ستظهر قوائم المستشفيات المعتمدة هنا بعد المراجعة.",
 };
 
+function readProfileSlug(searchParams: SearchParams | undefined): string | null {
+  const value = searchParams?.profileSlug;
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim().toLowerCase();
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trimmed) ? trimmed : null;
+}
+
+function importProfileDescription(name: string): string {
+  return `${name} on DrMuscat. Public hospital discovery in Oman only; not medical advice, booking, or emergency care.`;
+}
+
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<Params>;
+  searchParams?: Promise<SearchParams>;
 }): Promise<Metadata> {
   const { locale, country } = await params;
   if (!isSupportedLocale(locale) || !isSupportedCountry(country)) return {};
+
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const profileSlug = readProfileSlug(resolvedSearchParams);
+  if (profileSlug !== null) {
+    const profileResult = await getPublicImportHospitalProfile({
+      locale,
+      country,
+      hospitalSlug: profileSlug,
+    });
+
+    if (profileResult.ok) {
+      return buildLocalizedMetadata({
+        locale,
+        country,
+        pathname: `/hospitals/${profileSlug}`,
+        title: `${profileResult.profile.name} | DrMuscat`,
+        description: importProfileDescription(profileResult.profile.name),
+      });
+    }
+  }
+
   const copy = metadataCopyByLocale[locale];
   return buildLocalizedMetadata({
     locale,
@@ -58,14 +95,30 @@ export async function generateMetadata({
 
 export default async function PublicHospitalsPage({
   params,
+  searchParams,
 }: {
   params: Promise<Params>;
+  searchParams?: Promise<SearchParams>;
 }) {
   const { locale, country } = await params;
   if (!isSupportedLocale(locale) || !isSupportedCountry(country)) notFound();
 
   const safeLocale = locale as SupportedLocale;
   const safeCountry = country as SupportedCountry;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const profileSlug = readProfileSlug(resolvedSearchParams);
+
+  if (profileSlug !== null) {
+    const profileResult = await getPublicImportHospitalProfile({
+      locale: safeLocale,
+      country: safeCountry,
+      hospitalSlug: profileSlug,
+    });
+
+    if (!profileResult.ok) notFound();
+    return <GuardedImportProfilePage profile={profileResult.profile} locale={safeLocale} />;
+  }
+
   const dir = localeDirection(safeLocale);
   const config = buildHospitalsDiscoveryConfig(safeLocale, safeCountry, dir);
   const result = await listPublicCenters({

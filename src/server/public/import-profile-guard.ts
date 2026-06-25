@@ -145,11 +145,15 @@ function readCandidateId(metadata: unknown): string | null {
   return readString(metadata, "import_entity_candidate_id");
 }
 
-function rowHasSafeIncludedState(row: ImportPublishQueueRow, canonicalPath: string): boolean {
+function rowHasSafeIncludedState(
+  row: ImportPublishQueueRow,
+  family: PublicImportProfileFamily,
+  canonicalPath: string,
+): boolean {
   if (row.publish_status !== "index_eligible") return false;
   if (row.index_policy !== "index") return false;
   if (row.sitemap_policy !== "included") return false;
-  if (!familyEntityTypes(canonicalPath.split("/")[3] as PublicImportProfileFamily).includes(row.target_entity_type)) return false;
+  if (!familyEntityTypes(family).includes(row.target_entity_type)) return false;
   if (!isRecord(row.metadata)) return false;
   if (row.metadata.sitemap_included !== true) return false;
   if (readString(row.metadata, "robots_policy") !== "index") return false;
@@ -202,39 +206,43 @@ function buildProfile(
 }
 
 export async function getPublicImportProfile(input: GuardInput): Promise<GetPublicImportProfileResult> {
-  const slug = normalizeSlug(input.slug);
-  if (slug === null) return { ok: false, reason: "not_found" };
+  try {
+    const slug = normalizeSlug(input.slug);
+    if (slug === null) return { ok: false, reason: "not_found" };
 
-  const canonicalPath = canonicalPathForInput(input, slug);
-  if (canonicalPath === null) return { ok: false, reason: "not_found" };
+    const canonicalPath = canonicalPathForInput(input, slug);
+    if (canonicalPath === null) return { ok: false, reason: "not_found" };
 
-  const supabase = createImportProfileClient();
-  const queueResult = await supabase
-    .from<ImportPublishQueueRow>("import_publish_queue")
-    .select("id, target_entity_type, publish_status, index_policy, sitemap_policy, quality_score, metadata")
-    .eq("sitemap_policy", "included")
-    .eq("index_policy", "index")
-    .eq("publish_status", "index_eligible")
-    .order("updated_at", { ascending: false })
-    .limit(publicProfileLookupLimit);
+    const supabase = createImportProfileClient();
+    const queueResult = await supabase
+      .from<ImportPublishQueueRow>("import_publish_queue")
+      .select("id, target_entity_type, publish_status, index_policy, sitemap_policy, quality_score, metadata")
+      .eq("sitemap_policy", "included")
+      .eq("index_policy", "index")
+      .eq("publish_status", "index_eligible")
+      .order("updated_at", { ascending: false })
+      .limit(publicProfileLookupLimit);
 
-  if (queueResult.error !== null || queueResult.data === null) return { ok: false, reason: "not_found" };
+    if (queueResult.error !== null || queueResult.data === null) return { ok: false, reason: "not_found" };
 
-  const queueRow = queueResult.data.find((row) => rowHasSafeIncludedState(row, canonicalPath));
-  if (!queueRow) return { ok: false, reason: "not_found" };
+    const queueRow = queueResult.data.find((row) => rowHasSafeIncludedState(row, input.family, canonicalPath));
+    if (!queueRow) return { ok: false, reason: "not_found" };
 
-  const candidateId = readCandidateId(queueRow.metadata);
-  if (candidateId === null) return { ok: false, reason: "not_found" };
+    const candidateId = readCandidateId(queueRow.metadata);
+    if (candidateId === null) return { ok: false, reason: "not_found" };
 
-  const candidateResult = await supabase
-    .from<ImportEntityCandidateRow>("import_entity_candidates")
-    .select("id, entity_type, candidate_status, candidate_payload")
-    .eq("id", candidateId)
-    .eq("candidate_status", "approved")
-    .maybeSingle();
+    const candidateResult = await supabase
+      .from<ImportEntityCandidateRow>("import_entity_candidates")
+      .select("id, entity_type, candidate_status, candidate_payload")
+      .eq("id", candidateId)
+      .eq("candidate_status", "approved")
+      .maybeSingle();
 
-  if (candidateResult.error !== null || candidateResult.data === null) return { ok: false, reason: "not_found" };
+    if (candidateResult.error !== null || candidateResult.data === null) return { ok: false, reason: "not_found" };
 
-  const profile = buildProfile(input.family, canonicalPath, queueRow, candidateResult.data);
-  return profile === null ? { ok: false, reason: "not_found" } : { ok: true, profile };
+    const profile = buildProfile(input.family, canonicalPath, queueRow, candidateResult.data);
+    return profile === null ? { ok: false, reason: "not_found" } : { ok: true, profile };
+  } catch {
+    return { ok: false, reason: "not_found" };
+  }
 }

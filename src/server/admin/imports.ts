@@ -43,7 +43,8 @@ type ImportTableName =
   | "import_validation_issues"
   | "import_duplicate_candidates"
   | "import_mapping_results"
-  | "import_publish_queue";
+  | "import_publish_queue"
+  | "import_relation_candidates";
 
 type QueryResult<T> = { data: T[] | null; error: unknown | null };
 type SingleQueryResult<T> = { data: T | null; error: unknown | null };
@@ -129,6 +130,19 @@ type ImportDuplicateCandidateExistingRow = {
   metadata: ImportJsonValue;
 };
 
+type ImportRelationCandidateRow = {
+  id: string;
+  raw_row_id: string | null;
+  relation_type: string;
+  source_entity_type: string;
+  target_entity_type: string;
+  target_entity_id: string | null;
+  match_score: number;
+  match_reason: string;
+  resolution_status: string;
+  created_at: string;
+};
+
 type ImportMappingResultRow = {
   id: string;
   raw_row_id: string;
@@ -179,6 +193,7 @@ export type AdminImportBatchDetail = {
   rawRows: ImportRawRow[];
   validationIssues: ImportValidationIssueRow[];
   duplicateCandidates: ImportDuplicateCandidateRow[];
+  relationCandidates: ImportRelationCandidateRow[];
   mappingResults: ImportMappingResultRow[];
   publishQueue: ImportPublishQueueRow[];
 };
@@ -295,49 +310,63 @@ export async function getAdminImportBatchDetail(
     return { ok: false, reason: "not_found" };
   }
 
-  const [rawRowsResult, validationIssuesResult, duplicateCandidatesResult, mappingResultsResult, publishQueueResult] =
-    await Promise.all([
-      supabase
-        .from<ImportRawRow>("import_raw_rows")
-        .select(
-          "id, row_number, entity_type, external_id, row_status, validation_score, source_url, last_checked_at, created_at, updated_at",
-        )
-        .eq("batch_id", batchId)
-        .order("row_number", { ascending: true })
-        .limit(detailLimit),
-      supabase
-        .from<ImportValidationIssueRow>("import_validation_issues")
-        .select(
-          "id, raw_row_id, severity, field_name, issue_code, issue_message, suggested_fix, created_at",
-        )
-        .eq("batch_id", batchId)
-        .order("created_at", { ascending: false })
-        .limit(detailLimit),
-      supabase
-        .from<ImportDuplicateCandidateRow>("import_duplicate_candidates")
-        .select(
-          "id, raw_row_id, matched_entity_type, matched_entity_id, match_score, match_reason, resolution_status, created_at",
-        )
-        .eq("batch_id", batchId)
-        .order("created_at", { ascending: false })
-        .limit(detailLimit),
-      supabase
-        .from<ImportMappingResultRow>("import_mapping_results")
-        .select(
-          "id, raw_row_id, mapping_type, source_value, target_type, target_id, target_slug, confidence_score, mapping_status, created_at",
-        )
-        .eq("batch_id", batchId)
-        .order("created_at", { ascending: false })
-        .limit(detailLimit),
-      supabase
-        .from<ImportPublishQueueRow>("import_publish_queue")
-        .select(
-          "id, raw_row_id, target_entity_type, target_entity_id, publish_status, index_policy, sitemap_policy, quality_score, admin_note, created_at, updated_at",
-        )
-        .eq("batch_id", batchId)
-        .order("created_at", { ascending: false })
-        .limit(detailLimit),
-    ]);
+  const [
+    rawRowsResult,
+    validationIssuesResult,
+    duplicateCandidatesResult,
+    relationCandidatesResult,
+    mappingResultsResult,
+    publishQueueResult,
+  ] = await Promise.all([
+    supabase
+      .from<ImportRawRow>("import_raw_rows")
+      .select(
+        "id, row_number, entity_type, external_id, row_status, validation_score, source_url, last_checked_at, created_at, updated_at",
+      )
+      .eq("batch_id", batchId)
+      .order("row_number", { ascending: true })
+      .limit(detailLimit),
+    supabase
+      .from<ImportValidationIssueRow>("import_validation_issues")
+      .select(
+        "id, raw_row_id, severity, field_name, issue_code, issue_message, suggested_fix, created_at",
+      )
+      .eq("batch_id", batchId)
+      .order("created_at", { ascending: false })
+      .limit(detailLimit),
+    supabase
+      .from<ImportDuplicateCandidateRow>("import_duplicate_candidates")
+      .select(
+        "id, raw_row_id, matched_entity_type, matched_entity_id, match_score, match_reason, resolution_status, created_at",
+      )
+      .eq("batch_id", batchId)
+      .order("created_at", { ascending: false })
+      .limit(detailLimit),
+    supabase
+      .from<ImportRelationCandidateRow>("import_relation_candidates")
+      .select(
+        "id, raw_row_id, relation_type, source_entity_type, target_entity_type, target_entity_id, match_score, match_reason, resolution_status, created_at",
+      )
+      .eq("batch_id", batchId)
+      .order("created_at", { ascending: false })
+      .limit(detailLimit),
+    supabase
+      .from<ImportMappingResultRow>("import_mapping_results")
+      .select(
+        "id, raw_row_id, mapping_type, source_value, target_type, target_id, target_slug, confidence_score, mapping_status, created_at",
+      )
+      .eq("batch_id", batchId)
+      .order("created_at", { ascending: false })
+      .limit(detailLimit),
+    supabase
+      .from<ImportPublishQueueRow>("import_publish_queue")
+      .select(
+        "id, raw_row_id, target_entity_type, target_entity_id, publish_status, index_policy, sitemap_policy, quality_score, admin_note, created_at, updated_at",
+      )
+      .eq("batch_id", batchId)
+      .order("created_at", { ascending: false })
+      .limit(detailLimit),
+  ]);
 
   if (
     rawRowsResult.error !== null ||
@@ -346,6 +375,8 @@ export async function getAdminImportBatchDetail(
     validationIssuesResult.data === null ||
     duplicateCandidatesResult.error !== null ||
     duplicateCandidatesResult.data === null ||
+    relationCandidatesResult.error !== null ||
+    relationCandidatesResult.data === null ||
     mappingResultsResult.error !== null ||
     mappingResultsResult.data === null ||
     publishQueueResult.error !== null ||
@@ -360,6 +391,7 @@ export async function getAdminImportBatchDetail(
     rawRows: rawRowsResult.data,
     validationIssues: validationIssuesResult.data,
     duplicateCandidates: duplicateCandidatesResult.data,
+    relationCandidates: relationCandidatesResult.data,
     mappingResults: mappingResultsResult.data,
     publishQueue: publishQueueResult.data,
   };
@@ -568,11 +600,11 @@ export async function detectAdminImportBatchDuplicates(
     .from("import_batches")
     .update({
       status: candidates.length > 0 ? "reviewing" : batchResult.data.status,
-      duplicate_suspected_rows: duplicateRowIds.length,
+      duplicate_suspected_rows: duplicateRowIds.size,
       metadata: {
-        duplicate_detector_version: "v1",
+        duplicate_detection_version: "v1",
         duplicate_candidates_created: candidates.length,
-        duplicate_suspected_rows: duplicateRowIds.length,
+        duplicate_suspected_rows: duplicateRowIds.size,
         max_rows_per_run: duplicateDetectionLimit,
       },
     })
@@ -590,18 +622,14 @@ export async function detectAdminImportBatchDuplicates(
       entityType: "import_batch",
       entityId: batchId,
       targetTable: "import_duplicate_candidates",
-      summary: "Duplicate candidates created for normalized import rows.",
+      summary: "Import duplicate candidates detected from normalized staging rows.",
       metadata: {
         candidatesCreated: candidates.length,
-        duplicateSuspectedRows: duplicateRowIds.length,
+        duplicateSuspectedRows: duplicateRowIds.size,
         previousBatchStatus: batchResult.data.status,
       },
     });
   }
 
-  return {
-    ok: true,
-    candidatesCreated: candidates.length,
-    duplicateSuspectedRows: duplicateRowIds.length,
-  };
+  return { ok: true, candidatesCreated: candidates.length, duplicateSuspectedRows: duplicateRowIds.size };
 }

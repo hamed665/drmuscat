@@ -1,4 +1,4 @@
-import type { PublicImportProfile } from "@/server/public/import-profile-guard";
+import type { PublicImportProfile } from "@/server/public/import-doctor-profile-guard";
 
 type GuardedImportProfilePageProps = {
   profile: PublicImportProfile;
@@ -17,15 +17,6 @@ function profileTypeLabel(profile: PublicImportProfile): string {
   switch (profile.entityType) {
     case "doctor":
       return "Doctor profile";
-    case "hospital":
-      return "Hospital profile";
-    case "clinic":
-    case "medical_center":
-      return "Clinic profile";
-    case "pharmacy":
-      return "Pharmacy profile";
-    case "laboratory":
-      return "Laboratory profile";
     default:
       return formatLabel(profile.entityType);
   }

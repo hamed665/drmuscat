@@ -31,6 +31,7 @@ type QueueRow = {
   metadata: unknown;
 };
 
+type RoutedEntityType = "doctor" | "hospital";
 type IncludedItem = { publishQueueId: string; rawRowId: string; entityType: string; canonicalPath: string };
 
 export type IncludeSitemapEligibleImportCandidatesResult =
@@ -47,7 +48,7 @@ export type IncludeSitemapEligibleImportCandidatesResult =
 
 const inclusionLimit = 500;
 const inclusionVersion = "v1";
-const routedEntityType = "doctor";
+const routedEntityTypes = ["doctor", "hospital"] as const;
 
 function client(): Client {
   return createSupabaseServiceRoleClient() as unknown as Client;
@@ -69,8 +70,16 @@ function uniqueReasons(reasons: string[]): string[] {
   return [...new Set(reasons.filter((reason) => reason.trim().length > 0))];
 }
 
-function isRoutedDoctorPath(path: string): boolean {
-  return /^\/(en|ar)\/om\/doctor\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path);
+function isRoutedEntityType(value: string): value is RoutedEntityType {
+  return routedEntityTypes.some((entityType) => entityType === value);
+}
+
+function isRoutedPublicPath(entityType: RoutedEntityType, path: string): boolean {
+  if (entityType === "doctor") {
+    return /^\/(en|ar)\/om\/doctor\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path);
+  }
+
+  return /^\/(en|ar)\/om\/hospitals\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path);
 }
 
 async function markBlocked(
@@ -141,11 +150,12 @@ export async function includeSitemapEligibleImportCandidates(
     }
 
     const reasons = [...item.reasons];
+    const isRoutedEntity = isRoutedEntityType(item.entityType);
     if (item.robotsPolicy !== "index_candidate") reasons.push("robots_policy_not_index_candidate");
     if (item.sitemapIncluded !== false) reasons.push("already_marked_as_sitemap_included");
     if (item.canonicalPath === null || item.canonicalUrlCandidate === null) reasons.push("missing_canonical_url_candidate");
-    if (item.entityType !== routedEntityType) reasons.push("public_profile_route_not_enabled_for_entity_type");
-    if (item.canonicalPath !== null && !isRoutedDoctorPath(item.canonicalPath)) {
+    if (!isRoutedEntity) reasons.push("public_profile_route_not_enabled_for_entity_type");
+    if (isRoutedEntity && item.canonicalPath !== null && !isRoutedPublicPath(item.entityType, item.canonicalPath)) {
       reasons.push("canonical_route_not_enabled_for_public_sitemap");
     }
 
@@ -169,7 +179,7 @@ export async function includeSitemapEligibleImportCandidates(
           robots_policy: "index",
           canonical_path: item.canonicalPath,
           canonical_url_candidate: item.canonicalUrlCandidate,
-          routed_public_profile_entity_type: routedEntityType,
+          routed_public_profile_entity_type: item.entityType,
         }),
       })
       .eq("id", queueRow.id);
@@ -196,7 +206,7 @@ export async function includeSitemapEligibleImportCandidates(
         sitemap_inclusion_included_rows: includedItems.length,
         sitemap_inclusion_blocked_rows: blockedRows,
         sitemap_inclusion_skipped_rows: skippedRows,
-        routed_public_profile_entity_type: routedEntityType,
+        routed_public_profile_entity_types: [...routedEntityTypes],
       },
     })
     .eq("id", batchId);
@@ -210,14 +220,14 @@ export async function includeSitemapEligibleImportCandidates(
     entityType: "import_batch",
     entityId: batchId,
     targetTable: "import_publish_queue",
-    summary: "Sitemap-eligible import queue rows were evaluated for routed doctor sitemap inclusion.",
+    summary: "Sitemap-eligible import queue rows were evaluated for routed doctor and hospital sitemap inclusion.",
     oldValues: { batchStatus: batchResult.data.status },
     newValues: { includedRows: includedItems.length, blockedRows, skippedRows },
     metadata: {
       sitemapInclusionGateVersion: inclusionVersion,
       publicSitemapRouteCreated: false,
       sitemapPolicyForIncludedRows: "included",
-      routedPublicProfileEntityType: routedEntityType,
+      routedPublicProfileEntityTypes: [...routedEntityTypes],
       includedItems,
     },
   });

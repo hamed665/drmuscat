@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { resolveAdminImportDuplicateCandidate } from "@/server/admin/import-duplicate-resolution";
+import { promoteNoindexImportQueueToIndexEligible } from "@/server/admin/import-index-promotion";
 import { publishApprovedImportCandidatesNoindex } from "@/server/admin/import-noindex-publish";
 import { applyApprovedImportRelationCandidates } from "@/server/admin/import-relation-apply";
 import { generateAdminImportRelationCandidates } from "@/server/admin/import-relation-candidates";
@@ -128,6 +129,19 @@ async function publishNoindexAction(formData: FormData) {
   if (typeof batchIdValue !== "string") return;
 
   const result = await publishApprovedImportCandidatesNoindex(batchIdValue);
+  if (result.ok) {
+    revalidatePath("/admin/imports");
+    revalidatePath(`/admin/imports/${batchIdValue}`);
+  }
+}
+
+async function promoteIndexEligibleAction(formData: FormData) {
+  "use server";
+
+  const batchIdValue = formData.get("batchId");
+  if (typeof batchIdValue !== "string") return;
+
+  const result = await promoteNoindexImportQueueToIndexEligible(batchIdValue);
   if (result.ok) {
     revalidatePath("/admin/imports");
     revalidatePath(`/admin/imports/${batchIdValue}`);
@@ -277,6 +291,9 @@ export default async function AdminImportBatchDetailPage({
   const canDetectDuplicates = result.rawRows.length > 1;
   const canProjectRows = result.rawRows.some((row) => row.row_status === "ready_for_publish");
   const canPublishNoindex = batch.status === "ready_for_publish";
+  const canPromoteIndexEligible = result.publishQueue.some(
+    (row) => row.publish_status === "published_noindex" && row.index_policy === "noindex" && row.sitemap_policy === "excluded",
+  );
   const canGenerateRelations = batch.status === "ready_for_publish" || batch.status === "reviewing" || batch.status === "completed";
   const relationCandidatesResult = await listAdminImportRelationCandidates(batchId);
   const canApplyApprovedRelations = relationCandidatesResult.ok
@@ -297,7 +314,7 @@ export default async function AdminImportBatchDetailPage({
           <div>
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-slate-950">{batch.batchName}</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Batch inspection and staging controls. Normalization, duplicate detection, duplicate resolution, row review, public-safe projection, noindex publish queueing, relation candidate generation, and approved relation applying update protected records only; public index promotion and sitemap inclusion remain deferred.
+              Batch inspection and staging controls. Normalization, duplicate detection, duplicate resolution, row review, public-safe projection, noindex publish queueing, index eligibility promotion, relation candidate generation, and approved relation applying update protected records only; sitemap inclusion remains deferred.
             </p>
           </div>
           <span className="w-fit rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
@@ -407,6 +424,24 @@ export default async function AdminImportBatchDetailPage({
               className="rounded-2xl bg-sky-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400"
             >
               Publish noindex queue
+            </button>
+          </form>
+        </div>
+
+        <div className="rounded-3xl border border-indigo-100 bg-indigo-50/70 p-5 text-indigo-950 shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-800">ADM-IDX-A</p>
+          <h3 className="mt-2 text-xl font-bold text-slate-950">Promote index eligible</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-700">
+            Runs the index eligibility gate for published noindex queue rows. Passing rows become index eligible, but sitemap inclusion still stays deferred.
+          </p>
+          <form action={promoteIndexEligibleAction} className="mt-4">
+            <input type="hidden" name="batchId" value={batch.id} />
+            <button
+              type="submit"
+              disabled={!canPromoteIndexEligible}
+              className="rounded-2xl bg-indigo-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400"
+            >
+              Promote index eligible
             </button>
           </form>
         </div>
@@ -585,7 +620,7 @@ export default async function AdminImportBatchDetailPage({
         </div>
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
           <h3 className="text-lg font-bold text-slate-950">Publish queue</h3>
-          <p className="mt-2 text-sm text-slate-600">{result.publishQueue.length} publish queue rows loaded. This phase does not publish or index any imported record.</p>
+          <p className="mt-2 text-sm text-slate-600">{result.publishQueue.length} publish queue rows loaded. Sitemap inclusion and public indexing remain gated.</p>
         </div>
       </section>
     </div>

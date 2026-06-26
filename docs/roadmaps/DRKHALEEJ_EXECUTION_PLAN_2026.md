@@ -32,6 +32,14 @@ DrKhaleej replaces the previous DrMuscat public-domain plan. The product launche
 14. area-page-template-v1
 15. internal-linking-engine-v1
 
+## Second execution wave
+
+16. faq-placement-v1
+17. article-template-v1
+18. media-optimization-v1
+19. search-analytics-v1
+20. first-controlled-index-batch-v1
+
 ## Execution order
 
-SEO foundation first, then content and slots, then plans and sales, then dashboards, then country expansion.
+SEO foundation first, then content and commercial slots, then plans and sales, then dashboards, then country expansion.

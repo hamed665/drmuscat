@@ -7,12 +7,14 @@ export type SeoPageFamily =
   | 'provider_onboarding';
 
 export type SeoPageIndexPolicy = 'index' | 'noindex_until_ready';
+export type SeoPageReadiness = 'ready' | 'needs_content' | 'blocked';
 
 export type PublicSeoPageDefinition = {
   readonly id: string;
   readonly pathname: string;
   readonly family: SeoPageFamily;
   readonly indexPolicy: SeoPageIndexPolicy;
+  readonly readiness: SeoPageReadiness;
   readonly sitemapEligible: boolean;
   readonly priority: number;
   readonly changeFrequency: 'daily' | 'weekly' | 'monthly';
@@ -48,6 +50,7 @@ function countryRootPage(locale: SiteLocale, country: SiteCountry): PublicSeoPag
     pathname,
     family: 'country_root',
     indexPolicy: 'index',
+    readiness: 'ready',
     sitemapEligible: true,
     priority: 1,
     changeFrequency: 'weekly',
@@ -65,6 +68,7 @@ function localizedStaticPage(
     pathname: localizedPathname(pathname, locale, country),
     family,
     indexPolicy: 'index',
+    readiness: 'ready',
     sitemapEligible: true,
     priority: 0.8,
     changeFrequency: 'weekly',
@@ -85,8 +89,10 @@ export function listPublicSeoPageDefinitions(): PublicSeoPageDefinition[] {
   );
 }
 
+export function isSitemapReadySeoPageDefinition(page: PublicSeoPageDefinition): boolean {
+  return page.indexPolicy === 'index' && page.readiness === 'ready' && page.sitemapEligible;
+}
+
 export function listSitemapEligibleSeoPageDefinitions(): PublicSeoPageDefinition[] {
-  return listPublicSeoPageDefinitions().filter(
-    (page) => page.indexPolicy === 'index' && page.sitemapEligible,
-  );
+  return listPublicSeoPageDefinitions().filter(isSitemapReadySeoPageDefinition);
 }

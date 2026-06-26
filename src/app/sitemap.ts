@@ -1,44 +1,19 @@
 import type { MetadataRoute } from "next";
 
-import { sitemapMarketCountries } from "@/lib/market/public-market";
-import { localizedRootPath, siteConfig } from "@/lib/seo/site";
+import { siteConfig } from "@/lib/seo/site";
+import { listSitemapEligibleSeoPageDefinitions } from "@/lib/seo/page-registry";
 import { listPublicImportSitemapEntries } from "@/server/public/import-sitemap";
-
-const discoveryRoutes = [
-  "/doctors",
-  "/dental",
-  "/centers",
-  "/labs",
-  "/pharmacies",
-  "/hospitals",
-  "/offers",
-  "/beauty",
-  "/pet-clinics",
-  "/pet-shops",
-  "/services",
-  "/search",
-] as const;
-const providerRoutes = ["/for-providers"] as const;
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
-  const localeCountryRoots = sitemapMarketCountries.flatMap((country) =>
-    siteConfig.locales.map((locale) => localizedRootPath(locale, country)),
-  );
 
-  const urls = [
-    ...localeCountryRoots,
-    ...localeCountryRoots.flatMap((root) => discoveryRoutes.map((route) => `${root}${route}`)),
-    ...localeCountryRoots.flatMap((root) => providerRoutes.map((route) => `${root}${route}`)),
-  ];
-
-  const staticEntries: MetadataRoute.Sitemap = urls.map((path) => ({
-    url: new URL(path, siteConfig.baseUrl).toString(),
+  const staticEntries: MetadataRoute.Sitemap = listSitemapEligibleSeoPageDefinitions().map((page) => ({
+    url: new URL(page.pathname, siteConfig.baseUrl).toString(),
     lastModified,
-    changeFrequency: "weekly",
-    priority: path === "/en/om" || path === "/ar/om" ? 1 : 0.8,
+    changeFrequency: page.changeFrequency,
+    priority: page.priority,
   }));
 
   const importEntries = await listPublicImportSitemapEntries();

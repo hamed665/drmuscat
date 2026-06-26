@@ -1,28 +1,45 @@
-# DrMuscat
+# DrKhaleej
 
-DrMuscat is an SEO-first healthcare discovery and provider visibility platform for Oman.
+DrKhaleej is an SEO-first healthcare discovery and provider visibility platform for Oman.
+
+DrKhaleej is the current public brand. DrMuscat is a previous project name and may still appear in legacy repository or infrastructure references.
 
 Current public routes in this phase:
 - /en/om
 - /ar/om
 - /en/om/doctors
 - /ar/om/doctors
+- /en/om/dental
+- /ar/om/dental
 - /en/om/centers
 - /ar/om/centers
 - /en/om/pharmacies
 - /ar/om/pharmacies
+- /en/om/hospitals
+- /ar/om/hospitals
 - /en/om/labs
 - /ar/om/labs
+- /en/om/offers
+- /ar/om/offers
+- /en/om/beauty
+- /ar/om/beauty
+- /en/om/pet-clinics
+- /ar/om/pet-clinics
+- /en/om/pet-shops
+- /ar/om/pet-shops
 - /en/om/services
 - /ar/om/services
 - /en/om/search
 - /ar/om/search
+- /en/om/for-providers
+- /ar/om/for-providers
 
 Crawler-facing files:
 - /robots.txt
 - /sitemap.xml
 
-In Phase 4.2A, public route skeleton pages exist, but provider data, listings, and profiles are not yet public.
+Provider data, listings, individual profiles, and programmatic location or specialty pages are not yet public in this phase unless explicitly listed above.
 
-DrMuscat does not claim MOH verification in this phase.
-DrMuscat does not offer AI diagnosis or a symptom checker in this phase.
+DrKhaleej does not claim MOH verification, MOH approval, ratings, reviews, booking availability, insurance acceptance, or license verification in this phase.
+
+DrKhaleej does not offer AI diagnosis or a symptom checker in this phase.

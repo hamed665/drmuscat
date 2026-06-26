@@ -17,6 +17,7 @@ export function Logo({ variant = 'full', className, imageAlt, ...props }: LogoPr
   const isCompact = variant === 'compact';
   const classes = ['dm-logo', `dm-logo--${variant}`, 'dm-logo--inline', className].filter(Boolean).join(' ');
   const iconSize = isCompact ? 44 : 42;
+  const gradientId = isCompact ? 'dmLogoGreenCompact' : 'dmLogoGreenFull';
 
   return (
     <div
@@ -35,7 +36,7 @@ export function Logo({ variant = 'full', className, imageAlt, ...props }: LogoPr
       }}
       {...props}
     >
-      <LogoMark size={iconSize} />
+      <LogoMark size={iconSize} gradientId={gradientId} />
       {!isCompact ? <LogoWordmark /> : null}
       <span className="sr-only">{accessibleName}</span>
     </div>
@@ -52,7 +53,7 @@ function LogoWordmark() {
         lineHeight: 1,
         letterSpacing: '-0.045em',
         fontFamily: 'Avenir Next, Nunito Sans, Inter, Segoe UI, Arial, sans-serif',
-        fontSize: 'clamp(1.42rem, 2.05vw, 1.68rem)',
+        fontSize: 'clamp(1.36rem, 1.9vw, 1.58rem)',
         fontWeight: 760,
         whiteSpace: 'nowrap',
         direction: 'ltr'
@@ -64,7 +65,7 @@ function LogoWordmark() {
   );
 }
 
-function LogoMark({ size }: { size: number }) {
+function LogoMark({ size, gradientId }: { size: number; gradientId: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +77,7 @@ function LogoMark({ size }: { size: number }) {
       style={{ display: 'block', inlineSize: `${size}px`, blockSize: `${size}px`, background: 'transparent', flexShrink: 0 }}
     >
       <defs>
-        <linearGradient id="dmLogoGreenMark" x1="90" y1="16" x2="90" y2="164" gradientUnits="userSpaceOnUse">
+        <linearGradient id={gradientId} x1="90" y1="16" x2="90" y2="164" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#20D184" />
           <stop offset="0.48" stopColor="#12AE6B" />
           <stop offset="1" stopColor="#08724F" />
@@ -85,7 +86,7 @@ function LogoMark({ size }: { size: number }) {
       <path
         d="M38 150 V80 C38 26 142 26 142 80 V150"
         fill="none"
-        stroke="url(#dmLogoGreenMark)"
+        stroke={`url(#${gradientId})`}
         strokeWidth="30"
         strokeLinecap="butt"
         strokeLinejoin="round"

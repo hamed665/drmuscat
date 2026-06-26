@@ -28,47 +28,47 @@ type SupportContactCopy = {
 const supportContactCopy: Record<SupportedLocale, SupportContactCopy> = {
   en: {
     eyebrow: 'Support',
-    headline: 'Need help using DrMuscat?',
+    headline: 'Need help using DrKhaleej?',
     subtitle:
       'Choose the right WhatsApp path for public discovery help or provider listing support. We do not provide medical advice.',
     unavailable: 'WhatsApp activation pending',
     quickLabel: 'WhatsApp',
-    quickAriaLabel: 'Contact DrMuscat support on WhatsApp',
+    quickAriaLabel: 'Contact DrKhaleej support on WhatsApp',
     user: {
       title: 'Need help finding public provider information?',
-      body: 'Message DrMuscat support on WhatsApp for help with public discovery. We do not provide medical advice.',
+      body: 'Message DrKhaleej support on WhatsApp for help with public discovery. We do not provide medical advice.',
       button: 'WhatsApp support',
-      message: 'Hi DrMuscat, I need help finding public healthcare provider information in Oman.',
-      ariaLabel: 'Message DrMuscat support on WhatsApp for public discovery help'
+      message: 'Hi DrKhaleej, I need help finding public healthcare provider information in Oman.',
+      ariaLabel: 'Message DrKhaleej support on WhatsApp for public discovery help'
     },
     provider: {
       title: 'Want to list or claim your center?',
       body: 'Contact our provider team to prepare your public profile, services, offers and contact actions.',
       button: 'Provider team',
-      message: 'Hi DrMuscat, I want to list or claim my center on DrMuscat.',
-      ariaLabel: 'Message the DrMuscat provider team about listing or claiming a center'
+      message: 'Hi DrKhaleej, I want to list or claim my center on DrKhaleej.',
+      ariaLabel: 'Message the DrKhaleej provider team about listing or claiming a center'
     }
   },
   ar: {
     eyebrow: 'الدعم',
-    headline: 'هل تحتاج مساعدة في استخدام DrMuscat؟',
+    headline: 'هل تحتاج مساعدة في استخدام DrKhaleej؟',
     subtitle: 'اختر مسار واتساب المناسب للمساعدة في الاكتشاف العام أو دعم إدراج مقدمي الخدمة. لا نقدم نصائح طبية.',
     unavailable: 'تفعيل واتساب قيد الإعداد',
     quickLabel: 'واتساب',
-    quickAriaLabel: 'تواصل مع دعم DrMuscat عبر واتساب',
+    quickAriaLabel: 'تواصل مع دعم DrKhaleej عبر واتساب',
     user: {
       title: 'هل تحتاج مساعدة في العثور على معلومات عامة؟',
-      body: 'راسل دعم DrMuscat عبر واتساب للمساعدة في الاكتشاف العام. لا نقدم نصائح طبية.',
+      body: 'راسل دعم DrKhaleej عبر واتساب للمساعدة في الاكتشاف العام. لا نقدم نصائح طبية.',
       button: 'دعم واتساب',
-      message: 'مرحباً DrMuscat، أحتاج مساعدة في العثور على معلومات عامة عن مقدمي الرعاية الصحية في عُمان.',
-      ariaLabel: 'راسل دعم DrMuscat عبر واتساب للمساعدة في الاكتشاف العام'
+      message: 'مرحباً DrKhaleej، أحتاج مساعدة في العثور على معلومات عامة عن مقدمي الرعاية الصحية في عُمان.',
+      ariaLabel: 'راسل دعم DrKhaleej عبر واتساب للمساعدة في الاكتشاف العام'
     },
     provider: {
       title: 'هل تريد إدراج أو مطالبة مركزك؟',
       body: 'تواصل مع فريق مقدمي الخدمة لتجهيز ملفك العام والخدمات والعروض وطرق التواصل.',
       button: 'فريق مقدمي الخدمة',
-      message: 'مرحباً DrMuscat، أريد إدراج أو مطالبة مركزي على DrMuscat.',
-      ariaLabel: 'راسل فريق مقدمي الخدمة في DrMuscat حول إدراج أو مطالبة مركز'
+      message: 'مرحباً DrKhaleej، أريد إدراج أو مطالبة مركزي على DrKhaleej.',
+      ariaLabel: 'راسل فريق مقدمي الخدمة في DrKhaleej حول إدراج أو مطالبة مركز'
     }
   }
 };

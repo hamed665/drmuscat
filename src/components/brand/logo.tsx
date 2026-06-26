@@ -20,6 +20,7 @@ export function Logo({ variant = 'full', className, imageAlt, ...props }: LogoPr
   return (
     <div
       className={classes}
+      dir="ltr"
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -27,7 +28,9 @@ export function Logo({ variant = 'full', className, imageAlt, ...props }: LogoPr
         blockSize: isCompact ? '44px' : '45px',
         overflow: 'visible',
         flexShrink: 0,
-        background: 'transparent'
+        background: 'transparent',
+        direction: 'ltr',
+        unicodeBidi: 'isolate'
       }}
       {...props}
     >
@@ -46,7 +49,8 @@ function FullLogoLockup() {
       viewBox="0 0 720 180"
       aria-hidden="true"
       focusable="false"
-      style={{ display: 'block', inlineSize: '180px', blockSize: '45px', background: 'transparent' }}
+      dir="ltr"
+      style={{ display: 'block', inlineSize: '180px', blockSize: '45px', background: 'transparent', direction: 'ltr' }}
     >
       <defs>
         <linearGradient id="dmLogoGreenFull" x1="70" y1="20" x2="70" y2="156" gradientUnits="userSpaceOnUse">
@@ -81,13 +85,26 @@ function FullLogoLockup() {
       <text
         x="185"
         y="114"
+        fill="#111827"
         fontFamily="Avenir Next, Nunito Sans, Inter, Segoe UI, Arial, sans-serif"
         fontSize="92"
         fontWeight="700"
         letterSpacing="-4"
+        style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
       >
-        <tspan fill="#111827">Dr</tspan>
-        <tspan fill="url(#dmWordGreenFull)">Khaleej</tspan>
+        Dr
+      </text>
+      <text
+        x="282"
+        y="114"
+        fill="url(#dmWordGreenFull)"
+        fontFamily="Avenir Next, Nunito Sans, Inter, Segoe UI, Arial, sans-serif"
+        fontSize="92"
+        fontWeight="700"
+        letterSpacing="-4"
+        style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
+      >
+        Khaleej
       </text>
     </svg>
   );
@@ -102,7 +119,8 @@ function CompactLogoMark() {
       viewBox="0 0 180 180"
       aria-hidden="true"
       focusable="false"
-      style={{ display: 'block', inlineSize: '44px', blockSize: '44px', background: 'transparent' }}
+      dir="ltr"
+      style={{ display: 'block', inlineSize: '44px', blockSize: '44px', background: 'transparent', direction: 'ltr' }}
     >
       <defs>
         <linearGradient id="dmLogoGreenCompact" x1="90" y1="16" x2="90" y2="164" gradientUnits="userSpaceOnUse">

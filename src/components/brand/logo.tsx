@@ -13,7 +13,7 @@ type LogoProps = HTMLAttributes<HTMLDivElement> & {
 };
 
 export function Logo({ variant = 'full', className, imageAlt, ...props }: LogoProps) {
-  const accessibleName = imageAlt ?? 'DrMuscat';
+  const accessibleName = imageAlt ?? 'DrKhaleej';
   const isCompact = variant === 'compact';
   const classes = ['dm-logo', `dm-logo--${variant}`, 'dm-logo--inline', className].filter(Boolean).join(' ');
 
@@ -87,7 +87,7 @@ function FullLogoLockup() {
         letterSpacing="-4"
       >
         <tspan fill="#111827">Dr</tspan>
-        <tspan fill="url(#dmWordGreenFull)">Muscat</tspan>
+        <tspan fill="url(#dmWordGreenFull)">Khaleej</tspan>
       </text>
     </svg>
   );

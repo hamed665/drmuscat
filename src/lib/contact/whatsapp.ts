@@ -16,6 +16,12 @@ export function normalizeWhatsAppNumber(value?: string): string | null {
   return null;
 }
 
+export function getPublicWhatsAppNumber(): string | null {
+  return normalizeWhatsAppNumber(
+    process.env.NEXT_PUBLIC_DRKHALEEJ_WHATSAPP_NUMBER ?? process.env.NEXT_PUBLIC_DRMUSCAT_WHATSAPP_NUMBER
+  );
+}
+
 export function buildWhatsAppUrl(number: string | null, message: string): string | null {
   if (!number) {
     return null;

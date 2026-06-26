@@ -141,14 +141,14 @@ const styles = {
 const copyByLocale: Record<SupportedLocale, RouteCopy> = {
   en: {
     title: 'Search Healthcare in Oman',
-    description: 'Search requests are now routed safely while DrMuscat expands public discovery with reviewed provider information.',
+    description: 'Search requests are now routed safely while DrKhaleej expands public discovery with reviewed provider information.',
     badge: 'Public discovery search',
     submittedHeading: 'Submitted search filters',
     noFiltersHeading: 'Start a public healthcare search',
     emptyLabel: 'No search filters were submitted yet.',
     preparationHeading: 'Search results are being prepared',
     preparationBody:
-      'DrMuscat is expanding public discovery as reviewed provider information is onboarded. Results will appear only when safe public listing data is available, so this page does not show fake counts, ratings, reviews, or verified badges.',
+      'DrKhaleej is expanding public discovery as reviewed provider information is onboarded. Results will appear only when safe public listing data is available, so this page does not show fake counts, ratings, reviews, or verified badges.',
     preparationItems: [
       'Your search is preserved in the route query parameters.',
       'Public provider discovery will use reviewed public information only.',
@@ -166,14 +166,14 @@ const copyByLocale: Record<SupportedLocale, RouteCopy> = {
   },
   ar: {
     title: 'البحث عن الرعاية الصحية في عُمان',
-    description: 'أصبحت طلبات البحث مرتبطة بالمسار بأمان بينما يوسّع DrMuscat الاكتشاف العام بمعلومات مقدمي الخدمة بعد مراجعتها.',
+    description: 'أصبحت طلبات البحث مرتبطة بالمسار بأمان بينما يوسّع DrKhaleej الاكتشاف العام بمعلومات مقدمي الخدمة بعد مراجعتها.',
     badge: 'بحث الاكتشاف العام',
     submittedHeading: 'فلاتر البحث المرسلة',
     noFiltersHeading: 'ابدأ بحثًا عامًا عن الرعاية الصحية',
     emptyLabel: 'لم يتم إرسال فلاتر بحث بعد.',
     preparationHeading: 'يتم تجهيز نتائج البحث',
     preparationBody:
-      'يوسّع DrMuscat الاكتشاف العام مع إدخال معلومات مقدمي الخدمة بعد مراجعتها. ستظهر النتائج فقط عند توفر بيانات عامة آمنة، لذلك لا تعرض هذه الصفحة أعدادًا أو تقييمات أو مراجعات أو شارات موثقة وهمية.',
+      'يوسّع DrKhaleej الاكتشاف العام مع إدخال معلومات مقدمي الخدمة بعد مراجعتها. ستظهر النتائج فقط عند توفر بيانات عامة آمنة، لذلك لا تعرض هذه الصفحة أعدادًا أو تقييمات أو مراجعات أو شارات موثقة وهمية.',
     preparationItems: [
       'يتم حفظ البحث في معاملات الاستعلام داخل المسار.',
       'سيستخدم الاكتشاف العام معلومات عامة تمت مراجعتها فقط.',

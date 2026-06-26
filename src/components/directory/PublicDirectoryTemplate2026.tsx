@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { PublicProfileEntityType } from '@/lib/profiles/public-profile-guards';
+import type { InternalLinkDefinition } from '@/lib/seo/internal-linking';
 
 type PublicDirectoryTemplateLocale = 'en' | 'ar';
 
@@ -35,6 +36,7 @@ export type PublicDirectoryTemplate2026Props = {
   totalResults?: number | null;
   filters?: readonly PublicDirectoryFilter[];
   results?: readonly PublicDirectoryResultCard[];
+  internalLinks?: readonly InternalLinkDefinition[];
   emptyState?: ReactNode;
   footer?: ReactNode;
   children?: ReactNode;
@@ -52,6 +54,7 @@ const directoryCopy: Record<
     safetyNote: string;
     safetyBody: string;
     openProfile: string;
+    relatedLinks: string;
   }
 > = {
   en: {
@@ -63,7 +66,8 @@ const directoryCopy: Record<
     noResults: 'No public profiles are ready for this directory yet.',
     safetyNote: 'Safety note',
     safetyBody: 'Directory pages do not imply MOH verification, diagnosis, booking availability, insurance acceptance or medical advice.',
-    openProfile: 'Open profile'
+    openProfile: 'Open profile',
+    relatedLinks: 'Related links'
   },
   ar: {
     results: 'نتائج',
@@ -74,7 +78,8 @@ const directoryCopy: Record<
     noResults: 'لا توجد ملفات عامة جاهزة في هذا الدليل حالياً.',
     safetyNote: 'ملاحظة أمان',
     safetyBody: 'صفحات الدليل لا تعني تحققاً من وزارة الصحة أو تشخيصاً أو توفر حجز أو قبول تأمين أو نصيحة طبية.',
-    openProfile: 'فتح الملف'
+    openProfile: 'فتح الملف',
+    relatedLinks: 'روابط ذات صلة'
   }
 };
 
@@ -133,6 +138,31 @@ function DirectoryResultCard({ result, copy }: { result: PublicDirectoryResultCa
   );
 }
 
+function DirectoryInternalLinks({
+  links,
+  copy
+}: {
+  links: readonly InternalLinkDefinition[];
+  copy: (typeof directoryCopy)[PublicDirectoryTemplateLocale];
+}) {
+  if (links.length === 0) {
+    return null;
+  }
+
+  return (
+    <nav className="dm2026-directory__internal-links" aria-label={copy.relatedLinks}>
+      <strong>{copy.relatedLinks}</strong>
+      <ul>
+        {links.map((link) => (
+          <li key={link.key} data-intent={link.intent} data-priority={link.priority}>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
 export function PublicDirectoryTemplate2026({
   locale,
   dir,
@@ -143,6 +173,7 @@ export function PublicDirectoryTemplate2026({
   totalResults = null,
   filters = [],
   results = [],
+  internalLinks = [],
   emptyState,
   footer,
   children
@@ -184,6 +215,8 @@ export function PublicDirectoryTemplate2026({
           </ul>
         </nav>
       ) : null}
+
+      <DirectoryInternalLinks links={internalLinks} copy={copy} />
 
       {children}
 

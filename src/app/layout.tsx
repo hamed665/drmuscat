@@ -16,7 +16,9 @@ function isAdminRequestPath(path: string | null): boolean {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const requestHeaders = await headers();
-  const localeHeader = requestHeaders.get("x-drmuscat-locale");
+  const localeHeader =
+    requestHeaders.get("x-drkhaleej-locale") ??
+    requestHeaders.get("x-drmuscat-locale");
   const locale =
     localeHeader && isSupportedLocale(localeHeader) ? localeHeader : "en";
   const requestPath =

@@ -21,9 +21,14 @@ for (const token of [
   'ImportBatchDryRunReport',
   'ImportBatchDryRunCheckKey',
   'ImportBatchDryRunBlockerReason',
+  'BuildImportBatchDryRunReportInput',
   'firstImportBatchDryRunCaps',
   'importBatchDryRunRequiredChecks',
   'createEmptyImportBatchDryRunReport',
+  'decideImportBatchDryRunReport',
+  'buildImportBatchDryRunReport',
+  'familyWithinCaps',
+  'familyHasNoBlockers',
 ]) {
   assertIncludes(contractSource, token, 'dry-run report contract');
 }

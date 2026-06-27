@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { normalizePublicBrandCopy } from '@/lib/brand/public-brand-copy';
+import { normalizePublicBrandMetadata } from '@/lib/brand/public-brand-metadata';
 import { localizedPathname, siteConfig, type SiteCountry, type SiteLocale } from './site';
 
 type BuildLocalizedMetadataInput = {
@@ -30,13 +30,13 @@ export function buildLocalizedMetadata(input: BuildLocalizedMetadataInput = {}):
   const locale = input.locale ?? siteConfig.defaultLocale;
   const country = input.country ?? siteConfig.defaultCountry;
   const pathname = input.pathname ?? '/';
-  const title = normalizePublicBrandCopy(input.title ?? siteConfig.defaultTitle);
-  const description = normalizePublicBrandCopy(input.description ?? siteConfig.defaultDescription);
+  const title = input.title ?? siteConfig.defaultTitle;
+  const description = input.description ?? siteConfig.defaultDescription;
   const canonical = buildCanonicalUrl(pathname, locale, country);
   const englishAlternate = toAbsoluteUrl(localizedPathname(pathname, 'en', country));
   const arabicAlternate = toAbsoluteUrl(localizedPathname(pathname, 'ar', country));
 
-  return {
+  return normalizePublicBrandMetadata({
     metadataBase: siteConfig.baseUrl,
     applicationName: siteConfig.siteName,
     manifest: '/manifest.webmanifest',
@@ -69,7 +69,7 @@ export function buildLocalizedMetadata(input: BuildLocalizedMetadataInput = {}):
       icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
       other: [{ rel: 'mask-icon', url: '/favicon.svg', color: '#0e7469' }]
     }
-  };
+  });
 }
 
 export const defaultMetadata = buildLocalizedMetadata();

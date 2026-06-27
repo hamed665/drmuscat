@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const routePath = 'src/pages/[locale]/[country]/hospitals/[hospitalSlug].tsx';
+const apiRoutePath = 'src/app/api/_drk/hospital-profile/[locale]/[country]/[hospitalSlug]/route.ts';
 const appHospitalsPath = 'src/app/[locale]/[country]/hospitals/[hospitalSlug]/page.tsx';
 const sitemapPath = 'src/server/public/import-sitemap.ts';
 
@@ -40,16 +41,20 @@ function assertNotIncludes(source, token, message) {
 }
 
 await assertFile(routePath);
+await assertFile(apiRoutePath);
 await assertMissing(appHospitalsPath);
 
 const routeSource = await readText(routePath);
+const apiRouteSource = await readText(apiRoutePath);
 const sitemapSource = await readText(sitemapPath);
 const packageSource = await readText('package.json');
 
 for (const token of [
   'getServerSideProps',
   'PublicImportedHospitalProfilePage',
-  'getPublicImportHospitalProfile',
+  'loadHospitalProfile',
+  'hospitalProfileEndpointUrl',
+  '/api/_drk/hospital-profile/${locale}/${country}/${hospitalSlug}',
   'hospitalSlug',
   'notFound: true',
   'href={canonical}',
@@ -74,6 +79,18 @@ for (const forbiddenToken of [
   'listPublicImportSitemapEntries',
 ]) {
   assertNotIncludes(routeSource, forbiddenToken, `${routePath} must not include ${forbiddenToken}.`);
+}
+
+for (const token of [
+  'export async function GET',
+  'getPublicImportHospitalProfile',
+  'hospitalSlug',
+  'NextResponse.json',
+  'status: 404',
+  'cache-control',
+  'no-store, private',
+]) {
+  assertIncludes(apiRouteSource, token, `${apiRoutePath} must include ${token}`);
 }
 
 assertNotIncludes(sitemapSource, '^\\/(en|ar)\\/om\\/hospitals\\/', 'import sitemap must not include hospital profile URLs in this route-wrapper PR.');

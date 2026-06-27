@@ -1,0 +1,77 @@
+import { access, readFile } from 'node:fs/promises';
+import path from 'node:path';
+
+const root = process.cwd();
+const routePath = 'src/app/[locale]/[country]/pharmacies/[pharmacySlug]/page.tsx';
+const sitemapPath = 'src/server/public/import-sitemap.ts';
+
+async function readText(relativePath) {
+  return readFile(path.join(root, relativePath), 'utf8');
+}
+
+async function assertFile(relativePath) {
+  try {
+    await access(path.join(root, relativePath));
+  } catch {
+    throw new Error(`Missing file: ${relativePath}`);
+  }
+}
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function assertIncludes(source, token, message) {
+  assert(source.includes(token), message);
+}
+
+function assertNotIncludes(source, token, message) {
+  assert(!source.includes(token), message);
+}
+
+await assertFile(routePath);
+const routeSource = await readText(routePath);
+const sitemapSource = await readText(sitemapPath);
+const packageSource = await readText('package.json');
+
+for (const token of [
+  'generateMetadata',
+  'export default async function PublicImportedPharmacyProfilePage',
+  'getPublicImportPharmacyProfile',
+  'pharmacySlug: string',
+  'pathname: `/pharmacies/${pharmacySlug}`',
+  'notFound()',
+  'robots: { index: false, follow: true }',
+  'profile.canonicalPath',
+  'profile.lastCheckedAt',
+  'profile.sourceName ?? profile.sourceUrl',
+]) {
+  assertIncludes(routeSource, token, `${routePath} must include ${token}`);
+}
+
+for (const forbiddenToken of [
+  'application/ld+json',
+  'buildFaqJsonLd',
+  'Review',
+  'rating',
+  'booking',
+  'insurance',
+  'claim',
+  'provider-dashboard',
+  'listPublicImportSitemapEntries',
+]) {
+  assertNotIncludes(routeSource, forbiddenToken, `${routePath} must not include ${forbiddenToken}.`);
+}
+
+assertIncludes(sitemapSource, '^\\/(en|ar)\\/om\\/doctor\\/', 'import sitemap must still only allow guarded doctor canonical paths.');
+assertNotIncludes(sitemapSource, 'pharmacies', 'import sitemap must not include pharmacy profile URLs in this route-wrapper PR.');
+
+for (const packageToken of [
+  'import:pharmacy-profile-route:validate',
+  'scripts/import/check-public-pharmacy-profile-route-wrapper.mjs',
+  'pnpm import:pharmacy-profile-route:validate',
+]) {
+  assertIncludes(packageSource, packageToken, `package.json must include ${packageToken}.`);
+}
+
+console.log('public pharmacy profile route wrapper check passed.');

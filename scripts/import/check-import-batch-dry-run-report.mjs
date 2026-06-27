@@ -1,0 +1,57 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+
+const root = process.cwd();
+
+async function readText(relativePath) {
+  return readFile(path.join(root, relativePath), 'utf8');
+}
+
+function assertIncludes(source, token, label) {
+  if (!source.includes(token)) throw new Error(`${label} must include ${token}`);
+}
+
+const contractSource = await readText('src/server/admin/import-batch-dry-run-report.ts');
+const docsSource = await readText('docs/import/DRKHALEEJ_IMPORT_BATCH_DRY_RUN_REPORT_V1.md');
+const rehearsalSource = await readText('docs/import/DRKHALEEJ_IMPORT_BATCH_REHEARSAL_V1.md');
+const packageSource = await readText('package.json');
+
+for (const token of [
+  'drkhaleej.import.batchDryRun.v1',
+  'ImportBatchDryRunReport',
+  'ImportBatchDryRunCheckKey',
+  'ImportBatchDryRunBlockerReason',
+  'firstImportBatchDryRunCaps',
+  'importBatchDryRunRequiredChecks',
+  'createEmptyImportBatchDryRunReport',
+]) {
+  assertIncludes(contractSource, token, 'dry-run report contract');
+}
+
+for (const token of [
+  '# DrKhaleej Import Batch Dry-Run Report V1',
+  'drkhaleej.import.batchDryRun.v1',
+  '## Source of truth',
+  '## Required top-level shape',
+  '## Report decision rule',
+]) {
+  assertIncludes(docsSource, token, 'dry-run report docs');
+}
+
+for (const token of [
+  '# DrKhaleej Import Batch Rehearsal V1',
+  'Maximum: 50 doctors, 25 pharmacies, 10 hospitals.',
+  'The audit must show zero blockers for the selected rows.',
+]) {
+  assertIncludes(rehearsalSource, token, 'batch rehearsal docs');
+}
+
+for (const token of [
+  'import:batch-dry-run:validate',
+  'scripts/import/check-import-batch-dry-run-report.mjs',
+  'pnpm import:batch-dry-run:validate',
+]) {
+  assertIncludes(packageSource, token, 'package.json');
+}
+
+console.log('import batch dry-run report check passed.');

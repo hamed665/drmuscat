@@ -185,6 +185,19 @@ if (!/(not yet public|are not yet public|not public in this phase)/i.test(llmsSo
   throw new Error('public/llms.txt must clearly state future doctor/center/service/pharmacy/laboratory/programmatic pages are not yet public in this phase.');
 }
 
+const forbiddenMohPositiveClaimPatterns = [
+  /\bmoh[-\s]*verified\b/i,
+  /\bverified\s+by\s+moh\b/i,
+  /\bmoh[-\s]*approved\b/i,
+  /\bmoh\s+approved\b/i,
+  /\bmoh\s+certified\b/i,
+  /\bcertified\s+by\s+moh\b/i,
+  /\bmoh\s+verification\s+badge\b/i,
+  /\bofficial\s+moh\s+verification\b/i,
+  /\bmoh\s+checked\b/i,
+  /\bchecked\s+by\s+moh\b/i
+];
+
 const aiPrefixPattern = String.raw`ai\s*`;
 const clinicalDecisionWord = 'diag' + 'nosis';
 const clinicalDecisionToolWord = 'diag' + 'nostic';

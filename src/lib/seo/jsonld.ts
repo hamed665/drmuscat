@@ -1,3 +1,5 @@
+import { normalizePublicBrandCopy } from '@/lib/brand/public-brand-copy';
+
 export type JsonLdContext = 'https://schema.org';
 
 type JsonLdPrimitive = string | number | boolean | null;
@@ -114,8 +116,26 @@ export type SupportedJsonLd =
   | DiagnosticLabJsonLd
   | MedicalTestJsonLd;
 
+function normalizeJsonLdValue(value: JsonLdValue): JsonLdValue {
+  if (typeof value === 'string') {
+    return normalizePublicBrandCopy(value);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((entry) => normalizeJsonLdValue(entry));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entry]) => [key, normalizeJsonLdValue(entry)])
+    ) as JsonLdValue;
+  }
+
+  return value;
+}
+
 export function createJsonLd<T extends SupportedJsonLd>(schema: T): T {
-  return schema;
+  return normalizeJsonLdValue(schema as unknown as JsonLdValue) as unknown as T;
 }
 
 function sanitizeJsonLdForScript(value: string): string {

@@ -3,6 +3,7 @@ import { isValidElement, type ReactElement, type ReactNode } from 'react';
 
 import ForProvidersPage, { generateMetadata } from '../app/[locale]/[country]/for-providers/page';
 
+const supportedPublicLocales = ['en', 'ar'] as const;
 const legacyPublicBrandNames = ['DrMuscat', 'Dr Muscat', 'Doctor Muscat', 'دکتر مسقط', 'دكتور مسقط', 'د. مسقط'] as const;
 const publicTextPropNames = ['aria-label', 'title', 'alt', 'placeholder'] as const;
 
@@ -39,28 +40,30 @@ function expectNoLegacyBrandCopy(value: string): void {
 }
 
 describe('for-providers public brand output', () => {
-  it('normalizes metadata output', async () => {
-    const metadata = await generateMetadata({ params: Promise.resolve({ locale: 'en', country: 'om' }) });
-    const metadataText = [
-      metadata.title,
-      metadata.description,
-      metadata.openGraph?.title,
-      metadata.openGraph?.description,
-      metadata.twitter?.title,
-      metadata.twitter?.description
-    ]
-      .filter((value): value is string => typeof value === 'string')
-      .join(' ');
+  for (const locale of supportedPublicLocales) {
+    it(`normalizes ${locale} metadata output`, async () => {
+      const metadata = await generateMetadata({ params: Promise.resolve({ locale, country: 'om' }) });
+      const metadataText = [
+        metadata.title,
+        metadata.description,
+        metadata.openGraph?.title,
+        metadata.openGraph?.description,
+        metadata.twitter?.title,
+        metadata.twitter?.description
+      ]
+        .filter((value): value is string => typeof value === 'string')
+        .join(' ');
 
-    expect(metadataText).toContain('DrKhaleej');
-    expectNoLegacyBrandCopy(metadataText);
-  });
+      expect(metadataText).toContain('DrKhaleej');
+      expectNoLegacyBrandCopy(metadataText);
+    });
 
-  it('normalizes rendered visible copy', async () => {
-    const page = await ForProvidersPage({ params: Promise.resolve({ locale: 'en', country: 'om' }) });
-    const publicText = collectPublicText(page).join(' ');
+    it(`normalizes ${locale} rendered visible copy`, async () => {
+      const page = await ForProvidersPage({ params: Promise.resolve({ locale, country: 'om' }) });
+      const publicText = collectPublicText(page).join(' ');
 
-    expect(publicText).toContain('DrKhaleej');
-    expectNoLegacyBrandCopy(publicText);
-  });
+      expect(publicText).toContain('DrKhaleej');
+      expectNoLegacyBrandCopy(publicText);
+    });
+  }
 });

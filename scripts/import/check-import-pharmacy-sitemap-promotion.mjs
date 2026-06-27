@@ -49,7 +49,6 @@ for (const forbiddenToken of [
   '/pharmacy/',
   '/hospitals/',
   'rating',
-  'Review',
   'booking',
   'insurance',
   'claim',

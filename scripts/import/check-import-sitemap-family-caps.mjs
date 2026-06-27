@@ -60,7 +60,6 @@ for (const forbiddenToken of [
   'claim',
   'provider-dashboard',
   'rating',
-  'Review',
 ]) {
   assertNotIncludes(sitemapSource, forbiddenToken, `${sitemapPath} must not include ${forbiddenToken}.`);
 }

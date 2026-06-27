@@ -29,4 +29,22 @@ describe('normalizePublicBrandMetadata', () => {
     expect(normalized.twitter?.title).toBe('DrKhaleej profile card');
     expect(normalized.twitter?.description).toBe('DrKhaleej social preview');
   });
+
+  it('normalizes title template metadata fields', () => {
+    const metadata: Metadata = {
+      title: {
+        default: 'DrMuscat default title',
+        template: '%s | Doctor Muscat',
+        absolute: 'دکتر مسقط absolute title'
+      }
+    };
+
+    const normalized = normalizePublicBrandMetadata(metadata);
+
+    expect(normalized.title).toEqual({
+      default: 'DrKhaleej default title',
+      template: '%s | DrKhaleej',
+      absolute: 'DrKhaleej absolute title'
+    });
+  });
 });

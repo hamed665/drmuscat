@@ -18,7 +18,6 @@ import {
   type SupportedLocale,
 } from "@/lib/i18n/config";
 import { buildLocalizedMetadata } from "@/lib/seo/metadata";
-import { buildFaqJsonLd } from "@/lib/seo/faq-jsonld";
 
 type Params = { locale: string; country: string };
 
@@ -34,12 +33,12 @@ const metadataCopyByLocale: Record<
   en: {
     title: "Pet Clinics in Oman | DrKhaleej",
     description:
-      "Browse veterinary clinics, pet care services and animal health options in Oman. Public discovery only, not veterinary advice.",
+      "Browse veterinary clinic discovery paths in Oman after reviewed public listings are available.",
   },
   ar: {
     title: "العيادات البيطرية في عُمان | DrKhaleej",
     description:
-      "تصفح العيادات البيطرية وخدمات رعاية الحيوانات وخيارات صحة الحيوانات في عُمان. اكتشاف عام فقط وليس نصيحة بيطرية.",
+      "تصفح مسارات اكتشاف العيادات البيطرية في عُمان بعد توفر قوائم عامة مراجعة.",
   },
 };
 
@@ -106,16 +105,6 @@ export default async function PublicPetClinicsPage({
           locale={safeLocale}
           dir={dir}
           idPrefix={config.categoryType}
-        />
-      ) : null}
-      {config.faq ? (
-        <script
-          id={`dm2026-public-discovery-faq-jsonld-${config.categoryType}-${safeLocale}`}
-          type="application/ld+json"
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(buildFaqJsonLd(config.faq)),
-          }}
         />
       ) : null}
     </main>

@@ -21,15 +21,26 @@ describe('final route gate wiring', () => {
     expect(packageJson.scripts['seo:check']).toContain(`pnpm ${scriptName}`);
   });
 
-  it('keeps the manual gate chain covered by the final gate', () => {
+  it('keeps the added chain covered by the final gate', () => {
     const finalGate = readText('scripts/seo/check-location-candidate-route-readiness-final-gate.mjs');
 
-    expect(finalGate).toContain(['location-candidate-manual', '-gate-contract.ts'].join(''));
-    expect(finalGate).toContain(['oman-location-candidate-manual', '-gate.ts'].join(''));
-    expect(finalGate).toContain(['oman-location-candidate-manual', '-gate.test.ts'].join(''));
-    expect(finalGate).toContain(['check-location-candidate-manual', '-gate-integration.mjs'].join(''));
-    expect(finalGate).toContain('candidate-manual-gate-contract-only');
-    expect(finalGate).toContain('candidate-manual-gate-runtime-disabled');
-    expect(finalGate).toContain('seo:location-candidate-manual-gate-integration:validate');
+    const requiredTokens = [
+      'manualGateContract',
+      'manualGateRuntime',
+      'manualGateTest',
+      'manualGateIntegration',
+      'location-candidate-manual',
+      '-gate-contract.ts',
+      '-gate.ts',
+      '-gate.test.ts',
+      '-gate-integration.mjs',
+      'candidate-manual-gate-contract-only',
+      'candidate-manual-gate-runtime-disabled',
+      'seo:location-candidate-manual-gate-integration:validate',
+    ];
+
+    for (const token of requiredTokens) {
+      expect(finalGate).toContain(token);
+    }
   });
 });

@@ -4,38 +4,38 @@ import { describe, expect, it } from 'vitest';
 import { normalizePublicBrandMetadata } from './public-brand-metadata';
 
 describe('normalizePublicBrandMetadata', () => {
-  it('normalizes legacy brand copy across public metadata fields', () => {
+  it('keeps DrKhaleej copy unchanged across public metadata fields', () => {
     const metadata: Metadata = {
-      title: 'DrMuscat provider onboarding',
-      description: 'Doctor Muscat and دكتور مسقط discovery copy.',
+      title: 'DrKhaleej provider onboarding',
+      description: 'DrKhaleej discovery copy.',
       openGraph: {
-        title: 'Dr Muscat public profile',
-        description: 'د. مسقط public discovery',
+        title: 'DrKhaleej public profile',
+        description: 'DrKhaleej public discovery',
         type: 'website'
       },
       twitter: {
         card: 'summary_large_image',
-        title: 'دکتر مسقط profile card',
-        description: 'DrMuscat social preview'
+        title: 'DrKhaleej profile card',
+        description: 'DrKhaleej social preview'
       }
     };
 
     const normalized = normalizePublicBrandMetadata(metadata);
 
     expect(normalized.title).toBe('DrKhaleej provider onboarding');
-    expect(normalized.description).toBe('DrKhaleej and DrKhaleej discovery copy.');
+    expect(normalized.description).toBe('DrKhaleej discovery copy.');
     expect(normalized.openGraph?.title).toBe('DrKhaleej public profile');
     expect(normalized.openGraph?.description).toBe('DrKhaleej public discovery');
     expect(normalized.twitter?.title).toBe('DrKhaleej profile card');
     expect(normalized.twitter?.description).toBe('DrKhaleej social preview');
   });
 
-  it('normalizes title template metadata fields', () => {
+  it('keeps DrKhaleej title template metadata fields unchanged', () => {
     const metadata: Metadata = {
       title: {
-        default: 'DrMuscat default title',
-        template: '%s | Doctor Muscat',
-        absolute: 'دکتر مسقط absolute title'
+        default: 'DrKhaleej default title',
+        template: '%s | DrKhaleej',
+        absolute: 'DrKhaleej absolute title'
       }
     };
 

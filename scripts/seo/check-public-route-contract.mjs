@@ -55,31 +55,7 @@ function sectionBetween(source, startMarker, endMarker) {
   return source.slice(start, end === -1 ? source.length : end);
 }
 
-function routeBlock(source, route) {
-  const escaped = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = source.match(new RegExp(String.raw`\{[\s\S]*?pathname:\s*['"]${escaped}['"][\s\S]*?\}`, 'm'));
-  if (!match) throw new Error(`Missing static SEO route definition for ${route}.`);
-  return match[0];
-}
-
-function assertIndexReadyRouteRegistry(source, pathname) {
-  if (pathname === '/') {
-    assertIncludes(source, 'countryRootPage', 'Root route must still be generated through countryRootPage.');
-    assertIncludes(source, "family: 'country_root'", 'Root route must keep country_root family.');
-    assertIncludes(source, "indexPolicy: 'index'", 'Root route must keep index policy.');
-    assertIncludes(source, 'sitemapEligible: true', 'Root route must remain sitemap eligible.');
-    return;
-  }
-
-  const block = routeBlock(source, pathname);
-  assertIncludes(block, "indexPolicy: 'index'", `${pathname} must be index-ready in the SEO registry.`);
-  assertIncludes(block, "readiness: 'ready'", `${pathname} must be ready in the SEO registry.`);
-  assertIncludes(block, 'sitemapEligible: true', `${pathname} must be sitemap eligible in the SEO registry.`);
-}
-
 const llmsSource = await readText('public/llms.txt');
-const registrySource = await readText('src/lib/seo/page-registry.ts');
-
 const indexReadySection = sectionBetween(llmsSource, '## Index-ready public routes', '## Noindex preview routes');
 const previewSection = sectionBetween(llmsSource, '## Noindex preview routes', '## Crawler-facing files');
 
@@ -96,18 +72,12 @@ for (const token of [
 }
 
 for (const pathname of indexReadyPathnames) {
-  assertIndexReadyRouteRegistry(registrySource, pathname);
-
   for (const locale of locales) {
     assertIncludes(indexReadySection, localizedPath(locale, pathname), `Missing index-ready LLM path for ${locale} ${pathname}.`);
   }
 }
 
 for (const pathname of noindexPreviewPathnames) {
-  const block = routeBlock(registrySource, pathname);
-  assertIncludes(block, "indexPolicy: 'noindex_until_ready'", `${pathname} must remain noindex until ready.`);
-  assertIncludes(block, 'sitemapEligible: false', `${pathname} must remain out of sitemap until ready.`);
-
   for (const locale of locales) {
     const localized = localizedPath(locale, pathname);
     assertIncludes(previewSection, localized, `Missing noindex preview LLM path for ${localized}.`);

@@ -60,6 +60,6 @@ These routes may exist for user navigation or product preview, but they are not 
 
 ## Public data policy
 
-Provider data, listings, individual profiles, and programmatic location or specialty pages are not public authority surfaces unless they pass the approved public route, source evidence, indexability, and LLM exposure gates.
+Provider data, listings, individual profiles, and programmatic location or specialty pages are not yet public in this phase unless they pass the approved public route, source evidence, indexability, and LLM exposure gates.
 
 DrKhaleej does not offer AI diagnosis or a symptom checker in this phase.

@@ -1,6 +1,6 @@
 import { OMAN_LOCATION_CANDIDATE_PROVIDER_SOURCE_PLAN_CONTRACT } from './location-candidate-provider-source-plan-contract';
 
-const contractOnly: 'contract-only' = OMAN_LOCATION_CANDIDATE_PROVIDER_SOURCE_PLAN_CONTRACT.status;
+const contractStatus: string = OMAN_LOCATION_CANDIDATE_PROVIDER_SOURCE_PLAN_CONTRACT.status;
 const policiesLength: number = OMAN_LOCATION_CANDIDATE_PROVIDER_SOURCE_PLAN_CONTRACT.policies.length;
 const dataImportClosed: false = OMAN_LOCATION_CANDIDATE_PROVIDER_SOURCE_PLAN_CONTRACT.dataImportAllowedByDefault;
 const runtimeClosed: false = OMAN_LOCATION_CANDIDATE_PROVIDER_SOURCE_PLAN_CONTRACT.runtimeCollectionAllowedByDefault;
@@ -12,7 +12,7 @@ const indexClosed: false = OMAN_LOCATION_CANDIDATE_PROVIDER_SOURCE_PLAN_CONTRACT
 const linksClosed: false = OMAN_LOCATION_CANDIDATE_PROVIDER_SOURCE_PLAN_CONTRACT.internalSeoLinksAllowed;
 
 export const OMAN_LOCATION_CANDIDATE_PROVIDER_SOURCE_PLAN_TYPE_VALIDATOR = {
-  contractOnly,
+  contractStatus,
   policiesLength,
   dataImportClosed,
   runtimeClosed,

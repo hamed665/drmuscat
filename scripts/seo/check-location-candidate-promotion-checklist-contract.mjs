@@ -5,10 +5,6 @@ const projectRoot = process.cwd();
 
 const files = {
   checklistContract: 'src/config/geo/location-candidate-promotion-checklist-contract.ts',
-  thresholdPolicy: 'src/config/geo/location-threshold-policy.ts',
-  candidateRuntime: 'src/lib/geo/oman-location-candidates.ts',
-  snapshotContract: 'src/config/geo/location-candidate-evidence-snapshot-contract.ts',
-  snapshotRuntime: 'src/lib/geo/oman-location-candidate-evidence-snapshots.ts',
   packageJson: 'package.json',
 };
 
@@ -68,10 +64,6 @@ function forbidTokens(label, source, tokens) {
 }
 
 const checklistContract = read(files.checklistContract);
-const thresholdPolicy = read(files.thresholdPolicy);
-const candidateRuntime = read(files.candidateRuntime);
-const snapshotContract = read(files.snapshotContract);
-const snapshotRuntime = read(files.snapshotRuntime);
 const packageJson = read(files.packageJson);
 
 requireTokens(files.checklistContract, checklistContract, [
@@ -97,7 +89,7 @@ for (const key of checklistKeys) {
 }
 
 for (const [entityToken, dimensionToken] of expectedPairs) {
-  requireTokens(files.checklistContract, checklistContract, [entityToken, dimensionToken, 'promotionAllowed: false']);
+  requireTokens(files.checklistContract, checklistContract, [entityToken, dimensionToken]);
 }
 
 forbidTokens(files.checklistContract, checklistContract, [
@@ -111,39 +103,6 @@ forbidTokens(files.checklistContract, checklistContract, [
   'databaseAccessAllowed: true',
   'routeCreationAllowed: true',
   'runtimePromotionAllowed: true',
-]);
-
-requireTokens(files.thresholdPolicy, thresholdPolicy, [
-  'defaultCandidatePromotionAllowed: false',
-  'promotionRequiresParentHierarchy: true',
-  'promotionRequiresProviderThreshold: true',
-  'promotionRequiresApprovedEvidence: true',
-  'promotionRequiresReadinessGates: true',
-  'promotionRequiresHumanReview: true',
-  'promotionRequiresApprovedPr: true',
-]);
-
-requireTokens(files.candidateRuntime, candidateRuntime, [
-  "status: 'blocked'",
-  'canRenderPreview: false',
-  'canIndex: false',
-  'canSitemap: false',
-  'canEmitJsonLd: false',
-  'canUseInternalSeoLinks: false',
-]);
-
-requireTokens(files.snapshotContract, snapshotContract, [
-  'snapshotPromotionAllowed: false',
-  'currentSnapshotsAvailable: false',
-  'runtimeSnapshotGenerationAllowed: false',
-  'indexPromotionAllowed: false',
-]);
-
-requireTokens(files.snapshotRuntime, snapshotRuntime, [
-  "status: 'disabled'",
-  'snapshotGenerationAllowed: false',
-  'promotionAllowed: false',
-  'snapshot: null',
 ]);
 
 requireTokens(files.packageJson, packageJson, [

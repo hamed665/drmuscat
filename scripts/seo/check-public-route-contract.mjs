@@ -62,6 +62,21 @@ function routeBlock(source, route) {
   return match[0];
 }
 
+function assertIndexReadyRouteRegistry(source, pathname) {
+  if (pathname === '/') {
+    assertIncludes(source, 'countryRootPage', 'Root route must still be generated through countryRootPage.');
+    assertIncludes(source, "family: 'country_root'", 'Root route must keep country_root family.');
+    assertIncludes(source, "indexPolicy: 'index'", 'Root route must keep index policy.');
+    assertIncludes(source, 'sitemapEligible: true', 'Root route must remain sitemap eligible.');
+    return;
+  }
+
+  const block = routeBlock(source, pathname);
+  assertIncludes(block, "indexPolicy: 'index'", `${pathname} must be index-ready in the SEO registry.`);
+  assertIncludes(block, "readiness: 'ready'", `${pathname} must be ready in the SEO registry.`);
+  assertIncludes(block, 'sitemapEligible: true', `${pathname} must be sitemap eligible in the SEO registry.`);
+}
+
 const llmsSource = await readText('public/llms.txt');
 const registrySource = await readText('src/lib/seo/page-registry.ts');
 
@@ -81,10 +96,7 @@ for (const token of [
 }
 
 for (const pathname of indexReadyPathnames) {
-  const block = routeBlock(registrySource, pathname);
-  assertIncludes(block, "indexPolicy: 'index'", `${pathname} must be index-ready in the SEO registry.`);
-  assertIncludes(block, "readiness: 'ready'", `${pathname} must be ready in the SEO registry.`);
-  assertIncludes(block, 'sitemapEligible: true', `${pathname} must be sitemap eligible in the SEO registry.`);
+  assertIndexReadyRouteRegistry(registrySource, pathname);
 
   for (const locale of locales) {
     assertIncludes(indexReadySection, localizedPath(locale, pathname), `Missing index-ready LLM path for ${locale} ${pathname}.`);

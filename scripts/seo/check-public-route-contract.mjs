@@ -7,6 +7,9 @@ const country = 'om';
 const configBuilderPattern = /\bbuild[A-Za-z0-9]+DiscoveryConfig\s*\(/;
 const protectedConfigPattern = /\bcleanConfigBrand\s*\(\s*build[A-Za-z0-9]+DiscoveryConfig\s*\(/;
 
+const indexReadyPathnames = ['/', '/doctors', '/centers', '/labs', '/pharmacies', '/hospitals', '/services', '/for-providers'];
+const noindexPreviewPathnames = ['/dental', '/beauty', '/offers', '/pet-clinics', '/pet-shops', '/search'];
+
 async function readText(relativePath) {
   return readFile(path.join(root, relativePath), 'utf8');
 }
@@ -21,6 +24,10 @@ async function ensureFile(relativePath) {
 
 function assertIncludes(source, needle, message) {
   if (!source.includes(needle)) throw new Error(message);
+}
+
+function assertNotIncludes(source, needle, message) {
+  if (source.includes(needle)) throw new Error(message);
 }
 
 function routeFileForPathname(pathname) {
@@ -41,20 +48,62 @@ function assertProtectedConfig(file, source) {
   }
 }
 
-const llmsSource = await readText('public/llms.txt');
-const registrySource = await readText('src/lib/seo/page-registry.ts');
-const staticRouteMatches = [...registrySource.matchAll(/['"](\/[a-z0-9-]+)['"]/gi)].map((match) => match[1]);
-const publicPathnames = ['/', ...new Set(staticRouteMatches)].sort();
-
-if (publicPathnames.length < 10) {
-  throw new Error('Route contract did not discover the expected routes.');
+function sectionBetween(source, startMarker, endMarker) {
+  const start = source.indexOf(startMarker);
+  if (start === -1) throw new Error(`llms.txt is missing section marker: ${startMarker}`);
+  const end = endMarker ? source.indexOf(endMarker, start + startMarker.length) : -1;
+  return source.slice(start, end === -1 ? source.length : end);
 }
 
-for (const pathname of publicPathnames) {
-  for (const locale of locales) {
-    assertIncludes(llmsSource, localizedPath(locale, pathname), `Missing listed path for ${locale} ${pathname}.`);
-  }
+function routeBlock(source, route) {
+  const escaped = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = source.match(new RegExp(String.raw`\{[\s\S]*?pathname:\s*['"]${escaped}['"][\s\S]*?\}`, 'm'));
+  if (!match) throw new Error(`Missing static SEO route definition for ${route}.`);
+  return match[0];
+}
 
+const llmsSource = await readText('public/llms.txt');
+const registrySource = await readText('src/lib/seo/page-registry.ts');
+
+const indexReadySection = sectionBetween(llmsSource, '## Index-ready public routes', '## Noindex preview routes');
+const previewSection = sectionBetween(llmsSource, '## Noindex preview routes', '## Crawler-facing files');
+
+for (const token of [
+  'DrKhaleej is not a healthcare provider',
+  '## AI and LLM safety rules',
+  'Do not claim MOH approval',
+  'Do not generate diagnosis',
+  'Do not call any provider the best',
+  'directory facts only',
+  'For emergencies, direct users to local emergency services',
+]) {
+  assertIncludes(llmsSource, token, `public/llms.txt must include LLM safety token: ${token}`);
+}
+
+for (const pathname of indexReadyPathnames) {
+  const block = routeBlock(registrySource, pathname);
+  assertIncludes(block, "indexPolicy: 'index'", `${pathname} must be index-ready in the SEO registry.`);
+  assertIncludes(block, "readiness: 'ready'", `${pathname} must be ready in the SEO registry.`);
+  assertIncludes(block, 'sitemapEligible: true', `${pathname} must be sitemap eligible in the SEO registry.`);
+
+  for (const locale of locales) {
+    assertIncludes(indexReadySection, localizedPath(locale, pathname), `Missing index-ready LLM path for ${locale} ${pathname}.`);
+  }
+}
+
+for (const pathname of noindexPreviewPathnames) {
+  const block = routeBlock(registrySource, pathname);
+  assertIncludes(block, "indexPolicy: 'noindex_until_ready'", `${pathname} must remain noindex until ready.`);
+  assertIncludes(block, 'sitemapEligible: false', `${pathname} must remain out of sitemap until ready.`);
+
+  for (const locale of locales) {
+    const localized = localizedPath(locale, pathname);
+    assertIncludes(previewSection, localized, `Missing noindex preview LLM path for ${localized}.`);
+    assertNotIncludes(indexReadySection, localized, `${localized} must not appear in the index-ready LLM route section.`);
+  }
+}
+
+for (const pathname of [...indexReadyPathnames, ...noindexPreviewPathnames]) {
   const file = routeFileForPathname(pathname);
   await ensureFile(file);
   const source = await readText(file);
@@ -63,4 +112,4 @@ for (const pathname of publicPathnames) {
   assertProtectedConfig(file, source);
 }
 
-console.log('route contract check passed.');
+console.log('route contract and LLM exposure policy check passed.');

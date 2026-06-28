@@ -12,7 +12,6 @@ import {
   localeDirection,
 } from "@/lib/i18n/config";
 import { buildLocalizedMetadata } from "@/lib/seo/metadata";
-import { buildFaqJsonLd } from "@/lib/seo/faq-jsonld";
 
 type Params = { locale: string; country: string };
 
@@ -21,14 +20,14 @@ const metadataCopyByLocale: Record<
   { title: string; description: string }
 > = {
   en: {
-    title: "Beauty Centers and Salons in Oman | DrKhaleej",
+    title: "Beauty and Wellness Discovery in Oman | DrKhaleej",
     description:
-      "Browse beauty centers, salons, skincare, hair, nails and wellness services in Oman. Public discovery only, not medical advice.",
+      "Browse public beauty and wellness discovery paths in Oman after reviewed listings are available.",
   },
   ar: {
-    title: "مراكز التجميل والصالونات في عُمان | DrKhaleej",
+    title: "اكتشاف التجميل والعافية في عُمان | DrKhaleej",
     description:
-      "تصفح مراكز التجميل والصالونات والعناية بالبشرة والشعر والأظافر وخدمات العافية في عُمان. اكتشاف عام فقط وليس نصيحة طبية.",
+      "تصفح مسارات اكتشاف التجميل والعافية في عُمان بعد توفر قوائم عامة مراجعة.",
   },
 };
 
@@ -88,16 +87,6 @@ export default async function PublicBeautyPage({
           locale={safeLocale}
           dir={dir}
           idPrefix={config.categoryType}
-        />
-      ) : null}
-      {config.faq ? (
-        <script
-          id={`dm2026-public-discovery-faq-jsonld-${config.categoryType}-${safeLocale}`}
-          type="application/ld+json"
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(buildFaqJsonLd(config.faq)),
-          }}
         />
       ) : null}
     </main>

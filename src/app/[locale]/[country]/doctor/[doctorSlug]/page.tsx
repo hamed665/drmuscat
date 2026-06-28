@@ -10,6 +10,7 @@ import {
   isSupportedCountry,
   isSupportedLocale,
   localeDirection,
+  type SupportedCountry,
   type SupportedLocale
 } from '@/lib/i18n/config';
 import { buildLocalizedMetadata } from '@/lib/seo/metadata';
@@ -68,7 +69,7 @@ function importProfileDescription(name: string): string {
 
 function buildNoindexFallbackMetadata(input: {
   locale: SupportedLocale;
-  country: string;
+  country: SupportedCountry;
   doctorSlug: string;
   title: string;
   description: string;

@@ -29,7 +29,7 @@ export type OmanLocationPathInput =
 const canonicalSlugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function assertCanonicalSlug(name: string, value: string): void {
-  if (!canonicalSlugPattern.test(value)) {
+  if (typeof value !== 'string' || !canonicalSlugPattern.test(value)) {
     throw new Error(`${name} must be a lowercase kebab-case canonical slug.`);
   }
 }

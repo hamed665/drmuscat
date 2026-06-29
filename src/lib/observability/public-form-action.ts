@@ -23,13 +23,10 @@ const routeFamilyByKind = {
 } as const satisfies Record<PublicFormActionKind, NonNullable<PublicActionPayloadInput['routeFamily']>>;
 
 export function recordPublicFormAction(context: PublicFormActionContext): RecordPublicActionResult {
-  const input: PublicActionPayloadInput = {
+  return recordPublicAction({
     name: formActionByKind[context.kind],
     routeFamily: routeFamilyByKind[context.kind],
-  };
-
-  if (context.locale !== undefined) input.locale = context.locale;
-  if (context.country !== undefined) input.country = context.country;
-
-  return recordPublicAction(input);
+    ...(context.locale === undefined ? {} : { locale: context.locale }),
+    ...(context.country === undefined ? {} : { country: context.country }),
+  });
 }

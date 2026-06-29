@@ -23,6 +23,7 @@ import type {
 
 type CenterRow = Database["public"]["Tables"]["centers"]["Row"];
 type DoctorRow = Database["public"]["Tables"]["doctors"]["Row"];
+type VerificationStatus = Database["public"]["Enums"]["verification_status"];
 
 type PublicCenterSummaryRow = Pick<
   CenterRow,
@@ -56,7 +57,11 @@ const safeVerificationStatuses = [
   "unverified",
   "pending",
   "verified",
-] as const satisfies readonly Database["public"]["Enums"]["verification_status"][];
+] as const satisfies readonly VerificationStatus[];
+
+function verificationStatusFilterValues(): VerificationStatus[] {
+  return [...safeVerificationStatuses];
+}
 
 function clampLimit(limit: number | undefined): number {
   if (typeof limit !== "number" || Number.isNaN(limit)) return DEFAULT_LIMIT;
@@ -125,7 +130,7 @@ async function isPublicCenterSlugEligible(options: PublicCenterDetailOptions): P
     .eq("slug", options.slug)
     .eq("is_active", true)
     .eq("status", "active")
-    .in("verification_status", safeVerificationStatuses)
+    .in("verification_status", verificationStatusFilterValues())
     .is("deleted_at", null)
     .limit(1);
 
@@ -149,7 +154,7 @@ async function isPublicDoctorSlugEligible(options: PublicDoctorDetailOptions): P
     .eq("slug", options.slug)
     .eq("is_active", true)
     .eq("status", "active")
-    .in("verification_status", safeVerificationStatuses)
+    .in("verification_status", verificationStatusFilterValues())
     .is("deleted_at", null)
     .limit(1);
 
@@ -174,7 +179,7 @@ export async function listPublicCenters(
     )
     .eq("is_active", true)
     .eq("status", "active")
-    .in("verification_status", safeVerificationStatuses)
+    .in("verification_status", verificationStatusFilterValues())
     .is("deleted_at", null)
     .order("sort_order", { ascending: true })
     .order("name_en", { ascending: true })
@@ -212,7 +217,7 @@ export async function listPublicDoctors(
     .select("id,slug,full_name_en,full_name_ar,title,gender,default_country")
     .eq("is_active", true)
     .eq("status", "active")
-    .in("verification_status", safeVerificationStatuses)
+    .in("verification_status", verificationStatusFilterValues())
     .is("deleted_at", null)
     .order("sort_order", { ascending: true })
     .order("full_name_en", { ascending: true })

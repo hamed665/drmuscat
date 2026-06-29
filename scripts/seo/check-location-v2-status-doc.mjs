@@ -5,6 +5,7 @@ const projectRoot = process.cwd();
 const statusDocPath = 'docs/DRKHALEEJ_LOCATION_V2_STATUS.md';
 const closeoutDocPath = 'docs/DRKHALEEJ_LOCATION_V2_CLOSEOUT_CHECKLIST.md';
 const providerStatusDocPath = 'docs/DRKHALEEJ_LOCATION_V2_PROVIDER_SOURCE_PLAN_STATUS.md';
+const providerAddendumDocPath = 'docs/DRKHALEEJ_LOCATION_V2_PROVIDER_PLAN_ADDENDUM.md';
 const packagePath = 'package.json';
 
 function read(relativePath) {
@@ -32,10 +33,12 @@ function requireTokens(label, source, tokens) {
 requireDocument(statusDocPath, 'Location V2 status document');
 requireDocument(closeoutDocPath, 'Location V2 closeout checklist');
 requireDocument(providerStatusDocPath, 'Location V2 provider status document');
+requireDocument(providerAddendumDocPath, 'Location V2 provider addendum document');
 
 const statusDoc = read(statusDocPath);
 const closeoutDoc = read(closeoutDocPath);
 const providerStatusDoc = read(providerStatusDocPath);
+const providerAddendumDoc = read(providerAddendumDocPath);
 const packageJson = read(packagePath);
 
 requireTokens(statusDocPath, statusDoc, [
@@ -90,6 +93,16 @@ requireTokens(providerStatusDocPath, providerStatusDoc, [
   'disabled runtime accessor',
   'runtime test coverage',
   'route snapshot guard coverage',
+]);
+
+requireTokens(providerAddendumDocPath, providerAddendumDoc, [
+  'DrKhaleej Location V2 Provider Plan Addendum',
+  'Guard chain',
+  'typecheck guard',
+  'disabled accessor',
+  'tests for nine candidate policy pairs',
+  'route snapshot checks',
+  'planning-only',
 ]);
 
 requireTokens(packagePath, packageJson, [

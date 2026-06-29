@@ -33,6 +33,7 @@ for (const file of [
   'src/app/robots.ts',
   'src/lib/seo/metadata.ts',
   'src/components/layout/site-header.tsx',
+  'src/components/layout/site-footer.tsx',
   'src/components/layout/app-shell.tsx',
   'scripts/seo/check-noindex-preview-structured-data.mjs',
 ]) {
@@ -48,6 +49,7 @@ const robots = await readText('src/app/robots.ts');
 const metadata = await readText('src/lib/seo/metadata.ts');
 const llms = await readText('public/llms.txt');
 const header = await readText('src/components/layout/site-header.tsx');
+const footer = await readText('src/components/layout/site-footer.tsx');
 const shell = await readText('src/components/layout/app-shell.tsx');
 const previewGuard = await readText('scripts/seo/check-noindex-preview-structured-data.mjs');
 
@@ -93,11 +95,19 @@ for (const route of ['/dental', '/beauty', '/offers', '/pet-clinics', '/pet-shop
 }
 
 for (const route of ['doctors', 'centers', 'labs', 'pharmacies', 'hospitals', 'services']) {
-  assertIncludes(header, `publicDiscoveryRoute(locale, country, '${route}')`, `header must include ${route}`);
+  const token = `publicDiscoveryRoute(locale, country, '${route}')`;
+  assertIncludes(header, token, `header must include ${route}`);
+  assertIncludes(footer, token, `footer must include ${route}`);
 }
 
-for (const route of ['dental', 'beauty', 'offers', 'pet-clinics', 'pet-shops']) {
-  assertNotIncludes(header, `publicDiscoveryRoute(locale, country, '${route}')`, `header must not include preview route ${route}`);
+for (const route of ['dental', 'beauty', 'offers', 'pet-clinics', 'pet-shops', 'search']) {
+  const token = `publicDiscoveryRoute(locale, country, '${route}')`;
+  assertNotIncludes(header, token, `header must not include preview route ${route}`);
+  assertNotIncludes(footer, token, `footer must not include preview route ${route}`);
+}
+
+for (const token of ['/${locale}/${country}/articles', '/${locale}/${country}/about']) {
+  assertNotIncludes(footer, token, `footer must not include unlaunched static route token ${token}`);
 }
 
 assertNotIncludes(shell, '<main id="main-content"', 'app shell must not create nested main content landmark.');

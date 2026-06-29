@@ -17,17 +17,14 @@ export function SiteHeader() {
   const providerHref = publicProviderRoute(locale, country);
   const mobileMenuId = `dm2026-mobile-menu-${locale}`;
   const accountPopoverId = `dm2026-account-menu-${locale}`;
-  const accountLabel = locale === 'ar' ? 'دخول' : 'Login';
+  const accountLabel = locale === 'ar' ? '\u062f\u062e\u0648\u0644' : 'Login';
   const linkedNavItems = [
     { href: publicDiscoveryRoute(locale, country, 'doctors'), label: copy.doctors },
-    { href: publicDiscoveryRoute(locale, country, 'dental'), label: copy.dental },
     { href: publicDiscoveryRoute(locale, country, 'centers'), label: copy.centers },
     { href: publicDiscoveryRoute(locale, country, 'labs'), label: copy.labs },
     { href: publicDiscoveryRoute(locale, country, 'pharmacies'), label: copy.pharmacies },
     { href: publicDiscoveryRoute(locale, country, 'hospitals'), label: copy.hospitals },
-    { href: publicDiscoveryRoute(locale, country, 'offers'), label: copy.offers },
-    { href: publicDiscoveryRoute(locale, country, 'beauty'), label: copy.beauty },
-    { href: publicDiscoveryRoute(locale, country, 'pet-clinics'), label: copy.petClinics }
+    { href: publicDiscoveryRoute(locale, country, 'services'), label: copy.services }
   ] as const;
 
   useEffect(() => {

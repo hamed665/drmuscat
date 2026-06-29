@@ -31,14 +31,6 @@ const centerTypes = [
   "other",
 ] as const;
 
-const verificationStatuses = [
-  "unverified",
-  "pending",
-  "verified",
-  "rejected",
-  "suspended",
-] as const;
-
 function formatLabel(value: string): string {
   return value
     .split(/[_-]+/)
@@ -86,7 +78,7 @@ export function DraftCenterEditForm({ center }: DraftCenterEditFormProps) {
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
               Update basic draft center profile data before any publish workflow
               exists. This form does not publish, activate, claim, bill, upload
-              media, create offers, or display anything publicly.
+              media, create offers, change verification, or display anything publicly.
             </p>
           </div>
           <Link
@@ -117,6 +109,7 @@ export function DraftCenterEditForm({ center }: DraftCenterEditFormProps) {
 
       <form action={formAction} className="space-y-6">
         <input type="hidden" name="centerId" value={center.id} />
+        <input type="hidden" name="verificationStatus" value={center.verificationStatus} />
 
         <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
           <h3 className="text-lg font-bold text-slate-950">Identity</h3>
@@ -188,22 +181,15 @@ export function DraftCenterEditForm({ center }: DraftCenterEditFormProps) {
                 ))}
               </select>
             </label>
-            <label className="block text-sm font-semibold text-slate-800">
+            <div className="block text-sm font-semibold text-slate-800">
               Verification status
-              <select
-                name="verificationStatus"
-                defaultValue={center.verificationStatus}
-                disabled={isPending}
-                className={inputClassName()}
-                required
-              >
-                {verificationStatuses.map((status) => (
-                  <option key={status} value={status}>
-                    {formatLabel(status)}
-                  </option>
-                ))}
-              </select>
-            </label>
+              <div className="mt-2 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950">
+                {formatLabel(center.verificationStatus)}
+              </div>
+              <span className="mt-1 block text-xs font-normal text-slate-500">
+                Verification changes require a separate evidence-based workflow.
+              </span>
+            </div>
             <label className="block text-sm font-semibold text-slate-800">
               Default locale
               <select

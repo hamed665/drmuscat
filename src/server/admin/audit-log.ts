@@ -8,6 +8,7 @@ import { requireAdminPermission, type CurrentAdminContext } from "@/server/admin
 export type AdminAuditAction =
   | "provider_lead.status_priority_updated"
   | "provider_lead.draft_center_created"
+  | "draft_center.manual_created"
   | "draft_center.details_updated"
   | "draft_center.taxonomy_updated"
   | "draft_center.workflow_updated"

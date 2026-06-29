@@ -13,6 +13,7 @@ export type AdminAuditAction =
   | "draft_center.taxonomy_updated"
   | "draft_center.workflow_updated"
   | "draft_center.contact_visibility_updated"
+  | "draft_center.public_profile_activated"
   | "subscription.assigned"
   | "subscription_plan_catalog.synced"
   | "commercial_addon.assigned"

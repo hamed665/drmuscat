@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { DraftCenterContactReviewPanel } from "@/components/admin/draft-center-contact-review-panel";
 import { DraftCenterEditForm } from "@/components/admin/draft-center-edit-form";
 import { DraftCenterLocationCreateForm } from "@/components/admin/draft-center-location-create-form";
 import { DraftCenterLocationPanel } from "@/components/admin/draft-center-location-panel";
@@ -72,6 +73,7 @@ export default async function AdminDraftCenterEditPage({
         <DraftCenterLocationCreateForm centerId={centerId} options={locationOptions.options} />
       ) : null}
       {locations.ok ? <DraftCenterLocationPanel centerId={centerId} locations={locations.locations} /> : null}
+      {locations.ok ? <DraftCenterContactReviewPanel centerId={centerId} locations={locations.locations} /> : null}
       {quality.ok ? (
         <DraftCenterQualityPanel report={quality.report} />
       ) : (

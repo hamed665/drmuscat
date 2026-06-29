@@ -4,6 +4,7 @@ import { FormEvent, useId, useState } from 'react';
 
 import { normalizePublicBrandCopy } from '@/lib/brand/public-brand-copy';
 import type { SupportedLocale } from '@/lib/i18n/config';
+import { recordPublicFormAction } from '@/lib/observability/public-form-action';
 import type { ProviderOnboardingLeadProviderType } from '@/lib/provider-onboarding/provider-onboarding-lead-validation';
 
 type ProviderFormCopy = {
@@ -73,6 +74,8 @@ export function ProviderOnboardingForm({ locale, copy }: ProviderOnboardingFormP
 
     const form = event.currentTarget;
     setStatus('submitting');
+
+    recordPublicFormAction({ kind: 'provider', locale, country: 'om' });
 
     const formData = new FormData(form);
     const payload = {

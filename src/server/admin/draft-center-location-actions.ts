@@ -9,6 +9,7 @@ import { writeAdminAuditEvent } from "@/server/admin/audit-log";
 import { requireAdminPermission } from "@/server/admin/permissions";
 
 type CenterLocationInsert = Database["public"]["Tables"]["center_locations"]["Insert"];
+type CenterLocationRow = Database["public"]["Tables"]["center_locations"]["Row"];
 type CenterLocationUpdate = Database["public"]["Tables"]["center_locations"]["Update"];
 type DraftCenterStatus = Database["public"]["Enums"]["provider_status"];
 
@@ -27,6 +28,24 @@ type DraftCenterLocationPrimaryState = {
   message: string | null;
 };
 
+type DraftCenterLocationReviewState = {
+  ok: boolean;
+  message: string | null;
+};
+
+type ReviewLocationRow = Pick<
+  CenterLocationRow,
+  | "address_line1_ar"
+  | "address_line1_en"
+  | "city_id"
+  | "country_id"
+  | "id"
+  | "map_url"
+  | "name_ar"
+  | "name_en"
+  | "region_id"
+>;
+
 const draftStatuses = ["draft", "pending_review"] as const satisfies readonly DraftCenterStatus[];
 
 const failure: DraftCenterLocationCreateState = {
@@ -44,6 +63,11 @@ const primaryFailure: DraftCenterLocationPrimaryState = {
   message: "Primary location candidate could not be updated.",
 };
 
+const reviewFailure: DraftCenterLocationReviewState = {
+  ok: false,
+  message: "Location candidate could not be marked ready for review.",
+};
+
 function formString(formData: FormData, key: string): string | null {
   const value = formData.get(key);
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
@@ -51,6 +75,10 @@ function formString(formData: FormData, key: string): string | null {
 
 function isUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function hasText(value: string | null | undefined): boolean {
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function limitedString(value: string | null, maxLength: number): string | null {
@@ -79,6 +107,20 @@ function hasEditableLocationText(formData: FormData): boolean {
     formString(formData, "addressLine1Ar") !== null ||
     formString(formData, "mapUrl") !== null
   );
+}
+
+function hasReviewLocationIdentity(location: ReviewLocationRow): boolean {
+  return (
+    hasText(location.name_en) ||
+    hasText(location.name_ar) ||
+    hasText(location.address_line1_en) ||
+    hasText(location.address_line1_ar) ||
+    hasText(location.map_url)
+  );
+}
+
+function hasReviewLocationGeography(location: ReviewLocationRow): boolean {
+  return hasText(location.country_id) && hasText(location.region_id) && hasText(location.city_id);
 }
 
 function locationPayload(input: {
@@ -376,8 +418,103 @@ export async function setPrimaryDraftCenterLocationCandidate(
   };
 }
 
+export async function markDraftCenterLocationReadyForReview(
+  _previousState: DraftCenterLocationReviewState,
+  formData: FormData,
+): Promise<DraftCenterLocationReviewState> {
+  const adminContext = await requireAdminPermission("draft_centers.update");
+  const centerId = formString(formData, "centerId");
+  const locationId = formString(formData, "locationId");
+
+  if (centerId === null || !isUuid(centerId)) return reviewFailure;
+  if (locationId === null || !isUuid(locationId)) return reviewFailure;
+
+  const supabase = createSupabaseServiceRoleClient();
+  const { data: center, error: centerError } = await supabase
+    .from("centers")
+    .select("id,status")
+    .eq("id", centerId)
+    .in("status", [...draftStatuses])
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (centerError !== null || center === null) return reviewFailure;
+
+  const { data: location, error: locationError } = await supabase
+    .from("center_locations")
+    .select("id,name_en,name_ar,address_line1_en,address_line1_ar,map_url,country_id,region_id,city_id")
+    .eq("id", locationId)
+    .eq("center_id", centerId)
+    .eq("is_active", false)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (locationError !== null || location === null) return reviewFailure;
+
+  const reviewLocation = location as ReviewLocationRow;
+
+  if (!hasReviewLocationGeography(reviewLocation)) {
+    return {
+      ok: false,
+      message: "Country, governorate/region, and city/wilayat are required before review.",
+    };
+  }
+
+  if (!hasReviewLocationIdentity(reviewLocation)) {
+    return {
+      ok: false,
+      message: "Add a location name, address, or map URL before review.",
+    };
+  }
+
+  const { error: updateError } = await supabase
+    .from("center_locations")
+    .update({
+      contact_review_status: "pending",
+      contact_reviewed_at: null,
+      is_active: true,
+      public_email_visible: false,
+      public_primary_phone_visible: false,
+      public_secondary_phone_visible: false,
+      public_whatsapp_phone_visible: false,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", locationId)
+    .eq("center_id", centerId)
+    .eq("is_active", false)
+    .is("deleted_at", null);
+
+  if (updateError !== null) return reviewFailure;
+
+  await writeAdminAuditEvent({
+    admin: adminContext,
+    permissionKey: "draft_centers.update",
+    action: "draft_center.details_updated",
+    entityType: "center",
+    entityId: centerId,
+    targetTable: "center_locations",
+    summary: "Draft center location candidate marked ready for quality review.",
+    newValues: {
+      location_id: locationId,
+      is_active: true,
+      public_email_visible: false,
+      public_primary_phone_visible: false,
+      public_secondary_phone_visible: false,
+      public_whatsapp_phone_visible: false,
+    },
+  });
+
+  revalidatePath(`/admin/draft-centers/${centerId}`);
+
+  return {
+    ok: true,
+    message: "Location candidate is ready for quality gate review.",
+  };
+}
+
 export type {
   DraftCenterLocationCreateState,
   DraftCenterLocationEditState,
   DraftCenterLocationPrimaryState,
+  DraftCenterLocationReviewState,
 };

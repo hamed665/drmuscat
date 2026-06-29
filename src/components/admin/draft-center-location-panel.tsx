@@ -1,9 +1,15 @@
 import { DraftCenterLocationEditForm } from "@/components/admin/draft-center-location-edit-form";
+import { setPrimaryDraftCenterLocationCandidate } from "@/server/admin/draft-center-location-actions";
 import type { AdminDraftCenterLocation } from "@/server/admin/draft-center-locations";
 
 type DraftCenterLocationPanelProps = {
   centerId: string;
   locations: AdminDraftCenterLocation[];
+};
+
+const primaryInitialState = {
+  ok: false,
+  message: null,
 };
 
 function yesNo(value: boolean): string {
@@ -23,6 +29,36 @@ function formatDateTime(value: string): string {
     timeStyle: "short",
     timeZone: "Asia/Muscat",
   }).format(date);
+}
+
+function LocationPrimaryForm({
+  centerId,
+  location,
+}: {
+  centerId: string;
+  location: AdminDraftCenterLocation;
+}) {
+  if (location.isActive) return null;
+
+  return (
+    <form
+      action={setPrimaryDraftCenterLocationCandidate.bind(null, primaryInitialState)}
+      className="flex flex-col gap-2 sm:items-end"
+    >
+      <input type="hidden" name="centerId" value={centerId} />
+      <input type="hidden" name="locationId" value={location.id} />
+      <button
+        type="submit"
+        disabled={location.isPrimary}
+        className="inline-flex justify-center rounded-2xl border border-cyan-100 bg-white px-4 py-2 text-xs font-bold text-cyan-900 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
+      >
+        {location.isPrimary ? "Selected candidate" : "Select candidate"}
+      </button>
+      <span className="max-w-xs text-right text-[11px] font-semibold leading-4 text-slate-500">
+        Selection stays private and inactive.
+      </span>
+    </form>
+  );
 }
 
 function LocationCard({
@@ -51,13 +87,16 @@ function LocationCard({
             {displayText(location.addressLine1En ?? location.addressLine1Ar)}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-700 ring-1 ring-slate-200">
-            Active: {yesNo(location.isActive)}
-          </span>
-          <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-700 ring-1 ring-slate-200">
-            Primary: {yesNo(location.isPrimary)}
-          </span>
+        <div className="flex flex-col gap-3 sm:items-end">
+          <div className="flex flex-wrap gap-2 sm:justify-end">
+            <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-700 ring-1 ring-slate-200">
+              Active: {yesNo(location.isActive)}
+            </span>
+            <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-700 ring-1 ring-slate-200">
+              Selected: {yesNo(location.isPrimary)}
+            </span>
+          </div>
+          <LocationPrimaryForm centerId={centerId} location={location} />
         </div>
       </div>
 
@@ -83,7 +122,7 @@ function LocationCard({
       </dl>
 
       <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold leading-5 text-amber-950">
-        Candidate edits stay private. Activation, public visibility, and promotion require a separate review workflow.
+        Candidate edits and selection stay private. Activation, public visibility, and promotion require a separate review workflow.
       </p>
 
       <DraftCenterLocationEditForm centerId={centerId} location={location} />

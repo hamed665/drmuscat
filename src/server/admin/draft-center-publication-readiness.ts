@@ -41,7 +41,6 @@ type QueryResponse<T> = { data: T | null; error: QueryError | null };
 
 type QueryBuilder<T> = PromiseLike<QueryResponse<T>> & {
   eq(column: string, value: unknown): QueryBuilder<T>;
-  in(column: string, values: readonly unknown[]): QueryBuilder<T>;
   is(column: string, value: boolean | null): QueryBuilder<T>;
   limit(count: number): QueryBuilder<T>;
   maybeSingle(): Promise<QueryResponse<T>>;
@@ -78,8 +77,6 @@ export type DraftCenterPublicationReadinessResult =
   | { ok: true; readiness: DraftCenterPublicationReadiness }
   | { ok: false; reason: "not_found" | "unavailable" };
 
-const prePublicationStatuses = ["pending_review"] as const satisfies readonly ProviderStatus[];
-
 function readinessClient(): UntypedSupabaseClient {
   return createSupabaseServiceRoleClient() as unknown as UntypedSupabaseClient;
 }
@@ -109,7 +106,7 @@ function qualityIssues(input: {
   const blockers: string[] = [];
   const warnings: string[] = [];
 
-  if (!prePublicationStatuses.includes(input.center.status)) {
+  if (input.center.status !== "pending_review") {
     blockers.push("Center must be in pending_review before publication readiness can pass.");
   }
 

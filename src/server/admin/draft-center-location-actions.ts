@@ -160,7 +160,7 @@ export async function createDraftCenterLocationCandidate(
   await writeAdminAuditEvent({
     admin: adminContext,
     permissionKey: "draft_centers.update",
-    action: "draft_center.location_created",
+    action: "draft_center.details_updated",
     entityType: "center",
     entityId: centerId,
     targetTable: "center_locations",

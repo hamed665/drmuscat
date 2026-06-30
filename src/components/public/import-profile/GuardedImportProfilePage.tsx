@@ -1,3 +1,7 @@
+import {
+  buildPublicImportProfileSummary,
+  type PublicImportProfileSummaryInput,
+} from "@/lib/catalog/public-import-profile-summary";
 import type { PublicImportProfile } from "@/server/public/import-doctor-profile-guard";
 
 type GuardedImportProfilePageProps = {
@@ -26,6 +30,7 @@ export function GuardedImportProfilePage({ profile, locale }: GuardedImportProfi
   const dir = locale === "ar" ? "rtl" : "ltr";
   const location = [profile.area, profile.wilayat, profile.governorate].filter(Boolean).join(", ");
   const careSignals = [profile.primarySpecialty, ...profile.services.slice(0, 4)].filter(Boolean);
+  const profileSummary = buildPublicImportProfileSummary(locale, profile satisfies PublicImportProfileSummaryInput);
 
   return (
     <main className="home-foundation dm2026-home-page" dir={dir} data-profile-family={profile.family}>
@@ -34,16 +39,14 @@ export function GuardedImportProfilePage({ profile, locale }: GuardedImportProfi
           <span className="dm2026-badge">{profileTypeLabel(profile)}</span>
           <h1 id="profile-title">{locale === "ar" && profile.nameAr ? profile.nameAr : profile.name}</h1>
           {profile.nameAr && locale !== "ar" ? <p>{profile.nameAr}</p> : null}
-          <p>
-            Public discovery profile for Oman. Information is shown only after import review, sitemap inclusion gating,
-            and canonical path validation. This page is not medical advice.
-          </p>
+          <p>{profileSummary}</p>
         </div>
       </section>
 
       <section className="dm2026-container dm2026-doctors-listings" aria-labelledby="profile-overview-title">
         <div className="dm2026-card-soft">
           <h2 id="profile-overview-title">Profile overview</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-700">{profileSummary}</p>
           <dl className="mt-4 grid gap-3 text-sm text-slate-700 md:grid-cols-2">
             <div>
               <dt className="font-semibold text-slate-950">Location</dt>

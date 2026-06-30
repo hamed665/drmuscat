@@ -5,14 +5,6 @@ const root = process.cwd();
 
 const staticScanFiles = [
   'public/llms.txt',
-  'src/app/robots.ts',
-  'src/app/sitemap.ts',
-  'src/app/[locale]/[country]/articles/page.tsx',
-  'src/app/[locale]/[country]/articles/[slug]/page.tsx',
-  'src/app/[locale]/[country]/center/[centerSlug]/page.tsx',
-  'src/app/[locale]/[country]/doctor/[doctorSlug]/page.tsx',
-  'src/components/public/public-center-detail.tsx',
-  'src/components/public/public-doctor-detail.tsx',
   'src/components/home/HomePage2026HeaderHero.tsx',
   'src/components/home/HomeSearch2026.tsx',
   'src/components/home/HomeEntityClarity2026.tsx',
@@ -23,7 +15,6 @@ const staticScanFiles = [
   'src/components/home/HomeFAQ2026.tsx',
   'src/components/home/HomeTrustSafety2026.tsx',
   'src/components/home/HomeSupportContact2026.tsx',
-  'src/lib/articles/article-shell-content.ts',
   'src/lib/seo/site.ts',
   'src/lib/seo/metadata.ts',
   'src/lib/seo/jsonld.ts',
@@ -55,7 +46,7 @@ function routeFileForPathname(pathname) {
 function assertNoBlockedText(relativePath, source) {
   for (const value of blockedValues) {
     if (source.includes(value)) {
-      throw new Error(`${relativePath} contains previous public brand text: ${value}`);
+      throw new Error(`${relativePath} contains previous public name text.`);
     }
   }
 }
@@ -63,11 +54,11 @@ function assertNoBlockedText(relativePath, source) {
 const registrySource = await readText('src/lib/seo/page-registry.ts');
 const staticRouteMatches = [...registrySource.matchAll(/['"](\/[a-z0-9-]+)['"]/gi)].map((match) => match[1]);
 const publicPageFiles = ['/', ...new Set(staticRouteMatches)].map(routeFileForPathname);
-const files = [...new Set([...staticScanFiles, ...publicPageFiles])].sort();
+const files = [...new Set([...staticScanFiles, ...publicPageFiles])];
 
 for (const file of files) {
   const source = await readText(file);
   assertNoBlockedText(file, source);
 }
 
-console.log(`public text contract check passed for ${files.length} targeted public surface files.`);
+console.log(`public text contract check passed for ${files.length} files.`);

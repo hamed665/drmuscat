@@ -43,11 +43,24 @@ function assertProtectedConfig(file, source) {
 
 const llmsSource = await readText('public/llms.txt');
 const registrySource = await readText('src/lib/seo/page-registry.ts');
+const urlRegistryV2Source = await readText('src/lib/seo/url-registry-v2.ts');
 const staticRouteMatches = [...registrySource.matchAll(/['"](\/[a-z0-9-]+)['"]/gi)].map((match) => match[1]);
 const publicPathnames = ['/', ...new Set(staticRouteMatches)].sort();
 
 if (publicPathnames.length < 10) {
   throw new Error('Route contract did not discover the expected routes.');
+}
+
+for (const token of [
+  'seoUrlRegistryV2',
+  'provider_eligibility',
+  'geo_promotion',
+  'search_noindex',
+  'gate_before_index',
+  'gate_before_include',
+  'private_exclusion',
+]) {
+  assertIncludes(urlRegistryV2Source, token, `src/lib/seo/url-registry-v2.ts must include URL registry token: ${token}`);
 }
 
 for (const token of [

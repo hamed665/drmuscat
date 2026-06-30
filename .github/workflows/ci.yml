@@ -81,5 +81,13 @@ jobs:
           pnpm seo:drkhaleej-brand:validate
           pnpm seo:cleaned-public-source-brand:validate
 
+      - name: Launch surface diagnostics
+        run: |
+          pnpm admin:provider-view-contract:validate
+          pnpm admin:final-route-sanity:validate
+          pnpm import:profile-smoke:validate
+          pnpm import:pharmacy-profile-route:validate
+          pnpm import:hospital-profile-route:validate
+
       - name: SEO check
         run: pnpm seo:check

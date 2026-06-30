@@ -5,6 +5,10 @@ import { PublicListingError } from '@/components/public/public-listing-error';
 import { PublicPageShell } from '@/components/public/public-page-shell';
 import { getPublicCenterBySlug } from '@/lib/catalog/public-eligible-queries';
 import {
+  buildPublicCenterProfileSummary,
+  buildPublicProfileMetaDescription,
+} from '@/lib/catalog/public-profile-summary';
+import {
   isSupportedCountry,
   isSupportedLocale,
   localeDirection,
@@ -62,17 +66,14 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   }
 
   const centerName = preferredText(locale, result.data.nameEn, result.data.nameAr) ?? result.data.nameEn;
-  const description =
-    preferredText(locale, result.data.shortDescriptionEn, result.data.shortDescriptionAr) ??
-    preferredText(locale, result.data.descriptionEn, result.data.descriptionAr) ??
-    copy.fallbackDescription;
+  const profileSummary = buildPublicCenterProfileSummary(locale, result.data);
 
   return buildLocalizedMetadata({
     locale,
     country,
     pathname: `/center/${centerSlug}`,
     title: metadataTitle(centerName),
-    description
+    description: buildPublicProfileMetaDescription(profileSummary)
   });
 }
 
@@ -98,10 +99,11 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
   if (!result.data) notFound();
 
   const centerName = preferredText(locale, result.data.nameEn, result.data.nameAr) ?? result.data.nameEn;
+  const profileSummary = buildPublicCenterProfileSummary(locale, result.data);
   const description =
     preferredText(locale, result.data.shortDescriptionEn, result.data.shortDescriptionAr) ??
     preferredText(locale, result.data.descriptionEn, result.data.descriptionAr) ??
-    copy.fallbackDescription;
+    profileSummary;
 
   return (
     <PublicPageShell

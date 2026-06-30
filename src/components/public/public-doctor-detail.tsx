@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { formatPublicLocationSummary, getPublicDirectionsUrl } from '@/lib/catalog/public-location';
+import { buildPublicDoctorProfileSummary } from '@/lib/catalog/public-profile-summary';
 import type { PublicCatalogLocale, PublicDoctorDetail as PublicDoctorDetailData } from '@/lib/catalog/public-types';
 import { publicCenterDetailRoute } from '@/lib/routes/public';
 
@@ -101,6 +102,7 @@ const pillActionClassName =
 export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) {
   const copy = copyByLocale[locale];
   const bio = preferredText(locale, doctor.bioEn, doctor.bioAr);
+  const profileSummary = buildPublicDoctorProfileSummary(locale, doctor);
   const primarySpecialtyName = doctor.primarySpecialty
     ? preferredText(locale, doctor.primarySpecialty.nameEn, doctor.primarySpecialty.nameAr) ?? doctor.primarySpecialty.nameEn
     : null;
@@ -129,7 +131,8 @@ export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) 
               </p>
               {primarySpecialtyName ? <p className="text-sm leading-6 text-slate-600">{primarySpecialtyName}</p> : null}
             </div>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700">{bio ?? copy.noBio}</p>
+            {bio ? <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700">{bio}</p> : null}
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700">{profileSummary}</p>
           </div>
         </div>
       </PublicCenterDetailSection>

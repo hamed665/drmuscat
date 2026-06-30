@@ -5,6 +5,10 @@ import { PublicDoctorDetail } from '@/components/public/public-doctor-detail';
 import { PublicListingError } from '@/components/public/public-listing-error';
 import { PublicPageShell } from '@/components/public/public-page-shell';
 import { getPublicDoctorBySlug } from '@/lib/catalog/public-eligible-queries';
+import {
+  buildPublicDoctorProfileSummary,
+  buildPublicProfileMetaDescription,
+} from '@/lib/catalog/public-profile-summary';
 import type { PublicDoctorDetail as PublicDoctorDetailData } from '@/lib/catalog/public-types';
 import {
   isSupportedCountry,
@@ -54,15 +58,6 @@ function metadataTitle(name: string): string {
   return `${name} | DrKhaleej`;
 }
 
-function metadataDescription(locale: SupportedLocale, doctor: PublicDoctorDetailData, fallback: string): string {
-  const bio = preferredText(locale, doctor.bioEn, doctor.bioAr);
-  if (!bio) return fallback;
-
-  const normalizedBio = bio.replace(/\s+/g, ' ').trim();
-  if (normalizedBio.length <= 155) return normalizedBio;
-  return `${normalizedBio.slice(0, 152).trim()}...`;
-}
-
 function importProfileDescription(name: string): string {
   return `${name} on DrKhaleej. Public healthcare discovery in Oman only; not medical advice, booking, or emergency care.`;
 }
@@ -94,12 +89,14 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const result = await getPublicDoctorBySlug({ slug: doctorSlug, country });
 
   if (result.ok && result.data) {
+    const profileSummary = buildPublicDoctorProfileSummary(locale, result.data);
+
     return buildLocalizedMetadata({
       locale,
       country,
       pathname: `/doctor/${doctorSlug}`,
       title: metadataTitle(doctorDisplayName(locale, result.data)),
-      description: metadataDescription(locale, result.data, copy.fallbackDescription)
+      description: buildPublicProfileMetaDescription(profileSummary)
     });
   }
 
@@ -132,14 +129,14 @@ export default async function PublicDoctorDetailPage({ params }: { params: Promi
 
   if (result.ok && result.data) {
     const doctorName = doctorDisplayName(locale, result.data);
-    const description = metadataDescription(locale, result.data, copy.fallbackDescription);
+    const profileSummary = buildPublicDoctorProfileSummary(locale, result.data);
 
     return (
       <PublicPageShell
         dir={localeDirection(locale)}
         heroBadge={copy.badge}
         heroTitle={doctorName}
-        heroDescription={description}
+        heroDescription={profileSummary}
         content={<PublicDoctorDetail locale={locale} doctor={result.data} />}
       />
     );

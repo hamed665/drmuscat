@@ -6,6 +6,7 @@ import { PublicDiscoveryResultsShell2026 } from "@/components/public/discovery/P
 import { buildCentersDiscoveryConfig } from "@/components/public/discovery/publicDiscoveryPageConfig";
 import { cleanConfigBrand } from "@/components/public/discovery/configBrand";
 import { PublicDirectoryListingContent } from "@/components/public/public-directory-listing-content";
+import { PublicDirectoryQueryNotice } from "@/components/public/public-directory-query-notice";
 import {
   centerDirectoryResultFromSearch,
   firstDirectorySearchParamValue,
@@ -90,6 +91,7 @@ export default async function PublicCentersPage({
   const emptyText = isDirectorySearch
     ? searchEmptyCopyByLocale[safeLocale]
     : compactEmptyCopyByLocale[safeLocale];
+  const clearSearchHref = `/${safeLocale}/${safeCountry}/centers`;
 
   return (
     <main
@@ -102,6 +104,12 @@ export default async function PublicCentersPage({
       <PublicDiscoveryResultsShell2026
         config={config}
         isEmpty={result.ok && result.data.length === 0}
+        hasActiveQuery={isDirectorySearch}
+        activeQueryNotice={
+          isDirectorySearch ? (
+            <PublicDirectoryQueryNotice locale={safeLocale} query={query} clearHref={clearSearchHref} />
+          ) : null
+        }
         compactEmptyText={emptyText}
       >
         <PublicDirectoryListingContent

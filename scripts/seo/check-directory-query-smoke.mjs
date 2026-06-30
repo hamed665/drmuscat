@@ -141,13 +141,8 @@ for (const route of routes) {
   }
 }
 
-const packagePath = 'package.json';
-const packageContent = readFile(packagePath);
-for (const token of [
-  '"seo:directory-query-smoke:validate": "node scripts/seo/check-directory-query-smoke.mjs"',
-  'pnpm seo:directory-query-smoke:validate',
-]) {
-  assertIncludes(packageContent, token, packagePath);
-}
+const listingSafetyPath = 'scripts/seo/check-public-listing-card-safety.mjs';
+const listingSafety = readFile(listingSafetyPath);
+assertIncludes(listingSafety, "import './check-directory-query-smoke.mjs';", listingSafetyPath);
 
 console.log('Directory query smoke guard passed.');

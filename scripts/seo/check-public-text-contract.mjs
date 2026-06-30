@@ -14,7 +14,13 @@ const scanTargets = [
   'src/components/public',
   'src/lib/articles',
   'src/lib/routes/public.ts',
-  'src/lib/seo'
+  'src/lib/seo/site.ts',
+  'src/lib/seo/metadata.ts',
+  'src/lib/seo/geo-route-metadata.ts',
+  'src/lib/seo/oman-geo-gated-metadata.ts',
+  'src/lib/seo/jsonld.ts',
+  'src/lib/seo/faq-jsonld.ts',
+  'src/lib/seo/page-registry.ts'
 ];
 
 const textFileExtensions = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.md', '.txt']);

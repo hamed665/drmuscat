@@ -79,32 +79,65 @@ for (const token of [
   assertIncludes(directoryQueryHelper, token, directoryQueryHelperPath);
 }
 
+const queryNoticePath = 'src/components/public/public-directory-query-notice.tsx';
+const queryNoticeContent = readFile(queryNoticePath);
+for (const token of [
+  'export function PublicDirectoryQueryNotice',
+  'Showing search results for',
+  'Clear search',
+  'مسح البحث',
+  'rounded-3xl',
+  'from-white via-emerald-50/30 to-cyan-50/30',
+]) {
+  assertIncludes(queryNoticeContent, token, queryNoticePath);
+}
+
+const resultsShellPath = 'src/components/public/discovery/PublicDiscoveryResultsShell2026.tsx';
+const resultsShellContent = readFile(resultsShellPath);
+for (const token of [
+  'activeQueryNotice?: ReactNode',
+  'activeQueryNotice,',
+  '{activeQueryNotice}',
+]) {
+  assertIncludes(resultsShellContent, token, resultsShellPath);
+}
+
 const directoryContracts = [
   {
     path: 'src/app/[locale]/[country]/doctors/page.tsx',
-    tokens: ['listPublicDoctors({ country: safeCountry })', 'searchPublicCatalog(query, { limit: 24 })', 'doctorDirectoryResultFromSearch', 'isDirectorySearchQuery(query)', 'firstDirectorySearchParamValue', 'PublicDirectoryListingContent', 'variant="doctor"', 'result={result}', 'emptyText={emptyText}'],
+    route: '/doctors',
+    variantToken: 'variant="doctor"',
+    tokens: ['listPublicDoctors({ country: safeCountry })', 'searchPublicCatalog(query, { limit: 24 })', 'doctorDirectoryResultFromSearch', 'isDirectorySearchQuery(query)', 'firstDirectorySearchParamValue', 'PublicDirectoryQueryNotice', 'clearSearchHref', 'PublicDirectoryListingContent', 'result={result}', 'emptyText={emptyText}'],
   },
   {
     path: 'src/app/[locale]/[country]/centers/page.tsx',
-    tokens: ['listPublicCenters({ country: safeCountry })', 'searchPublicCatalog(query, { limit: 24 })', 'centerDirectoryResultFromSearch', 'isDirectorySearchQuery(query)', 'firstDirectorySearchParamValue', 'PublicDirectoryListingContent', 'variant="center"', 'result={result}', 'emptyText={emptyText}'],
+    route: '/centers',
+    variantToken: 'variant="center"',
+    tokens: ['listPublicCenters({ country: safeCountry })', 'searchPublicCatalog(query, { limit: 24 })', 'centerDirectoryResultFromSearch', 'isDirectorySearchQuery(query)', 'firstDirectorySearchParamValue', 'PublicDirectoryQueryNotice', 'activeQueryNotice', 'hasActiveQuery={isDirectorySearch}', 'clearSearchHref', 'PublicDirectoryListingContent', 'result={result}', 'emptyText={emptyText}'],
   },
   {
     path: 'src/app/[locale]/[country]/labs/page.tsx',
-    tokens: ['listPublicCenters({', 'centerType: "laboratory"', 'searchPublicCatalog(query, { limit: 24 })', 'centerTypeDirectoryResultFromSearch', 'isDirectorySearchQuery(query)', 'firstDirectorySearchParamValue', 'PublicDirectoryListingContent', 'variant="center"', 'result={result}', 'emptyText={emptyText}'],
+    route: '/labs',
+    variantToken: 'variant="center"',
+    tokens: ['listPublicCenters({', 'centerType: "laboratory"', 'searchPublicCatalog(query, { limit: 24 })', 'centerTypeDirectoryResultFromSearch', 'isDirectorySearchQuery(query)', 'firstDirectorySearchParamValue', 'PublicDirectoryQueryNotice', 'activeQueryNotice', 'hasActiveQuery={isDirectorySearch}', 'clearSearchHref', 'PublicDirectoryListingContent', 'result={result}', 'emptyText={emptyText}'],
   },
   {
     path: 'src/app/[locale]/[country]/pharmacies/page.tsx',
-    tokens: ['listPublicCenters({', 'centerType: "pharmacy"', 'searchPublicCatalog(query, { limit: 24 })', 'centerTypeDirectoryResultFromSearch', 'isDirectorySearchQuery(query)', 'firstDirectorySearchParamValue', 'PublicDirectoryListingContent', 'variant="center"', 'result={result}', 'emptyText={emptyText}'],
+    route: '/pharmacies',
+    variantToken: 'variant="center"',
+    tokens: ['listPublicCenters({', 'centerType: "pharmacy"', 'searchPublicCatalog(query, { limit: 24 })', 'centerTypeDirectoryResultFromSearch', 'isDirectorySearchQuery(query)', 'firstDirectorySearchParamValue', 'PublicDirectoryQueryNotice', 'activeQueryNotice', 'hasActiveQuery={isDirectorySearch}', 'clearSearchHref', 'PublicDirectoryListingContent', 'result={result}', 'emptyText={emptyText}'],
   },
   {
     path: 'src/app/[locale]/[country]/hospitals/page.tsx',
-    tokens: ['listPublicCenters({', 'centerType: "hospital"', 'searchPublicCatalog(query, { limit: 24 })', 'centerTypeDirectoryResultFromSearch', 'isDirectorySearchQuery(query)', 'firstDirectorySearchParamValue', 'PublicDirectoryListingContent', 'variant="center"', 'result={result}', 'emptyText={emptyText}'],
+    route: '/hospitals',
+    variantToken: 'variant="center"',
+    tokens: ['listPublicCenters({', 'centerType: "hospital"', 'searchPublicCatalog(query, { limit: 24 })', 'centerTypeDirectoryResultFromSearch', 'isDirectorySearchQuery(query)', 'firstDirectorySearchParamValue', 'PublicDirectoryQueryNotice', 'activeQueryNotice', 'hasActiveQuery={isDirectorySearch}', 'clearSearchHref', 'PublicDirectoryListingContent', 'result={result}', 'emptyText={emptyText}'],
   },
 ];
 
 for (const contract of directoryContracts) {
   const content = readFile(contract.path);
-  for (const token of contract.tokens) {
+  for (const token of [...contract.tokens, contract.variantToken, `pathname: "${contract.route}"`, `/${'${safeLocale}'}/${'${safeCountry}'}${contract.route}`]) {
     assertIncludes(content, token, contract.path);
   }
   for (const forbiddenToken of [
@@ -123,35 +156,9 @@ for (const contract of directoryContracts) {
   }
 }
 
-const doctorsPage = readFile('src/app/[locale]/[country]/doctors/page.tsx');
-for (const token of [
-  'type SearchParams = Record<string, string | string[] | undefined>',
-  'searchParams: Promise<SearchParams>',
-  'searchResultsHeading',
-  'searchResultsSubtext',
-  'searchEmptyText',
-  'pathname: "/doctors"',
-]) {
-  assertIncludes(doctorsPage, token, 'src/app/[locale]/[country]/doctors/page.tsx');
-}
-for (const forbiddenToken of ['sitemapPolicy', 'generateStaticParams', 'specialtySlug', 'areaSlug', 'geo_area', 'AggregateRating']) {
-  assertNotIncludes(doctorsPage, forbiddenToken, 'src/app/[locale]/[country]/doctors/page.tsx');
-}
-
-const centersPage = readFile('src/app/[locale]/[country]/centers/page.tsx');
-for (const token of [
-  'type SearchParams = Record<string, string | string[] | undefined>',
-  'searchParams: Promise<SearchParams>',
-  'searchEmptyCopyByLocale',
-  'pathname: "/centers"',
-]) {
-  assertIncludes(centersPage, token, 'src/app/[locale]/[country]/centers/page.tsx');
-}
-for (const forbiddenToken of ['sitemapPolicy', 'generateStaticParams', 'specialtySlug', 'areaSlug', 'geo_area', 'AggregateRating']) {
-  assertNotIncludes(centersPage, forbiddenToken, 'src/app/[locale]/[country]/centers/page.tsx');
-}
-
 for (const routePath of [
+  'src/app/[locale]/[country]/doctors/page.tsx',
+  'src/app/[locale]/[country]/centers/page.tsx',
   'src/app/[locale]/[country]/labs/page.tsx',
   'src/app/[locale]/[country]/pharmacies/page.tsx',
   'src/app/[locale]/[country]/hospitals/page.tsx',
@@ -161,8 +168,10 @@ for (const routePath of [
     'type SearchParams = Record<string, string | string[] | undefined>',
     'searchParams: Promise<SearchParams>',
     'searchEmptyCopyByLocale',
-    'centerTypeDirectoryResultFromSearch',
   ]) {
+    if (routePath.includes('/doctors/') && token === 'searchEmptyCopyByLocale') {
+      continue;
+    }
     assertIncludes(routePage, token, routePath);
   }
   for (const forbiddenToken of ['sitemapPolicy', 'generateStaticParams', 'specialtySlug', 'areaSlug', 'geo_area', 'AggregateRating']) {
@@ -200,4 +209,4 @@ for (const token of [
   assertIncludes(packageContent, token, packagePath);
 }
 
-console.log('Public listing card safety, directory graph, and shared directory query helpers checks passed.');
+console.log('Public listing card safety, directory graph, shared query helpers, and active query UX checks passed.');

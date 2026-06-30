@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import type {
   PublicCatalogLocale,
   PublicCenterSummary,
@@ -10,16 +12,19 @@ type PublicListingCardProps =
       locale: PublicCatalogLocale;
       variant: 'center';
       item: PublicCenterSummary;
+      href: string | null;
     }
   | {
       locale: PublicCatalogLocale;
       variant: 'doctor';
       item: PublicDoctorSummary;
+      href: string | null;
     }
   | {
       locale: PublicCatalogLocale;
       variant: 'service';
       item: PublicServiceSummary;
+      href: string | null;
     };
 
 function byLocale(locale: PublicCatalogLocale, en: string, ar: string): string {
@@ -43,12 +48,43 @@ const cardClassName =
 
 const titleClassName = 'text-base font-semibold leading-7 text-slate-950';
 
+const titleLinkClassName = 'underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2';
+
 const tagClassName =
   'mt-3 inline-flex w-fit rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-800';
 
 const descriptionClassName = 'mt-4 text-sm leading-6 text-slate-600';
 
 const comingSoonClassName = 'mt-5 text-xs font-medium text-slate-500';
+
+const profileLinkClassName =
+  'mt-5 inline-flex text-xs font-semibold text-emerald-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2';
+
+function CardTitle({ href, title }: { href: string | null; title: string }) {
+  return (
+    <h3 className={titleClassName}>
+      {href ? (
+        <Link href={href} className={titleLinkClassName}>
+          {title}
+        </Link>
+      ) : (
+        title
+      )}
+    </h3>
+  );
+}
+
+function ProfileAction({ href, locale }: { href: string | null; locale: PublicCatalogLocale }) {
+  if (!href) {
+    return <p className={comingSoonClassName}>{byLocale(locale, 'Profile coming soon', 'الملف قريباً')}</p>;
+  }
+
+  return (
+    <Link href={href} className={profileLinkClassName}>
+      {byLocale(locale, 'View public profile', 'عرض الملف العام')}
+    </Link>
+  );
+}
 
 export function PublicListingCard(props: PublicListingCardProps) {
   if (props.variant === 'center') {
@@ -59,10 +95,10 @@ export function PublicListingCard(props: PublicListingCardProps) {
 
     return (
       <article className={cardClassName}>
-        <h3 className={titleClassName}>{name}</h3>
+        <CardTitle href={props.href} title={name} />
         <p className={tagClassName}>{formatNeutralLabel(props.item.centerType)}</p>
         {description ? <p className={descriptionClassName}>{description}</p> : null}
-        <p className={comingSoonClassName}>{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
+        <ProfileAction href={props.href} locale={props.locale} />
       </article>
     );
   }
@@ -72,9 +108,9 @@ export function PublicListingCard(props: PublicListingCardProps) {
 
     return (
       <article className={cardClassName}>
-        <h3 className={titleClassName}>{name}</h3>
+        <CardTitle href={props.href} title={name} />
         <p className={tagClassName}>{formatNeutralLabel(props.item.titleEn)}</p>
-        <p className={comingSoonClassName}>{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
+        <ProfileAction href={props.href} locale={props.locale} />
       </article>
     );
   }
@@ -84,9 +120,9 @@ export function PublicListingCard(props: PublicListingCardProps) {
 
   return (
     <article className={cardClassName}>
-      <h3 className={titleClassName}>{serviceName}</h3>
+      <CardTitle href={props.href} title={serviceName} />
       {serviceDescription ? <p className={descriptionClassName}>{serviceDescription}</p> : null}
-      <p className={comingSoonClassName}>{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
+      <ProfileAction href={props.href} locale={props.locale} />
     </article>
   );
 }

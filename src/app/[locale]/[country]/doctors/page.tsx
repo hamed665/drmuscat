@@ -6,6 +6,7 @@ import { DoctorsSearch2026 } from "@/components/public/doctors/DoctorsSearch2026
 import { PublicDiscoveryFaq2026 } from "@/components/public/discovery/PublicDiscoveryFaq2026";
 import { buildDiscoveryFaq } from "@/components/public/discovery/publicDiscoveryPageConfig";
 import { PublicDirectoryListingContent } from "@/components/public/public-directory-listing-content";
+import { PublicDirectoryQueryNotice } from "@/components/public/public-directory-query-notice";
 import {
   doctorDirectoryResultFromSearch,
   firstDirectorySearchParamValue,
@@ -133,6 +134,7 @@ export default async function PublicDoctorsPage({
   const resultsHeading = isDirectorySearch ? copy.searchResultsHeading : copy.resultsHeading;
   const resultsSubtext = isDirectorySearch ? copy.searchResultsSubtext : copy.resultsSubtext;
   const emptyText = isDirectorySearch ? copy.searchEmptyText : copy.compactEmptyText;
+  const clearSearchHref = `/${safeLocale}/${safeCountry}/doctors`;
 
   return (
     <main
@@ -204,6 +206,9 @@ export default async function PublicDoctorsPage({
         }
         aria-labelledby="doctor-results-title"
       >
+        {isDirectorySearch ? (
+          <PublicDirectoryQueryNotice locale={safeLocale} query={query} clearHref={clearSearchHref} />
+        ) : null}
         {result.ok && result.data.length === 0 ? (
           <div
             className="dm2026-public-discovery-empty-compact dm2026-card-soft"

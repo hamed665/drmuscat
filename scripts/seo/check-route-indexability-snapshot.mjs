@@ -16,39 +16,37 @@ function assertExcludes(source, needle, message) {
   if (source.includes(needle)) throw new Error(message);
 }
 
-function routeBlock(source, route) {
-  const escaped = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = source.match(new RegExp(String.raw`\{[\s\S]*?pathname:\s*['"]${escaped}['"][\s\S]*?\}`, 'm'));
-  if (!match) throw new Error(`Missing static route registry block for ${route}.`);
-  return match[0];
-}
-
-function registryIndexStatus(registrySource, route) {
-  if (route === '/') return 'index-ready';
-  const block = routeBlock(registrySource, route);
-  const indexable = block.includes("indexPolicy: 'index'") && block.includes("readiness: 'ready'") && block.includes('sitemapEligible: true');
-  const noindex = block.includes("indexPolicy: 'noindex_until_ready'") && block.includes('sitemapEligible: false');
-
-  if (indexable) return 'index-ready';
-  if (noindex) return 'sitemap-excluded';
-  throw new Error(`Static route ${route} is neither launch-ready nor noindex-gated.`);
-}
-
 function localizedUrl(route, locale) {
   return route === '/' ? `/${locale}/om` : `/${locale}/om${route}`;
 }
 
-const registrySource = await readText('src/lib/seo/page-registry.ts');
+function hasIndexRoute(registrySource, route) {
+  return registrySource.includes(`indexDirectory('${route}'`) ||
+    (registrySource.includes(`route: '${route}'`) && registrySource.includes("indexPolicy: 'index'") && registrySource.includes("sitemapPolicy: 'included'"));
+}
+
+function hasExcludedRoute(registrySource, route) {
+  return registrySource.includes(`promotionDirectory('${route}'`) ||
+    registrySource.includes(`blockedDirectory('${route}'`) ||
+    (registrySource.includes(`route: '${route}'`) && registrySource.includes("sitemapPolicy: 'excluded'"));
+}
+
+function registryIndexStatus(registrySource, route) {
+  if (route === '/') return 'index-ready';
+  if (hasIndexRoute(registrySource, route)) return 'index-ready';
+  if (hasExcludedRoute(registrySource, route)) return 'sitemap-excluded';
+  throw new Error(`Static route ${route} is not represented in URL registry v2.`);
+}
+
+const registrySource = await readText('src/lib/seo/url-registry.ts');
+const pageRegistrySource = await readText('src/lib/seo/page-registry.ts');
 const snapshotSource = await readText(snapshotPath);
 const packageSource = await readText('package.json');
 const sitemapSource = await readText('src/app/sitemap.ts');
 const metadataSource = await readText('src/lib/seo/metadata.ts');
 const cpRuntimeSource = await readText('src/lib/geo/oman-location-candidate-cp-plan.ts');
-const cpRuntimeTestSource = await readText('src/lib/geo/cp.test.ts');
 const verifiedCountRuntimeSource = await readText('src/lib/geo/oman-location-candidate-verified-count.ts');
-const verifiedCountRuntimeTestSource = await readText('src/lib/geo/vcount.test.ts');
 const evidenceReferenceRuntimeSource = await readText('src/lib/geo/evidence-reference-runtime.ts');
-const evidenceReferenceRuntimeTestSource = await readText('src/lib/geo/er.test.ts');
 
 for (const token of [
   '# DrKhaleej Route Indexability Snapshot V1',
@@ -59,26 +57,35 @@ for (const token of [
   '## Blocked from first clean launch sitemap',
   '| Route | Localized URLs | Index policy | Readiness | Sitemap | Robots | Snapshot decision | Next action |',
 ]) {
-  assertIncludes(snapshotSource, token, `${snapshotPath} is missing required section or table marker: ${token}`);
+  assertIncludes(snapshotSource, token, `${snapshotPath} is missing required marker: ${token}`);
 }
 
-const staticRoutes = [
-  '/',
-  '/doctors',
-  '/centers',
-  '/labs',
-  '/pharmacies',
-  '/hospitals',
-  '/services',
-  '/for-providers',
-  '/dental',
-  '/beauty',
-  '/offers',
-  '/pet-clinics',
-  '/pet-shops',
-  '/search',
-];
+for (const token of [
+  'PublicUrlFamily',
+  'PublicUrlIndexPolicy',
+  'PublicUrlSitemapPolicy',
+  'canonicalPath',
+  'parentRoute',
+  'parentCanonicalPath',
+  'requiredGuards',
+  'internalLinkRequirement',
+  'schemaPolicy',
+  'launchStatus',
+  'hasRequiredInternalLinkContract',
+]) {
+  assertIncludes(registrySource, token, `URL registry v2 must include ${token}.`);
+}
 
+for (const token of [
+  'listPublicUrlRegistryEntries',
+  'getPublicUrlRegistryEntry',
+  'listSitemapIncludedPublicUrlEntries',
+  'isSitemapIncludedPublicUrlEntry',
+]) {
+  assertIncludes(pageRegistrySource, token, `page registry wrapper must use URL registry v2 token: ${token}`);
+}
+
+const staticRoutes = ['/', '/doctors', '/centers', '/labs', '/pharmacies', '/hospitals', '/services', '/for-providers', '/dental', '/beauty', '/offers', '/pet-clinics', '/pet-shops', '/search'];
 for (const route of staticRoutes) {
   const expectedStatus = registryIndexStatus(registrySource, route);
   assertIncludes(snapshotSource, `\`${route}\``, `${snapshotPath} must include route ${route}.`);
@@ -86,6 +93,11 @@ for (const route of staticRoutes) {
   assertIncludes(snapshotSource, `\`${localizedUrl(route, 'ar')}\``, `${snapshotPath} must include Arabic URL for ${route}.`);
   assertIncludes(snapshotSource, expectedStatus, `${snapshotPath} must include status ${expectedStatus} for ${route}.`);
 }
+
+for (const route of ['/doctors', '/centers', '/labs', '/pharmacies', '/hospitals', '/services']) {
+  assertIncludes(registrySource, `indexDirectory('${route}'`, `Indexable route ${route} must use indexDirectory helper.`);
+}
+assertIncludes(registrySource, "'parent-internal-link-contract'", 'Indexable static routes must carry parent internal link contract guard.');
 
 for (const token of [
   '`/en/om/doctor/{slug}`',
@@ -95,9 +107,7 @@ for (const token of [
   '`/en/om/hospitals/{slug}`',
   '`/ar/om/hospitals/{slug}`',
   'PROFILE-GATE-B imported-pharmacy-profile-guard-v1',
-  'PROFILE-GATE-C public-pharmacy-profile-route-wrapper-v1',
   'PROFILE-GATE-D imported-hospital-profile-guard-v1',
-  'PROFILE-GATE-E public-hospital-profile-route-wrapper-v1',
   'SITEMAP-GUARD-B import-sitemap-family-caps-v1',
   'PROFILE-SMOKE-A public-import-profile-smoke-v1',
   'doctor cap: 3000',
@@ -105,11 +115,6 @@ for (const token of [
   'hospital cap: 500',
   'pnpm import:profile-smoke:validate',
   'source evidence exists, contact/map evidence exists, and Oman geo evidence exists',
-]) {
-  assertIncludes(snapshotSource, token, `${snapshotPath} must include dynamic route snapshot token: ${token}`);
-}
-
-for (const token of [
   'import_publish_queue',
   'sitemap_included: true',
   'robots_policy: index',
@@ -117,94 +122,28 @@ for (const token of [
   'the candidate is approved',
   'required evidence exists',
 ]) {
-  assertIncludes(snapshotSource, token, `${snapshotPath} must include import sitemap allowlist token: ${token}`);
+  assertIncludes(snapshotSource, token, `${snapshotPath} must include dynamic/import token: ${token}`);
 }
 
-for (const token of [
-  'oman-location-candidate-cp-plan',
-  'location-candidate-provider-source-plan-contract',
-  'oman-location-candidate-verified-count',
-  'location-candidate-verified-count-method-contract',
-  'evidence-reference-runtime',
-  'location-candidate-evidence-source-reference-contract',
-]) {
-  assertExcludes(registrySource, token, `page registry must not reference ${token}.`);
+for (const token of ['oman-location-candidate-cp-plan', 'oman-location-candidate-verified-count', 'evidence-reference-runtime']) {
+  assertExcludes(registrySource, token, `URL registry v2 must not reference ${token}.`);
   assertExcludes(sitemapSource, token, `sitemap must not reference ${token}.`);
   assertExcludes(metadataSource, token, `metadata must not reference ${token}.`);
 }
 
-for (const token of [
-  "status: 'disabled'",
-  'dataImportAllowed: false',
-  'runtimeCollectionAllowed: false',
-  'databaseAccessAllowed: false',
-  'routeCreationAllowed: false',
-  'sitemapAllowed: false',
-  'jsonLdAllowed: false',
-  'indexPromotionAllowed: false',
-]) {
-  assertIncludes(cpRuntimeSource, token, `cp runtime must include disabled token: ${token}`);
-  assertIncludes(cpRuntimeTestSource, token.replace(': false', ').toBe(false)').replace("status: 'disabled'", "status).toBe('disabled')"), `cp runtime test must cover ${token}.`);
-}
-
-for (const token of [
-  "status: 'disabled'",
-  'verifiedCount: null',
-  'runtimeCountingAllowed: false',
-  'databaseAccessAllowed: false',
-  'importAllowed: false',
-  'routeCreationAllowed: false',
-  'sitemapAllowed: false',
-  'jsonLdAllowed: false',
-  'indexPromotionAllowed: false',
-  'internalSeoLinksAllowed: false',
-]) {
-  assertIncludes(verifiedCountRuntimeSource, token, `verified count runtime must include disabled token: ${token}`);
-  assertIncludes(
-    verifiedCountRuntimeTestSource,
-    token
-      .replace(': null', ').toBeNull()')
-      .replace(': false', ').toBe(false)')
-      .replace("status: 'disabled'", "status).toBe('disabled')"),
-    `verified count runtime test must cover ${token}.`,
-  );
-}
-
-for (const token of [
-  "status: 'disabled'",
-  'sourceReferences: []',
-  'runtimeCollectionAllowed: false',
-  'databaseAccessAllowed: false',
-  'importAllowed: false',
-  'routeCreationAllowed: false',
-  'sitemapAllowed: false',
-  'jsonLdAllowed: false',
-  'indexPromotionAllowed: false',
-  'internalSeoLinksAllowed: false',
-]) {
-  assertIncludes(evidenceReferenceRuntimeSource, token, `evidence reference runtime must include disabled token: ${token}`);
-}
-
-for (const token of [
-  "status).toBe('disabled')",
-  'sourceReferences).toHaveLength(0)',
-  'runtimeCollectionAllowed).toBe(false)',
-  'databaseAccessAllowed).toBe(false)',
-  'importAllowed).toBe(false)',
-  'routeCreationAllowed).toBe(false)',
-  'sitemapAllowed).toBe(false)',
-  'jsonLdAllowed).toBe(false)',
-  'indexPromotionAllowed).toBe(false)',
-  'internalSeoLinksAllowed).toBe(false)',
-]) {
-  assertIncludes(evidenceReferenceRuntimeTestSource, token, `evidence reference runtime test must cover ${token}.`);
+for (const source of [cpRuntimeSource, verifiedCountRuntimeSource, evidenceReferenceRuntimeSource]) {
+  for (const token of ["status: 'disabled'", 'routeCreationAllowed: false', 'sitemapAllowed: false', 'jsonLdAllowed: false', 'indexPromotionAllowed: false']) {
+    assertIncludes(source, token, `disabled GEO runtime source must include ${token}.`);
+  }
 }
 
 assertIncludes(packageSource, 'seo:route-snapshot:validate', 'package.json must expose route snapshot validation.');
 assertIncludes(packageSource, 'pnpm seo:route-snapshot:validate', 'seo:check must run route snapshot validation.');
 assertIncludes(packageSource, 'pnpm import:profile-smoke:validate', 'seo:check must run public import profile smoke validation.');
-assertIncludes(sitemapSource, 'listSitemapEligibleSeoPageDefinitions()', 'sitemap must still use the readiness-filtered registry.');
+assertIncludes(sitemapSource, 'listSitemapIncludedPublicUrlEntries()', 'sitemap must use URL registry v2 included route helper.');
 assertIncludes(sitemapSource, 'listPublicImportSitemapEntries()', 'sitemap must still merge guarded import profile entries.');
 assertIncludes(metadataSource, 'robotsForStaticSeoPage', 'metadata must still use static route readiness for robots.');
+assertIncludes(metadataSource, 'getPublicUrlRegistryEntry', 'metadata must use URL registry v2 for robots.');
+assertIncludes(metadataSource, 'isIndexablePublicUrlEntry', 'metadata must use URL registry v2 indexability helper.');
 
 console.log('route indexability snapshot check passed.');

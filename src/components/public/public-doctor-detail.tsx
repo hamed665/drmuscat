@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { formatPublicLocationSummary, getPublicDirectionsUrl } from '@/lib/catalog/public-location';
 import type { PublicCatalogLocale, PublicDoctorDetail as PublicDoctorDetailData } from '@/lib/catalog/public-types';
 import { publicCenterDetailRoute } from '@/lib/routes/public';
@@ -80,12 +82,21 @@ function formatNeutralLabel(value: string): string {
 
 function DetailItem({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-4">
+    <div className="rounded-2xl border border-emerald-100/80 bg-white/80 p-4 shadow-sm ring-1 ring-white/70">
       <dt className="text-xs font-medium text-slate-500">{label}</dt>
       <dd className="mt-2 text-sm font-semibold text-slate-950">{value}</dd>
     </div>
   );
 }
+
+const relationshipCardClassName =
+  'rounded-2xl border border-emerald-100/80 bg-white/85 p-4 shadow-sm ring-1 ring-white/70 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md';
+
+const internalProfileLinkClassName =
+  'inline-flex text-xs font-semibold text-emerald-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2';
+
+const pillActionClassName =
+  'inline-flex w-fit rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2';
 
 export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) {
   const copy = copyByLocale[locale];
@@ -96,11 +107,11 @@ export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) 
   const gender = doctor.gender !== 'unspecified' ? formatNeutralLabel(doctor.gender) : null;
 
   return (
-    <div className="mt-10 space-y-5">
+    <div className="mt-8 space-y-4 px-0 sm:mt-10 sm:space-y-5">
       <PublicCenterDetailSection title={copy.aboutTitle}>
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
           {doctor.profileImage ? (
-            <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm">
+            <div className="h-24 w-24 shrink-0 overflow-hidden rounded-3xl border border-emerald-100 bg-white shadow-sm ring-1 ring-white/80 sm:h-28 sm:w-28">
               <img
                 src={doctor.profileImage.url}
                 alt={doctor.profileImage.altText}
@@ -143,7 +154,7 @@ export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) 
               const serviceName = preferredText(locale, service.nameEn, service.nameAr) ?? service.nameEn;
               const serviceDescription = preferredText(locale, service.descriptionEn, service.descriptionAr);
               return (
-                <li key={service.id} className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-4">
+                <li key={service.id} className={relationshipCardClassName}>
                   <h3 className="text-sm font-semibold leading-6 text-slate-950">{serviceName}</h3>
                   {serviceDescription ? <p className="mt-2 text-sm leading-6 text-slate-600">{serviceDescription}</p> : null}
                 </li>
@@ -157,25 +168,30 @@ export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) 
 
       <PublicCenterDetailSection title={copy.practiceLocationsTitle} description={copy.practiceLocationsDescription}>
         {doctor.practiceLocations.length > 0 ? (
-          <ul className="grid gap-3 sm:grid-cols-2" role="list">
+          <ul className="grid gap-3 md:grid-cols-2" role="list">
             {doctor.practiceLocations.map((practiceLocation) => {
               const centerName = preferredText(locale, practiceLocation.center.nameEn, practiceLocation.center.nameAr) ?? practiceLocation.center.nameEn;
               const locationText = formatPublicLocationSummary(locale, practiceLocation.location);
               const directionsUrl = getPublicDirectionsUrl(practiceLocation.location);
+              const centerHref = publicCenterDetailRoute(locale, doctor.defaultCountry, practiceLocation.center.slug);
               return (
-                <li key={practiceLocation.id} className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-4">
-                  <h3 className="text-sm font-semibold leading-6 text-slate-950">{centerName}</h3>
+                <li key={practiceLocation.id} className={relationshipCardClassName}>
+                  <h3>
+                    <Link href={centerHref} className="text-sm font-semibold leading-6 text-slate-950 underline-offset-4 hover:text-emerald-800 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2">
+                      {centerName}
+                    </Link>
+                  </h3>
                   <p className="mt-2 text-sm leading-6 text-slate-600">{locationText ?? copy.noLocation}</p>
-                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                     <PublicContactActions actions={practiceLocation.contactActions} locale={locale} />
                     {directionsUrl ? (
-                      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" aria-label={copy.practiceDirectionsAriaLabel} className="inline-flex w-fit rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+                      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" aria-label={copy.practiceDirectionsAriaLabel} className={pillActionClassName}>
                         {copy.directionsLabel}
                       </a>
                     ) : null}
-                    <a href={publicCenterDetailRoute(locale, doctor.defaultCountry, practiceLocation.center.slug)} className="inline-flex text-xs font-semibold text-emerald-800 underline-offset-4 hover:underline">
+                    <Link href={centerHref} className={internalProfileLinkClassName}>
                       {copy.centerProfileLabel}
-                    </a>
+                    </Link>
                   </div>
                   <PublicDoctorPracticeCallback locale={locale} doctor={doctor} practiceLocation={practiceLocation} />
                 </li>
@@ -194,7 +210,7 @@ export function PublicDoctorDetail({ locale, doctor }: PublicDoctorDetailProps) 
       <PublicCenterDetailSection title={copy.futureTitle} description={copy.futureDescription}>
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5" role="list">
           {copy.futureSlots.map((slot) => (
-            <li key={slot} className="rounded-xl border border-dashed border-slate-300 bg-slate-50/60 px-4 py-3 text-sm text-slate-600">
+            <li key={slot} className="rounded-2xl border border-dashed border-emerald-200 bg-white/70 px-4 py-3 text-sm text-slate-600">
               {slot}
             </li>
           ))}

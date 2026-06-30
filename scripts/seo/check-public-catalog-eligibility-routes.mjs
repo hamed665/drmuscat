@@ -66,4 +66,54 @@ for (const token of requiredWrapperTokens) {
   assertIncludes(wrapperContent, token, wrapperPath);
 }
 
-console.log('Public catalog eligibility route checks passed.');
+const centerDetailPath = 'src/components/public/public-center-detail.tsx';
+const centerDetail = readFile(centerDetailPath);
+for (const token of [
+  "import Link from 'next/link'",
+  'publicDoctorDetailRoute',
+  '<Link href={href}',
+  'doctorProfileLabel',
+]) {
+  assertIncludes(centerDetail, token, centerDetailPath);
+}
+
+const doctorDetailPath = 'src/components/public/public-doctor-detail.tsx';
+const doctorDetail = readFile(doctorDetailPath);
+for (const token of [
+  "import Link from 'next/link'",
+  'publicCenterDetailRoute',
+  'const centerHref = publicCenterDetailRoute',
+  '<Link href={centerHref}',
+  'relationshipCardClassName',
+  'pillActionClassName',
+  'internalProfileLinkClassName',
+  'grid gap-3 md:grid-cols-2',
+  'sm:flex-row sm:flex-wrap sm:items-center',
+]) {
+  assertIncludes(doctorDetail, token, doctorDetailPath);
+}
+
+for (const forbiddenToken of [
+  '<a href={publicCenterDetailRoute',
+  'rating',
+  'insurance',
+  'MOH approved',
+  'Book now',
+]) {
+  assertNotIncludes(doctorDetail, forbiddenToken, doctorDetailPath);
+}
+
+const sectionPath = 'src/components/public/public-center-detail-section.tsx';
+const section = readFile(sectionPath);
+for (const token of [
+  'rounded-3xl',
+  'bg-gradient-to-br',
+  'from-white via-emerald-50/30 to-cyan-50/30',
+  'p-4',
+  'sm:p-6',
+  'sm:text-xl',
+]) {
+  assertIncludes(section, token, sectionPath);
+}
+
+console.log('Public catalog eligibility route and profile relationship link checks passed.');

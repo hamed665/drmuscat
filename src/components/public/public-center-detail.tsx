@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { formatPublicLocationSummary } from '@/lib/catalog/public-location';
+import { buildPublicCenterProfileSummary } from '@/lib/catalog/public-profile-summary';
 import type { PublicCatalogLocale, PublicCenterDetail as PublicCenterDetailData } from '@/lib/catalog/public-types';
 import { publicDoctorDetailRoute } from '@/lib/routes/public';
 
@@ -116,6 +117,7 @@ export function PublicCenterDetail({ locale, center }: PublicCenterDetailProps) 
   const description =
     preferredText(locale, center.shortDescriptionEn, center.shortDescriptionAr) ??
     preferredText(locale, center.descriptionEn, center.descriptionAr);
+  const profileSummary = buildPublicCenterProfileSummary(locale, center);
   const locationText = formatPublicLocationSummary(locale, center.location);
   const showSafeContactFallback = center.contactActions.length === 0 && center.locations.length > 0;
 
@@ -158,6 +160,7 @@ export function PublicCenterDetail({ locale, center }: PublicCenterDetailProps) 
               {locationText ? <p className="text-sm leading-6 text-slate-600">{locationText}</p> : null}
             </div>
             {description ? <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700">{description}</p> : null}
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700">{profileSummary}</p>
           </div>
         </div>
       </PublicCenterDetailSection>

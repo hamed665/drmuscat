@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -125,7 +126,7 @@ function ResultCard({
   );
 }
 
-function ResultGroup({ title, children }: { title: string; children: React.ReactNode }) {
+function ResultGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-3xl border border-emerald-100/80 bg-gradient-to-br from-white via-emerald-50/30 to-cyan-50/30 p-4 shadow-[0_18px_50px_rgba(15,118,110,0.08)] ring-1 ring-white/80 sm:p-6">
       <h2 className="text-lg font-semibold leading-7 tracking-[-0.01em] text-slate-950 sm:text-xl">{title}</h2>

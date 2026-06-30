@@ -1,3 +1,5 @@
+import './seo/check-sitemap-hreflang-parity-guard.mjs';
+
 import { readFile, access } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -11,7 +13,6 @@ const requiredFiles = [
   'src/lib/seo/metadata.ts',
   'public/llms.txt'
 ];
-
 const approvedDiscoveryRoutes = ['/doctors', '/dental', '/centers', '/pharmacies', '/beauty', '/pet-clinics', '/pet-shops', '/hospitals', '/offers', '/labs', '/services', '/search'];
 const approvedProviderRoutes = ['/for-providers'];
 

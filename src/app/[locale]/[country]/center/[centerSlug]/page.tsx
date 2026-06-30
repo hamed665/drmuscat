@@ -12,6 +12,7 @@ import {
   isSupportedCountry,
   isSupportedLocale,
   localeDirection,
+  type SupportedCountry,
   type SupportedLocale
 } from '@/lib/i18n/config';
 import { buildLocalizedMetadata } from '@/lib/seo/metadata';
@@ -48,6 +49,25 @@ function metadataTitle(name: string): string {
   return `${name} | ${publicBrandName}`;
 }
 
+function buildNoindexFallbackMetadata(input: {
+  locale: SupportedLocale;
+  country: SupportedCountry;
+  centerSlug: string;
+  title: string;
+  description: string;
+}): Metadata {
+  return {
+    ...buildLocalizedMetadata({
+      locale: input.locale,
+      country: input.country,
+      pathname: `/center/${input.centerSlug}`,
+      title: input.title,
+      description: input.description
+    }),
+    robots: { index: false, follow: true }
+  };
+}
+
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { locale, country, centerSlug } = await params;
   if (!isSupportedLocale(locale) || !isSupportedCountry(country)) return {};
@@ -56,10 +76,10 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const result = await getPublicCenterBySlug({ slug: centerSlug, country });
 
   if (!result.ok || !result.data) {
-    return buildLocalizedMetadata({
+    return buildNoindexFallbackMetadata({
       locale,
       country,
-      pathname: `/center/${centerSlug}`,
+      centerSlug,
       title: copy.fallbackTitle,
       description: copy.fallbackDescription
     });

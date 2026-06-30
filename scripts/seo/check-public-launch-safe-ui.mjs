@@ -37,6 +37,9 @@ for (const token of [
   'It is not medical advice, diagnosis, emergency guidance, or a guarantee of provider availability.',
   'showSafeContactFallback',
   'center.contactActions.length > 0',
+  'publicDoctorDetailRoute',
+  'doctorProfileLabel',
+  'View doctor profile',
 ]) {
   mustHave(detail, token, detailPath);
 }

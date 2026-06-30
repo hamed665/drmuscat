@@ -226,7 +226,7 @@ function evaluateActiveCenterPublicState(
 export async function getAdminActiveCenterPublicStateReadiness(
   centerId: string,
 ): Promise<ActiveCenterPublicStateReadinessResult> {
-  await requireAdminPermission("draft_centers.update");
+  await requireAdminPermission("active_centers.public_state.update");
 
   if (!isUuid(centerId)) {
     return { ok: false, reason: "not_found" };

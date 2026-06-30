@@ -67,5 +67,19 @@ jobs:
       - name: Static seed tests
         run: pnpm test:db:seed
 
+      - name: SEO base diagnostics
+        run: |
+          node scripts/seo-check.mjs
+          node scripts/seo/check-public-route-contract.mjs
+          node scripts/seo/check-public-text-contract.mjs
+
+      - name: Public SEO diagnostics
+        run: |
+          pnpm seo:public-catalog-eligibility:validate
+          pnpm seo:public-listing-card-safety:validate
+          pnpm seo:public-launch-safe-ui:validate
+          pnpm seo:drkhaleej-brand:validate
+          pnpm seo:cleaned-public-source-brand:validate
+
       - name: SEO check
         run: pnpm seo:check

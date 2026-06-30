@@ -1,0 +1,60 @@
+name: Admin Diagnostics
+
+on:
+  pull_request:
+
+jobs:
+  admin-validator:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        script:
+          - admin:draft-verification-guard:validate
+          - admin:role-runtime-guard:validate
+          - admin:location-contract:validate
+          - admin:location-create-runtime:validate
+          - admin:location-edit-runtime:validate
+          - admin:location-primary-runtime:validate
+          - admin:location-review-contract:validate
+          - admin:location-review-runtime:validate
+          - admin:location-review-ui:validate
+          - admin:quality-internal-gate:validate
+          - admin:contact-visibility-contract:validate
+          - admin:contact-review-guard:validate
+          - admin:provider-publication-contract:validate
+          - admin:final-chain:validate
+          - admin:launch-checklist:validate
+          - admin:post-activation:validate
+          - admin:active-centers-readonly:validate
+          - admin:audit-log-readonly:validate
+          - admin:final-launch-recap:validate
+          - admin:soft-launch-checklist:validate
+          - admin:r1:validate
+          - admin:readiness-bundle:validate
+          - admin:cw:validate
+          - admin:fo:validate
+          - admin:gng:validate
+          - admin:fpi:validate
+          - admin:w:validate
+          - admin:av:validate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Prepare pnpm 10.22.0
+        run: corepack prepare pnpm@10.22.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run admin validator
+        run: pnpm ${{ matrix.script }}

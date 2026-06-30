@@ -102,8 +102,8 @@ for (const token of [
   assertIncludes(doc, token, docPath);
 }
 
-const listingSafetyPath = 'scripts/seo/check-public-listing-card-safety.mjs';
-const listingSafety = readFile(listingSafetyPath);
-assertIncludes(listingSafety, "import './check-public-profile-metadata-index-gate.mjs';", listingSafetyPath);
+const eligibilityGuardPath = 'scripts/seo/check-public-profile-index-eligibility-contract.mjs';
+const eligibilityGuard = readFile(eligibilityGuardPath);
+assertIncludes(eligibilityGuard, "import './check-public-profile-metadata-index-gate.mjs';", eligibilityGuardPath);
 
 console.log('Public profile metadata index gate passed.');

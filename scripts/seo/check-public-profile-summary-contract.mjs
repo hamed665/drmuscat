@@ -25,6 +25,25 @@ function assertNotIncludes(content, token, label) {
   }
 }
 
+const summaryDocPath = 'docs/seo/public-profile-summary-contract.md';
+const summaryDoc = readFile(summaryDocPath);
+for (const token of [
+  'Public profile summary contract',
+  'Every indexable public doctor or center profile must use the shared summary helpers',
+  'buildPublicCenterProfileSummary',
+  'buildPublicDoctorProfileSummary',
+  'buildPublicProfileMetaDescription',
+  'approved public directory facts',
+  'Provider-written or editorial text may appear',
+  'Generated summaries must not include these claims',
+  'Metadata must not fall back to a generic repeated sentence',
+  'PublicCenterDetail',
+  'PublicDoctorDetail',
+  'scripts/seo/check-public-profile-summary-contract.mjs',
+]) {
+  assertIncludes(summaryDoc, token, summaryDocPath);
+}
+
 const summaryHelperPath = 'src/lib/catalog/public-profile-summary.ts';
 const summaryHelper = readFile(summaryHelperPath);
 for (const token of [

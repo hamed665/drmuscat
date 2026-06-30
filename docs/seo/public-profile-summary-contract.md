@@ -1,0 +1,74 @@
+# Public profile summary contract
+
+Public doctor and center profile pages must include a short, unique, fact-based profile summary. This summary is part of the soft-launch SEO and GEO safety boundary, not decorative copy.
+
+## Goal
+
+The public profile summary prevents profile pages from becoming near-duplicate pages where only the provider name changes. It gives each profile a small amount of useful, entity-specific context while keeping the page safe for healthcare discovery.
+
+## Required behavior
+
+Every indexable public doctor or center profile must use the shared summary helpers:
+
+- `buildPublicCenterProfileSummary`
+- `buildPublicDoctorProfileSummary`
+- `buildPublicProfileMetaDescription`
+
+The generated summary must be used in profile metadata. It must also be visible in the public profile content, inside the profile about section.
+
+## Allowed inputs
+
+Summaries may only use approved public directory facts that already exist in the public profile payload:
+
+- entity name
+- entity type or public title
+- public location context
+- approved services
+- related public doctor profiles
+- primary specialty
+- connected practice locations
+- approved public directory data status
+
+The summary must not invent services, credentials, availability, outcomes, reviews, ratings, insurance acceptance, emergency coverage, or government approval.
+
+## Manual provider text
+
+Provider-written or editorial text may appear when it is already part of the approved public profile data, such as `shortDescription`, `description`, or doctor biography. That text does not replace the fact-based summary. It can appear before the generated summary, so the page can carry both provider-specific wording and a consistent safe discovery summary.
+
+Future provider-submitted profile copy must be reviewed before public use. Until a review workflow exists, generated fact-based summaries remain the safe fallback.
+
+## Forbidden claims
+
+Generated summaries must not include these claims unless a future evidence gate explicitly supports them:
+
+- best
+- top-rated
+- guaranteed
+- trusted by thousands
+- insurance accepted
+- MOH approved
+- 24/7
+
+The current contract intentionally avoids promotional claims. This is a public healthcare discovery product, not a machine for manufacturing confident nonsense with a logo on it.
+
+## Metadata boundary
+
+Profile metadata descriptions must be produced from the generated summary through `buildPublicProfileMetaDescription`. Metadata must not fall back to a generic repeated sentence when a public doctor or center profile is available.
+
+## Public UI boundary
+
+The generated profile summary must render inside:
+
+- `PublicCenterDetail`
+- `PublicDoctorDetail`
+
+Existing provider description or doctor biography can remain visible, but the generated summary must still render so the page has a consistent fact-based baseline.
+
+## Launch guard
+
+The contract is enforced by:
+
+- `scripts/seo/check-public-profile-summary-contract.mjs`
+- `scripts/seo/check-public-listing-card-safety.mjs`
+
+The guard must remain wired into the existing SEO check chain.

@@ -5,6 +5,7 @@ import { PublicDoctorDetail } from '@/components/public/public-doctor-detail';
 import { PublicListingError } from '@/components/public/public-listing-error';
 import { PublicPageShell } from '@/components/public/public-page-shell';
 import { getPublicDoctorBySlug } from '@/lib/catalog/public-eligible-queries';
+import { isPublicProfileIndexEligible } from '@/lib/catalog/public-profile-index-eligibility';
 import {
   buildPublicDoctorProfileSummary,
   buildPublicProfileMetaDescription,
@@ -18,6 +19,7 @@ import {
   type SupportedLocale
 } from '@/lib/i18n/config';
 import { buildLocalizedMetadata } from '@/lib/seo/metadata';
+import { applyProfileMetadataIndexGate } from '@/lib/seo/profile-metadata-index-gate';
 import { getPublicImportDoctorProfile } from '@/server/public/import-doctor-profile-guard';
 
 type Params = { locale: string; country: string; doctorSlug: string };
@@ -90,14 +92,20 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
   if (result.ok && result.data) {
     const profileSummary = buildPublicDoctorProfileSummary(locale, result.data);
-
-    return buildLocalizedMetadata({
+    const metadata = buildLocalizedMetadata({
       locale,
       country,
       pathname: `/doctor/${doctorSlug}`,
       title: metadataTitle(doctorDisplayName(locale, result.data)),
       description: buildPublicProfileMetaDescription(profileSummary)
     });
+    const indexEligibility = isPublicProfileIndexEligible(result.data, {
+      kind: 'doctor',
+      locale,
+      fromPublicEligibleQuery: true,
+    });
+
+    return applyProfileMetadataIndexGate(metadata, indexEligibility);
   }
 
   const importResult = await getPublicImportDoctorProfile({ locale, country, doctorSlug });

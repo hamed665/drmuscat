@@ -14,6 +14,7 @@ export type AdminAuditAction =
   | "draft_center.workflow_updated"
   | "draft_center.contact_visibility_updated"
   | "draft_center.public_profile_activated"
+  | "active_center.public_profile_deactivated"
   | "subscription.assigned"
   | "subscription_plan_catalog.synced"
   | "commercial_addon.assigned"

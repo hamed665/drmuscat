@@ -55,7 +55,7 @@ for (const token of [
   'getAdminActiveCenterPublicStateReadiness(centerId)',
   'ACTIVE_CENTER_PUBLIC_STATE_READINESS',
   'No action available here',
-  'read-only public state readiness',
+  'Read-only public state readiness',
   'draft_center.public_profile_activated',
   'Activation audit evidence',
   'English public path',

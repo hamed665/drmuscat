@@ -1,5 +1,10 @@
 import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
+import {
+  buildPublicImportProfileMetaDescription,
+  buildPublicImportProfileSummary,
+  type PublicImportProfileSummaryInput,
+} from "@/lib/catalog/public-import-profile-summary";
 import { isSupportedCountry, isSupportedLocale, localeDirection, type SupportedLocale } from "@/lib/i18n/config";
 import { siteConfig } from "@/lib/seo/site";
 
@@ -57,11 +62,11 @@ const copyByLocale: Record<SupportedLocale, RouteCopy> = {
     sourceLabel: "Source",
   },
   ar: {
-    badge: "\u0645\u0644\u0641 \u0645\u0633\u062a\u0634\u0641\u0649 \u0639\u0627\u0645",
-    overviewTitle: "\u0646\u0638\u0631\u0629 \u0639\u0627\u0645\u0629 \u0639\u0644\u0649 \u0627\u0644\u0645\u0644\u0641",
-    servicesTitle: "\u062e\u062f\u0645\u0627\u062a \u0627\u0644\u0645\u0633\u062a\u0634\u0641\u0649",
-    contactTitle: "\u0627\u0644\u062a\u0648\u0627\u0635\u0644 \u0648\u0627\u0644\u0627\u062a\u062c\u0627\u0647\u0627\u062a",
-    sourceLabel: "\u0627\u0644\u0645\u0635\u062f\u0631",
+    badge: "ملف مستشفى عام",
+    overviewTitle: "نظرة عامة على الملف",
+    servicesTitle: "خدمات المستشفى",
+    contactTitle: "التواصل والاتجاهات",
+    sourceLabel: "المصدر",
   },
 };
 
@@ -110,10 +115,6 @@ function metadataTitle(name: string): string {
   return `${name} | DrKhaleej`;
 }
 
-function profileDescription(name: string): string {
-  return `${name} on DrKhaleej. Public directory information in Oman. Confirm details directly with the provider.`;
-}
-
 function displayName(locale: SupportedLocale, name: string, nameAr: string | null): string {
   return locale === "ar" && nameAr ? nameAr : name;
 }
@@ -159,7 +160,8 @@ export default function PublicImportedHospitalProfilePage({
   const copy = copyByLocale[locale];
   const dir = localeDirection(locale);
   const title = displayName(locale, profile.name, profile.nameAr);
-  const description = profileDescription(title);
+  const profileSummary = buildPublicImportProfileSummary(locale, profile satisfies PublicImportProfileSummaryInput);
+  const description = buildPublicImportProfileMetaDescription(profileSummary);
   const pathname = `/${locale}/${country}/hospitals/${hospitalSlug}`;
   const canonical = absoluteUrl(pathname);
   const englishAlternate = absoluteUrl(`/en/${country}/hospitals/${hospitalSlug}`);
@@ -192,13 +194,14 @@ export default function PublicImportedHospitalProfilePage({
             <span className="dm2026-badge">{copy.badge}</span>
             <h1 id="hospital-profile-title">{title}</h1>
             {profile.nameAr && locale !== "ar" ? <p>{profile.nameAr}</p> : null}
-            <p>{description}</p>
+            <p>{profileSummary}</p>
           </div>
         </section>
 
         <section className="dm2026-container dm2026-doctors-listings" aria-labelledby="hospital-profile-overview-title">
           <div className="dm2026-card-soft">
             <h2 id="hospital-profile-overview-title">{copy.overviewTitle}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-700">{profileSummary}</p>
             <dl className="mt-4 grid gap-3 text-sm text-slate-700 md:grid-cols-2">
               <div>
                 <dt className="font-semibold text-slate-950">Location</dt>

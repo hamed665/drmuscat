@@ -104,7 +104,7 @@ for (const token of [
   'Query and filter URL variants are user state only.',
   'Directory query variants must not enter the sitemap.',
   'Canonical metadata remains the base directory path.',
-  'q text search on `/doctors`',
+  '`q` text search on `/doctors`',
   'SSR execution using `searchPublicCatalog`',
   'client-only filtering that changes the URL without changing the server-rendered results',
   'Specialty and area filters only after their gates and canonical rules exist.',

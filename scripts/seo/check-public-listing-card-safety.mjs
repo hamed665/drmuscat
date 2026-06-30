@@ -71,7 +71,7 @@ const directoryContracts = [
   },
   {
     path: 'src/app/[locale]/[country]/centers/page.tsx',
-    tokens: ['listPublicCenters({ country: safeCountry })', 'PublicDirectoryListingContent', 'variant="center"', 'result={result}'],
+    tokens: ['listPublicCenters({ country: safeCountry })', 'searchPublicCatalog(query, { limit: 24 })', 'centerResultFromSearch', 'query.length >= 2', 'PublicDirectoryListingContent', 'variant="center"', 'result={result}', 'emptyText={emptyText}'],
   },
   {
     path: 'src/app/[locale]/[country]/labs/page.tsx',
@@ -113,6 +113,21 @@ for (const forbiddenToken of ['sitemapPolicy', 'generateStaticParams', 'specialt
   assertNotIncludes(doctorsPage, forbiddenToken, 'src/app/[locale]/[country]/doctors/page.tsx');
 }
 
+const centersPage = readFile('src/app/[locale]/[country]/centers/page.tsx');
+for (const token of [
+  'type SearchParams = Record<string, string | string[] | undefined>',
+  'searchParams: Promise<SearchParams>',
+  'firstSearchParamValue',
+  'searchEmptyCopyByLocale',
+  'centerResultFromSearch',
+  'pathname: "/centers"',
+]) {
+  assertIncludes(centersPage, token, 'src/app/[locale]/[country]/centers/page.tsx');
+}
+for (const forbiddenToken of ['sitemapPolicy', 'generateStaticParams', 'specialtySlug', 'areaSlug', 'geo_area', 'AggregateRating']) {
+  assertNotIncludes(centersPage, forbiddenToken, 'src/app/[locale]/[country]/centers/page.tsx');
+}
+
 const directorySearchContractPath = 'docs/seo/directory-search-filter-contract.md';
 const directorySearchContract = readFile(directorySearchContractPath);
 for (const token of [
@@ -121,6 +136,8 @@ for (const token of [
   'Directory query variants must not enter the sitemap.',
   'Canonical metadata remains the base directory path.',
   '`q` text search on `/doctors`',
+  '`q` text search on `/centers`',
+  'center results narrowed to `PublicCenterSummary[]`',
   'SSR execution using `searchPublicCatalog`',
   'client-only filtering that changes the URL without changing the server-rendered results',
   'Specialty and area filters only after their gates and canonical rules exist.',
@@ -137,4 +154,4 @@ for (const token of [
   assertIncludes(packageContent, token, packagePath);
 }
 
-console.log('Public listing card safety, directory graph, and doctors q SSR directory search checks passed.');
+console.log('Public listing card safety, directory graph, and doctors/centers q SSR directory search checks passed.');

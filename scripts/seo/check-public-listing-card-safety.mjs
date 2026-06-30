@@ -29,10 +29,15 @@ const cardPath = 'src/components/public/public-listing-card.tsx';
 const cardContent = readFile(cardPath);
 
 for (const token of [
+  'import Link from',
   'export function PublicListingCard',
   "variant: 'center'",
   "variant: 'doctor'",
   "variant: 'service'",
+  'listingHref',
+  "'center'",
+  "'doctor'",
+  'View profile',
   'Profile coming soon',
   'formatNeutralLabel',
 ]) {

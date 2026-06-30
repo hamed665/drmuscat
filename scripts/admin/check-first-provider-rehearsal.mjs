@@ -99,7 +99,7 @@ for (const token of [
 const publicRoutePath = 'src/app/[locale]/[country]/center/[centerSlug]/page.tsx';
 const publicRoute = readFile(publicRoutePath);
 for (const token of [
-  "@/lib/catalog/public-eligible-queries",
+  '@/lib/catalog/public-eligible-queries',
   'getPublicCenterBySlug({ slug: centerSlug, country })',
 ]) {
   mustHave(publicRoute, token, publicRoutePath);
@@ -108,8 +108,8 @@ for (const token of [
 const packagePath = 'package.json';
 const packageJson = readFile(packagePath);
 for (const token of [
-  '"admin:first-provider-rehearsal:validate": "node scripts/admin/check-first-provider-rehearsal.mjs"',
-  'pnpm admin:first-provider-rehearsal:validate',
+  '"admin:first-run-check:validate": "node scripts/admin/check-first-provider-rehearsal.mjs"',
+  'pnpm admin:first-run-check:validate',
   'pnpm admin:soft-launch-checklist:validate',
   'pnpm admin:final-route-sanity:validate',
   'pnpm admin:final-launch-recap:validate',

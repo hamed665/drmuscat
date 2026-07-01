@@ -22,11 +22,16 @@ export async function createSessionAwareSupabaseServerClient(): Promise<SessionA
         cookiesToSet: { name: string; value: string; options: CookieOptions }[],
       ) {
         for (const cookieToSet of cookiesToSet) {
-          cookieStore.set(
-            cookieToSet.name,
-            cookieToSet.value,
-            cookieToSet.options,
-          );
+          try {
+            cookieStore.set(
+              cookieToSet.name,
+              cookieToSet.value,
+              cookieToSet.options,
+            );
+          } catch {
+            // Server Component renders cannot mutate cookies.
+            // Server Actions and Route Handlers can still persist refreshed auth cookies.
+          }
         }
       },
     },

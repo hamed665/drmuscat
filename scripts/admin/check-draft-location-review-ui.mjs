@@ -14,7 +14,8 @@ const content = fs.readFileSync(absolutePath, 'utf8');
 
 const requiredTokens = [
   'markDraftCenterLocationReadyForReview',
-  'type DraftCenterLocationReviewState',
+  'DraftCenterLocationReviewState',
+  'from "@/server/admin/draft-center-location-action-types";',
   'const reviewInitialState: DraftCenterLocationReviewState',
   'function LocationReviewForm',
   'useActionState(',

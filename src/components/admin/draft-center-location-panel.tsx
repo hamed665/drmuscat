@@ -6,9 +6,11 @@ import { DraftCenterLocationEditForm } from "@/components/admin/draft-center-loc
 import {
   markDraftCenterLocationReadyForReview,
   setPrimaryDraftCenterLocationCandidate,
-  type DraftCenterLocationPrimaryState,
-  type DraftCenterLocationReviewState,
 } from "@/server/admin/draft-center-location-actions";
+import type {
+  DraftCenterLocationPrimaryState,
+  DraftCenterLocationReviewState,
+} from "@/server/admin/draft-center-location-action-types";
 import type { AdminDraftCenterLocation } from "@/server/admin/draft-center-locations";
 
 type DraftCenterLocationPanelProps = {

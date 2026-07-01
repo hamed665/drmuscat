@@ -2,10 +2,8 @@
 
 import { useActionState } from "react";
 
-import {
-  createDraftCenterLocationCandidate,
-  type DraftCenterLocationCreateState,
-} from "@/server/admin/draft-center-location-actions";
+import { createDraftCenterLocationCandidate } from "@/server/admin/draft-center-location-actions";
+import type { DraftCenterLocationCreateState } from "@/server/admin/draft-center-location-action-types";
 import type { DraftLocationOptions } from "@/server/admin/draft-center-location-options";
 
 type DraftCenterLocationCreateFormProps = {

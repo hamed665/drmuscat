@@ -14,6 +14,7 @@ import type { PublicCatalogLocale, PublicCenterDetail as PublicCenterDetailData 
 import { publicDoctorDetailRoute } from '@/lib/routes/public';
 
 import { PublicCenterDetailSection } from './public-center-detail-section';
+import { PublicCenterGallery as PublicCenterMediaStrip } from './public-center-gallery';
 import { PublicCenterPublicInfo } from './public-center-public-info';
 import { PublicLicenseInfoCard } from './public-license-info-card';
 
@@ -206,6 +207,7 @@ export function PublicCenterDetail({ locale, center, publicInfo }: PublicCenterD
         showSafeContactFallback={showSafeContactFallback}
       />
       <MoreRelationsNotice hiddenCount={hiddenLocationCount} label={copy.moreRelationsNotice} />
+      <PublicCenterMediaStrip title={copy.galleryTitle} images={center['galleryImages']} />
 
       <PublicCenterDetailSection title={copy.servicesTitle} description={copy.servicesDescription}>
         {visibleServices.length > 0 ? (

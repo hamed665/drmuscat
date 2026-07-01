@@ -211,11 +211,12 @@ export async function getPublicCenterPublicInfo(centerId: string): Promise<Publi
 
   if (locationsError) return createEmptyPublicCenterInfo(true);
 
-  const centerInfo = center as PublicCenterInfoRow;
+  const centerInfo = center as unknown as PublicCenterInfoRow;
+  const locationRows = (locations ?? []) as unknown as PublicCenterLocationInfoRow[];
 
   return {
     contactActions: mapPublicCenterInfoForTest(centerInfo).contactActions,
-    locations: ((locations ?? []) as PublicCenterLocationInfoRow[]).map((location) => mapLocationInfoRow(location, centerInfo)),
+    locations: locationRows.map((location) => mapLocationInfoRow(location, centerInfo)),
     error: false
   };
 }

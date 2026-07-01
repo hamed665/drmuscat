@@ -1,3 +1,4 @@
+import '../db/check-security-warning-backlog.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -182,6 +183,8 @@ for (const relativePath of [
   'scripts/seo/check-profile-relation-limit-guard.mjs',
   'scripts/import/check-import-profile-index-eligibility.mjs',
   'scripts/import/check-public-import-profile-smoke.mjs',
+  'docs/security/supabase-warning-hardening-backlog.md',
+  'scripts/db/check-security-warning-backlog.mjs',
 ]) {
   readFile(relativePath);
 }
@@ -259,6 +262,17 @@ mustHaveAll(relationLimit, [
 for (const forbiddenToken of ['Math.random', 'sort(() =>', 'randomUUID']) {
   mustNotHave(relationLimit, forbiddenToken, relationLimitPath);
 }
+
+const securityBacklogPath = 'docs/security/supabase-warning-hardening-backlog.md';
+const securityBacklog = readFile(securityBacklogPath);
+mustHaveAll(securityBacklog, [
+  'Supabase warning hardening backlog',
+  'PR 687: function search path hardening',
+  'PR 688: sensitive helper search path hardening',
+  'Function execution privilege hardening',
+  'Extension schema hardening',
+  'Security Advisor Errors remain launch blockers.',
+], securityBacklogPath);
 
 const packagePath = 'package.json';
 const packageJson = readFile(packagePath);

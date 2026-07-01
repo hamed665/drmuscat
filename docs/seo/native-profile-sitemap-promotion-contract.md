@@ -58,7 +58,7 @@ Reasons include:
 
 ## Current sitemap rule
 
-`src/app/sitemap.ts` must not import or call this helper yet.
+src/app/sitemap.ts must not import or call this helper yet.
 
 The sitemap continues to use only static SEO page definitions plus reviewed import sitemap entries.
 

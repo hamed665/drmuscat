@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
+import type { PublicProfileIndexEligibilityResult } from '@/lib/catalog/public-profile-index-eligibility';
 import { buildNativeProfileSitemapPromotionDecision } from './native-profile-sitemap-promotion';
 
-const eligibleIndex = { eligible: true, reasons: [] } as const;
+const eligibleIndex: PublicProfileIndexEligibilityResult = { eligible: true, reasons: [] };
 
 function baseInput() {
   return {

@@ -2,10 +2,8 @@
 
 import { useActionState } from "react";
 
-import {
-  updateDraftCenterLocationCandidate,
-  type DraftCenterLocationEditState,
-} from "@/server/admin/draft-center-location-actions";
+import { updateDraftCenterLocationCandidate } from "@/server/admin/draft-center-location-actions";
+import type { DraftCenterLocationEditState } from "@/server/admin/draft-center-location-action-types";
 import type { AdminDraftCenterLocation } from "@/server/admin/draft-center-locations";
 
 type DraftCenterLocationEditFormProps = {

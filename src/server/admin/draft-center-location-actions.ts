@@ -5,6 +5,12 @@ import { revalidatePath } from "next/cache";
 
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import type { Database } from "@/lib/supabase/types";
+import type {
+  DraftCenterLocationCreateState,
+  DraftCenterLocationEditState,
+  DraftCenterLocationPrimaryState,
+  DraftCenterLocationReviewState,
+} from "@/server/admin/draft-center-location-action-types";
 import { writeAdminAuditEvent } from "@/server/admin/audit-log";
 import { requireAdminPermission } from "@/server/admin/permissions";
 
@@ -12,26 +18,6 @@ type CenterLocationInsert = Database["public"]["Tables"]["center_locations"]["In
 type CenterLocationRow = Database["public"]["Tables"]["center_locations"]["Row"];
 type CenterLocationUpdate = Database["public"]["Tables"]["center_locations"]["Update"];
 type DraftCenterStatus = Database["public"]["Enums"]["provider_status"];
-
-type DraftCenterLocationCreateState = {
-  ok: boolean;
-  message: string | null;
-};
-
-type DraftCenterLocationEditState = {
-  ok: boolean;
-  message: string | null;
-};
-
-type DraftCenterLocationPrimaryState = {
-  ok: boolean;
-  message: string | null;
-};
-
-type DraftCenterLocationReviewState = {
-  ok: boolean;
-  message: string | null;
-};
 
 type ReviewLocationRow = Pick<
   CenterLocationRow,
@@ -97,6 +83,26 @@ function safeSlugPart(value: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 48) || "location";
+}
+
+function isNextControlFlowError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null || !("digest" in error)) {
+    return false;
+  }
+
+  const digest = (error as { digest?: unknown }).digest;
+  return (
+    typeof digest === "string" &&
+    (digest.startsWith("NEXT_REDIRECT") || digest.startsWith("NEXT_NOT_FOUND"))
+  );
+}
+
+function safeActionFailure<T>(error: unknown, state: T): T {
+  if (isNextControlFlowError(error)) {
+    throw error;
+  }
+
+  return state;
 }
 
 function hasEditableLocationText(formData: FormData): boolean {
@@ -190,7 +196,7 @@ function locationUpdatePayload(formData: FormData): CenterLocationUpdate {
   };
 }
 
-export async function createDraftCenterLocationCandidate(
+async function createDraftCenterLocationCandidateImpl(
   _previousState: DraftCenterLocationCreateState,
   formData: FormData,
 ): Promise<DraftCenterLocationCreateState> {
@@ -267,7 +273,18 @@ export async function createDraftCenterLocationCandidate(
   };
 }
 
-export async function updateDraftCenterLocationCandidate(
+export async function createDraftCenterLocationCandidate(
+  previousState: DraftCenterLocationCreateState,
+  formData: FormData,
+): Promise<DraftCenterLocationCreateState> {
+  try {
+    return await createDraftCenterLocationCandidateImpl(previousState, formData);
+  } catch (error) {
+    return safeActionFailure(error, failure);
+  }
+}
+
+async function updateDraftCenterLocationCandidateImpl(
   _previousState: DraftCenterLocationEditState,
   formData: FormData,
 ): Promise<DraftCenterLocationEditState> {
@@ -341,7 +358,18 @@ export async function updateDraftCenterLocationCandidate(
   };
 }
 
-export async function setPrimaryDraftCenterLocationCandidate(
+export async function updateDraftCenterLocationCandidate(
+  previousState: DraftCenterLocationEditState,
+  formData: FormData,
+): Promise<DraftCenterLocationEditState> {
+  try {
+    return await updateDraftCenterLocationCandidateImpl(previousState, formData);
+  } catch (error) {
+    return safeActionFailure(error, editFailure);
+  }
+}
+
+async function setPrimaryDraftCenterLocationCandidateImpl(
   _previousState: DraftCenterLocationPrimaryState,
   formData: FormData,
 ): Promise<DraftCenterLocationPrimaryState> {
@@ -418,7 +446,18 @@ export async function setPrimaryDraftCenterLocationCandidate(
   };
 }
 
-export async function markDraftCenterLocationReadyForReview(
+export async function setPrimaryDraftCenterLocationCandidate(
+  previousState: DraftCenterLocationPrimaryState,
+  formData: FormData,
+): Promise<DraftCenterLocationPrimaryState> {
+  try {
+    return await setPrimaryDraftCenterLocationCandidateImpl(previousState, formData);
+  } catch (error) {
+    return safeActionFailure(error, primaryFailure);
+  }
+}
+
+async function markDraftCenterLocationReadyForReviewImpl(
   _previousState: DraftCenterLocationReviewState,
   formData: FormData,
 ): Promise<DraftCenterLocationReviewState> {
@@ -512,9 +551,13 @@ export async function markDraftCenterLocationReadyForReview(
   };
 }
 
-export type {
-  DraftCenterLocationCreateState,
-  DraftCenterLocationEditState,
-  DraftCenterLocationPrimaryState,
-  DraftCenterLocationReviewState,
-};
+export async function markDraftCenterLocationReadyForReview(
+  previousState: DraftCenterLocationReviewState,
+  formData: FormData,
+): Promise<DraftCenterLocationReviewState> {
+  try {
+    return await markDraftCenterLocationReadyForReviewImpl(previousState, formData);
+  } catch (error) {
+    return safeActionFailure(error, reviewFailure);
+  }
+}

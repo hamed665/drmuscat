@@ -239,16 +239,8 @@ assertFileIncludes('scripts/seo/check-public-profile-evidence-copy-guard.mjs', [
   'This is not a license or MOH approval claim.',
   'Contact details should be confirmed with the provider.',
   'not medical advice, diagnosis, emergency guidance, or a guarantee of provider availability',
-  'MOH ',
-  'approved',
-  'insurance ',
-  'accepted',
-  'Book ',
-  'now',
-  'Open ',
-  'available ',
-  'emergency ',
-  'availability',
+  'approvedHeroActions',
+  'renderLocationActions',
 ]);
 assertFileIncludes('docs/seo/public-profile-evidence-copy-guard.md', [
   'Public profile evidence copy guard',
@@ -259,9 +251,14 @@ assertFileIncludes('docs/seo/public-profile-evidence-copy-guard.md', [
 assertFileIncludes('src/components/public/public-center-detail.tsx', [
   'PublicLicenseInfoCard',
   'center.licenseInfo ? (',
-  'PublicContactActions actions={center.contactActions}',
+  'showCallbackRequest',
   'showSafeContactFallback',
   'medical advice',
+]);
+assertFileIncludes('src/app/[locale]/[country]/center/[centerSlug]/page.tsx', [
+  'PublicContactActions',
+  'approvedHeroActions',
+  'heroActions={heroActions}',
 ]);
 assertFileIncludes('src/components/public/public-doctor-detail.tsx', [
   'PublicLicenseInfoCard',

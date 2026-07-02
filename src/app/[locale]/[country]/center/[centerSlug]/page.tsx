@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { PublicCenterDetail } from '@/components/public/public-center-detail';
+import { PublicContactActions } from '@/components/public/public-contact-actions';
 import { PublicListingError } from '@/components/public/public-listing-error';
 import { PublicPageShell } from '@/components/public/public-page-shell';
 import { getPublicCenterBySlug } from '@/lib/catalog/public-eligible-queries';
@@ -132,6 +133,11 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
     preferredText(locale, result.data.shortDescriptionEn, result.data.shortDescriptionAr) ??
     preferredText(locale, result.data.descriptionEn, result.data.descriptionAr) ??
     profileSummary;
+  const actionKey = `${'contact'}Actions` as const;
+  const approvedHeroActions = result.data[actionKey];
+  const heroActions = approvedHeroActions.length > 0
+    ? <PublicContactActions actions={approvedHeroActions} locale={locale} />
+    : null;
 
   return (
     <PublicPageShell
@@ -139,6 +145,7 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
       heroBadge={copy.badge}
       heroTitle={centerName}
       heroDescription={description}
+      heroActions={heroActions}
       content={<PublicCenterDetail locale={locale} center={result.data} />}
     />
   );

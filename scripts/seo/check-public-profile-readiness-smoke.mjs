@@ -104,6 +104,7 @@ for (const token of [
   'generateMetadata',
   'getPublicCenterBySlug',
   'PublicCenterDetail',
+  'PublicContactActions',
   'PublicPageShell',
   'PublicListingError',
   'buildNoindexFallbackMetadata',
@@ -113,11 +114,11 @@ for (const token of [
   'notFound()',
   'fallbackTitle',
   'fallbackDescription',
+  'heroActions={heroActions}',
 ]) {
   assertIncludes(centerRoute, token, centerRoutePath);
 }
 for (const forbiddenToken of [
-  'contactActions',
   'Book now',
   'Open now',
   'AggregateRating',
@@ -167,13 +168,22 @@ for (const token of [
   'View doctor profile',
   'عرض ملف الطبيب',
   'This is not a license or MOH approval claim.',
-  'Medical safety note',
   'not medical advice, diagnosis, emergency guidance, or a guarantee of provider availability',
-  'Future profile sections',
-  'Reviews',
-  'Premium profile',
+  'showCallbackRequest',
+  'showSafeContactFallback',
+  'showVerification',
+  'visibleServices.length > 0 ?',
+  'visibleDoctors.length > 0 ?',
 ]) {
   assertIncludes(centerDetail, token, centerDetailPath);
+}
+for (const token of [
+  'futureSlots',
+  'futureTitle',
+  'renderLocationActions',
+  'verificationPlaceholder',
+]) {
+  assertNotIncludes(centerDetail, token, centerDetailPath);
 }
 
 const doctorDetailPath = 'src/components/public/public-doctor-detail.tsx';

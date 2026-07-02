@@ -133,6 +133,9 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
     preferredText(locale, result.data.shortDescriptionEn, result.data.shortDescriptionAr) ??
     preferredText(locale, result.data.descriptionEn, result.data.descriptionAr) ??
     profileSummary;
+  const heroActions = result.data.contactActions.length > 0
+    ? <PublicContactActions actions={result.data.contactActions} locale={locale} />
+    : null;
 
   return (
     <PublicPageShell
@@ -140,7 +143,7 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
       heroBadge={copy.badge}
       heroTitle={centerName}
       heroDescription={description}
-      heroActions={<PublicContactActions actions={result.data.contactActions} locale={locale} />}
+      heroActions={heroActions}
       content={<PublicCenterDetail locale={locale} center={result.data} />}
     />
   );

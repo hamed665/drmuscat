@@ -27,6 +27,24 @@ describe('public contact actions', () => {
     expect(actions.find((action) => action.kind === 'website')?.labelEn).toBe('Visit website');
   });
 
+  it('prefers an Oman landline for call actions when a mobile WhatsApp number is also present', () => {
+    const actions = buildPublicContactActions({
+      contactReviewStatus: 'approved',
+      country: 'om',
+      primaryPhone: '91234567',
+      secondaryPhone: '24123456',
+      whatsappPhone: '91234567',
+      publicPrimaryPhoneVisible: true,
+      publicSecondaryPhoneVisible: true,
+      publicWhatsappPhoneVisible: true,
+    });
+
+    const callActions = actions.filter((action) => action.kind === 'call');
+    expect(callActions).toHaveLength(1);
+    expect(callActions[0]?.href).toBe('tel:24123456');
+    expect(actions.find((action) => action.kind === 'whatsapp')?.href).toBe('https://wa.me/96891234567');
+  });
+
   it('keeps email hidden until the reviewed visibility flag is true', () => {
     const actions = buildPublicContactActions({
       contactReviewStatus: 'approved',

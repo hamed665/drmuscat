@@ -74,6 +74,16 @@ type ResolvedPublicContactActionLabels = {
   websiteAr: string;
 };
 
+type PublicCallCandidate = {
+  value: string | null | undefined;
+  isVisible: boolean | null | undefined;
+};
+
+type BuiltPublicCallCandidate = {
+  action: PublicContactAction;
+  isPreferredLandline: boolean;
+};
+
 function createPublicContactAction(
   kind: PublicContactActionKind,
   href: string,
@@ -116,6 +126,21 @@ function hasPublicContactValue(value: string | null | undefined): boolean {
 
 function isBlockedPublicContactReviewStatus(contactReviewStatus: string | null | undefined): boolean {
   return contactReviewStatus === 'rejected' || contactReviewStatus === 'suspended';
+}
+
+function publicTelDigits(value: string | null | undefined): string | null {
+  const href = normalizePublicTelHref(value);
+  if (!href) return null;
+  return href.replace(/^tel:\+?/, '');
+}
+
+function isPreferredOmanLandline(value: string | null | undefined, country: PublicContactCountry | null | undefined): boolean {
+  if (country !== 'om') return false;
+  const digits = publicTelDigits(value);
+  if (!digits) return false;
+
+  const localDigits = digits.startsWith('968') ? digits.slice(3) : digits;
+  return /^2\d{7}$/.test(localDigits);
 }
 
 export function isApprovedPublicContact(contactReviewStatus: string | null | undefined): boolean {
@@ -212,6 +237,35 @@ export function buildPublicCallAction(
   return createPublicContactAction('call', href, resolvePublicContactLabels(labels));
 }
 
+function buildPublicCallActions(
+  candidates: PublicCallCandidate[],
+  country: PublicContactCountry | null | undefined,
+  contactReviewStatus: string | null | undefined,
+  labels: ResolvedPublicContactActionLabels,
+  allowPublicDirectoryFallback: boolean
+): PublicContactAction[] {
+  const builtCandidates: BuiltPublicCallCandidate[] = [];
+
+  for (const candidate of candidates) {
+    const action = buildPublicCallAction(
+      candidate.value,
+      candidate.isVisible,
+      contactReviewStatus,
+      labels,
+      allowPublicDirectoryFallback
+    );
+    if (!action) continue;
+
+    builtCandidates.push({
+      action,
+      isPreferredLandline: isPreferredOmanLandline(candidate.value, country)
+    });
+  }
+
+  const preferredLandlines = builtCandidates.filter((candidate) => candidate.isPreferredLandline);
+  return (preferredLandlines.length > 0 ? preferredLandlines : builtCandidates).map((candidate) => candidate.action);
+}
+
 export function buildPublicWhatsAppAction(
   value: string | null | undefined,
   isVisible: boolean | null | undefined,
@@ -273,8 +327,16 @@ export function buildPublicContactActions(source: PublicContactSource): PublicCo
   });
 
   const candidates = [
-    buildPublicCallAction(source.primaryPhone, source.publicPrimaryPhoneVisible, source.contactReviewStatus, labels, allowPublicDirectoryFallback),
-    buildPublicCallAction(source.secondaryPhone, source.publicSecondaryPhoneVisible, source.contactReviewStatus, labels, allowPublicDirectoryFallback),
+    ...buildPublicCallActions(
+      [
+        { value: source.primaryPhone, isVisible: source.publicPrimaryPhoneVisible },
+        { value: source.secondaryPhone, isVisible: source.publicSecondaryPhoneVisible }
+      ],
+      source.country,
+      source.contactReviewStatus,
+      labels,
+      allowPublicDirectoryFallback
+    ),
     buildPublicWhatsAppAction(source.whatsappPhone, source.publicWhatsappPhoneVisible, source.contactReviewStatus, source.country, labels, allowPublicDirectoryFallback),
     buildPublicEmailAction(source.email, source.publicEmailVisible, source.contactReviewStatus, labels, allowPublicDirectoryFallback),
     buildPublicWebsiteAction(source.websiteUrl, source.contactReviewStatus, labels, allowPublicDirectoryFallback)

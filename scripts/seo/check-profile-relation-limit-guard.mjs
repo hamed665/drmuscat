@@ -87,7 +87,7 @@ for (const token of [
   'showCallbackRequest',
   'showSafeContactFallback',
   'showVerification',
-  'Public discovery only. Not medical advice',
+  'This public profile is for healthcare discovery only.',
 ]) {
   assertIncludes(centerDetail, token, centerDetailPath);
 }

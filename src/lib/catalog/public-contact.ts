@@ -34,6 +34,7 @@ type PublicContactSource = PublicContactActionLabels & {
   publicSecondaryPhoneVisible?: boolean | null;
   publicWhatsappPhoneVisible?: boolean | null;
   publicEmailVisible?: boolean | null;
+  allowPublicDirectoryFallback?: boolean | null;
 };
 
 export type PublicContactVisibilityInput = {
@@ -42,6 +43,7 @@ export type PublicContactVisibilityInput = {
   locationActive?: boolean | null | undefined;
   providerPublicEligible?: boolean | null | undefined;
   value?: string | null | undefined;
+  allowPublicDirectoryFallback?: boolean | null | undefined;
 };
 
 const DEFAULT_CALL_LABEL_EN = 'Call center';
@@ -112,6 +114,10 @@ function hasPublicContactValue(value: string | null | undefined): boolean {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+function isBlockedPublicContactReviewStatus(contactReviewStatus: string | null | undefined): boolean {
+  return contactReviewStatus === 'rejected' || contactReviewStatus === 'suspended';
+}
+
 export function isApprovedPublicContact(contactReviewStatus: string | null | undefined): boolean {
   return contactReviewStatus === 'approved';
 }
@@ -119,8 +125,13 @@ export function isApprovedPublicContact(contactReviewStatus: string | null | und
 export function isPublicContactVisible(input: PublicContactVisibilityInput): boolean {
   if (input.providerPublicEligible === false) return false;
   if (input.locationActive === false) return false;
-  if (input.isVisible !== true) return false;
   if (!hasPublicContactValue(input.value)) return false;
+
+  if (input.allowPublicDirectoryFallback === true) {
+    return !isBlockedPublicContactReviewStatus(input.contactReviewStatus);
+  }
+
+  if (input.isVisible !== true) return false;
 
   return isApprovedPublicContact(input.contactReviewStatus);
 }
@@ -190,9 +201,10 @@ export function buildPublicCallAction(
   value: string | null | undefined,
   isVisible: boolean | null | undefined,
   contactReviewStatus: string | null | undefined,
-  labels?: PublicContactActionLabels
+  labels?: PublicContactActionLabels,
+  allowPublicDirectoryFallback?: boolean | null
 ): PublicContactAction | null {
-  if (!isPublicContactVisible({ contactReviewStatus, isVisible, value })) return null;
+  if (!isPublicContactVisible({ contactReviewStatus, isVisible, value, allowPublicDirectoryFallback })) return null;
 
   const href = normalizePublicTelHref(value);
   if (!href) return null;
@@ -205,9 +217,10 @@ export function buildPublicWhatsAppAction(
   isVisible: boolean | null | undefined,
   contactReviewStatus: string | null | undefined,
   country: PublicContactCountry | null | undefined,
-  labels?: PublicContactActionLabels
+  labels?: PublicContactActionLabels,
+  allowPublicDirectoryFallback?: boolean | null
 ): PublicContactAction | null {
-  if (!isPublicContactVisible({ contactReviewStatus, isVisible, value })) return null;
+  if (!isPublicContactVisible({ contactReviewStatus, isVisible, value, allowPublicDirectoryFallback })) return null;
 
   const digits = normalizePublicWhatsAppDigits(value, country);
   if (!digits) return null;
@@ -219,9 +232,10 @@ export function buildPublicEmailAction(
   value: string | null | undefined,
   isVisible: boolean | null | undefined,
   contactReviewStatus: string | null | undefined,
-  labels?: PublicContactActionLabels
+  labels?: PublicContactActionLabels,
+  allowPublicDirectoryFallback?: boolean | null
 ): PublicContactAction | null {
-  if (!isPublicContactVisible({ contactReviewStatus, isVisible, value })) return null;
+  if (!isPublicContactVisible({ contactReviewStatus, isVisible, value, allowPublicDirectoryFallback })) return null;
 
   const href = normalizePublicEmailHref(value);
   if (!href) return null;
@@ -232,9 +246,10 @@ export function buildPublicEmailAction(
 export function buildPublicWebsiteAction(
   value: string | null | undefined,
   contactReviewStatus: string | null | undefined,
-  labels?: PublicContactActionLabels
+  labels?: PublicContactActionLabels,
+  allowPublicDirectoryFallback?: boolean | null
 ): PublicContactAction | null {
-  if (!isPublicContactVisible({ contactReviewStatus, isVisible: true, value })) return null;
+  if (!isPublicContactVisible({ contactReviewStatus, isVisible: true, value, allowPublicDirectoryFallback })) return null;
 
   const href = normalizePublicWebsiteHref(value);
   if (!href) return null;
@@ -243,7 +258,8 @@ export function buildPublicWebsiteAction(
 }
 
 export function buildPublicContactActions(source: PublicContactSource): PublicContactAction[] {
-  if (!isApprovedPublicContact(source.contactReviewStatus)) return [];
+  const allowPublicDirectoryFallback = source.allowPublicDirectoryFallback === true;
+  if (!allowPublicDirectoryFallback && !isApprovedPublicContact(source.contactReviewStatus)) return [];
 
   const labels = resolvePublicContactLabels({
     callEn: source.callEn,
@@ -257,11 +273,11 @@ export function buildPublicContactActions(source: PublicContactSource): PublicCo
   });
 
   const candidates = [
-    buildPublicCallAction(source.primaryPhone, source.publicPrimaryPhoneVisible, source.contactReviewStatus, labels),
-    buildPublicCallAction(source.secondaryPhone, source.publicSecondaryPhoneVisible, source.contactReviewStatus, labels),
-    buildPublicWhatsAppAction(source.whatsappPhone, source.publicWhatsappPhoneVisible, source.contactReviewStatus, source.country, labels),
-    buildPublicEmailAction(source.email, source.publicEmailVisible, source.contactReviewStatus, labels),
-    buildPublicWebsiteAction(source.websiteUrl, source.contactReviewStatus, labels)
+    buildPublicCallAction(source.primaryPhone, source.publicPrimaryPhoneVisible, source.contactReviewStatus, labels, allowPublicDirectoryFallback),
+    buildPublicCallAction(source.secondaryPhone, source.publicSecondaryPhoneVisible, source.contactReviewStatus, labels, allowPublicDirectoryFallback),
+    buildPublicWhatsAppAction(source.whatsappPhone, source.publicWhatsappPhoneVisible, source.contactReviewStatus, source.country, labels, allowPublicDirectoryFallback),
+    buildPublicEmailAction(source.email, source.publicEmailVisible, source.contactReviewStatus, labels, allowPublicDirectoryFallback),
+    buildPublicWebsiteAction(source.websiteUrl, source.contactReviewStatus, labels, allowPublicDirectoryFallback)
   ];
 
   const seenActions = new Set<string>();

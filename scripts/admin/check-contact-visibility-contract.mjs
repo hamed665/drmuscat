@@ -87,14 +87,14 @@ for (const token of [
   "createPublicContactAction('email'",
   "createPublicContactAction('website'",
   'if (!isApprovedPublicContact(contactReviewStatus)) return null',
+  'const hasAllowedScheme = /^https?:\\/\\//i.test(trimmedValue)',
+  'const hasAnyScheme = /^[a-z][a-z0-9+.-]*:/i.test(trimmedValue)',
+  'if (hasAnyScheme && !hasAllowedScheme) return null',
+  "if (url.protocol !== 'https:' && url.protocol !== 'http:') return null",
+  'if (url.username || url.password) return null',
   "buildPublicEmailAction(source.email, source.publicEmailVisible, source.contactReviewStatus, labels)",
   'buildPublicWebsiteAction(source.websiteUrl, source.contactReviewStatus, labels)',
 ]) {
-  assertIncludes(publicContact, token, publicContactPath);
-}
-
-const blockedProtocolTokens = [['java', 'script:'].join(''), ['da', 'ta:'].join('')];
-for (const token of blockedProtocolTokens) {
   assertIncludes(publicContact, token, publicContactPath);
 }
 

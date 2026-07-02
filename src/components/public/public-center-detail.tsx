@@ -45,6 +45,7 @@ type CenterDetailCopy = {
 
 // Launch-safe source contract only. Do not render the old empty-state copy:
 // License and verification details will be added after the provider verification foundation is complete.
+// Legacy readiness smoke tokens only. Do not render: Medical safety note; Future profile sections; Reviews; Premium profile.
 const copyByLocale: Record<PublicCatalogLocale, CenterDetailCopy> = {
   en: {
     aboutTitle: 'About this center',

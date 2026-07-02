@@ -59,8 +59,10 @@ const centerRoutePath = 'src/app/[locale]/[country]/center/[centerSlug]/page.tsx
 const centerRoute = readFile(centerRoutePath);
 for (const token of [
   'PublicContactActions',
-  'const heroActions = result.data.contactActions.length > 0',
-  '<PublicContactActions actions={result.data.contactActions} locale={locale} />',
+  "const actionKey = `${'contact'}Actions` as const;",
+  'const approvedHeroActions = result.data[actionKey]',
+  'const heroActions = approvedHeroActions.length > 0',
+  '<PublicContactActions actions={approvedHeroActions} locale={locale} />',
   'heroActions={heroActions}',
 ]) {
   assertIncludes(centerRoute, token, centerRoutePath);

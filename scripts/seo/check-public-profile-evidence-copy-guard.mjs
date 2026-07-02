@@ -25,6 +25,16 @@ function assertNotIncludes(content, token, label) {
   }
 }
 
+const centerRoutePath = 'src/app/[locale]/[country]/center/[centerSlug]/page.tsx';
+const centerRoute = readFile(centerRoutePath);
+for (const token of [
+  'PublicContactActions',
+  'const approvedHeroActions = result.data[actionKey]',
+  'heroActions={heroActions}',
+]) {
+  assertIncludes(centerRoute, token, centerRoutePath);
+}
+
 const centerDetailPath = 'src/components/public/public-center-detail.tsx';
 const centerDetail = readFile(centerDetailPath);
 for (const token of [
@@ -37,11 +47,16 @@ for (const token of [
   'center.contactActions.length > 0',
   'showSafeContactFallback',
   'Contact details should be confirmed with the provider.',
-  'PublicContactActions actions={center.contactActions}',
-  'PublicContactActions actions={location.contactActions}',
   'not medical advice, diagnosis, emergency guidance, or a guarantee of provider availability',
 ]) {
   assertIncludes(centerDetail, token, centerDetailPath);
+}
+for (const token of [
+  '<PublicContactActions actions={center.contactActions}',
+  '<PublicContactActions actions={location.contactActions}',
+  'renderLocationActions',
+]) {
+  assertNotIncludes(centerDetail, token, centerDetailPath);
 }
 
 const doctorDetailPath = 'src/components/public/public-doctor-detail.tsx';
@@ -86,6 +101,7 @@ const forbiddenClaimTokens = [
 ];
 for (const token of forbiddenClaimTokens) {
   assertNotIncludes(centerDetail, token, centerDetailPath);
+  assertNotIncludes(centerRoute, token, centerRoutePath);
   assertNotIncludes(doctorDetail, token, doctorDetailPath);
 }
 

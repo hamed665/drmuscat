@@ -20,6 +20,7 @@ type PublicCenterInfoRow = Pick<
   | 'public_whatsapp_phone_visible'
   | 'public_email_visible'
   | 'contact_review_status'
+  | 'verification_status'
 >;
 
 type PublicCenterLocationInfoRow = Pick<
@@ -94,7 +95,8 @@ const centerInfoSelect = [
   'public_secondary_phone_visible',
   'public_whatsapp_phone_visible',
   'public_email_visible',
-  'contact_review_status'
+  'contact_review_status',
+  'verification_status'
 ].join(',');
 
 const locationInfoSelect = [
@@ -128,7 +130,13 @@ function createEmptyPublicCenterInfo(error = false): PublicCenterPublicInfo {
   return { contactActions: [], locations: [], error };
 }
 
+function allowActiveCenterDirectoryFallback(center: PublicCenterInfoRow): boolean {
+  return center.verification_status === 'verified';
+}
+
 export function mapPublicCenterInfoForTest(center: PublicCenterInfoRow): PublicCenterPublicInfo {
+  const allowPublicDirectoryFallback = allowActiveCenterDirectoryFallback(center);
+
   return {
     contactActions: buildPublicContactActions({
       contactReviewStatus: center.contact_review_status,
@@ -141,7 +149,8 @@ export function mapPublicCenterInfoForTest(center: PublicCenterInfoRow): PublicC
       publicPrimaryPhoneVisible: center.public_primary_phone_visible,
       publicSecondaryPhoneVisible: center.public_secondary_phone_visible,
       publicWhatsappPhoneVisible: center.public_whatsapp_phone_visible,
-      publicEmailVisible: center.public_email_visible
+      publicEmailVisible: center.public_email_visible,
+      allowPublicDirectoryFallback
     }),
     locations: [],
     error: false
@@ -152,6 +161,8 @@ function mapLocationInfoRow(
   row: PublicCenterLocationInfoRow,
   center: PublicCenterInfoRow
 ): PublicCenterPublicLocationInfo {
+  const allowPublicDirectoryFallback = allowActiveCenterDirectoryFallback(center);
+
   return {
     id: row.id,
     locationNameEn: row.name_en,
@@ -178,7 +189,8 @@ function mapLocationInfoRow(
       publicPrimaryPhoneVisible: row.public_primary_phone_visible,
       publicSecondaryPhoneVisible: row.public_secondary_phone_visible,
       publicWhatsappPhoneVisible: row.public_whatsapp_phone_visible,
-      publicEmailVisible: row.public_email_visible
+      publicEmailVisible: row.public_email_visible,
+      allowPublicDirectoryFallback
     })
   };
 }

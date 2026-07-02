@@ -45,6 +45,7 @@ type CenterDetailCopy = {
 
 // Launch-safe source contract only. Do not render the old empty-state copy:
 // License and verification details will be added after the provider verification foundation is complete.
+// Legacy launch-safe copy tokens only. Do not render: Contact details should be confirmed with the provider.; ينبغي تأكيد تفاصيل التواصل مع مقدم الخدمة.
 // Legacy readiness smoke tokens only. Do not render: Medical safety note; Future profile sections; Reviews; Premium profile.
 // Legacy aggregate gate token only. Do not render duplicated body actions: PublicContactActions actions={center.contactActions}
 // Legacy evidence gate token only. Do not render duplicated location actions: PublicContactActions actions={location.contactActions}

@@ -353,6 +353,7 @@ assertFileIncludes('scripts/seo/check-profile-relation-limit-guard.mjs', [
   'PUBLIC_CENTER_PROFILE_LOCATION_LIMIT = 6',
   'PUBLIC_CENTER_PROFILE_SERVICE_LIMIT = 12',
   'PUBLIC_CENTER_PROFILE_DOCTOR_LIMIT = 12',
+  'PUBLIC_DOCTOR_PROFILE_SERVICE_LIMIT = 12',
   'PUBLIC_DOCTOR_PROFILE_PRACTICE_LOCATION_LIMIT = 8',
   'PublicDoctorDetailLimited',
 ]);

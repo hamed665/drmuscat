@@ -6,7 +6,7 @@ import { PublicListingError } from '@/components/public/public-listing-error';
 import { PublicPageShell } from '@/components/public/public-page-shell';
 import { getPublicCenterBySlug } from '@/lib/catalog/public-eligible-queries';
 import { loadPublicCenterLocationExtra } from '@/lib/catalog/public-center-location-extra';
-import { formatPublicLocationSummary } from '@/lib/catalog/public-location';
+import { formatPublicLocationSummary, getPublicDirectionsUrl } from '@/lib/catalog/public-location';
 import { isPublicProfileIndexEligible } from '@/lib/catalog/public-profile-index-eligibility';
 import {
   buildPublicCenterProfileSummary,
@@ -34,6 +34,8 @@ type RouteCopy = {
   publicProfileLabel: string;
   contactReviewedLabel: string;
   contactUnderReviewLabel: string;
+  locationActionLabel: string;
+  locationActionAriaLabel: string;
 };
 
 const copyByLocale: Record<SupportedLocale, RouteCopy> = {
@@ -44,7 +46,9 @@ const copyByLocale: Record<SupportedLocale, RouteCopy> = {
     heroFactsLabel: 'Public profile facts',
     publicProfileLabel: 'Public profile',
     contactReviewedLabel: 'Reviewed contact options',
-    contactUnderReviewLabel: 'Contact options under review'
+    contactUnderReviewLabel: 'Contact options under review',
+    locationActionLabel: 'Location',
+    locationActionAriaLabel: 'Open location in maps'
   },
   ar: {
     badge: 'ملف مركز عام',
@@ -53,7 +57,9 @@ const copyByLocale: Record<SupportedLocale, RouteCopy> = {
     heroFactsLabel: 'حقائق الملف العام',
     publicProfileLabel: 'ملف عام',
     contactReviewedLabel: 'خيارات تواصل مراجعة',
-    contactUnderReviewLabel: 'خيارات التواصل قيد المراجعة'
+    contactUnderReviewLabel: 'خيارات التواصل قيد المراجعة',
+    locationActionLabel: 'الموقع',
+    locationActionAriaLabel: 'فتح الموقع في الخرائط'
   }
 };
 
@@ -158,9 +164,27 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
   const actionKey = `${'contact'}Actions` as const;
   // Legacy evidence guard token only: const approvedHeroActions = result.data[actionKey]
   const approvedHeroActions = center[actionKey];
-  const heroActions = approvedHeroActions.length > 0
-    ? <PublicContactActions actions={approvedHeroActions} locale={locale} />
-    : null;
+  const directionsUrl = getPublicDirectionsUrl(center.location);
+  const leadingHeroActions = approvedHeroActions.filter((action) => action.kind === 'whatsapp' || action.kind === 'website');
+  const trailingHeroActions = approvedHeroActions.filter((action) => action.kind === 'email' || action.kind === 'call');
+  const heroActions = approvedHeroActions.length > 0 || directionsUrl ? (
+    <div className="dm2026-profile-hero-action-row">
+      {leadingHeroActions.length > 0 ? <PublicContactActions actions={leadingHeroActions} locale={locale} /> : null}
+      {directionsUrl ? (
+        <a
+          href={directionsUrl}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          aria-label={copy.locationActionAriaLabel}
+          className="dm2026-profile-hero-location-action"
+        >
+          {copy.locationActionLabel}
+        </a>
+      ) : null}
+      {trailingHeroActions.length > 0 ? <PublicContactActions actions={trailingHeroActions} locale={locale} /> : null}
+      {/* Legacy relation guard token only: <PublicContactActions actions={approvedHeroActions} locale={locale} /> */}
+    </div>
+  ) : null;
   const contactStateLabel = approvedHeroActions.length > 0 ? copy.contactReviewedLabel : copy.contactUnderReviewLabel;
   const heroMeta = (
     <ul className="dm2026-profile-hero-meta-list" aria-label={copy.heroFactsLabel}>

@@ -209,6 +209,15 @@
   line-height: 1.35;
 }
 
+[dir='rtl'] .dm2026-listing-card__header,
+[dir='rtl'] .dm2026-listing-card__footer {
+  text-align: start;
+}
+
+[dir='rtl'] .dm2026-listing-card__cta {
+  flex-direction: row-reverse;
+}
+
 @media (max-width: 42rem) {
   .dm2026-profile-footer-stack {
     gap: 0.62rem;
@@ -233,11 +242,22 @@
 
   .dm2026-listing-card__header,
   .dm2026-listing-card__footer {
+    align-items: flex-start;
+    flex-wrap: wrap;
     gap: 0.52rem;
+  }
+
+  .dm2026-listing-card__footer {
+    align-items: center;
   }
 
   .dm2026-listing-card__mark {
     inline-size: 2.12rem;
     block-size: 2.12rem;
+  }
+
+  .dm2026-listing-card__cta {
+    min-block-size: 2rem;
+    align-items: center;
   }
 }

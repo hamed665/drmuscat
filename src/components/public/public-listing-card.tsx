@@ -56,7 +56,7 @@ function PublicListingCta({ href, locale }: { href: string; locale: PublicCatalo
   return (
     <Link href={href} className="dm2026-listing-card__cta">
       {byLocale(locale, 'View profile', 'عرض الملف')}
-      <span aria-hidden="true">→</span>
+      <span aria-hidden="true">{locale === 'ar' ? '←' : '→'}</span>
     </Link>
   );
 }

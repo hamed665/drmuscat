@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { PublicCenterDetail } from './public-types';
 
 type LocationExtraRow = {
@@ -12,6 +13,17 @@ type LocationExtraRow = {
   landmark_ar: string | null;
   postal_code: string | null;
 };
+
+const LOCATION_EXTRA_SELECT = [
+  'id',
+  'address_line1_en',
+  'address_line1_ar',
+  'address_line2_en',
+  'address_line2_ar',
+  'landmark_en',
+  'landmark_ar',
+  'postal_code'
+].join(',');
 
 function applyLocationExtra(center: PublicCenterDetail, rows: LocationExtraRow[]): PublicCenterDetail {
   if (rows.length === 0) return center;
@@ -38,5 +50,18 @@ function applyLocationExtra(center: PublicCenterDetail, rows: LocationExtraRow[]
 }
 
 export async function loadPublicCenterLocationExtra(center: PublicCenterDetail): Promise<PublicCenterDetail> {
-  return applyLocationExtra(center, []);
+  const locationIds = center.locations.map((location) => location.id);
+  if (locationIds.length === 0) return center;
+
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('center_locations')
+    .select(LOCATION_EXTRA_SELECT)
+    .in('id', locationIds)
+    .eq('is_active', true)
+    .is('deleted_at', null);
+
+  if (error || !data) return center;
+
+  return applyLocationExtra(center, data as LocationExtraRow[]);
 }

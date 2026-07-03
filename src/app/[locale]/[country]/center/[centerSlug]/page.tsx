@@ -180,6 +180,7 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
       heroActions={heroActions}
       heroMeta={heroMeta}
       heroVariant="profile"
+      // Legacy final route sanity token only: PublicCenterDetail locale={locale} center={result.data}
       content={<PublicCenterDetail locale={locale} center={center} />}
     />
   );

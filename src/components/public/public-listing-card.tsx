@@ -44,19 +44,22 @@ function listingHref(locale: PublicCatalogLocale, country: string, family: 'cent
   return `/${locale}/${country.toLowerCase()}/${family}/${slug}`;
 }
 
-const cardClassName =
-  'h-full rounded-2xl border border-slate-200/70 bg-white/75 p-5 shadow-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md';
+function PublicListingMark({ label }: { label: string }) {
+  return (
+    <span className="dm2026-listing-card__mark" aria-hidden="true">
+      {label.slice(0, 1).toUpperCase()}
+    </span>
+  );
+}
 
-const titleLinkClassName = 'text-base font-semibold leading-7 text-slate-950 underline-offset-4 hover:text-emerald-800 hover:underline';
-
-const tagClassName =
-  'mt-3 inline-flex w-fit rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-800';
-
-const descriptionClassName = 'mt-4 text-sm leading-6 text-slate-600';
-
-const comingSoonClassName = 'mt-5 text-xs font-medium text-slate-500';
-
-const profileLinkClassName = 'mt-5 inline-flex text-xs font-semibold text-emerald-800 underline-offset-4 hover:underline';
+function PublicListingCta({ href, locale }: { href: string; locale: PublicCatalogLocale }) {
+  return (
+    <Link href={href} className="dm2026-listing-card__cta">
+      {byLocale(locale, 'View profile', 'عرض الملف')}
+      <span aria-hidden="true">→</span>
+    </Link>
+  );
+}
 
 export function PublicListingCard(props: PublicListingCardProps) {
   if (props.variant === 'center') {
@@ -67,17 +70,19 @@ export function PublicListingCard(props: PublicListingCardProps) {
     const href = listingHref(props.locale, props.item.defaultCountry, 'center', props.item.slug);
 
     return (
-      <article className={cardClassName}>
-        <h3>
-          <Link href={href} className={titleLinkClassName}>
-            {name}
-          </Link>
+      <article className="dm2026-listing-card dm2026-listing-card--center">
+        <div className="dm2026-listing-card__header">
+          <PublicListingMark label={name} />
+          <p className="dm2026-listing-card__eyebrow">{formatNeutralLabel(props.item.centerType)}</p>
+        </div>
+        <h3 className="dm2026-listing-card__title">
+          <Link href={href}>{name}</Link>
         </h3>
-        <p className={tagClassName}>{formatNeutralLabel(props.item.centerType)}</p>
-        {description ? <p className={descriptionClassName}>{description}</p> : null}
-        <Link href={href} className={profileLinkClassName}>
-          {byLocale(props.locale, 'View profile', 'عرض الملف')}
-        </Link>
+        {description ? <p className="dm2026-listing-card__description">{description}</p> : null}
+        <div className="dm2026-listing-card__footer">
+          <p>{byLocale(props.locale, 'Public profile', 'ملف عام')}</p>
+          <PublicListingCta href={href} locale={props.locale} />
+        </div>
       </article>
     );
   }
@@ -87,16 +92,18 @@ export function PublicListingCard(props: PublicListingCardProps) {
     const href = listingHref(props.locale, props.item.defaultCountry, 'doctor', props.item.slug);
 
     return (
-      <article className={cardClassName}>
-        <h3>
-          <Link href={href} className={titleLinkClassName}>
-            {name}
-          </Link>
+      <article className="dm2026-listing-card dm2026-listing-card--doctor">
+        <div className="dm2026-listing-card__header">
+          <PublicListingMark label={name} />
+          <p className="dm2026-listing-card__eyebrow">{formatNeutralLabel(props.item.titleEn)}</p>
+        </div>
+        <h3 className="dm2026-listing-card__title">
+          <Link href={href}>{name}</Link>
         </h3>
-        <p className={tagClassName}>{formatNeutralLabel(props.item.titleEn)}</p>
-        <Link href={href} className={profileLinkClassName}>
-          {byLocale(props.locale, 'View profile', 'عرض الملف')}
-        </Link>
+        <div className="dm2026-listing-card__footer">
+          <p>{byLocale(props.locale, 'Doctor profile', 'ملف طبيب')}</p>
+          <PublicListingCta href={href} locale={props.locale} />
+        </div>
       </article>
     );
   }
@@ -105,10 +112,14 @@ export function PublicListingCard(props: PublicListingCardProps) {
   const serviceDescription = preferredText(props.locale, props.item.descriptionEn, props.item.descriptionAr);
 
   return (
-    <article className={cardClassName}>
-      <h3 className="text-base font-semibold leading-7 text-slate-950">{serviceName}</h3>
-      {serviceDescription ? <p className={descriptionClassName}>{serviceDescription}</p> : null}
-      <p className={comingSoonClassName}>{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
+    <article className="dm2026-listing-card dm2026-listing-card--service">
+      <div className="dm2026-listing-card__header">
+        <PublicListingMark label={serviceName} />
+        <p className="dm2026-listing-card__eyebrow">{byLocale(props.locale, 'Service', 'خدمة')}</p>
+      </div>
+      <h3 className="dm2026-listing-card__title">{serviceName}</h3>
+      {serviceDescription ? <p className="dm2026-listing-card__description">{serviceDescription}</p> : null}
+      <p className="dm2026-listing-card__coming-soon">{byLocale(props.locale, 'Profile coming soon', 'الملف قريباً')}</p>
     </article>
   );
 }

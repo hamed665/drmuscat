@@ -33,6 +33,7 @@ for (const token of [
   'ACTIVE_CENTER_CONTACT_EDIT',
   'updateActiveCenterPublicContactDetails',
   'requireAdminPermission("active_centers.public_state.update")',
+  'return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);',
   '.from("centers")',
   '.eq("status", "active")',
   '.eq("is_active", true)',
@@ -48,6 +49,8 @@ for (const token of [
 ]) {
   mustHave(editPage, token, editPagePath);
 }
+
+mustNotHave(editPage, 'return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);', editPagePath);
 
 const allowedFieldNames = uniqueSorted([
   'centerId',
@@ -88,6 +91,7 @@ for (const token of [
   '"use server";',
   'export async function updateActiveCenterPublicContactDetails',
   'requireAdminPermission("active_centers.public_state.update")',
+  'return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);',
   'const centerId = formText(formData, "centerId", 64)',
   'const primaryPhone = formText(formData, "primaryPhone", 64)',
   'const secondaryPhone = formText(formData, "secondaryPhone", 64)',

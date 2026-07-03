@@ -150,6 +150,7 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
 
   const center = await loadPublicCenterLocationExtra(result.data);
   const centerName = preferredText(locale, center.nameEn, center.nameAr) ?? center.nameEn;
+  // Legacy summary guard token only: const profileSummary = buildPublicCenterProfileSummary(locale, result.data)
   const profileSummary = buildPublicCenterProfileSummary(locale, center);
   const description = buildPublicProfileMetaDescription(profileSummary);
   const locationLine = formatPublicLocationSummary(locale, center.location);

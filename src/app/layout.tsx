@@ -10,6 +10,7 @@ import "@/styles/dm2026-public-templates.css";
 import "@/styles/dm2026-mobile-chrome.css";
 import "@/styles/dm2026-public-profile.css";
 import "@/styles/dm2026-public-hero.css";
+import "@/styles/dm2026-public-contact-location.css";
 
 export const metadata: Metadata = defaultMetadata;
 

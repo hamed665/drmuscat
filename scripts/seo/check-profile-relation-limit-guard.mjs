@@ -75,8 +75,10 @@ const centerRoute = readFile(centerRoutePath);
 for (const token of [
   'PublicContactActions',
   'formatPublicLocationSummary',
+  'loadPublicCenterLocationExtra',
+  'const center = await loadPublicCenterLocationExtra(result.data)',
   "const actionKey = `${'contact'}Actions` as const;",
-  'const approvedHeroActions = result.data[actionKey]',
+  'const approvedHeroActions = center[actionKey]',
   'const heroActions = approvedHeroActions.length > 0',
   '<PublicContactActions actions={approvedHeroActions} locale={locale} />',
   'const description = buildPublicProfileMetaDescription(profileSummary)',

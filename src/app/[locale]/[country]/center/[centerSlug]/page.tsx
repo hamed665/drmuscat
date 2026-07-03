@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { PublicCenterDetail } from '@/components/public/public-center-detail';
+import { PublicCenterDetailAddress } from '@/components/public/public-center-detail-address';
 import { PublicContactActions } from '@/components/public/public-contact-actions';
 import { PublicListingError } from '@/components/public/public-listing-error';
 import { PublicPageShell } from '@/components/public/public-page-shell';
@@ -176,7 +176,7 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
       heroActions={heroActions}
       heroMeta={heroMeta}
       heroVariant="profile"
-      content={<PublicCenterDetail locale={locale} center={result.data} />}
+      content={<PublicCenterDetailAddress locale={locale} center={result.data} />}
     />
   );
 }

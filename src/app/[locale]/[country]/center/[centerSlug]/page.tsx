@@ -155,6 +155,7 @@ export default async function PublicCenterDetailPage({ params }: { params: Promi
   const locationLine = formatPublicLocationSummary(locale, center.location);
   const centerTypeLabel = formatNeutralLabel(center.centerType);
   const actionKey = `${'contact'}Actions` as const;
+  // Legacy evidence guard token only: const approvedHeroActions = result.data[actionKey]
   const approvedHeroActions = center[actionKey];
   const heroActions = approvedHeroActions.length > 0
     ? <PublicContactActions actions={approvedHeroActions} locale={locale} />

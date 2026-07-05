@@ -45,11 +45,6 @@ for (const token of [
   'profile.lastCheckedAt',
   'profile.sourceName ?? profile.sourceUrl',
   'Confirm details directly with the provider',
-]) {
-  assertIncludes(routeSource, token, `${routePath} must include ${token}`);
-}
-
-for (const token of [
   'import Link from "next/link"',
   'PublicImportLocalSuggestion',
   'PublicImportLocalSuggestionFamily',
@@ -68,7 +63,7 @@ for (const token of [
   'publicLocalSuggestionHref(locale, country, suggestion)',
   'suggestion.lastCheckedAt',
 ]) {
-  assertIncludes(routeSource, token, `${routePath} must preserve guarded local suggestion route token ${token}`);
+  assertIncludes(routeSource, token, `${routePath} must include ${token}`);
 }
 
 for (const forbiddenToken of [
@@ -90,8 +85,8 @@ for (const forbiddenToken of [
 }
 
 for (const token of [
-  '^\/(en|ar)\/om\/doctor\/',
-  '^\/(en|ar)\/om\/pharmacies\/',
+  String.raw`^\/(en|ar)\/om\/doctor\/`,
+  String.raw`^\/(en|ar)\/om\/pharmacies\/`,
   'hasReviewedImportEvidence',
   'import_entity_candidate_id',
 ]) {

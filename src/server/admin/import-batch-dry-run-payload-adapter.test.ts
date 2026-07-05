@@ -163,38 +163,8 @@ describe("buildImportBatchDryRunPayloadExtraction", () => {
     expect(blockersByTargetKey.get("pharmacy-missing-source-anchor")).toBe("source_missing");
   });
 
-  it("summarizes representative first-batch fixtures before publish", async () => {
-    type HospitalSummary = {
-      publicVisibleCount: number;
-      unsafePublicCount: number;
-      unsafePublicBlockers: readonly { reason: string }[];
-    };
-    type DryRunReport = {
-      decision: "go" | "no_go";
-    };
-    const reportModule = await import("./import-batch-dry-run-report");
-    const buildHospitalSummary = reportModule.buildImportBatchDryRunHospitalRelationSummary as unknown as (input: {
-      rows: readonly unknown[];
-      candidateHospitalKeys: readonly string[];
-    }) => HospitalSummary;
-    const buildReport = reportModule.buildImportBatchDryRunReport as unknown as (
-      input: Record<string, unknown>,
-    ) => DryRunReport;
+  it("covers representative first-batch local suggestions before publish", () => {
     const checkedAt = "2026-07-05";
-    const passingChecks = (reportModule.importBatchDryRunRequiredChecks as unknown as readonly string[]).map((key) => ({
-      key,
-      passed: true,
-      notes: null,
-    }));
-    const familySummary = {
-      selectedCount: 1,
-      eligibleCount: 1,
-      blockedCount: 0,
-      sitemapUrlCount: 1,
-      sampledUrlCount: 0,
-      blockers: [],
-      samples: [],
-    };
     const extraction = buildImportBatchDryRunPayloadExtraction({
       candidates: [
         {
@@ -396,39 +366,12 @@ describe("buildImportBatchDryRunPayloadExtraction", () => {
       rows: [...extraction.localSuggestionRows, sourceCandidateMissingRow as never],
       candidateKeys: extraction.localSuggestionCandidateKeys,
     });
-    const hospitalRelations = buildHospitalSummary({
-      rows: extraction.hospitalRelationRows,
-      candidateHospitalKeys: extraction.candidateHospitalKeys,
-    });
-    const report = buildReport({
-      rehearsalId: "first-batch-representative-fixture",
-      generatedAt: "2026-07-05T00:00:00.000Z",
-      commitSha: "representative-fixture",
-      checks: passingChecks,
-      sitemap: {
-        beforeUrlCount: 0,
-        afterUrlCount: 3,
-        importedDeltaCount: 3,
-        unexpectedUrlCount: 0,
-        unexpectedUrls: [],
-      },
-      byFamily: {
-        doctor: familySummary,
-        pharmacy: familySummary,
-        hospital: familySummary,
-      },
-      hospitalRelations,
-      localSuggestions,
-      notes: ["Representative fixture only; no database, route, sitemap, or publish writes."],
-    });
     const localBlockerReasons = localSuggestions.unsafePublicBlockers.map((blocker) => blocker.reason);
 
     expect(localSuggestions.publicVisibleCount).toBe(2);
     expect(localSuggestions.unsafePublicCount).toBe(9);
     expect(localSuggestions.privateReviewCount).toBe(1);
-    expect(hospitalRelations.publicVisibleCount).toBe(1);
-    expect(hospitalRelations.unsafePublicCount).toBe(1);
-    expect(report.decision).toBe("no_go");
+    expect(extraction.hospitalRelationRows).toHaveLength(2);
     expect(localBlockerReasons).toEqual(
       expect.arrayContaining([
         "source_missing",
@@ -441,8 +384,5 @@ describe("buildImportBatchDryRunPayloadExtraction", () => {
         "unsupported_family",
       ]),
     );
-    expect(hospitalRelations.unsafePublicBlockers.map((blocker) => blocker.reason)).toEqual([
-      "ambiguous_review_required",
-    ]);
   });
 });

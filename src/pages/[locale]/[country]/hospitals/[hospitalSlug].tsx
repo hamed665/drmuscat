@@ -1,5 +1,6 @@
 import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { isPublicImportProfileIndexEligible } from "@/lib/catalog/public-import-profile-index-eligibility";
 import {
   buildPublicImportProfileMetaDescription,
@@ -8,6 +9,18 @@ import {
 } from "@/lib/catalog/public-import-profile-summary";
 import { isSupportedCountry, isSupportedLocale, localeDirection, type SupportedLocale } from "@/lib/i18n/config";
 import { siteConfig } from "@/lib/seo/site";
+
+type PublicImportHospitalRelatedDoctor = {
+  name: string;
+  nameAr: string | null;
+  slug: string | null;
+  specialty: string | null;
+  department: string | null;
+  sourceName: string | null;
+  sourceUrl: string | null;
+  lastCheckedAt: string | null;
+  confidence: string | null;
+};
 
 type PublicImportHospitalProfile = {
   family: "hospitals";
@@ -21,6 +34,7 @@ type PublicImportHospitalProfile = {
   services: string[];
   departments: string[];
   languages: string[];
+  doctors: PublicImportHospitalRelatedDoctor[];
   phoneE164: string | null;
   whatsappE164: string | null;
   email: string | null;
@@ -50,8 +64,24 @@ type RouteCopy = {
   badge: string;
   overviewTitle: string;
   servicesTitle: string;
+  doctorsTitle: string;
+  doctorsDescription: string;
+  doctorProfileLabel: string;
   contactTitle: string;
   sourceLabel: string;
+  relatedTitle: string;
+  directoryLabel: string;
+  directoryDescription: string;
+  locationLabelPrefix: string;
+  locationDescription: string;
+  serviceLabelPrefix: string;
+  serviceDescription: string;
+};
+
+type RelatedInternalLink = {
+  href: string;
+  label: string;
+  description: string;
 };
 
 const copyByLocale: Record<SupportedLocale, RouteCopy> = {
@@ -59,15 +89,35 @@ const copyByLocale: Record<SupportedLocale, RouteCopy> = {
     badge: "Public hospital profile",
     overviewTitle: "Profile overview",
     servicesTitle: "Hospital services",
+    doctorsTitle: "Doctors connected to this hospital",
+    doctorsDescription: "Public doctor links appear only when the hospital relationship has reviewed source evidence.",
+    doctorProfileLabel: "View doctor profile",
     contactTitle: "Contact and directions",
     sourceLabel: "Source",
+    relatedTitle: "Explore related care options",
+    directoryLabel: "Browse hospitals in Oman",
+    directoryDescription: "See more public hospital profiles across Oman.",
+    locationLabelPrefix: "Hospitals near",
+    locationDescription: "Find more public hospital profiles around this location.",
+    serviceLabelPrefix: "Search care options for",
+    serviceDescription: "Use DrKhaleej search to compare related public care options.",
   },
   ar: {
     badge: "ملف مستشفى عام",
     overviewTitle: "نظرة عامة على الملف",
     servicesTitle: "خدمات المستشفى",
+    doctorsTitle: "أطباء مرتبطون بهذا المستشفى",
+    doctorsDescription: "تظهر روابط الأطباء العامة فقط عند وجود دليل مصدر للعلاقة مع المستشفى.",
+    doctorProfileLabel: "عرض ملف الطبيب",
     contactTitle: "التواصل والاتجاهات",
     sourceLabel: "المصدر",
+    relatedTitle: "استكشف خيارات رعاية مرتبطة",
+    directoryLabel: "تصفح المستشفيات في عُمان",
+    directoryDescription: "اطلع على ملفات مستشفيات عامة أخرى في عُمان.",
+    locationLabelPrefix: "مستشفيات بالقرب من",
+    locationDescription: "اعثر على ملفات مستشفيات عامة أخرى حول هذا الموقع.",
+    serviceLabelPrefix: "ابحث عن خيارات رعاية لـ",
+    serviceDescription: "استخدم بحث DrKhaleej لمقارنة خيارات رعاية عامة مرتبطة.",
   },
 };
 
@@ -120,12 +170,92 @@ function displayName(locale: SupportedLocale, name: string, nameAr: string | nul
   return locale === "ar" && nameAr ? nameAr : name;
 }
 
+function doctorDisplayName(locale: SupportedLocale, doctor: PublicImportHospitalRelatedDoctor): string {
+  return locale === "ar" && doctor.nameAr ? doctor.nameAr : doctor.name;
+}
+
 function localArea(parts: Array<string | null>): string {
   return parts.filter(Boolean).join(", ") || "Oman";
 }
 
 function absoluteUrl(pathname: string): string {
   return new URL(pathname, siteConfig.baseUrl).toString();
+}
+
+function publicSearchHref(locale: SupportedLocale, country: string, query: string): string {
+  return `/${locale}/${country}/search?q=${encodeURIComponent(query)}`;
+}
+
+function publicHospitalsHref(locale: SupportedLocale, country: string): string {
+  return `/${locale}/${country}/hospitals`;
+}
+
+function publicDoctorHref(locale: SupportedLocale, country: string, doctor: PublicImportHospitalRelatedDoctor): string {
+  return doctor.slug ? `/${locale}/${country}/doctor/${doctor.slug}` : publicSearchHref(locale, country, doctor.name);
+}
+
+function uniqueText(values: Array<string | null | undefined>): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (!trimmed) continue;
+    const key = trimmed.toLocaleLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(trimmed);
+  }
+
+  return result;
+}
+
+function dedupeLinks(links: RelatedInternalLink[]): RelatedInternalLink[] {
+  const seen = new Set<string>();
+  const result: RelatedInternalLink[] = [];
+
+  for (const link of links) {
+    if (seen.has(link.href)) continue;
+    seen.add(link.href);
+    result.push(link);
+  }
+
+  return result;
+}
+
+function buildRelatedInternalLinks(input: {
+  locale: SupportedLocale;
+  country: string;
+  profile: PublicImportHospitalProfile;
+  serviceSignals: string[];
+}): RelatedInternalLink[] {
+  const { locale, country, profile, serviceSignals } = input;
+  const copy = copyByLocale[locale];
+  const links: RelatedInternalLink[] = [
+    {
+      href: publicHospitalsHref(locale, country),
+      label: copy.directoryLabel,
+      description: copy.directoryDescription,
+    },
+  ];
+
+  for (const place of uniqueText([profile.area, profile.wilayat, profile.governorate]).slice(0, 3)) {
+    links.push({
+      href: publicSearchHref(locale, country, `${place} hospital`),
+      label: `${copy.locationLabelPrefix} ${place}`,
+      description: copy.locationDescription,
+    });
+  }
+
+  for (const signal of serviceSignals.slice(0, 5)) {
+    links.push({
+      href: publicSearchHref(locale, country, signal),
+      label: `${copy.serviceLabelPrefix} ${signal}`,
+      description: copy.serviceDescription,
+    });
+  }
+
+  return dedupeLinks(links).slice(0, 9);
 }
 
 export const getServerSideProps: GetServerSideProps<HospitalPageProps> = async (context) => {
@@ -168,7 +298,8 @@ export default function PublicImportedHospitalProfilePage({
   const englishAlternate = absoluteUrl(`/en/${country}/hospitals/${hospitalSlug}`);
   const arabicAlternate = absoluteUrl(`/ar/${country}/hospitals/${hospitalSlug}`);
   const location = localArea([profile.area, profile.wilayat, profile.governorate]);
-  const serviceSignals = [...profile.services, ...profile.departments].slice(0, 8);
+  const serviceSignals = uniqueText([...profile.services, ...profile.departments]).slice(0, 8);
+  const relatedInternalLinks = buildRelatedInternalLinks({ locale, country, profile, serviceSignals });
   const importIndexEligibility = isPublicImportProfileIndexEligible(profile);
 
   return (
@@ -226,11 +357,40 @@ export default function PublicImportedHospitalProfilePage({
               <h2>{copy.servicesTitle}</h2>
               <div className="mt-3 flex flex-wrap gap-2">
                 {serviceSignals.map((item) => (
-                  <span key={item} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+                  <Link key={item} href={publicSearchHref(locale, country, item)} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
                     {item}
-                  </span>
+                  </Link>
                 ))}
               </div>
+            </div>
+          ) : null}
+
+          {profile.doctors.length > 0 ? (
+            <div className="dm2026-card-soft mt-4">
+              <h2>{copy.doctorsTitle}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{copy.doctorsDescription}</p>
+              <ul className="mt-3 grid gap-3 md:grid-cols-2" role="list">
+                {profile.doctors.map((doctor) => {
+                  const doctorName = doctorDisplayName(locale, doctor);
+                  return (
+                    <li key={doctor.slug ?? doctor.name} className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <h3>
+                        <Link href={publicDoctorHref(locale, country, doctor)} className="text-sm font-semibold text-slate-950 underline-offset-4 hover:underline">
+                          {doctorName}
+                        </Link>
+                      </h3>
+                      {doctor.specialty || doctor.department ? (
+                        <p className="mt-2 text-sm leading-6 text-slate-600">
+                          {[doctor.specialty, doctor.department].filter(Boolean).join(" · ")}
+                        </p>
+                      ) : null}
+                      <Link href={publicDoctorHref(locale, country, doctor)} className="mt-3 inline-flex text-xs font-semibold text-slate-700 underline-offset-4 hover:underline">
+                        {copy.doctorProfileLabel}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           ) : null}
 
@@ -269,6 +429,22 @@ export default function PublicImportedHospitalProfilePage({
               ) : null}
             </div>
           </div>
+
+          {relatedInternalLinks.length > 0 ? (
+            <div className="dm2026-card-soft mt-4">
+              <h2>{copy.relatedTitle}</h2>
+              <ul className="mt-3 grid gap-3 md:grid-cols-2" role="list">
+                {relatedInternalLinks.map((link) => (
+                  <li key={link.href} className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <Link href={link.href} className="text-sm font-semibold text-slate-950 underline-offset-4 hover:underline">
+                      {link.label}
+                    </Link>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{link.description}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           <p className="mt-4 text-xs leading-5 text-slate-500">
             {copy.sourceLabel}: {profile.sourceName ?? profile.sourceUrl}. Confirm details directly with the provider.

@@ -63,6 +63,30 @@ for (const token of [
 }
 
 for (const token of [
+  'export type PublicImportHospitalLocalSuggestionFamily',
+  'export type PublicImportHospitalLocalSuggestion',
+  'localSuggestions: PublicImportHospitalLocalSuggestion[];',
+  'const localSuggestionLimit = 12;',
+  'localSuggestionFamilyAliases',
+  'diagnostic_imaging',
+  'beauty_salon',
+  'function localSuggestionRows(payload: JsonRecord): JsonRecord[]',
+  'recordArray(relations, "localSuggestions")',
+  'recordArray(relations, "local_suggestions")',
+  'recordArray(relations, "nearby")',
+  'function approvedLocalSuggestion(',
+  'function approvedLocalSuggestions(',
+  'locationKey(sourceArea) !== locationKey(targetArea)',
+  'locationKey(sourceGovernorate) !== locationKey(targetGovernorate)',
+  'publicVisible !== true',
+  'confidence !== "high" && confidence !== "medium"',
+  'family === "hospital" && sourceHospitalSlug !== null && slug === sourceHospitalSlug',
+  'localSuggestions: approvedLocalSuggestions(payload, geo, currentHospitalSlug(path)),',
+]) {
+  assertIncludes(guardSource, token, `${guardPath} must preserve guarded local-suggestion token ${token}`);
+}
+
+for (const token of [
   'Doctor_Hospital_Relations',
   '`relation_key`',
   '`doctor_key`',
@@ -99,9 +123,9 @@ for (const token of [
 }
 
 for (const token of [
-  '^\\/(en|ar)\\/om\\/doctor\\/',
-  '^\\/(en|ar)\\/om\\/pharmacies\\/',
-  '^\\/(en|ar)\\/om\\/hospitals\\/',
+  String.raw`^\/(en|ar)\/om\/doctor\/`,
+  String.raw`^\/(en|ar)\/om\/pharmacies\/`,
+  String.raw`^\/(en|ar)\/om\/hospitals\/`,
   'target_entity_type',
 ]) {
   assertIncludes(importSitemapSource, token, `import sitemap must preserve reviewed sitemap token ${token}`);

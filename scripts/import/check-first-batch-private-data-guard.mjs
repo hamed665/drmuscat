@@ -14,7 +14,9 @@ const requiredDocTokens = [
   './data/import/private/first-batch.csv',
   './tmp/first-batch.dry-run-input.json',
   './tmp/first-batch.dry-run-report.json',
-  'A real import write path must not be built until a reviewed dry-run report returns `decision: go`.',
+  'validate-first-batch-dry-run-report.mjs',
+  '--expect go',
+  'A real import write path must not be built until a reviewed dry-run report returns `decision: go`',
 ];
 
 const forbiddenTrackedPathPrefixes = [

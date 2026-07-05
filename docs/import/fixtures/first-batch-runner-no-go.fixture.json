@@ -1,0 +1,105 @@
+{
+  "rehearsalId": "first-batch-runner-no-go-fixture",
+  "generatedAt": "2026-07-05T00:00:00.000Z",
+  "commitSha": "runner-no-go-fixture",
+  "checks": [
+    { "key": "ci_green", "passed": true, "notes": null },
+    { "key": "seo_check_green", "passed": true, "notes": null },
+    { "key": "readiness_audit_zero_blockers", "passed": true, "notes": null },
+    { "key": "sitemap_diff_frozen", "passed": true, "notes": null },
+    { "key": "representative_profile_smoke_passed", "passed": true, "notes": null },
+    { "key": "blocked_route_classes_absent", "passed": true, "notes": null }
+  ],
+  "sitemap": {
+    "beforeUrlCount": 100,
+    "afterUrlCount": 102,
+    "importedDeltaCount": 2,
+    "unexpectedUrlCount": 0,
+    "unexpectedUrls": []
+  },
+  "byFamily": {
+    "doctor": {
+      "selectedCount": 1,
+      "eligibleCount": 1,
+      "blockedCount": 0,
+      "sitemapUrlCount": 1,
+      "sampledUrlCount": 0,
+      "blockers": [],
+      "samples": []
+    },
+    "pharmacy": {
+      "selectedCount": 1,
+      "eligibleCount": 1,
+      "blockedCount": 0,
+      "sitemapUrlCount": 1,
+      "sampledUrlCount": 0,
+      "blockers": [],
+      "samples": []
+    },
+    "hospital": {
+      "selectedCount": 0,
+      "eligibleCount": 0,
+      "blockedCount": 0,
+      "sitemapUrlCount": 0,
+      "sampledUrlCount": 0,
+      "blockers": [],
+      "samples": []
+    }
+  },
+  "hospitalRelations": {
+    "totalRows": 0,
+    "candidateHospitalCount": 0,
+    "publicVisibleCount": 0,
+    "blockedFromPublicCount": 0,
+    "privateReviewCount": 0,
+    "hospitalSuggestionCount": 0,
+    "unsafePublicCount": 0,
+    "unsafePublicBlockers": [],
+    "blockedFromPublicReasons": []
+  },
+  "localSuggestions": {
+    "totalRows": 2,
+    "publicVisibleCount": 0,
+    "blockedFromPublicCount": 0,
+    "privateReviewCount": 0,
+    "sourceEntitySuggestionCount": 0,
+    "locationClusterCount": 0,
+    "unsafePublicCount": 2,
+    "unsafePublicBlockers": [
+      {
+        "reason": "location_mismatch",
+        "sourceFamily": "doctor",
+        "sourceKey": "runner-no-go-doctor-one",
+        "sourceArea": "Al Khuwair",
+        "sourceGovernorate": "Muscat",
+        "targetFamily": "pharmacy",
+        "targetKey": "runner-no-go-pharmacy-one",
+        "targetArea": "Qurum",
+        "targetGovernorate": "Muscat",
+        "targetName": "Runner No Go Pharmacy One",
+        "sourceName": "Provider official website",
+        "sourceUrl": "https://example.com/runner-no-go-source",
+        "notes": "Unsafe public fixture: wrong area must force no_go."
+      },
+      {
+        "reason": "unsupported_family",
+        "sourceFamily": "doctor",
+        "sourceKey": "runner-no-go-doctor-one",
+        "sourceArea": "Al Khuwair",
+        "sourceGovernorate": "Muscat",
+        "targetFamily": "clinic",
+        "targetKey": "runner-no-go-clinic-one",
+        "targetArea": "Al Khuwair",
+        "targetGovernorate": "Muscat",
+        "targetName": "Runner No Go Clinic One",
+        "sourceName": "Provider official website",
+        "sourceUrl": "https://example.com/runner-no-go-source",
+        "notes": "Unsafe public fixture: unsupported future family must force no_go."
+      }
+    ],
+    "blockedFromPublicReasons": []
+  },
+  "notes": [
+    "Runner fixture only; unsafe public local suggestions must keep the report no_go."
+  ]
+}

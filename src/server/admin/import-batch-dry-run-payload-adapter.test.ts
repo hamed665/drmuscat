@@ -165,6 +165,18 @@ describe("buildImportBatchDryRunPayloadExtraction", () => {
 
   it("covers representative first-batch local suggestions before publish", () => {
     const checkedAt = "2026-07-05";
+    const localSuggestion = (overrides: Record<string, unknown>) => ({
+      targetFamily: "pharmacy",
+      targetKey: "pharmacy-al-khuwair-one",
+      targetName: "Representative Pharmacy One",
+      targetArea: "Al Khuwair",
+      targetGovernorate: "Muscat",
+      sourceName: "Provider official website",
+      lastCheckedAt: checkedAt,
+      confidence: "high",
+      publicVisible: true,
+      ...overrides,
+    });
     const extraction = buildImportBatchDryRunPayloadExtraction({
       candidates: [
         {
@@ -175,116 +187,53 @@ describe("buildImportBatchDryRunPayloadExtraction", () => {
             geo: { area: "Al Khuwair", governorate: "Muscat" },
             relations: {
               localSuggestions: [
-                {
-                  targetFamily: "pharmacy",
-                  targetKey: "pharmacy-al-khuwair-one",
+                localSuggestion({
                   targetName: "Representative Pharmacy One",
-                  targetArea: "Al Khuwair",
-                  targetGovernorate: "Muscat",
                   sourceName: "Oman Ministry of Health directory",
-                  lastCheckedAt: checkedAt,
                   confidence: "high",
-                  publicVisible: true,
-                },
-                {
-                  targetFamily: "pharmacy",
-                  targetKey: "pharmacy-al-khuwair-one",
+                }),
+                localSuggestion({
                   targetName: "Missing Source Evidence Pharmacy",
-                  targetArea: "Al Khuwair",
-                  targetGovernorate: "Muscat",
-                  lastCheckedAt: checkedAt,
-                  confidence: "high",
-                  publicVisible: true,
-                },
-                {
-                  targetFamily: "pharmacy",
-                  targetKey: "pharmacy-al-khuwair-one",
+                  sourceName: undefined,
+                  sourceUrl: undefined,
+                }),
+                localSuggestion({
                   targetName: "Missing Last Checked Pharmacy",
-                  targetArea: "Al Khuwair",
-                  targetGovernorate: "Muscat",
-                  sourceName: "Provider official website",
-                  confidence: "high",
-                  publicVisible: true,
-                },
-                {
-                  targetFamily: "pharmacy",
-                  targetKey: "pharmacy-al-khuwair-one",
+                  lastCheckedAt: undefined,
+                }),
+                localSuggestion({
                   targetName: "Wrong Location Pharmacy",
                   targetArea: "Qurum",
-                  targetGovernorate: "Muscat",
-                  sourceName: "Provider official website",
-                  lastCheckedAt: checkedAt,
-                  confidence: "high",
-                  publicVisible: true,
-                },
-                {
-                  targetFamily: "pharmacy",
-                  targetKey: "pharmacy-not-selected",
+                }),
+                localSuggestion({
                   targetName: "Missing Target Candidate Pharmacy",
-                  targetArea: "Al Khuwair",
-                  targetGovernorate: "Muscat",
-                  sourceName: "Provider official website",
-                  lastCheckedAt: checkedAt,
+                  targetKey: "pharmacy-not-selected",
                   confidence: "medium",
-                  publicVisible: true,
-                },
-                {
+                }),
+                localSuggestion({
                   targetFamily: "doctor",
                   targetKey: "doctor-al-khuwair-one",
                   targetName: "Representative Doctor One",
-                  targetArea: "Al Khuwair",
-                  targetGovernorate: "Muscat",
-                  sourceName: "Provider official website",
-                  lastCheckedAt: checkedAt,
                   confidence: "medium",
-                  publicVisible: true,
-                },
-                {
-                  targetFamily: "pharmacy",
-                  targetKey: "pharmacy-al-khuwair-one",
+                }),
+                localSuggestion({
                   targetName: "Requires Review Pharmacy",
-                  targetArea: "Al Khuwair",
-                  targetGovernorate: "Muscat",
-                  sourceName: "Provider official website",
-                  lastCheckedAt: checkedAt,
-                  confidence: "high",
-                  publicVisible: true,
                   requiresReview: true,
-                },
-                {
-                  targetFamily: "pharmacy",
-                  targetKey: "pharmacy-al-khuwair-one",
+                }),
+                localSuggestion({
                   targetName: "Disputed Pharmacy",
-                  targetArea: "Al Khuwair",
-                  targetGovernorate: "Muscat",
-                  sourceName: "Provider official website",
-                  lastCheckedAt: checkedAt,
-                  confidence: "high",
-                  publicVisible: true,
                   relationStatus: "disputed",
-                },
-                {
+                }),
+                localSuggestion({
                   targetFamily: "clinic",
                   targetKey: "clinic-al-khuwair-one",
                   targetName: "Unsupported Clinic One",
-                  targetArea: "Al Khuwair",
-                  targetGovernorate: "Muscat",
-                  sourceName: "Provider official website",
-                  lastCheckedAt: checkedAt,
-                  confidence: "high",
-                  publicVisible: true,
-                },
-                {
-                  targetFamily: "pharmacy",
-                  targetKey: "pharmacy-al-khuwair-one",
+                }),
+                localSuggestion({
                   targetName: "Private Review Pharmacy",
-                  targetArea: "Al Khuwair",
-                  targetGovernorate: "Muscat",
-                  sourceName: "Provider official website",
-                  lastCheckedAt: checkedAt,
                   confidence: "medium",
                   publicVisible: false,
-                },
+                }),
               ],
             },
           },
@@ -297,17 +246,14 @@ describe("buildImportBatchDryRunPayloadExtraction", () => {
             geo: { area: "Al Khuwair", governorate: "Muscat" },
             relations: {
               localSuggestions: [
-                {
+                localSuggestion({
                   targetFamily: "doctor",
                   targetKey: "doctor-al-khuwair-one",
                   targetName: "Representative Doctor One",
-                  targetArea: "Al Khuwair",
-                  targetGovernorate: "Muscat",
+                  sourceName: undefined,
                   sourceUrl: "https://example.com/pharmacy-doctor-source",
-                  lastCheckedAt: checkedAt,
                   confidence: "medium",
-                  publicVisible: true,
-                },
+                }),
               ],
             },
           },
@@ -344,7 +290,7 @@ describe("buildImportBatchDryRunPayloadExtraction", () => {
           },
         },
       ],
-    });
+    } as never);
     const sourceCandidateMissingRow = {
       sourceFamily: "doctor",
       sourceKey: "doctor-not-in-candidates",

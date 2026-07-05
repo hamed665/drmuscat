@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 
@@ -107,7 +108,7 @@ async function assertRunnerSourceContract() {
   }
 }
 
-async function main() {
+export async function checkFirstBatchDryRunRunner() {
   await assertRunnerSourceContract();
   await rm(absolute(outputDir), { recursive: true, force: true });
   await mkdir(absolute(outputDir), { recursive: true });
@@ -147,7 +148,9 @@ async function main() {
   console.log('first batch dry-run runner check passed.');
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = 1;
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  checkFirstBatchDryRunRunner().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  });
+}

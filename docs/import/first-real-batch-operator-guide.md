@@ -7,8 +7,10 @@ This guide defines the human-reviewed path from a real Oman provider spreadsheet
 The first real batch must pass through these local-only tools:
 
 ```bash
+node scripts/import/check-first-batch-private-data-guard.mjs
 node scripts/import/check-first-batch-dry-run-runner.mjs
 node scripts/import/check-first-batch-csv-transformer.mjs
+node scripts/import/check-first-batch-dry-run-report-review.mjs
 ```
 
 The CI workflow `Import Runner Checks` runs those guards for pull requests and pushes to `main`.
@@ -112,6 +114,18 @@ node scripts/import/run-first-batch-dry-run.mjs \
   --output ./tmp/first-batch.dry-run-report.json
 ```
 
+## Report validation command
+
+Before asking anyone to review the report, validate it explicitly:
+
+```bash
+node scripts/import/validate-first-batch-dry-run-report.mjs \
+  --input ./tmp/first-batch.dry-run-report.json \
+  --expect go
+```
+
+Use `--expect no_go` only when intentionally documenting blockers. Use `--expect any` only for diagnostic inspection. A real dry-run PR that wants to advance toward import write-path design must validate with `--expect go`.
+
 ## Go/no-go review
 
 A report is not allowed to advance unless all are true:
@@ -153,8 +167,9 @@ A real dry-run PR should include:
 - reviewer name or QA owner
 - exact command used to generate the dry-run input
 - exact command used to generate the dry-run report
+- exact command used to validate the dry-run report
 - explanation for any held or removed rows
 
 ## Merge rule
 
-The real dry-run PR may merge only when the report is `go` and CI is green. The import write path must be a later PR with its own contract. Dry-run first, write path later; civilization depends on tiny acts of restraint like this.
+The real dry-run PR may merge only when the report is `go`, report validation passes with `--expect go`, and CI is green. The import write path must be a later PR with its own contract. Dry-run first, write path later; civilization depends on tiny acts of restraint like this.

@@ -12,6 +12,7 @@ The report is a dry-run artifact only. It records whether a frozen doctor, pharm
 | --- | --- |
 | Type contract | `src/server/admin/import-batch-dry-run-report.ts` |
 | Rehearsal checklist | `docs/import/DRKHALEEJ_IMPORT_BATCH_REHEARSAL_V1.md` |
+| Hospital doctor relation transform contract | `docs/import/hospital-doctor-relations-transform-contract.md` |
 | Readiness audit | `src/server/admin/import-publish-readiness-audit.ts` |
 | Sitemap family caps | `src/server/public/import-sitemap.ts` |
 | Profile smoke validator | `scripts/import/check-public-import-profile-smoke.mjs` |
@@ -103,13 +104,46 @@ If any required check fails, the report decision must be `no_go`.
       "samples": []
     }
   },
+  "hospitalRelations": {
+    "totalRows": 0,
+    "candidateHospitalCount": 0,
+    "publicVisibleCount": 0,
+    "blockedFromPublicCount": 0,
+    "privateReviewCount": 0,
+    "hospitalSuggestionCount": 0,
+    "unsafePublicCount": 0,
+    "unsafePublicBlockers": [],
+    "blockedFromPublicReasons": []
+  },
   "notes": []
 }
 ```
 
+## Hospital relation dry-run summary
+
+`hospitalRelations` reports the doctor-hospital relation rows produced from `Doctor_Hospital_Relations` and the hospital doctor relations transform contract.
+
+The relation summary separates three different states that must not be confused, because apparently confusion needed another place to live:
+
+- `publicVisibleCount`: relations that are allowed to become public doctor suggestions on hospital profile pages.
+- `blockedFromPublicCount`: relations that are safely omitted from public suggestions and may stay private/admin-review only.
+- `unsafePublicCount`: relations that were marked or prepared for public display but fail the relation gates. Any non-zero value forces `decision: "no_go"`.
+
+Allowed `unsafePublicBlockers[].reason` and `blockedFromPublicReasons[].reason` values are:
+
+- `branch_not_verified`
+- `source_missing`
+- `last_checked_missing`
+- `confidence_unsupported`
+- `doctor_name_missing`
+- `hospital_mismatch`
+- `ambiguous_review_required`
+
+A blocked relation does not automatically fail the whole hospital import rehearsal. An unsafe public relation does.
+
 ## Blocker reasons
 
-Allowed blocker reasons are:
+Allowed family-level blocker reasons are:
 
 - `canonical_unsafe`
 - `source_missing`
@@ -137,9 +171,11 @@ The report decision is `go` only when:
 
 - all required checks pass;
 - every selected row is eligible;
-- blocker count is zero;
+- family-level blocker count is zero;
 - unexpected sitemap URL count is zero;
 - sitemap counts stay within the first rehearsal caps;
-- representative profile samples pass.
+- representative profile samples pass;
+- `hospitalRelations.unsafePublicCount` is zero;
+- `hospitalRelations.unsafePublicBlockers` is empty.
 
 Otherwise the decision is `no_go`.

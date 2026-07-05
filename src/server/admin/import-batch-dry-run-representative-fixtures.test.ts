@@ -1,45 +1,18 @@
 import { describe, expect, it } from "vitest";
 
-import { buildFirstBatchDryRunReport } from "./import-first-batch-dry-run-bridge";
 import {
+  buildImportBatchDryRunHospitalRelationSummary,
+  buildImportBatchDryRunLocalSuggestionSummary,
+  buildImportBatchDryRunReport,
   importBatchDryRunRequiredChecks,
   type ImportBatchDryRunCheck,
+  type ImportBatchDryRunFamilySummary,
+  type ImportBatchDryRunHospitalRelationRow,
+  type ImportBatchDryRunLocalSuggestionFamily,
   type ImportBatchDryRunLocalSuggestionRow,
 } from "./import-batch-dry-run-report";
-import type { ImportBatchDryRunTransformedCandidate } from "./import-batch-dry-run-payload-adapter";
-import {
-  importFirstBatchSchemaVersion,
-  type ImportFirstBatchRow,
-  type ImportFirstBatchSelection,
-} from "./import-first-batch-selection";
 
 const checkedAt = "2026-07-05";
-
-function selectedRow(input: {
-  family: ImportFirstBatchRow["family"];
-  candidateId: string;
-  canonicalPath: string;
-  displayName: string;
-}): ImportFirstBatchRow {
-  return {
-    family: input.family,
-    queueId: `${input.candidateId}-queue`,
-    candidateId: input.candidateId,
-    canonicalPath: input.canonicalPath,
-    locale: "en",
-    slug: input.candidateId,
-    displayName: input.displayName,
-    area: "Al Khuwair",
-    governorate: "Muscat",
-    sourceName: "Oman Ministry of Health directory",
-    sourceUrl: "https://example.com/oman-health-directory",
-    lastCheckedAt: checkedAt,
-    contactOrMapSignal: "official_directory_entry",
-    qaOwner: "import-readiness",
-    qaStatus: "selected",
-    qaNotes: null,
-  };
-}
 
 function passingChecks(): readonly ImportBatchDryRunCheck[] {
   return importBatchDryRunRequiredChecks.map((key) => ({
@@ -49,275 +22,296 @@ function passingChecks(): readonly ImportBatchDryRunCheck[] {
   }));
 }
 
-const selection: ImportFirstBatchSelection = {
-  schemaVersion: importFirstBatchSchemaVersion,
-  selectionId: "first-batch-representative-fixture",
-  generatedAt: "2026-07-05T00:00:00.000Z",
-  caps: {
-    doctor: 50,
-    pharmacy: 25,
-    hospital: 10,
-  },
-  rows: [
-    selectedRow({
-      family: "doctor",
-      candidateId: "doctor-al-khuwair-one",
-      canonicalPath: "/en/om/doctor/doctor-al-khuwair-one",
-      displayName: "Representative Doctor One",
-    }),
-    selectedRow({
-      family: "pharmacy",
-      candidateId: "pharmacy-al-khuwair-one",
-      canonicalPath: "/en/om/pharmacies/pharmacy-al-khuwair-one",
-      displayName: "Representative Pharmacy One",
-    }),
-    selectedRow({
-      family: "hospital",
-      candidateId: "hospital-al-khuwair-one",
-      canonicalPath: "/en/om/hospitals/hospital-al-khuwair-one",
-      displayName: "Representative Hospital One",
-    }),
-  ],
-};
+function familySummary(): ImportBatchDryRunFamilySummary {
+  return {
+    selectedCount: 1,
+    eligibleCount: 1,
+    blockedCount: 0,
+    sitemapUrlCount: 1,
+    sampledUrlCount: 0,
+    blockers: [],
+    samples: [],
+  };
+}
 
-const transformedCandidates: readonly ImportBatchDryRunTransformedCandidate[] = [
+const localSuggestionRows: readonly ImportBatchDryRunLocalSuggestionRow[] = [
   {
-    candidateKey: "doctor-al-khuwair-one",
-    entityType: "doctor",
-    candidateStatus: "approved",
-    candidatePayload: {
-      geo: {
-        area: "Al Khuwair",
-        governorate: "Muscat",
-      },
-      relations: {
-        localSuggestions: [
-          {
-            targetFamily: "pharmacy",
-            targetKey: "pharmacy-al-khuwair-one",
-            targetName: "Representative Pharmacy One",
-            targetArea: "Al Khuwair",
-            targetGovernorate: "Muscat",
-            sourceName: "Oman Ministry of Health directory",
-            lastCheckedAt: checkedAt,
-            confidence: "high",
-            publicVisible: true,
-          },
-          {
-            targetFamily: "pharmacy",
-            targetKey: "pharmacy-al-khuwair-one",
-            targetName: "Missing Source Evidence Pharmacy",
-            targetArea: "Al Khuwair",
-            targetGovernorate: "Muscat",
-            lastCheckedAt: checkedAt,
-            confidence: "high",
-            publicVisible: true,
-          },
-          {
-            targetFamily: "pharmacy",
-            targetKey: "pharmacy-al-khuwair-one",
-            targetName: "Missing Last Checked Pharmacy",
-            targetArea: "Al Khuwair",
-            targetGovernorate: "Muscat",
-            sourceName: "Provider official website",
-            confidence: "high",
-            publicVisible: true,
-          },
-          {
-            targetFamily: "pharmacy",
-            targetKey: "pharmacy-al-khuwair-one",
-            targetName: "Wrong Location Pharmacy",
-            targetArea: "Qurum",
-            targetGovernorate: "Muscat",
-            sourceName: "Provider official website",
-            lastCheckedAt: checkedAt,
-            confidence: "high",
-            publicVisible: true,
-          },
-          {
-            targetFamily: "pharmacy",
-            targetKey: "pharmacy-not-selected",
-            targetName: "Missing Target Candidate Pharmacy",
-            targetArea: "Al Khuwair",
-            targetGovernorate: "Muscat",
-            sourceName: "Provider official website",
-            lastCheckedAt: checkedAt,
-            confidence: "medium",
-            publicVisible: true,
-          },
-          {
-            targetFamily: "doctor",
-            targetKey: "doctor-al-khuwair-one",
-            targetName: "Representative Doctor One",
-            targetArea: "Al Khuwair",
-            targetGovernorate: "Muscat",
-            sourceName: "Provider official website",
-            lastCheckedAt: checkedAt,
-            confidence: "medium",
-            publicVisible: true,
-          },
-          {
-            targetFamily: "pharmacy",
-            targetKey: "pharmacy-al-khuwair-one",
-            targetName: "Requires Review Pharmacy",
-            targetArea: "Al Khuwair",
-            targetGovernorate: "Muscat",
-            sourceName: "Provider official website",
-            lastCheckedAt: checkedAt,
-            confidence: "high",
-            publicVisible: true,
-            requiresReview: true,
-          },
-          {
-            targetFamily: "pharmacy",
-            targetKey: "pharmacy-al-khuwair-one",
-            targetName: "Disputed Pharmacy",
-            targetArea: "Al Khuwair",
-            targetGovernorate: "Muscat",
-            sourceName: "Provider official website",
-            lastCheckedAt: checkedAt,
-            confidence: "high",
-            publicVisible: true,
-            relationStatus: "disputed",
-          },
-          {
-            targetFamily: "clinic",
-            targetKey: "clinic-al-khuwair-one",
-            targetName: "Unsupported Clinic One",
-            targetArea: "Al Khuwair",
-            targetGovernorate: "Muscat",
-            sourceName: "Provider official website",
-            lastCheckedAt: checkedAt,
-            confidence: "high",
-            publicVisible: true,
-          },
-          {
-            targetFamily: "pharmacy",
-            targetKey: "pharmacy-al-khuwair-one",
-            targetName: "Private Review Pharmacy",
-            targetArea: "Al Khuwair",
-            targetGovernorate: "Muscat",
-            sourceName: "Provider official website",
-            lastCheckedAt: checkedAt,
-            confidence: "medium",
-            publicVisible: false,
-          },
-        ],
-      },
-    },
+    sourceFamily: "doctor",
+    sourceKey: "doctor-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "pharmacy",
+    targetKey: "pharmacy-al-khuwair-one",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Representative Pharmacy One",
+    sourceName: "Oman Ministry of Health directory",
+    sourceUrl: null,
+    lastCheckedAt: checkedAt,
+    confidence: "high",
+    publicVisible: true,
+    relationStatus: "active",
   },
   {
-    candidateKey: "pharmacy-al-khuwair-one",
-    entityType: "pharmacy",
-    candidateStatus: "approved",
-    candidatePayload: {
-      geo: {
-        area: "Al Khuwair",
-        governorate: "Muscat",
-      },
-      relations: {
-        localSuggestions: [
-          {
-            targetFamily: "doctor",
-            targetKey: "doctor-al-khuwair-one",
-            targetName: "Representative Doctor One",
-            targetArea: "Al Khuwair",
-            targetGovernorate: "Muscat",
-            sourceUrl: "https://example.com/pharmacy-doctor-source",
-            lastCheckedAt: checkedAt,
-            confidence: "medium",
-            publicVisible: true,
-          },
-        ],
-      },
-    },
+    sourceFamily: "pharmacy",
+    sourceKey: "pharmacy-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "doctor",
+    targetKey: "doctor-al-khuwair-one",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Representative Doctor One",
+    sourceName: null,
+    sourceUrl: "https://example.com/pharmacy-doctor-source",
+    lastCheckedAt: checkedAt,
+    confidence: "medium",
+    publicVisible: true,
+    relationStatus: "approved",
   },
   {
-    candidateKey: "hospital-al-khuwair-one",
-    entityType: "hospital",
-    candidateStatus: "approved",
-    candidatePayload: {
-      geo: {
-        area: "Al Khuwair",
-        governorate: "Muscat",
-      },
-      relations: {
-        doctors: [
-          {
-            doctorKey: "doctor-al-khuwair-one",
-            doctorName: "Representative Doctor One",
-            sourceUrl: "https://example.com/hospital-doctor-source",
-            lastCheckedAt: checkedAt,
-            confidence: "high",
-            branchVerified: true,
-            publicVisible: true,
-          },
-          {
-            doctorKey: "doctor-al-khuwair-one",
-            doctorName: "Disputed Hospital Doctor One",
-            sourceUrl: "https://example.com/hospital-doctor-disputed-source",
-            lastCheckedAt: checkedAt,
-            confidence: "medium",
-            branchVerified: true,
-            publicVisible: true,
-            relationStatus: "disputed",
-          },
-        ],
-      },
-    },
+    sourceFamily: "doctor",
+    sourceKey: "doctor-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "pharmacy",
+    targetKey: "pharmacy-al-khuwair-one",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Private Review Pharmacy",
+    sourceName: "Provider official website",
+    sourceUrl: null,
+    lastCheckedAt: checkedAt,
+    confidence: "medium",
+    publicVisible: false,
+    relationStatus: "active",
+  },
+  {
+    sourceFamily: "doctor",
+    sourceKey: "doctor-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "pharmacy",
+    targetKey: "pharmacy-al-khuwair-one",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Missing Source Evidence Pharmacy",
+    sourceName: null,
+    sourceUrl: null,
+    lastCheckedAt: checkedAt,
+    confidence: "high",
+    publicVisible: true,
+  },
+  {
+    sourceFamily: "doctor",
+    sourceKey: "doctor-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "pharmacy",
+    targetKey: "pharmacy-al-khuwair-one",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Missing Last Checked Pharmacy",
+    sourceName: "Provider official website",
+    sourceUrl: null,
+    lastCheckedAt: null,
+    confidence: "high",
+    publicVisible: true,
+  },
+  {
+    sourceFamily: "doctor",
+    sourceKey: "doctor-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "pharmacy",
+    targetKey: "pharmacy-al-khuwair-one",
+    targetArea: "Qurum",
+    targetGovernorate: "Muscat",
+    targetName: "Wrong Location Pharmacy",
+    sourceName: "Provider official website",
+    sourceUrl: null,
+    lastCheckedAt: checkedAt,
+    confidence: "high",
+    publicVisible: true,
+  },
+  {
+    sourceFamily: "doctor",
+    sourceKey: "doctor-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "pharmacy",
+    targetKey: "pharmacy-not-selected",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Missing Target Candidate Pharmacy",
+    sourceName: "Provider official website",
+    sourceUrl: null,
+    lastCheckedAt: checkedAt,
+    confidence: "medium",
+    publicVisible: true,
+  },
+  {
+    sourceFamily: "doctor",
+    sourceKey: "doctor-not-in-candidates",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "pharmacy",
+    targetKey: "pharmacy-al-khuwair-one",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Source Candidate Missing Pharmacy",
+    sourceName: "Provider official website",
+    sourceUrl: null,
+    lastCheckedAt: checkedAt,
+    confidence: "medium",
+    publicVisible: true,
+  },
+  {
+    sourceFamily: "doctor",
+    sourceKey: "doctor-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "doctor",
+    targetKey: "doctor-al-khuwair-one",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Representative Doctor One",
+    sourceName: "Provider official website",
+    sourceUrl: null,
+    lastCheckedAt: checkedAt,
+    confidence: "medium",
+    publicVisible: true,
+  },
+  {
+    sourceFamily: "doctor",
+    sourceKey: "doctor-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "pharmacy",
+    targetKey: "pharmacy-al-khuwair-one",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Requires Review Pharmacy",
+    sourceName: "Provider official website",
+    sourceUrl: null,
+    lastCheckedAt: checkedAt,
+    confidence: "high",
+    publicVisible: true,
+    requiresReview: true,
+  },
+  {
+    sourceFamily: "doctor",
+    sourceKey: "doctor-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "pharmacy",
+    targetKey: "pharmacy-al-khuwair-one",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Disputed Pharmacy",
+    sourceName: "Provider official website",
+    sourceUrl: null,
+    lastCheckedAt: checkedAt,
+    confidence: "high",
+    publicVisible: true,
+    relationStatus: "disputed",
+  },
+  {
+    sourceFamily: "doctor",
+    sourceKey: "doctor-al-khuwair-one",
+    sourceArea: "Al Khuwair",
+    sourceGovernorate: "Muscat",
+    targetFamily: "clinic" as ImportBatchDryRunLocalSuggestionFamily,
+    targetKey: "clinic-al-khuwair-one",
+    targetArea: "Al Khuwair",
+    targetGovernorate: "Muscat",
+    targetName: "Unsupported Clinic One",
+    sourceName: "Provider official website",
+    sourceUrl: null,
+    lastCheckedAt: checkedAt,
+    confidence: "high",
+    publicVisible: true,
   },
 ];
 
-const sourceCandidateMissingRow: ImportBatchDryRunLocalSuggestionRow = {
-  sourceFamily: "doctor",
-  sourceKey: "doctor-not-in-candidates",
-  sourceArea: "Al Khuwair",
-  sourceGovernorate: "Muscat",
-  targetFamily: "pharmacy",
-  targetKey: "pharmacy-al-khuwair-one",
-  targetArea: "Al Khuwair",
-  targetGovernorate: "Muscat",
-  targetName: "Source Candidate Missing Pharmacy",
-  sourceName: "Provider official website",
-  sourceUrl: null,
-  lastCheckedAt: checkedAt,
-  confidence: "medium",
-  publicVisible: true,
-  relationStatus: "active",
-};
+const hospitalRelationRows: readonly ImportBatchDryRunHospitalRelationRow[] = [
+  {
+    hospitalKey: "hospital-al-khuwair-one",
+    doctorKey: "doctor-al-khuwair-one",
+    doctorName: "Representative Doctor One",
+    sourceUrl: "https://example.com/hospital-doctor-source",
+    lastCheckedAt: checkedAt,
+    confidence: "high",
+    branchVerified: true,
+    publicVisible: true,
+    relationStatus: "active",
+  },
+  {
+    hospitalKey: "hospital-al-khuwair-one",
+    doctorKey: "doctor-al-khuwair-one",
+    doctorName: "Disputed Hospital Doctor One",
+    sourceUrl: "https://example.com/hospital-doctor-disputed-source",
+    lastCheckedAt: checkedAt,
+    confidence: "medium",
+    branchVerified: true,
+    publicVisible: true,
+    relationStatus: "disputed",
+  },
+];
 
 describe("representative first-batch dry-run fixtures", () => {
-  it("summarizes safe, unsafe, and private local suggestions without publish side effects", () => {
-    const report = buildFirstBatchDryRunReport({
-      selection,
+  it("summarizes safe, unsafe, and private suggestions without publish side effects", () => {
+    const localSuggestions = buildImportBatchDryRunLocalSuggestionSummary({
+      rows: localSuggestionRows,
+      candidateKeys: {
+        doctor: ["doctor-al-khuwair-one"],
+        pharmacy: ["pharmacy-al-khuwair-one"],
+        hospital: ["hospital-al-khuwair-one"],
+      },
+    });
+    const hospitalRelations = buildImportBatchDryRunHospitalRelationSummary({
+      rows: hospitalRelationRows,
+      candidateHospitalKeys: ["hospital-al-khuwair-one"],
+    });
+    const report = buildImportBatchDryRunReport({
+      rehearsalId: "first-batch-representative-fixture",
       generatedAt: "2026-07-05T00:00:00.000Z",
       commitSha: "representative-fixture",
       checks: passingChecks(),
-      transformedCandidates,
-      localSuggestionRows: [sourceCandidateMissingRow],
+      sitemap: {
+        beforeUrlCount: 0,
+        afterUrlCount: 3,
+        importedDeltaCount: 3,
+        unexpectedUrlCount: 0,
+        unexpectedUrls: [],
+      },
+      byFamily: {
+        doctor: familySummary(),
+        pharmacy: familySummary(),
+        hospital: familySummary(),
+      },
+      hospitalRelations,
+      localSuggestions,
       notes: ["Representative fixture only; no database, route, sitemap, or publish writes."],
     });
+    const localBlockerReasons = localSuggestions.unsafePublicBlockers.map((blocker) => blocker.reason);
 
-    expect(report.localSuggestions.publicVisibleCount).toBe(2);
-    expect(report.localSuggestions.unsafePublicCount).toBe(9);
-    expect(report.localSuggestions.privateReviewCount).toBe(1);
-    expect(report.hospitalRelations.publicVisibleCount).toBe(1);
-    expect(report.hospitalRelations.unsafePublicCount).toBe(1);
+    expect(localSuggestions.publicVisibleCount).toBe(2);
+    expect(localSuggestions.unsafePublicCount).toBe(9);
+    expect(localSuggestions.privateReviewCount).toBe(1);
+    expect(hospitalRelations.publicVisibleCount).toBe(1);
+    expect(hospitalRelations.unsafePublicCount).toBe(1);
     expect(report.decision).toBe("no_go");
 
-    expect(report.localSuggestions.unsafePublicBlockers.map((blocker) => blocker.reason)).toEqual(
-      expect.arrayContaining([
-        "source_missing",
-        "last_checked_missing",
-        "location_mismatch",
-        "target_candidate_missing",
-        "source_candidate_missing",
-        "same_entity_self_link",
-        "ambiguous_review_required",
-        "unsupported_family",
-      ]),
-    );
-    expect(report.hospitalRelations.unsafePublicBlockers.map((blocker) => blocker.reason)).toEqual([
+    expect(localBlockerReasons).toContain("source_missing");
+    expect(localBlockerReasons).toContain("last_checked_missing");
+    expect(localBlockerReasons).toContain("location_mismatch");
+    expect(localBlockerReasons).toContain("target_candidate_missing");
+    expect(localBlockerReasons).toContain("source_candidate_missing");
+    expect(localBlockerReasons).toContain("same_entity_self_link");
+    expect(localBlockerReasons).toContain("ambiguous_review_required");
+    expect(localBlockerReasons).toContain("unsupported_family");
+    expect(hospitalRelations.unsafePublicBlockers.map((blocker) => blocker.reason)).toEqual([
       "ambiguous_review_required",
     ]);
   });

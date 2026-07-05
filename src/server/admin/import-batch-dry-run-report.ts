@@ -62,6 +62,25 @@ export type ImportBatchDryRunHospitalRelationBlocker = {
   notes: string | null;
 };
 
+export type ImportBatchDryRunHospitalRelationRow = {
+  hospitalKey: string | null;
+  doctorKey: string | null;
+  doctorName: string | null;
+  sourceUrl: string | null;
+  lastCheckedAt: string | null;
+  confidence: string | null;
+  branchVerified: boolean;
+  publicVisible: boolean;
+  relationStatus?: string | null;
+  requiresReview?: boolean;
+  notes?: string | null;
+};
+
+export type BuildImportBatchDryRunHospitalRelationSummaryInput = {
+  rows: readonly ImportBatchDryRunHospitalRelationRow[];
+  candidateHospitalKeys: readonly string[];
+};
+
 export type ImportBatchDryRunSample = {
   family: ImportBatchDryRunFamily;
   locale: "en" | "ar";
@@ -152,6 +171,76 @@ export const importBatchDryRunRequiredChecks: readonly ImportBatchDryRunCheckKey
 
 const importBatchDryRunFamilies: readonly ImportBatchDryRunFamily[] = ["doctor", "pharmacy", "hospital"];
 
+function cleanText(value: string | null | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : null;
+}
+
+function cleanKeySet(values: readonly string[]): Set<string> {
+  const result = new Set<string>();
+  for (const value of values) {
+    const cleaned = cleanText(value);
+    if (cleaned) result.add(cleaned);
+  }
+  return result;
+}
+
+function isSupportedHospitalRelationConfidence(confidence: string | null): boolean {
+  return confidence === "high" || confidence === "medium";
+}
+
+function needsHospitalRelationReview(row: ImportBatchDryRunHospitalRelationRow): boolean {
+  const relationStatus = cleanText(row.relationStatus);
+  return row.requiresReview === true || (relationStatus !== null && relationStatus !== "active" && relationStatus !== "approved");
+}
+
+function hospitalRelationBlocker(
+  row: ImportBatchDryRunHospitalRelationRow,
+  reason: ImportBatchDryRunHospitalRelationBlockerReason,
+  notes: string,
+): ImportBatchDryRunHospitalRelationBlocker {
+  return {
+    reason,
+    hospitalKey: cleanText(row.hospitalKey),
+    doctorKey: cleanText(row.doctorKey),
+    doctorName: cleanText(row.doctorName),
+    sourceUrl: cleanText(row.sourceUrl),
+    notes,
+  };
+}
+
+function hospitalRelationBlockers(
+  row: ImportBatchDryRunHospitalRelationRow,
+  candidateHospitalKeys: Set<string>,
+): ImportBatchDryRunHospitalRelationBlocker[] {
+  const blockers: ImportBatchDryRunHospitalRelationBlocker[] = [];
+  const hospitalKey = cleanText(row.hospitalKey);
+
+  if (hospitalKey === null || !candidateHospitalKeys.has(hospitalKey)) {
+    blockers.push(hospitalRelationBlocker(row, "hospital_mismatch", "Relation hospital key does not match the dry-run hospital candidates."));
+  }
+  if (cleanText(row.doctorName) === null) {
+    blockers.push(hospitalRelationBlocker(row, "doctor_name_missing", "Doctor display name is required before public suggestion."));
+  }
+  if (row.branchVerified !== true) {
+    blockers.push(hospitalRelationBlocker(row, "branch_not_verified", "Hospital branch relationship is not verified."));
+  }
+  if (cleanText(row.sourceUrl) === null) {
+    blockers.push(hospitalRelationBlocker(row, "source_missing", "Relation source URL is required before public suggestion."));
+  }
+  if (cleanText(row.lastCheckedAt) === null) {
+    blockers.push(hospitalRelationBlocker(row, "last_checked_missing", "Relation last checked date is required before public suggestion."));
+  }
+  if (!isSupportedHospitalRelationConfidence(cleanText(row.confidence))) {
+    blockers.push(hospitalRelationBlocker(row, "confidence_unsupported", "Relation confidence must be high or medium before public suggestion."));
+  }
+  if (needsHospitalRelationReview(row)) {
+    blockers.push(hospitalRelationBlocker(row, "ambiguous_review_required", "Relation is marked for review or has an unsupported status."));
+  }
+
+  return blockers;
+}
+
 export function emptyImportBatchDryRunFamilySummary(): ImportBatchDryRunFamilySummary {
   return {
     selectedCount: 0,
@@ -175,6 +264,62 @@ export function emptyImportBatchDryRunHospitalRelationSummary(): ImportBatchDryR
     unsafePublicCount: 0,
     unsafePublicBlockers: [],
     blockedFromPublicReasons: [],
+  };
+}
+
+export function buildImportBatchDryRunHospitalRelationSummary(
+  input: BuildImportBatchDryRunHospitalRelationSummaryInput,
+): ImportBatchDryRunHospitalRelationSummary {
+  const candidateHospitalKeys = cleanKeySet(input.candidateHospitalKeys);
+  const candidateHospitalsWithRows = new Set<string>();
+  const hospitalsWithPublicSuggestions = new Set<string>();
+  const unsafePublicBlockers: ImportBatchDryRunHospitalRelationBlocker[] = [];
+  const blockedFromPublicReasons: ImportBatchDryRunHospitalRelationBlocker[] = [];
+  let publicVisibleCount = 0;
+  let blockedFromPublicCount = 0;
+  let privateReviewCount = 0;
+  let unsafePublicCount = 0;
+
+  for (const row of input.rows) {
+    const hospitalKey = cleanText(row.hospitalKey);
+    if (hospitalKey !== null && candidateHospitalKeys.has(hospitalKey)) {
+      candidateHospitalsWithRows.add(hospitalKey);
+    }
+
+    const blockers = hospitalRelationBlockers(row, candidateHospitalKeys);
+    const safeForPublic = blockers.length === 0;
+
+    if (row.publicVisible && safeForPublic) {
+      publicVisibleCount += 1;
+      if (hospitalKey !== null) hospitalsWithPublicSuggestions.add(hospitalKey);
+      continue;
+    }
+
+    if (row.publicVisible && !safeForPublic) {
+      unsafePublicCount += 1;
+      unsafePublicBlockers.push(...blockers);
+      continue;
+    }
+
+    if (!row.publicVisible && safeForPublic) {
+      privateReviewCount += 1;
+      continue;
+    }
+
+    blockedFromPublicCount += 1;
+    blockedFromPublicReasons.push(...blockers);
+  }
+
+  return {
+    totalRows: input.rows.length,
+    candidateHospitalCount: candidateHospitalsWithRows.size,
+    publicVisibleCount,
+    blockedFromPublicCount,
+    privateReviewCount,
+    hospitalSuggestionCount: hospitalsWithPublicSuggestions.size,
+    unsafePublicCount,
+    unsafePublicBlockers,
+    blockedFromPublicReasons,
   };
 }
 

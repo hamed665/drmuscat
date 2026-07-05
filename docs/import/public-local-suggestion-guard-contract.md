@@ -4,11 +4,11 @@
 
 `src/server/public/import-local-suggestion-guard.ts` is the shared fail-closed runtime guard for local cross-family suggestions on imported public profiles.
 
-It exists so imported doctor, pharmacy, hospital, and future radiology, dentistry, and beauty profiles can read the same local suggestion payload shape without duplicating publication rules.
+It keeps local profile suggestions behind one public-safe boundary instead of duplicating the same rules in every profile guard.
 
-## Supported source and target families
+## Supported families
 
-The public guard supports these normalized families:
+The shared guard supports these normalized families:
 
 - `doctor`
 - `pharmacy`
@@ -76,14 +76,13 @@ Current imported profile guards using this shared runtime boundary:
 
 - `src/server/public/import-doctor-profile-guard.ts`
 - `src/server/public/import-pharmacy-profile-guard.ts`
+- `src/server/public/import-hospital-profile-guard.ts`
 
-Hospital profiles currently implement equivalent guarded local suggestion logic directly in `src/server/public/import-hospital-profile-guard.ts`. A future refactor may move hospitals to this shared helper once the route wrapper remains stable.
+## Future profile guards
 
-## Future profile families
+Future imported profile guards should use `buildPublicImportLocalSuggestions(...)` directly rather than reimplementing local suggestion rules.
 
-Future radiology, dentistry, and beauty imported profile guards should use `buildPublicImportLocalSuggestions(...)` directly rather than reimplementing local suggestion rules.
-
-A future profile guard must pass:
+A profile guard must pass:
 
 - the full candidate payload;
 - the source `geo` record;

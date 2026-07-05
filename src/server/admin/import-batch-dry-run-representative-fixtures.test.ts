@@ -5,16 +5,11 @@ import {
   buildImportBatchDryRunLocalSuggestionSummary,
   buildImportBatchDryRunReport,
   importBatchDryRunRequiredChecks,
-  type ImportBatchDryRunCheck,
-  type ImportBatchDryRunFamilySummary,
-  type ImportBatchDryRunHospitalRelationRow,
-  type ImportBatchDryRunLocalSuggestionFamily,
-  type ImportBatchDryRunLocalSuggestionRow,
 } from "./import-batch-dry-run-report";
 
 const checkedAt = "2026-07-05";
 
-function passingChecks(): readonly ImportBatchDryRunCheck[] {
+function passingChecks() {
   return importBatchDryRunRequiredChecks.map((key) => ({
     key,
     passed: true,
@@ -22,7 +17,7 @@ function passingChecks(): readonly ImportBatchDryRunCheck[] {
   }));
 }
 
-function familySummary(): ImportBatchDryRunFamilySummary {
+function familySummary() {
   return {
     selectedCount: 1,
     eligibleCount: 1,
@@ -34,7 +29,7 @@ function familySummary(): ImportBatchDryRunFamilySummary {
   };
 }
 
-function localRow(overrides: Partial<ImportBatchDryRunLocalSuggestionRow>): ImportBatchDryRunLocalSuggestionRow {
+function localRow(overrides: Record<string, unknown>) {
   return {
     sourceFamily: "doctor",
     sourceKey: "doctor-al-khuwair-one",
@@ -52,10 +47,10 @@ function localRow(overrides: Partial<ImportBatchDryRunLocalSuggestionRow>): Impo
     publicVisible: true,
     relationStatus: "active",
     ...overrides,
-  } as ImportBatchDryRunLocalSuggestionRow;
+  };
 }
 
-function hospitalRow(overrides: Partial<ImportBatchDryRunHospitalRelationRow>): ImportBatchDryRunHospitalRelationRow {
+function hospitalRow(overrides: Record<string, unknown>) {
   return {
     hospitalKey: "hospital-al-khuwair-one",
     doctorKey: "doctor-al-khuwair-one",
@@ -67,10 +62,10 @@ function hospitalRow(overrides: Partial<ImportBatchDryRunHospitalRelationRow>): 
     publicVisible: true,
     relationStatus: "active",
     ...overrides,
-  } as ImportBatchDryRunHospitalRelationRow;
+  };
 }
 
-const localSuggestionRows: readonly ImportBatchDryRunLocalSuggestionRow[] = [
+const localSuggestionRows = [
   localRow({
     sourceName: "Oman Ministry of Health directory",
     confidence: "high",
@@ -129,13 +124,13 @@ const localSuggestionRows: readonly ImportBatchDryRunLocalSuggestionRow[] = [
     relationStatus: "disputed",
   }),
   localRow({
-    targetFamily: "clinic" as unknown as ImportBatchDryRunLocalSuggestionFamily,
+    targetFamily: "clinic",
     targetKey: "clinic-al-khuwair-one",
     targetName: "Unsupported Clinic One",
   }),
-];
+] as unknown as Parameters<typeof buildImportBatchDryRunLocalSuggestionSummary>[0]["rows"];
 
-const hospitalRelationRows: readonly ImportBatchDryRunHospitalRelationRow[] = [
+const hospitalRelationRows = [
   hospitalRow({}),
   hospitalRow({
     doctorName: "Disputed Hospital Doctor One",
@@ -143,7 +138,7 @@ const hospitalRelationRows: readonly ImportBatchDryRunHospitalRelationRow[] = [
     confidence: "medium",
     relationStatus: "disputed",
   }),
-];
+] as unknown as Parameters<typeof buildImportBatchDryRunHospitalRelationSummary>[0]["rows"];
 
 describe("representative first-batch dry-run fixtures", () => {
   it("summarizes safe, unsafe, and private suggestions without publish side effects", () => {

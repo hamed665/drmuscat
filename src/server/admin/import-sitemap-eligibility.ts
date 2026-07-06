@@ -91,7 +91,8 @@ function readString(value: JsonRecord, key: string): string | null {
   if (typeof result !== "string") return null;
   const trimmed = result.trim();
   return trimmed.length > 0 ? trimmed : null;
-}\n
+}
+
 function canonicalRouteFamily(entityType: string): CanonicalRouteFamily | null {
   switch (entityType) {
     case "doctor":

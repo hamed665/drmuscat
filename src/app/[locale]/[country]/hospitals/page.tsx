@@ -12,7 +12,12 @@ import {
   firstDirectorySearchParamValue,
   isDirectorySearchQuery,
 } from "@/lib/catalog/public-directory-query";
+import {
+  listImportedPublicHospitalSummaries,
+  searchImportedPublicHospitalSummaries,
+} from "@/lib/catalog/public-import-discovery";
 import { listPublicCenters, searchPublicCatalog } from "@/lib/catalog/public-eligible-queries";
+import type { PublicCatalogQueryResult, PublicCenterSummary } from "@/lib/catalog/public-types";
 import {
   isSupportedCountry,
   isSupportedLocale,
@@ -52,6 +57,29 @@ const searchEmptyCopyByLocale: Record<SupportedLocale, string> = {
   ar: "لا توجد نتائج مستشفيات عامة مؤهلة لهذا البحث حتى الآن.",
 };
 
+function mergeHospitalResults(
+  baseResult: PublicCatalogQueryResult<PublicCenterSummary[]>,
+  importedHospitals: PublicCenterSummary[],
+): PublicCatalogQueryResult<PublicCenterSummary[]> {
+  if (!baseResult.ok) return baseResult;
+
+  const seen = new Set<string>();
+  const data: PublicCenterSummary[] = [];
+
+  for (const item of [...baseResult.data, ...importedHospitals]) {
+    const key = item.slug.toLocaleLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    data.push(item);
+  }
+
+  return {
+    ...baseResult,
+    data,
+    emptyReason: data.length > 0 ? null : baseResult.emptyReason,
+  };
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -85,12 +113,19 @@ export default async function PublicHospitalsPage({
   const config = cleanConfigBrand(buildHospitalsDiscoveryConfig(safeLocale, safeCountry, dir));
   const query = firstDirectorySearchParamValue((await searchParams).q);
   const isDirectorySearch = isDirectorySearchQuery(query);
-  const result = isDirectorySearch
-    ? centerTypeDirectoryResultFromSearch(await searchPublicCatalog(query, { limit: 24 }), "hospital")
-    : await listPublicCenters({
-        country: safeCountry,
-        centerType: "hospital",
-      });
+  const [baseResult, importedHospitals] = isDirectorySearch
+    ? await Promise.all([
+        centerTypeDirectoryResultFromSearch(await searchPublicCatalog(query, { limit: 24 }), "hospital"),
+        searchImportedPublicHospitalSummaries(query, 24),
+      ])
+    : await Promise.all([
+        listPublicCenters({
+          country: safeCountry,
+          centerType: "hospital",
+        }),
+        listImportedPublicHospitalSummaries(24),
+      ]);
+  const result = mergeHospitalResults(baseResult, importedHospitals);
   const emptyText = isDirectorySearch
     ? searchEmptyCopyByLocale[safeLocale]
     : compactEmptyCopyByLocale[safeLocale];

@@ -69,6 +69,8 @@ export type PublicCenterSummary = {
   shortDescriptionEn: string | null;
   shortDescriptionAr: string | null;
   defaultCountry: CountryCode;
+  /** Optional locale/country-neutral profile path for public-safe imported profiles. */
+  publicProfilePath?: string;
 };
 
 export type PublicDoctorSummary = {

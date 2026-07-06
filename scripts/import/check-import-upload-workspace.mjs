@@ -98,7 +98,7 @@ for (const token of [
   'const maxUploadBytes = 5 * 1024 * 1024;',
   'const maxParsedRows = 500;',
   'isSupportedFileName',
-  '/\.(xlsx|csv|tsv)$/i',
+  String.raw`/\.(xlsx|csv|tsv)$/i`,
   'parseImportSpreadsheet(bytes, fileValue.name)',
   '.from<InsertedBatch>("import_batches")',
   '.from<InsertedFile>("import_files")',

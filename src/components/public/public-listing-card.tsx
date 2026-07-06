@@ -44,6 +44,14 @@ function listingHref(locale: PublicCatalogLocale, country: string, family: 'cent
   return `/${locale}/${country.toLowerCase()}/${family}/${slug}`;
 }
 
+function centerListingHref(locale: PublicCatalogLocale, item: PublicCenterSummary): string {
+  if (item.publicProfilePath) {
+    return `/${locale}/${item.defaultCountry.toLowerCase()}${item.publicProfilePath}`;
+  }
+
+  return listingHref(locale, item.defaultCountry, 'center', item.slug);
+}
+
 function PublicListingMark({ label }: { label: string }) {
   return (
     <span className="dm2026-listing-card__mark" aria-hidden="true">
@@ -67,7 +75,7 @@ export function PublicListingCard(props: PublicListingCardProps) {
     const description =
       preferredText(props.locale, props.item.shortDescriptionEn, props.item.shortDescriptionAr) ??
       preferredText(props.locale, props.item.descriptionEn, props.item.descriptionAr);
-    const href = listingHref(props.locale, props.item.defaultCountry, 'center', props.item.slug);
+    const href = centerListingHref(props.locale, props.item);
 
     return (
       <article className="dm2026-listing-card dm2026-listing-card--center">

@@ -172,7 +172,8 @@ function requestBaseUrl(context: GetServerSidePropsContext): string | null {
 function hospitalProfileEndpointUrl(context: GetServerSidePropsContext, locale: string, country: string, hospitalSlug: string): string | null {
   const baseUrl = requestBaseUrl(context);
   if (baseUrl === null) return null;
-  return new URL(`/api/_drk/hospital-profile/${locale}/${country}/${hospitalSlug}`, baseUrl).toString();
+  // Legacy app route kept available: /api/_drk/hospital-profile/${locale}/${country}/${hospitalSlug}
+  return new URL(`/api/_drk/public-hospital-profile/${locale}/${country}/${hospitalSlug}`, baseUrl).toString();
 }
 
 async function loadHospitalProfile(

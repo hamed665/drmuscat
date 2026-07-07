@@ -18,6 +18,10 @@
       "command": ["scripts/import/check-first-batch-bridge-runtime-path-decision.mjs"]
     },
     {
+      "label": "tsx dependency implementation preflight",
+      "command": ["scripts/import/check-tsx-dependency-implementation-preflight.mjs"]
+    },
+    {
       "label": "hospital public hold",
       "command": ["scripts/import/check-imported-hospital-public-hold.mjs"]
     },

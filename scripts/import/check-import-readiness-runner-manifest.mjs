@@ -13,12 +13,13 @@ function check(condition, message) {
 
 check(manifest.schemaVersion === 'drkhaleej.import.readinessRunnerManifest.v1', 'runner manifest schema mismatch');
 check(Array.isArray(manifest.checks), 'runner manifest checks must be an array');
-check(manifest.checks.length === 10, 'runner manifest must keep the full import-readiness chain');
+check(manifest.checks.length === 11, 'runner manifest must keep the full import-readiness chain');
 
 const expected = [
   ['runner manifest guard', 'scripts/import/check-import-readiness-runner-manifest.mjs'],
   ['workflow runner guard', 'scripts/import/check-import-readiness-workflow-runner.mjs'],
   ['import readiness status after manifest', 'scripts/import/check-import-readiness-status-after-manifest.mjs'],
+  ['first batch bridge runtime path decision', 'scripts/import/check-first-batch-bridge-runtime-path-decision.mjs'],
   ['hospital public hold', 'scripts/import/check-imported-hospital-public-hold.mjs'],
   ['first batch dry-run fixture', 'scripts/import/check-first-batch-real-fixture.mjs'],
   ['generated first batch dry-run fixture', 'scripts/import/generate-first-batch-dry-run-fixture.mjs'],
@@ -42,10 +43,8 @@ manifest.checks.forEach((item, index) => {
   scripts.add(item.command[0]);
 });
 
-check(
-  manifest.checks[5].command.includes('--check'),
-  'generated first batch dry-run fixture must run in check mode',
-);
+const generatedFixtureCheck = manifest.checks.find((item) => item.label === 'generated first batch dry-run fixture');
+check(generatedFixtureCheck.command.includes('--check'), 'generated first batch dry-run fixture must run in check mode');
 check(runner.includes(manifestPath), 'runner must read the manifest');
 check(!runner.includes('const checks = ['), 'runner must not keep a hard-coded checks array');
 

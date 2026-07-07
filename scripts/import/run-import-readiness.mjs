@@ -4,6 +4,7 @@ import { promisify } from 'node:util';
 const execFileAsync = promisify(execFile);
 
 const checks = [
+  ['workflow runner guard', ['scripts/import/check-import-readiness-workflow-runner.mjs']],
   ['hospital public hold', ['scripts/import/check-imported-hospital-public-hold.mjs']],
   ['first batch dry-run fixture', ['scripts/import/check-first-batch-real-fixture.mjs']],
   ['generated first batch dry-run fixture', ['scripts/import/generate-first-batch-dry-run-fixture.mjs', '--check']],

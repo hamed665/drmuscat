@@ -25,6 +25,12 @@ jobs:
           git fetch --quiet --depth=1 origin "$GITHUB_SHA"
           git checkout --quiet FETCH_HEAD
 
+      - name: Locate stale hospital sitemap tokens
+        run: |
+          grep -R -n 'type SupportedImportSitemapEntityType = "doctor" | "pharmacy" | "hospital"' scripts src docs package.json || true
+          grep -R -n 'hospital: 500' scripts src docs package.json || true
+          grep -R -n '\^\\\\/(en|ar)\\\\/om\\\\/hospitals' scripts src docs package.json || true
+
       - name: Enable corepack
         run: corepack enable
 

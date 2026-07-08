@@ -30,6 +30,8 @@ jobs:
           grep -R -n 'type SupportedImportSitemapEntityType = "doctor" | "pharmacy" | "hospital"' scripts src docs package.json || true
           grep -R -n 'hospital: 500' scripts src docs package.json || true
           grep -R -n '\^\\\\/(en|ar)\\\\/om\\\\/hospitals' scripts src docs package.json || true
+          grep -R -n 'must preserve reviewed sitemap token' scripts src docs package.json || true
+          grep -R -n 'preserve reviewed sitemap token' scripts src docs package.json || true
 
       - name: Enable corepack
         run: corepack enable

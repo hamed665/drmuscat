@@ -82,7 +82,7 @@ for (const routePath of [
 const importSitemapPath = 'src/server/public/import-sitemap.ts';
 const importSitemap = readFile(importSitemapPath);
 for (const token of [
-  'type SupportedImportSitemapEntityType = "doctor" | "pharmacy" | "hospital"',
+  'type SupportedImportSitemapEntityType = "doctor" | "pharmacy"',
   'publicImportSitemapFamilyCaps',
   'publicImportSitemapLimit',
   'hasReviewedImportEvidence',
@@ -93,7 +93,10 @@ for (const token of [
   'isSafePublicCanonicalPathForEntity',
   '^\\/(en|ar)\\/om\\/doctor\\/',
   '^\\/(en|ar)\\/om\\/pharmacies\\/',
-  '^\\/(en|ar)\\/om\\/hospitals\\/',
+  'decidePublicSitemapEligibility',
+  'minimumInternalLinksPassed',
+  'hreflangReady',
+  'blockedByImportedHospitalRelease',
   '.eq("publish_status", "index_eligible")',
   '.eq("index_policy", "index")',
   '.eq("sitemap_policy", "included")',
@@ -102,6 +105,11 @@ for (const token of [
   assertIncludes(importSitemap, token, importSitemapPath);
 }
 for (const forbiddenToken of [
+  '^\\/(en|ar)\\/om\\/hospitals\\/',
+  '| "hospital"',
+  'value === "hospital"',
+  'case "hospital":',
+  '/hospitals/',
   'rating',
   'booking',
   'insurance',

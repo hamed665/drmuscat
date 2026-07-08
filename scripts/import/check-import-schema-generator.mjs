@@ -60,6 +60,11 @@ for (const token of [
   'export function generateEntitySchema',
   'buildBreadcrumb',
   'buildFaq',
+  'const schema: ImportGeneratedSchema =',
+  'schema.openingHours = entity.opening_hours',
+  'schema.sameAs = entity.same_as',
+  'schema.breadcrumb = breadcrumb',
+  'schema.faq = faq',
 ]) {
   assertIncludes(generatorSource, token, `${generatorPath} must include ${token}`);
 }
@@ -95,6 +100,10 @@ for (const forbiddenToken of [
   'pet_clinic: ["Physician"',
   'hospital: ["VeterinaryCare"',
   'return true;',
+  'openingHours: entity.opening_hours.length > 0 ? entity.opening_hours : undefined',
+  'sameAs: entity.same_as.length > 0 ? entity.same_as : undefined',
+  'breadcrumb: buildBreadcrumb(entity.breadcrumb_items)',
+  'faq: buildFaq(entity.faq_items ?? [])',
 ]) {
   assertNotIncludes(generatorSource + validationSource, forbiddenToken, `Schema files must not include unsafe shortcut ${forbiddenToken}.`);
 }

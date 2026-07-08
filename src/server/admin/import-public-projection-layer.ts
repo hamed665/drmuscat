@@ -136,11 +136,11 @@ function hasRequiredKind(records: readonly ImportPublicProjectionRecord[], kind:
   return records.some((record) => record.kind === kind && record.status === "ready");
 }
 
-function uniquePublicPageDataSources(values: readonly ImportPublicPageDataSource[]): readonly ImportPublicPageDataSource[] {
+export function uniquePublicPageDataSources(values: readonly ImportPublicPageDataSource[]): readonly ImportPublicPageDataSource[] {
   return Array.from(new Set(values));
 }
 
-function uniquePublicProjectionBlockers(values: readonly ImportPublicProjectionBlocker[]): readonly ImportPublicProjectionBlocker[] {
+export function uniquePublicProjectionBlockers(values: readonly ImportPublicProjectionBlocker[]): readonly ImportPublicProjectionBlocker[] {
   return Array.from(new Set(values));
 }
 

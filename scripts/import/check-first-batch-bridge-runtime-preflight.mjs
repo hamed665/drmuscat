@@ -18,7 +18,7 @@ function mustNotContain(source, token, label) {
 const doc = await readText('docs/import/first-batch-bridge-runtime-preflight.md');
 const generator = await readText('scripts/import/generate-first-batch-dry-run-fixture.mjs');
 const packageJson = await readText('package.json');
-const workflow = await readText('.github/workflows/import-readiness-contract.yml');
+const manifest = await readText('fixtures/import/import-readiness-runner.manifest.json');
 
 for (const token of [
   '# First Batch Bridge Runtime Preflight',
@@ -53,10 +53,13 @@ for (const token of ['"tsx"', '"ts-node"', '"tsimp"', '"esbuild-register"']) {
   mustNotContain(packageJson, token, 'package TypeScript script runner state');
 }
 
-mustContain(
-  workflow,
-  'node scripts/import/check-import-readiness-combined-smoke.mjs',
-  'import readiness workflow',
-);
+for (const token of [
+  'first batch bridge runtime preflight',
+  'scripts/import/check-first-batch-bridge-runtime-preflight.mjs',
+  'combined smoke',
+  'scripts/import/check-import-readiness-combined-smoke.mjs',
+]) {
+  mustContain(manifest, token, 'import readiness runner manifest');
+}
 
 console.log('first batch bridge runtime preflight check passed.');

@@ -45,7 +45,14 @@ jobs:
           path: build.log
           if-no-files-found: ignore
       - name: Routes check
-        run: pnpm routes:check
+        run: pnpm routes:check 2>&1 | tee routes-check.log
+      - name: Upload routes check failure log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routes-check-log
+          path: routes-check.log
+          if-no-files-found: ignore
       - name: Env check
         run: pnpm env:check
       - name: Validate migrations

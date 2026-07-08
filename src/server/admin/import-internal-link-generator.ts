@@ -65,8 +65,13 @@ function scoreCandidate(rule: ImportEntityLinkRule, candidate: ImportInternalLin
   return rule.priority + candidate.quality_score + areaBoost + cityBoost + specialtyBoost - distancePenalty;
 }
 
+function ruleKey(rule: ImportEntityLinkRule): string {
+  return [rule.source_type, rule.target_type, rule.source_domain, rule.target_domain].join(":");
+}
+
 export function generateImportInternalLinks(input: ImportInternalLinkGenerationInput): readonly ImportGeneratedInternalLink[] {
-  const generatedLinks: ImportGeneratedInternalLink[] = [];
+  const generatedLinksByRule = new Map<string, ImportGeneratedInternalLink[]>();
+  const maxLinksByRule = new Map<string, number>();
 
   for (const candidate of input.candidates) {
     const decision = getImportLinkRuleDecision({
@@ -79,7 +84,11 @@ export function generateImportInternalLinks(input: ImportInternalLinkGenerationI
     if (decision.decision !== "allowed" || decision.rule === null) continue;
     if (!candidatePassesRule(decision.rule, candidate)) continue;
 
-    generatedLinks.push({
+    const key = ruleKey(decision.rule);
+    const links = generatedLinksByRule.get(key) ?? [];
+    maxLinksByRule.set(key, decision.rule.max_links);
+
+    links.push({
       source_entity_id: input.source.entity_id,
       source_type: input.source.entity_type,
       source_domain: input.source.entity_domain,
@@ -95,26 +104,15 @@ export function generateImportInternalLinks(input: ImportInternalLinkGenerationI
       rule_version: IMPORT_INTERNAL_LINK_RULE_VERSION,
       generator_version: IMPORT_INTERNAL_LINK_GENERATOR_VERSION,
     });
+
+    generatedLinksByRule.set(key, links);
   }
 
-  return generatedLinks
-    .sort((left, right) => right.score - left.score || right.priority - left.priority)
-    .slice(0, Math.max(0, generatedLinks[0]?.priority ? Number.POSITIVE_INFINITY : 0));
-}
-
-export function generateImportInternalLinksForRuleLimit(
-  input: ImportInternalLinkGenerationInput,
-): readonly ImportGeneratedInternalLink[] {
-  const links = generateImportInternalLinks(input);
-  const firstRule = links[0];
-  if (!firstRule) return [];
-
-  const matchingRule = getImportLinkRuleDecision({
-    source_type: firstRule.source_type,
-    target_type: firstRule.target_type,
-    source_domain: firstRule.source_domain,
-    target_domain: firstRule.target_domain,
-  }).rule;
-
-  return links.slice(0, matchingRule?.max_links ?? 0);
+  return [...generatedLinksByRule.entries()]
+    .flatMap(([key, links]) =>
+      links
+        .sort((left, right) => right.score - left.score || right.priority - left.priority)
+        .slice(0, maxLinksByRule.get(key) ?? 0),
+    )
+    .sort((left, right) => right.score - left.score || right.priority - left.priority);
 }

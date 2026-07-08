@@ -5,7 +5,7 @@ const root = process.cwd();
 const flowPath = 'src/server/admin/import-manual-publish-flow.ts';
 const readinessPath = 'src/server/admin/import-readiness-engine.ts';
 const performancePath = 'src/server/admin/import-performance-guard.ts';
-const architecturePath = 'docs/platform/DRMUSCAT_IMPORT_READINESS_CONTROLLED_PUBLISHING_ARCHITECTURE_V1.md';
+const manualPublishContractPath = 'docs/platform/DRMUSCAT_MANUAL_PUBLISH_FLOW_CONTRACT.md';
 
 async function readText(relativePath) {
   return readFile(path.join(root, relativePath), 'utf8');
@@ -26,7 +26,7 @@ function assertNotIncludes(source, token, message) {
 const flowSource = await readText(flowPath);
 const readinessSource = await readText(readinessPath);
 const performanceSource = await readText(performancePath);
-const architectureSource = await readText(architecturePath);
+const manualPublishContractSource = await readText(manualPublishContractPath);
 
 for (const token of [
   'export type ImportManualPublishStep',
@@ -115,7 +115,7 @@ for (const token of [
   'Publish',
   'This PR should not add public routes or sitemap XML generation.',
 ]) {
-  assertIncludes(architectureSource, token, `${architecturePath} must include manual publish flow token ${token}`);
+  assertIncludes(manualPublishContractSource, token, `${manualPublishContractPath} must include manual publish flow token ${token}`);
 }
 
 console.log('import manual publish flow check passed.');

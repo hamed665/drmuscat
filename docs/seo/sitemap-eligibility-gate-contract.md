@@ -70,6 +70,10 @@ Imported hospital sitemap promotion remains blocked until controlled release gat
 
 Hospital metadata must not override the release blocker.
 
+## Route posture
+
+This gate does not reopen held hospital detail routes. Route checks remain fail-closed while sitemap eligibility becomes stricter.
+
 ## Non-goals
 
 This contract does not add or change:

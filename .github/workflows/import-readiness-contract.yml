@@ -24,10 +24,12 @@ jobs:
   import-readiness-contract:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          show-progress: false
+      - name: Checkout merge commit
+        run: |
+          git init . --quiet
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git fetch --quiet --depth=1 origin "$GITHUB_SHA"
+          git checkout --quiet FETCH_HEAD
 
       - name: Run import readiness contract
         run: node scripts/import/run-import-readiness.mjs

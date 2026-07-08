@@ -21,6 +21,13 @@ jobs:
           git fetch --quiet --depth=1 origin "$GITHUB_SHA"
           git checkout --quiet FETCH_HEAD
 
+      - name: Print hospital route directory entries
+        run: |
+          find 'src/app/[locale]/[country]/hospitals' -maxdepth 2 -print | sort
+          test ! -e 'src/app/[locale]/[country]/hospital'
+          test ! -e 'src/app/[locale]/[country]/clinic'
+          test ! -e 'src/app/[locale]/[country]/clinics'
+
       - name: Print route contract failures only
         shell: bash
         run: |

@@ -45,27 +45,15 @@ const profileContracts = [
     entity: 'hospital',
     family: 'hospitals',
     guardPath: 'src/server/public/import-hospital-profile-guard.ts',
-    routePath: 'src/pages/[locale]/[country]/hospitals/[hospitalSlug].tsx',
-    apiRoutePath: 'src/app/api/_drk/hospital-profile/[locale]/[country]/[hospitalSlug]/route.ts',
     slugParam: 'hospitalSlug',
     canonicalReturn: 'return `/${locale}/${country}/hospitals/${slug}`;',
     guardExport: 'getPublicImportHospitalProfile',
-    routeTokens: [
-      'getServerSideProps',
-      'loadHospitalProfile',
-      'hospitalProfileEndpointUrl',
-      '/api/_drk/hospital-profile/${locale}/${country}/${hospitalSlug}',
-      'notFound: true',
-      'hrefLang="en-OM"',
-      'hrefLang="ar-OM"',
-      'Confirm details directly with the provider',
-    ],
-    apiRouteTokens: [
-      'export async function GET',
-      'getPublicImportHospitalProfile',
-      'NextResponse.json',
-      'status: 404',
-      'no-store, private',
+    blockedPublicRoutes: [
+      'src/pages/[locale]/[country]/hospitals/[hospitalSlug].tsx',
+      'src/app/api/_drk/hospital-profile/[locale]/[country]/[hospitalSlug]/route.ts',
+      'src/app/[locale]/[country]/hospitals/[hospitalSlug]/page.tsx',
+      'src/app/[locale]/[country]/hospitals/[slug]/page.tsx',
+      'src/app/[locale]/[country]/hospitals/[slug]/layout.tsx',
     ],
   },
 ];
@@ -80,6 +68,15 @@ async function assertFile(relativePath) {
   } catch {
     throw new Error(`Missing file: ${relativePath}`);
   }
+}
+
+async function assertMissing(relativePath) {
+  try {
+    await access(path.join(root, relativePath));
+  } catch {
+    return;
+  }
+  throw new Error(`${relativePath} must not exist while imported hospital detail pages are on public hold.`);
 }
 
 function assert(condition, message) {
@@ -140,6 +137,13 @@ async function assertGuard(contract) {
 }
 
 async function assertRoute(contract) {
+  if (contract.blockedPublicRoutes) {
+    for (const blockedPath of contract.blockedPublicRoutes) {
+      await assertMissing(blockedPath);
+    }
+    return;
+  }
+
   await assertFile(contract.routePath);
   const source = await readText(contract.routePath);
 
@@ -148,20 +152,6 @@ async function assertRoute(contract) {
   }
 
   assertNotIncludes(source, 'listPublicImportSitemapEntries', `${contract.routePath} must not call sitemap listing from a profile page.`);
-
-  if (contract.entity === 'hospital') {
-    for (const token of ['profile.canonicalPath', 'profile.qualityScore', 'Quality score']) {
-      assertNotIncludes(source, token, `${contract.routePath} must not expose public QA field token: ${token}`);
-    }
-  }
-
-  if (contract.apiRoutePath) {
-    await assertFile(contract.apiRoutePath);
-    const apiSource = await readText(contract.apiRoutePath);
-    for (const token of contract.apiRouteTokens) {
-      assertIncludes(apiSource, token, `${contract.apiRoutePath} must include ${token}`);
-    }
-  }
 }
 
 async function assertSitemapContract() {

@@ -1,10 +1,19 @@
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.cwd();
 
 async function readText(relativePath) {
   return readFile(path.join(root, relativePath), 'utf8');
+}
+
+async function assertMissing(relativePath) {
+  try {
+    await access(path.join(root, relativePath));
+  } catch {
+    return;
+  }
+  throw new Error(`${relativePath} must not exist while imported hospital detail pages are on public hold.`);
 }
 
 function assert(condition, message) {
@@ -67,15 +76,28 @@ for (const token of [
   assertIncludes(pharmacyRoute, token, `${pharmacyRoutePath} must include ${token}`);
 }
 
-const hospitalRoutePath = 'src/pages/[locale]/[country]/hospitals/[hospitalSlug].tsx';
-const hospitalRoute = await readText(hospitalRoutePath);
-for (const token of [
-  'isPublicImportProfileIndexEligible',
-  'const importIndexEligibility = isPublicImportProfileIndexEligible(profile)',
-  'name="robots"',
-  'importIndexEligibility.eligible ? "index,follow" : "noindex,follow"',
+for (const blockedHospitalRoutePath of [
+  'src/pages/[locale]/[country]/hospitals/[hospitalSlug].tsx',
+  'src/app/[locale]/[country]/hospitals/[hospitalSlug]/page.tsx',
+  'src/app/[locale]/[country]/hospitals/[slug]/page.tsx',
+  'src/app/[locale]/[country]/hospitals/[slug]/layout.tsx',
 ]) {
-  assertIncludes(hospitalRoute, token, `${hospitalRoutePath} must include ${token}`);
+  await assertMissing(blockedHospitalRoutePath);
+}
+
+const hospitalGuardPath = 'src/server/public/import-hospital-profile-guard.ts';
+const hospitalGuard = await readText(hospitalGuardPath);
+for (const token of [
+  'getPublicImportHospitalProfile',
+  'isRecord(row.metadata)',
+  'row.publish_status !== "index_eligible"',
+  'row.index_policy !== "index"',
+  'row.sitemap_policy !== "included"',
+  'hasLocalGeo(geo)',
+  'hasSourceEvidence(sourceName, sourceUrl, lastCheckedAt)',
+  'hasContactOrMap({ phoneE164, whatsappE164, email, websiteUrl, googleMapsUrl, directionUrl })',
+]) {
+  assertIncludes(hospitalGuard, token, `${hospitalGuardPath} must preserve hospital eligibility boundary token ${token}`);
 }
 
 const docPath = 'docs/seo/public-import-profile-index-eligibility.md';

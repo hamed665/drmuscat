@@ -97,7 +97,8 @@ for (const token of [
   'PROFILE-GATE-B imported-pharmacy-profile-guard-v1',
   'PROFILE-GATE-C public-pharmacy-profile-route-wrapper-v1',
   'PROFILE-GATE-D imported-hospital-profile-guard-v1',
-  'PROFILE-GATE-E public-hospital-profile-route-wrapper-v1',
+  'public hospital detail route and API are blocked',
+  'sitemap eligibility only, no public detail route',
   'SITEMAP-GUARD-B import-sitemap-family-caps-v1',
   'PROFILE-SMOKE-A public-import-profile-smoke-v1',
   'doctor cap: 3000',
@@ -107,6 +108,13 @@ for (const token of [
   'source evidence exists, contact/map evidence exists, and Oman geo evidence exists',
 ]) {
   assertIncludes(snapshotSource, token, `${snapshotPath} must include dynamic route snapshot token: ${token}`);
+}
+
+for (const token of [
+  'PROFILE-GATE-E public-hospital-profile-route-wrapper-v1` are active',
+  'guarded index path exists | Use for a small reviewed hospital batch only',
+]) {
+  assertExcludes(snapshotSource, token, `${snapshotPath} must not keep stale hospital public route token: ${token}`);
 }
 
 for (const token of [

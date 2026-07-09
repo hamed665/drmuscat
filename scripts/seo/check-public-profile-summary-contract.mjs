@@ -13,6 +13,13 @@ function readFile(relativePath) {
   return fs.readFileSync(absolutePath, 'utf8');
 }
 
+function assertMissing(relativePath) {
+  const absolutePath = path.join(repoRoot, relativePath);
+  if (fs.existsSync(absolutePath)) {
+    throw new Error(`${relativePath} must not exist while imported hospital detail pages are on public hold.`);
+  }
+}
+
 function assertIncludes(content, token, label) {
   if (!content.includes(token)) {
     throw new Error(`${label} is missing required token: ${token}`);
@@ -243,24 +250,24 @@ for (const forbiddenToken of [
   assertNotIncludes(pharmacyImportProfile, forbiddenToken, pharmacyImportProfilePath);
 }
 
-const hospitalImportProfilePath = 'src/pages/[locale]/[country]/hospitals/[hospitalSlug].tsx';
-const hospitalImportProfile = readFile(hospitalImportProfilePath);
-for (const token of [
-  'buildPublicImportProfileSummary',
-  'buildPublicImportProfileMetaDescription',
-  'PublicImportProfileSummaryInput',
-  'const profileSummary = buildPublicImportProfileSummary(locale, profile satisfies PublicImportProfileSummaryInput)',
-  'const description = buildPublicImportProfileMetaDescription(profileSummary)',
-  '<p>{profileSummary}</p>',
-  '<p className="mt-3 text-sm leading-6 text-slate-700">{profileSummary}</p>',
+for (const blockedHospitalRoute of [
+  'src/pages/[locale]/[country]/hospitals/[hospitalSlug].tsx',
+  'src/app/api/_drk/hospital-profile/[locale]/[country]/[hospitalSlug]/route.ts',
+  'src/app/[locale]/[country]/hospitals/[hospitalSlug]/page.tsx',
+  'src/app/[locale]/[country]/hospitals/[slug]/page.tsx',
+  'src/app/[locale]/[country]/hospitals/[slug]/layout.tsx',
 ]) {
-  assertIncludes(hospitalImportProfile, token, hospitalImportProfilePath);
+  assertMissing(blockedHospitalRoute);
 }
-for (const forbiddenToken of [
-  'function profileDescription(name: string): string',
-  'const description = profileDescription(title)',
+
+const hospitalHoldContractPath = 'docs/import/public-hospital-hold-contract.md';
+const hospitalHoldContract = readFile(hospitalHoldContractPath);
+for (const token of [
+  'The hospital detail route must not exist while imported hospital detail pages are blocked.',
+  'hospital sitemap eligibility remains guarded by import queue readiness',
+  'Imported hospital public release is blocked',
 ]) {
-  assertNotIncludes(hospitalImportProfile, forbiddenToken, hospitalImportProfilePath);
+  assertIncludes(hospitalHoldContract, token, hospitalHoldContractPath);
 }
 
 const listingSafetyPath = 'scripts/seo/check-public-listing-card-safety.mjs';

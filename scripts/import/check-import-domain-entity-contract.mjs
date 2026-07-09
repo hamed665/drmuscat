@@ -17,10 +17,6 @@ function assertIncludes(source, token, message) {
   assert(source.includes(token), message);
 }
 
-function assertNotIncludes(source, token, message) {
-  assert(!source.includes(token), message);
-}
-
 function assertNoExactObjectMapping(source, key, value, message) {
   const pattern = new RegExp(`(^|\\n)\\s*${key}:\\s*${JSON.stringify(value)}\\s*,`, 'm');
   assert(!pattern.test(source), message);
@@ -135,8 +131,6 @@ for (const [key, value] of [
     `${domainPath} must not include unsafe domain mapping ${key}: ${JSON.stringify(value)}.`,
   );
 }
-
-assertNotIncludes(domainSource, 'doctor: "pet_healthcare",', `${domainPath} must not map doctor to pet healthcare.`);
 
 for (const token of [
   'PR 3: Domain + Entity Type Contract',

@@ -222,40 +222,6 @@ function Feedback({ params }: { params: Record<string, string | string[] | undef
   );
 }
 
-function ActionCard({
-  code,
-  title,
-  description,
-  action,
-  disabled,
-  button,
-}: {
-  code: string;
-  title: string;
-  description: string;
-  action: (formData: FormData) => Promise<void>;
-  disabled?: boolean;
-  button: string;
-}) {
-  return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">{code}</p>
-      <h3 className="mt-2 text-xl font-bold text-slate-950">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
-      <form action={action} className="mt-4">
-        <input type="hidden" name="batchId" value="" />
-        <button
-          type="submit"
-          disabled={disabled}
-          className="rounded-2xl bg-cyan-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400"
-        >
-          {button}
-        </button>
-      </form>
-    </section>
-  );
-}
-
 function BatchActionCard({
   batchId,
   code,

@@ -9,14 +9,22 @@ During import-readiness work, imported hospitals must not be public released thr
 - detail page returning `200`;
 - public hospital directory listing;
 - public search result;
-- public sitemap entry;
 - internal related-provider link graph.
 
-The current public hospital detail route is allowed to exist only as a fail-closed route. It must return `notFound()` for supported locale/country params and expose no indexed hospital profile content.
+A public sitemap entry is allowed only after import sitemap eligibility passes through the shared `import_publish_queue` gates:
+
+- `publish_status = index_eligible`;
+- `index_policy = index`;
+- `sitemap_policy = included`;
+- reviewed import evidence exists;
+- a safe canonical hospital path exists;
+- the hospital family cap is respected.
+
+The hospital detail route must not exist while imported hospital detail pages are blocked. A fail-closed detail layout still creates a public route structure, so it must stay deleted until detail eligibility is implemented through the same projection path.
 
 ## Why this exists
 
-Imported hospital profiles are higher-risk than simple directory rows because they can carry branch, department, doctor relation, service, and local-suggestion claims. A public page without verified discovery, source evidence, and internal-link coverage creates orphan-index and misinformation risk. Humanity has produced enough SEO garbage already; this repository does not need to contribute a fresh pile.
+Imported hospital profiles can include branch, department, doctor relation, service, and local-suggestion claims. A public page without verified discovery, source evidence, and internal-link coverage creates orphan-index and data-quality risk.
 
 ## Release prerequisites
 
@@ -33,4 +41,4 @@ Imported hospital public release is blocked until all of these are true in the s
 9. representative profile smoke checks pass for English and Arabic routes;
 10. sitemap diff contains no unexpected imported hospital URLs.
 
-Until then, doctor/pharmacy import readiness can proceed independently, but imported hospital public release stays locked.
+Until then, doctor/pharmacy import readiness can proceed independently, hospital sitemap eligibility remains guarded by import queue readiness, and imported hospital public detail/discovery release stays locked.

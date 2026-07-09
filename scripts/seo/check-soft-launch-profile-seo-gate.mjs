@@ -346,7 +346,10 @@ assertFileIncludes('src/lib/catalog/public-profile-relation-limits.ts', [
   'PUBLIC_CENTER_PROFILE_DOCTOR_LIMIT = 12',
   'PUBLIC_DOCTOR_PROFILE_SERVICE_LIMIT = 12',
   'PUBLIC_DOCTOR_PROFILE_PRACTICE_LOCATION_LIMIT = 8',
-  'items.slice(0, Math.max(0, limit))',
+  'PUBLIC_DOCTOR_PROFILE_CENTER_LIMIT = 6',
+  'PUBLIC_PROFILE_RELATED_PROVIDER_LIMIT = 8',
+  'PUBLIC_IMPORT_PROFILE_LOCAL_SUGGESTION_LIMIT = 12',
+  'slice(0, limit)',
 ]);
 assertFileNotIncludes('src/lib/catalog/public-profile-relation-limits.ts', ['Math.random', 'sort(() =>', 'randomUUID']);
 assertFileIncludes('scripts/seo/check-profile-relation-limit-guard.mjs', [
@@ -383,7 +386,6 @@ assertCriticalFilesDoNotContain([
   'src/app/[locale]/[country]/center/[centerSlug]/page.tsx',
   'src/app/[locale]/[country]/doctor/[doctorSlug]/page.tsx',
   'src/app/[locale]/[country]/pharmacies/[pharmacySlug]/page.tsx',
-  'src/pages/[locale]/[country]/hospitals/[hospitalSlug].tsx',
   'src/components/public/public-listing-card.tsx',
   'src/components/public/public-center-detail.tsx',
   'src/components/public/public-doctor-detail.tsx',

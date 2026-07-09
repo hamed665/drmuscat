@@ -3,6 +3,9 @@ export const PUBLIC_CENTER_PROFILE_SERVICE_LIMIT = 12;
 export const PUBLIC_CENTER_PROFILE_DOCTOR_LIMIT = 12;
 export const PUBLIC_DOCTOR_PROFILE_SERVICE_LIMIT = 12;
 export const PUBLIC_DOCTOR_PROFILE_PRACTICE_LOCATION_LIMIT = 8;
+export const PUBLIC_DOCTOR_PROFILE_CENTER_LIMIT = 6;
+export const PUBLIC_PROFILE_RELATED_PROVIDER_LIMIT = 8;
+export const PUBLIC_IMPORT_PROFILE_LOCAL_SUGGESTION_LIMIT = 12;
 
 export function limitPublicProfileRelations<T>(items: readonly T[], limit: number): T[] {
   return items.slice(0, Math.max(0, limit));

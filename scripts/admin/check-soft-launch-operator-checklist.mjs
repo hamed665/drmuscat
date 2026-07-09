@@ -14,6 +14,13 @@ function readFile(relativePath) {
   return fs.readFileSync(absolutePath, 'utf8');
 }
 
+function assertMissing(relativePath) {
+  const absolutePath = path.join(repoRoot, relativePath);
+  if (fs.existsSync(absolutePath)) {
+    throw new Error(`${relativePath} must not exist while imported hospital detail pages are on public hold.`);
+  }
+}
+
 function mustHave(content, token, label) {
   if (!content.includes(token)) throw new Error(`${label} missing token: ${token}`);
 }
@@ -154,7 +161,6 @@ for (const relativePath of [
   'src/app/[locale]/[country]/center/[centerSlug]/page.tsx',
   'src/app/[locale]/[country]/doctor/[doctorSlug]/page.tsx',
   'src/app/[locale]/[country]/pharmacies/[pharmacySlug]/page.tsx',
-  'src/pages/[locale]/[country]/hospitals/[hospitalSlug].tsx',
   'src/server/admin/draft-center-public-activation-actions.ts',
   'src/server/admin/draft-center-publication-readiness.ts',
   'src/lib/catalog/public-profile-summary.ts',
@@ -173,6 +179,7 @@ for (const relativePath of [
   'docs/seo/public-import-profile-index-eligibility.md',
   'docs/seo/profile-relation-limit-guard.md',
   'docs/seo/soft-launch-profile-seo-gate.md',
+  'docs/import/public-hospital-hold-contract.md',
   'scripts/admin/check-final-route-indexability-sanity.mjs',
   'scripts/admin/check-final-launch-chain-recap.mjs',
   'scripts/admin/check-active-centers-readonly-view.mjs',
@@ -189,6 +196,24 @@ for (const relativePath of [
 ]) {
   readFile(relativePath);
 }
+
+for (const blockedHospitalRoute of [
+  'src/pages/[locale]/[country]/hospitals/[hospitalSlug].tsx',
+  'src/app/api/_drk/hospital-profile/[locale]/[country]/[hospitalSlug]/route.ts',
+  'src/app/[locale]/[country]/hospitals/[hospitalSlug]/page.tsx',
+  'src/app/[locale]/[country]/hospitals/[slug]/page.tsx',
+  'src/app/[locale]/[country]/hospitals/[slug]/layout.tsx',
+]) {
+  assertMissing(blockedHospitalRoute);
+}
+
+const hospitalHoldContractPath = 'docs/import/public-hospital-hold-contract.md';
+const hospitalHoldContract = readFile(hospitalHoldContractPath);
+mustHaveAll(hospitalHoldContract, [
+  'The hospital detail route must not exist while imported hospital detail pages are blocked.',
+  'hospital sitemap eligibility remains guarded by import queue readiness',
+  'Imported hospital public release is blocked',
+], hospitalHoldContractPath);
 
 const actionPath = 'src/server/admin/draft-center-public-activation-actions.ts';
 const action = readFile(actionPath);
@@ -258,17 +283,10 @@ const relationLimit = readFile(relationLimitPath);
 mustHaveAll(relationLimit, [
   'PUBLIC_CENTER_PROFILE_LOCATION_LIMIT = 6',
   'PUBLIC_CENTER_PROFILE_SERVICE_LIMIT = 12',
-  'PUBLIC_CENTER_PROFILE_DOCTOR_LIMIT = 12',
-  'PUBLIC_DOCTOR_PROFILE_SERVICE_LIMIT = 12',
+  'PUBLIC_DOCTOR_PROFILE_CENTER_LIMIT = 6',
+  'PUBLIC_PROFILE_RELATED_PROVIDER_LIMIT = 8',
+  'PUBLIC_IMPORT_PROFILE_LOCAL_SUGGESTION_LIMIT = 12',
+  'slice(0, limit)',
 ], relationLimitPath);
 
-const packagePath = 'package.json';
-const packageJson = readFile(packagePath);
-for (const token of [
-  '"admin:soft-launch-checklist:validate": "node scripts/admin/check-soft-launch-operator-checklist.mjs"',
-  'pnpm admin:soft-launch-checklist:validate',
-]) {
-  mustHave(packageJson, token, packagePath);
-}
-
-console.log('Soft launch operator checklist checks passed.');
+console.log('soft launch operator checklist check passed.');

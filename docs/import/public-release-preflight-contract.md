@@ -1,37 +1,152 @@
-# Import Public Release Preflight Contract
+import { execFile } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { promisify } from 'node:util';
 
-This contract defines the minimum checks required before any imported provider family can gain a new public release path.
+const execFileAsync = promisify(execFile);
 
-A public release path means any change that can make imported data visible through one of these surfaces:
+const root = process.cwd();
+const manifestPath =
+  process.env.IMPORT_READINESS_MANIFEST_PATH ??
+  'fixtures/import/import-readiness-runner.manifest.json';
 
-- public detail route;
-- directory or search result;
-- sitemap entry;
-- canonical metadata path;
-- internal related-provider link;
-- public listing card action.
+function assertString(value, label) {
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new Error(`${label} must be a non-empty string.`);
+  }
+}
 
-## Required before public release
+function assertCommand(command, label) {
+  if (!Array.isArray(command) || command.length === 0) {
+    throw new Error(`${label} command must be a non-empty array.`);
+  }
 
-Every PR that opens or expands imported public visibility must prove all of the following:
+  for (const [index, part] of command.entries()) {
+    assertString(part, `${label} command[${index}]`);
+  }
+}
 
-1. the relevant import family is represented in the first-batch dry-run fixture or a newer documented fixture;
-2. the dry-run report decision is `go` for that family, or the PR keeps that family explicitly blocked;
-3. sitemap unexpected URL count is zero;
-4. public sitemap eligibility is downstream of public discovery eligibility;
-5. public discovery eligibility is downstream of public detail eligibility;
-6. detail eligibility requires reviewed source, location, contact or map, candidate approval, canonical path, and route-family match;
-7. unsafe public relation and local-suggestion counts are zero;
-8. English and Arabic representative samples pass smoke checks;
-9. manual duplicate records win over imported duplicate records;
-10. the import-readiness contract workflow covers the changed route, fixture, script, or sitemap files.
+function normalizeCommand(command) {
+  const [first, ...rest] = command;
 
-## Hospital-specific hold
+  if (
+    first === 'node' ||
+    first === process.execPath ||
+    first.endsWith('/node') ||
+    first.endsWith('\\node.exe')
+  ) {
+    return rest;
+  }
 
-Imported hospital detail and discovery remain blocked until the hospital public hold contract is retired by a dedicated PR. Hospital sitemap eligibility remains guarded by import queue readiness, `index_eligible`, `index`, `included`, reviewed import evidence, safe canonical path, and the hospital family cap.
+  return command;
+}
 
-The PR that retires the hospital hold must reference the fixture that turns hospital release from blocked to eligible and must use the unified public provider projection.
+function formatCommand(command) {
+  return ['node', ...command].join(' ');
+}
 
-## No shortcut rule
+function formatOutputBlock(label, value) {
+  if (!value || String(value).trim() === '') return '';
 
-A route, sitemap, or discovery PR must not create a family-specific parallel catalog to bypass the unified provider projection. The project already tried that pattern. It was not charming the first time.
+  return [
+    '',
+    `--- ${label} ---`,
+    String(value).trimEnd(),
+    `--- end ${label} ---`,
+  ].join('\n');
+}
+
+async function runCheck(check, index) {
+  const label = check.label ?? `check #${index + 1}`;
+
+  assertString(label, `manifest.checks[${index}].label`);
+  assertCommand(check.command, label);
+
+  const command = normalizeCommand(check.command);
+
+  if (command.length === 0) {
+    throw new Error(`${label} command must include a script path.`);
+  }
+
+  const [script, ...scriptArgs] = command;
+  const commandText = formatCommand(command);
+
+  console.log(`running: ${label}`);
+  console.log(`command: ${commandText}`);
+
+  try {
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [script, ...scriptArgs],
+      {
+        cwd: root,
+        windowsHide: true,
+        maxBuffer: 1024 * 1024 * 20,
+      },
+    );
+
+    if (stdout?.trim()) {
+      console.log(stdout.trimEnd());
+    }
+
+    if (stderr?.trim()) {
+      console.error(stderr.trimEnd());
+    }
+
+    console.log(`passed: ${label}`);
+  } catch (error) {
+    const stdout =
+      typeof error.stdout === 'string' ? error.stdout : '';
+    const stderr =
+      typeof error.stderr === 'string' ? error.stderr : '';
+    const exitCode =
+      typeof error.code === 'number' || typeof error.code === 'string'
+        ? error.code
+        : 'unknown';
+    const signal = error.signal ?? 'none';
+
+    throw new Error(
+      [
+        'import readiness runner failed.',
+        `check: ${label}`,
+        `command: ${commandText}`,
+        `exitCode: ${exitCode}`,
+        `signal: ${signal}`,
+        formatOutputBlock('stdout', stdout),
+        formatOutputBlock('stderr', stderr),
+        error.message ? `error: ${error.message}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n'),
+    );
+  }
+}
+
+async function main() {
+  const manifestAbsolutePath = path.join(root, manifestPath);
+  const manifest = JSON.parse(
+    await readFile(manifestAbsolutePath, 'utf8'),
+  );
+
+  if (
+    manifest.schemaVersion !==
+    'drkhaleej.import.readinessRunnerManifest.v1'
+  ) {
+    throw new Error('Unsupported import readiness runner manifest schema.');
+  }
+
+  if (!Array.isArray(manifest.checks)) {
+    throw new Error('Import readiness runner manifest checks must be an array.');
+  }
+
+  for (const [index, check] of manifest.checks.entries()) {
+    await runCheck(check, index);
+  }
+
+  console.log('import readiness runner passed.');
+}
+
+main().catch((error) => {
+  console.error(error?.message ?? error);
+  process.exitCode = 1;
+});

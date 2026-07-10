@@ -345,6 +345,7 @@ export async function getPublicImportHospitalProfile(input: {
       .from<CandidateRow>("import_entity_candidates")
       .select("entity_type, candidate_status, candidate_payload")
       .eq("id", id)
+      .eq("candidate_status", "approved")
       .maybeSingle();
 
     if (candidateResult.error !== null || candidateResult.data === null) return { ok: false, reason: "not_found" };

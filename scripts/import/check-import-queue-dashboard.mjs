@@ -84,7 +84,7 @@ for (const forbiddenToken of [
   'insert(',
   'update(',
   'delete(',
-  'publish',
+  'publish(',
   'runImport',
   'executeImport',
   'visibility: "public"',

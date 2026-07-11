@@ -130,7 +130,7 @@ export function getImportControlledPublishDryRunPlan(
     auditSchemaVersion: input.auditSchemaVersion,
   });
 
-  const uniqueBlockers = Array.from(new Set(blockers));
+  const uniqueBlockers = [...new Set(blockers)];
   return {
     mode: "dry_run_only",
     planReady: uniqueBlockers.length === 0,

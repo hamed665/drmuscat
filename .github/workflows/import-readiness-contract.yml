@@ -33,15 +33,4 @@ jobs:
           node-version: 22
 
       - name: Run import readiness contract
-        shell: bash
-        run: |
-          set -o pipefail
-          node scripts/import/run-import-readiness.mjs 2>&1 | tee import-readiness.log
-
-      - name: Upload import readiness failure log
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: import-readiness-log
-          path: import-readiness.log
-          if-no-files-found: error
+        run: node scripts/import/run-import-readiness.mjs

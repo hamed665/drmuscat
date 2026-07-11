@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "drkhaleej.import.controlledPublishOrchestrator.v1",
+  "cases": [
+    {
+      "id": "ready-plan-executor-disabled",
+      "input": {
+        "dryRunPlanReady": true,
+        "reservationExpiresAt": "2026-07-14T12:00:00.000Z",
+        "rollbackExpiresAt": "2026-10-09T12:00:00.000Z"
+      },
+      "expected": {
+        "mode": "disabled_orchestration",
+        "orchestrationReady": true,
+        "reservationAttempted": false,
+        "executionReady": false,
+        "mutationEnabled": false,
+        "terminalPersistenceAllowed": false,
+        "bulkAllowed": false,
+        "blockers": ["executor_disabled"]
+      }
+    },
+    {
+      "id": "dry-run-blocked",
+      "input": {
+        "dryRunPlanReady": false,
+        "reservationExpiresAt": "2026-07-14T12:00:00.000Z",
+        "rollbackExpiresAt": "2026-10-09T12:00:00.000Z"
+      },
+      "expected": {
+        "orchestrationReady": false,
+        "reservationAttempted": false,
+        "blockers": ["dry_run_plan_not_ready", "executor_disabled"]
+      }
+    },
+    {
+      "id": "reservation-expiry-missing",
+      "input": {
+        "dryRunPlanReady": true,
+        "reservationExpiresAt": "",
+        "rollbackExpiresAt": "2026-10-09T12:00:00.000Z"
+      },
+      "expected": {
+        "orchestrationReady": false,
+        "reservationAttempted": false,
+        "blockers": ["reservation_expiry_missing", "executor_disabled"]
+      }
+    },
+    {
+      "id": "rollback-expiry-missing",
+      "input": {
+        "dryRunPlanReady": true,
+        "reservationExpiresAt": "2026-07-14T12:00:00.000Z",
+        "rollbackExpiresAt": ""
+      },
+      "expected": {
+        "orchestrationReady": false,
+        "reservationAttempted": false,
+        "blockers": ["rollback_expiry_missing", "executor_disabled"]
+      }
+    }
+  ]
+}

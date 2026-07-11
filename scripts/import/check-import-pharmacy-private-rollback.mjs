@@ -26,9 +26,10 @@ const requiredSql = [
   /status\s*=\s*'draft'::public\.provider_status/i,
   /is_active\s*=\s*false/i,
   /is_featured\s*=\s*false/i,
-  /status\s*=\s*'rolled_back'/i,
-  /'rollback_succeeded'\s*,\s*'rolled_back'/i,
   /restored_by_profile_id\s*=\s*p_actor_profile_id/i,
+  /status\s*=\s*'in_progress'\s*,\s*terminal_result\s*=\s*NULL/i,
+  /public\.import_publish_persist_terminal_result\([\s\S]*'rolled_back'/i,
+  /rollback_terminal_persistence_failed/i,
   /revoke\s+all\s+on\s+function[\s\S]*from\s+public\s*,\s*anon\s*,\s*authenticated/i,
   /grant\s+execute\s+on\s+function[\s\S]*to\s+service_role/i,
 ];
@@ -42,6 +43,7 @@ for (const pattern of [
   /is_active\s*=\s*true/i,
   /sitemapEligible['"]?\s*,?\s*true/i,
   /indexable['"]?\s*,?\s*true/i,
+  /insert\s+into\s+public\.import_publish_audit_events/i,
 ]) {
   if (pattern.test(sql)) throw new Error(`0071 contains forbidden rollback pattern: ${pattern}`);
 }

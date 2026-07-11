@@ -9,7 +9,6 @@ import {
 } from "./import-unified-draft-entity";
 
 export type ImportConvergedSource = Extract<ImportDraftEntitySource, "manual" | "csv" | "excel">;
-
 export type ImportIntakePayload = Omit<ImportUnifiedDraftEntityInput, "source">;
 
 export type ImportIntakeConvergenceResult = {
@@ -75,9 +74,7 @@ function scoreFamily(evidence: ImportFamilyEvidence): number | null {
     evidence.unresolvedBlockers.length > 0 ||
     evidence.requiredRelationCount < 0 ||
     evidence.mutableFieldCount < 1
-  ) {
-    return null;
-  }
+  ) return null;
 
   return evidence.requiredRelationCount * 10 + evidence.mutableFieldCount;
 }
@@ -87,7 +84,7 @@ export function selectFirstPrivatePublishFamily(
 ): ImportFamilySelectionResult {
   const blockers: string[] = [];
   const byFamily = new Map<ImportPublishFamily, ImportFamilyEvidence>(
-    evidenceRows.map((row) => [row.family, row]),
+    evidenceRows.map((row): [ImportPublishFamily, ImportFamilyEvidence] => [row.family, row]),
   );
   const families: readonly ImportPublishFamily[] = ["doctor", "hospital", "pharmacy"];
 
@@ -95,16 +92,19 @@ export function selectFirstPrivatePublishFamily(
     if (!byFamily.has(family)) blockers.push(`family_evidence_missing:${family}`);
   }
 
+  const doctorEvidence = byFamily.get("doctor");
+  const hospitalEvidence = byFamily.get("hospital");
+  const pharmacyEvidence = byFamily.get("pharmacy");
   const scores: Record<ImportPublishFamily, number | null> = {
-    doctor: byFamily.has("doctor") ? scoreFamily(byFamily.get("doctor")!) : null,
-    hospital: byFamily.has("hospital") ? scoreFamily(byFamily.get("hospital")!) : null,
-    pharmacy: byFamily.has("pharmacy") ? scoreFamily(byFamily.get("pharmacy")!) : null,
+    doctor: doctorEvidence ? scoreFamily(doctorEvidence) : null,
+    hospital: hospitalEvidence ? scoreFamily(hospitalEvidence) : null,
+    pharmacy: pharmacyEvidence ? scoreFamily(pharmacyEvidence) : null,
   };
 
   const eligibleFamilies = families.filter((family) => scores[family] !== null);
   const ordered = [...eligibleFamilies].sort((left, right) => scores[left]! - scores[right]!);
-  const first = ordered.at(0) ?? null;
-  const second = ordered.at(1) ?? null;
+  const first: ImportPublishFamily | null = ordered[0] ?? null;
+  const second: ImportPublishFamily | null = ordered[1] ?? null;
 
   if (first === null) blockers.push("no_family_ready");
   if (first !== null && second !== null && scores[first] === scores[second]) {

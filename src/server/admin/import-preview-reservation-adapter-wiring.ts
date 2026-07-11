@@ -4,7 +4,10 @@ import {
   createImportSupabasePublishPersistenceAdapter,
   type ImportSupabaseRpcClient,
 } from "./import-supabase-publish-persistence-adapter";
-import type { ImportPrivatePublishPersistenceAdapter } from "./import-private-persistence-adapter";
+import type {
+  ImportPublishPersistenceTransactionRequest,
+  ImportPublishPersistenceTransactionResult,
+} from "./import-private-persistence-adapter";
 
 export const IMPORT_PREVIEW_RESERVATION_ADAPTER_WIRING_ENABLED = false as const;
 
@@ -13,6 +16,12 @@ export type ImportPreviewReservationAdapterWiringBlocker =
   | "service_role_not_configured"
   | "reservation_mode_not_enabled"
   | "preview_wiring_disabled";
+
+export type ImportPreviewReservationAdapter = {
+  runReservationSnapshotAuditTransaction(
+    request: ImportPublishPersistenceTransactionRequest,
+  ): Promise<ImportPublishPersistenceTransactionResult>;
+};
 
 export type ImportPreviewReservationAdapterWiringInput = {
   environment: "development" | "preview" | "production";
@@ -25,7 +34,7 @@ export type ImportPreviewReservationAdapterWiringResult = {
   mode: "preview_wiring_disabled";
   wiringReady: boolean;
   clientConstructed: boolean;
-  adapter: ImportPrivatePublishPersistenceAdapter | null;
+  adapter: ImportPreviewReservationAdapter | null;
   executionReady: false;
   mutationEnabled: false;
   terminalPersistenceAllowed: false;
@@ -66,7 +75,11 @@ export function createImportPreviewReservationAdapterWiring(
     };
   }
 
-  const adapter = createImportSupabasePublishPersistenceAdapter(input.createRpcClient());
+  const fullAdapter = createImportSupabasePublishPersistenceAdapter(input.createRpcClient());
+  const adapter: ImportPreviewReservationAdapter = {
+    runReservationSnapshotAuditTransaction: (request) =>
+      fullAdapter.runReservationSnapshotAuditTransaction(request),
+  };
 
   return {
     mode: "preview_wiring_disabled",

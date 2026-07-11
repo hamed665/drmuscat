@@ -18,7 +18,18 @@ function validPayload(): ImportIntakePayload {
     draftId: "draft-001",
     entityType: "pharmacy",
     name: "Canary Pharmacy",
-    canonicalGeo: {} as ImportIntakePayload["canonicalGeo"],
+    canonicalGeo: {
+      country_code: "om",
+      governorate_id: "gov-muscat",
+      city_id: "city-muscat",
+      area_id: "area-bausher",
+      latitude: 23.58,
+      longitude: 58.42,
+      geo_confidence_score: 100,
+      geo_source: "controlled-canary",
+      geo_resolution_status: "manually_verified",
+      geo_validated: true,
+    },
     sourceEvidence: {
       sourceId: "source-001",
       sourceName: "controlled-canary",
@@ -31,11 +42,9 @@ function validPayload(): ImportIntakePayload {
 }
 
 function comparable(result: ReturnType<typeof normalizeManualImport>) {
-  return {
-    ...result.draft,
-    source: undefined,
-    sourceEvidence: { ...result.draft.sourceEvidence, source: undefined },
-  };
+  const { source: _source, sourceEvidence, ...draft } = result.draft;
+  const { source: _evidenceSource, ...evidence } = sourceEvidence;
+  return { ...draft, sourceEvidence: evidence };
 }
 
 describe("import intake convergence", () => {
@@ -50,14 +59,16 @@ describe("import intake convergence", () => {
     expect(excel.converged).toBe(true);
     expect(comparable(csv)).toEqual(comparable(manual));
     expect(comparable(excel)).toEqual(comparable(manual));
-    expect([manual, csv, excel].every((result) => result.directEntityWriteAllowed === false)).toBe(true);
+    expect(manual.directEntityWriteAllowed).toBe(false);
+    expect(csv.directEntityWriteAllowed).toBe(false);
+    expect(excel.directEntityWriteAllowed).toBe(false);
     expect(manual.draft.source).toBe("manual");
     expect(csv.draft.source).toBe("csv");
     expect(excel.draft.source).toBe("excel");
   });
 
   it("returns the same blockers for equivalent invalid payloads", () => {
-    const payload = { ...validPayload(), canonicalGeo: null };
+    const payload: ImportIntakePayload = { ...validPayload(), canonicalGeo: null };
     expect(normalizeManualImport(payload).blockers).toEqual(["canonical_geo_missing"]);
     expect(normalizeCsvImport(payload).blockers).toEqual(["canonical_geo_missing"]);
     expect(normalizeExcelImport(payload).blockers).toEqual(["canonical_geo_missing"]);
@@ -67,39 +78,9 @@ describe("import intake convergence", () => {
 describe("private publish family selection", () => {
   it("selects the unique lowest-complexity ready family", () => {
     const rows: ImportFamilyEvidence[] = [
-      {
-        family: "doctor",
-        schemaReady: true,
-        fixtureReady: true,
-        privateRouteReady: true,
-        projectionReady: true,
-        rollbackShapeReady: true,
-        requiredRelationCount: 4,
-        mutableFieldCount: 16,
-        unresolvedBlockers: [],
-      },
-      {
-        family: "hospital",
-        schemaReady: true,
-        fixtureReady: true,
-        privateRouteReady: true,
-        projectionReady: true,
-        rollbackShapeReady: true,
-        requiredRelationCount: 2,
-        mutableFieldCount: 14,
-        unresolvedBlockers: [],
-      },
-      {
-        family: "pharmacy",
-        schemaReady: true,
-        fixtureReady: true,
-        privateRouteReady: true,
-        projectionReady: true,
-        rollbackShapeReady: true,
-        requiredRelationCount: 1,
-        mutableFieldCount: 12,
-        unresolvedBlockers: [],
-      },
+      { family: "doctor", schemaReady: true, fixtureReady: true, privateRouteReady: true, projectionReady: true, rollbackShapeReady: true, requiredRelationCount: 4, mutableFieldCount: 16, unresolvedBlockers: [] },
+      { family: "hospital", schemaReady: true, fixtureReady: true, privateRouteReady: true, projectionReady: true, rollbackShapeReady: true, requiredRelationCount: 2, mutableFieldCount: 14, unresolvedBlockers: [] },
+      { family: "pharmacy", schemaReady: true, fixtureReady: true, privateRouteReady: true, projectionReady: true, rollbackShapeReady: true, requiredRelationCount: 1, mutableFieldCount: 12, unresolvedBlockers: [] },
     ];
 
     const result = selectFirstPrivatePublishFamily(rows);
@@ -107,7 +88,7 @@ describe("private publish family selection", () => {
     expect(result.blockers).toEqual([]);
   });
 
-  it("fails closed when evidence is missing or tied", () => {
+  it("fails closed when evidence is missing", () => {
     const result = selectFirstPrivatePublishFamily([]);
     expect(result.selectedFamily).toBeNull();
     expect(result.blockers).toContain("family_evidence_missing:doctor");

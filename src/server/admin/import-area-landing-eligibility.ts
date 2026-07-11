@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { ImportInternalLinkIntelligenceResult } from "./import-internal-link-intelligence";
-import type { ImportNearbyProjectionResult } from "./import-nearby-projection-engine";
+import type { ImportNearbyProjectionEngineResult } from "./import-nearby-projection-engine";
 import type { ImportOmanGeoSeedReadiness } from "./import-oman-geo-seed-validation";
 import type { ImportPageValueGateResult } from "./import-page-value-gate";
 import type { ImportPublicProjectionManifest } from "./import-public-projection-layer";
@@ -27,7 +27,7 @@ export type ImportAreaLandingEligibilityInput = {
   geoSeedReadiness: ImportOmanGeoSeedReadiness;
   pageValue: ImportPageValueGateResult;
   internalLinks: ImportInternalLinkIntelligenceResult;
-  nearbyProjection: ImportNearbyProjectionResult;
+  nearbyProjection: ImportNearbyProjectionEngineResult;
   publicProjection: ImportPublicProjectionManifest;
   hasEnglishKeywordTarget: boolean;
   hasArabicKeywordTarget: boolean;
@@ -61,11 +61,8 @@ function hasReadyAreaProjection(manifest: ImportPublicProjectionManifest): boole
   );
 }
 
-export function getImportAreaLandingEligibility(
-  input: ImportAreaLandingEligibilityInput,
-): ImportAreaLandingEligibilityResult {
+export function getImportAreaLandingEligibility(input: ImportAreaLandingEligibilityInput): ImportAreaLandingEligibilityResult {
   const blockers: ImportAreaLandingEligibilityBlocker[] = [];
-
   if (!input.geoSeedReadiness.seedReady) blockers.push("geo_seed_not_ready");
   if (!input.areaId.trim() || !input.areaSlug.trim() || !input.canonicalAreaIds.includes(input.areaId)) blockers.push("canonical_area_missing");
   if (!hasReadyAreaProjection(input.publicProjection)) blockers.push("area_projection_not_ready");
@@ -78,14 +75,8 @@ export function getImportAreaLandingEligibility(
   if (input.uniqueLocalFactCount < IMPORT_AREA_LANDING_MIN_UNIQUE_LOCAL_FACTS) blockers.push("unique_local_fact_coverage_below_minimum");
   if (input.duplicateAreaRisk) blockers.push("duplicate_area_risk");
   if (!input.manualReviewComplete) blockers.push("manual_review_missing");
-
   const uniqueBlockers = Array.from(new Set(blockers));
-  return {
-    areaLandingEligible: uniqueBlockers.length === 0,
-    publishReady: input.publishReady,
-    sitemapEligible: input.sitemapEligible,
-    blockers: uniqueBlockers,
-  };
+  return { areaLandingEligible: uniqueBlockers.length === 0, publishReady: input.publishReady, sitemapEligible: input.sitemapEligible, blockers: uniqueBlockers };
 }
 
 export function isImportAreaLandingEligible(input: ImportAreaLandingEligibilityInput): boolean {

@@ -1,0 +1,30 @@
+name: Controlled Publish Dry-Run Contract
+
+on:
+  pull_request:
+    paths:
+      - "src/server/admin/import-controlled-publish-dry-run-executor.ts"
+      - "fixtures/import/import-controlled-publish-dry-run-executor.fixture.json"
+      - "scripts/import/check-import-controlled-publish-dry-run-executor.mjs"
+      - "scripts/import/check-import-publish-readiness-audit.mjs"
+      - "docs/platform/DRKHALEEJ_CONTROLLED_PUBLISH_DRY_RUN_EXECUTOR.md"
+      - ".github/workflows/controlled-publish-dry-run-contract.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "src/server/admin/import-controlled-publish-dry-run-executor.ts"
+      - "fixtures/import/import-controlled-publish-dry-run-executor.fixture.json"
+      - "scripts/import/check-import-controlled-publish-dry-run-executor.mjs"
+      - "scripts/import/check-import-publish-readiness-audit.mjs"
+      - "docs/platform/DRKHALEEJ_CONTROLLED_PUBLISH_DRY_RUN_EXECUTOR.md"
+      - ".github/workflows/controlled-publish-dry-run-contract.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validate controlled publish dry-run contract
+        run: node scripts/import/check-import-controlled-publish-dry-run-executor.mjs

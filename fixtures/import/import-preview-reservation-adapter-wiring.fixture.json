@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "drkhaleej.import.previewReservationAdapterWiring.v1",
+  "cases": [
+    {
+      "id": "preview-ready-but-disabled",
+      "input": {
+        "environment": "preview",
+        "serviceRoleConfigured": true,
+        "reservationModeEnabled": true
+      },
+      "expected": {
+        "wiringReady": true,
+        "clientConstructed": false,
+        "adapterAvailable": false,
+        "blockers": ["preview_wiring_disabled"]
+      }
+    },
+    {
+      "id": "production-blocked",
+      "input": {
+        "environment": "production",
+        "serviceRoleConfigured": true,
+        "reservationModeEnabled": true
+      },
+      "expected": {
+        "wiringReady": false,
+        "clientConstructed": false,
+        "blockers": ["environment_not_preview", "preview_wiring_disabled"]
+      }
+    },
+    {
+      "id": "service-role-missing",
+      "input": {
+        "environment": "preview",
+        "serviceRoleConfigured": false,
+        "reservationModeEnabled": true
+      },
+      "expected": {
+        "wiringReady": false,
+        "clientConstructed": false,
+        "blockers": ["service_role_not_configured", "preview_wiring_disabled"]
+      }
+    },
+    {
+      "id": "reservation-mode-disabled",
+      "input": {
+        "environment": "preview",
+        "serviceRoleConfigured": true,
+        "reservationModeEnabled": false
+      },
+      "expected": {
+        "wiringReady": false,
+        "clientConstructed": false,
+        "blockers": ["reservation_mode_not_enabled", "preview_wiring_disabled"]
+      }
+    }
+  ],
+  "safety": {
+    "environmentVariableAccess": false,
+    "supabaseClientConstruction": false,
+    "rpcAttempted": false,
+    "terminalPersistenceAllowed": false,
+    "entityMutationAllowed": false,
+    "bulkAllowed": false
+  }
+}

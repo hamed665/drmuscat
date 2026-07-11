@@ -13,6 +13,13 @@ import {
 function request(): ImportPharmacyPrivateMutationRequest {
   return {
     family: "pharmacy",
+    selectedFamily: "pharmacy",
+    reservationResult: {
+      kind: "reserved",
+      reservationId: "reservation-001",
+      rollbackSnapshotId: "snapshot-001",
+      auditEventId: "audit-001",
+    },
     draft: {
       draftId: "draft-pharmacy-001",
       source: "excel",
@@ -55,7 +62,7 @@ function writer(result: Awaited<ReturnType<ImportPharmacyPrivateMutationWriter["
 }
 
 describe("pharmacy private mutation adapter", () => {
-  it("forces a successful mutation to remain private and undiscoverable", async () => {
+  it("forces a successful mutation to remain private and carries reservation identity", async () => {
     const mutationWriter = writer({ kind: "mutated", entityId: "pharmacy-001", actualVersion: "2" });
     const result = await runImportPharmacyPrivateMutation(request(), mutationWriter);
 
@@ -68,6 +75,9 @@ describe("pharmacy private mutation adapter", () => {
     expect(mutationWriter.mutateOne).toHaveBeenCalledWith(
       expect.objectContaining({
         family: "pharmacy",
+        reservationId: "reservation-001",
+        rollbackSnapshotId: "snapshot-001",
+        auditEventId: "audit-001",
         visibility: "private",
         publicRouteEnabled: false,
         indexable: false,
@@ -75,6 +85,25 @@ describe("pharmacy private mutation adapter", () => {
       }),
     );
     expect(mutationWriter.rollbackOne).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when reservation or pharmacy selection is missing", async () => {
+    const mutationWriter = writer({ kind: "failed" });
+    const result = await runImportPharmacyPrivateMutation(
+      {
+        ...request(),
+        selectedFamily: "hospital",
+        reservationResult: { kind: "failed", reason: "transaction_aborted" },
+      },
+      mutationWriter,
+    );
+
+    expect(result.kind).toBe("blocked");
+    if (result.kind === "blocked") {
+      expect(result.blockers).toContain("selected_family_not_pharmacy");
+      expect(result.blockers).toContain("reservation_not_reserved");
+    }
+    expect(mutationWriter.mutateOne).not.toHaveBeenCalled();
   });
 
   it("fails closed when execution is disabled or bulk is requested", async () => {

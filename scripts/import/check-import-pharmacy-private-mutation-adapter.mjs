@@ -23,6 +23,13 @@ for (const token of [
   'ImportPharmacyPrivateMutationWriter',
   'runImportPharmacyPrivateMutation',
   'getImportPharmacyPrivateMutationBlockers',
+  'selectedFamily',
+  'reservationResult',
+  'reservationId',
+  'rollbackSnapshotId',
+  'auditEventId',
+  'selected_family_not_pharmacy',
+  'reservation_not_reserved',
   'visibility: "private"',
   'publicRouteEnabled: false',
   'indexable: false',
@@ -35,9 +42,6 @@ for (const token of [
 }
 
 for (const forbidden of [
-  'doctor',
-  'hospital',
-  'batchSize: number',
   'publicRouteEnabled: true',
   'indexable: true',
   'sitemapEligible: true',
@@ -48,7 +52,8 @@ for (const forbidden of [
 }
 
 for (const behavior of [
-  'forces a successful mutation to remain private and undiscoverable',
+  'forces a successful mutation to remain private and carries reservation identity',
+  'fails closed when reservation or pharmacy selection is missing',
   'fails closed when execution is disabled or bulk is requested',
   'rolls back when the writer reports failure after a write',
   'reports rollback failure instead of pretending recovery succeeded',

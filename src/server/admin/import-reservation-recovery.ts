@@ -79,6 +79,27 @@ function validDate(value: string): boolean {
   return Number.isFinite(Date.parse(value));
 }
 
+function result(
+  mode: ImportReservationRecoveryResult["mode"],
+  blockers: readonly ImportReservationRecoveryBlocker[],
+  options: {
+    recoveryAttempted?: boolean;
+    recovered?: boolean;
+    terminalResult?: ImportPublishPersistenceTerminalResult | null;
+  } = {},
+): ImportReservationRecoveryResult {
+  return {
+    mode,
+    recoveryAttempted: options.recoveryAttempted ?? false,
+    recovered: options.recovered ?? false,
+    snapshotPreserved: true,
+    entityMutationAllowed: false,
+    automaticRetryAllowed: false,
+    blockers: [...new Set(blockers)],
+    terminalResult: options.terminalResult ?? null,
+  };
+}
+
 export async function recoverExpiredImportReservation(
   reader: ImportReservationRecoveryReader,
   adapter: ImportPrivatePublishPersistenceAdapter,
@@ -86,7 +107,7 @@ export async function recoverExpiredImportReservation(
 ): Promise<ImportReservationRecoveryResult> {
   const blockers: ImportReservationRecoveryBlocker[] = [];
 
-  if (!IMPORT_RESERVATION_RECOVERY_ENABLED || !input.executionEnabled) blockers.push("recovery_disabled");
+  if (!input.executionEnabled) blockers.push("recovery_disabled");
   if (input.environment !== "preview") blockers.push("environment_not_preview");
   if (!input.allowedActorIds.includes(input.actorId)) blockers.push("actor_not_allowed");
   if (!input.allowedEntityIds.includes(input.entityId)) blockers.push("entity_not_allowed");
@@ -97,23 +118,9 @@ export async function recoverExpiredImportReservation(
     !isSha256(input.requestHash) ||
     !input.auditSchemaVersion.trim() ||
     !validDate(input.now)
-  ) {
-    blockers.push("invalid_input");
-  }
+  ) blockers.push("invalid_input");
 
-  const hardBlockers = blockers.filter((blocker) => blocker !== "recovery_disabled");
-  if (hardBlockers.length > 0 || !input.executionEnabled) {
-    return {
-      mode: "recovery_disabled",
-      recoveryAttempted: false,
-      recovered: false,
-      snapshotPreserved: true,
-      entityMutationAllowed: false,
-      automaticRetryAllowed: false,
-      blockers: [...new Set(blockers)],
-      terminalResult: null,
-    };
-  }
+  if (blockers.length > 0) return result("recovery_disabled", blockers);
 
   const recordRead = await reader.readRecoveryRecord({
     entityId: input.entityId,
@@ -123,18 +130,7 @@ export async function recoverExpiredImportReservation(
   if (!recordRead.data) blockers.push("reservation_not_found");
 
   const record = recordRead.data;
-  if (!record || blockers.length > 0) {
-    return {
-      mode: "recovery_checked",
-      recoveryAttempted: false,
-      recovered: false,
-      snapshotPreserved: true,
-      entityMutationAllowed: false,
-      automaticRetryAllowed: false,
-      blockers: [...new Set(blockers)],
-      terminalResult: null,
-    };
-  }
+  if (!record || blockers.length > 0) return result("recovery_checked", blockers);
 
   if (
     record.entityId !== input.entityId ||
@@ -144,19 +140,15 @@ export async function recoverExpiredImportReservation(
   ) blockers.push("reservation_identity_mismatch");
 
   if (record.terminalResult) {
-    return {
-      mode: "replayed",
-      recoveryAttempted: false,
+    return result("replayed", blockers, {
       recovered: record.terminalResult.status === "failed",
-      snapshotPreserved: true,
-      entityMutationAllowed: false,
-      automaticRetryAllowed: false,
-      blockers: [...new Set(blockers)],
       terminalResult: record.terminalResult,
-    };
+    });
   }
 
-  if (record.status !== "reserved" && record.status !== "in_progress") blockers.push("reservation_not_recoverable");
+  if (record.status !== "reserved" && record.status !== "in_progress") {
+    blockers.push("reservation_not_recoverable");
+  }
   if (!validDate(record.expiresAt) || Date.parse(record.expiresAt) > Date.parse(input.now)) {
     blockers.push("reservation_not_expired");
   }
@@ -165,18 +157,7 @@ export async function recoverExpiredImportReservation(
   if (entityRead.error || !entityRead.data) blockers.push("entity_read_failed");
   else if (entityRead.data.version !== record.expectedVersion) blockers.push("entity_version_changed");
 
-  if (blockers.length > 0 || !IMPORT_RESERVATION_RECOVERY_ENABLED) {
-    return {
-      mode: "recovery_checked",
-      recoveryAttempted: false,
-      recovered: false,
-      snapshotPreserved: true,
-      entityMutationAllowed: false,
-      automaticRetryAllowed: false,
-      blockers: [...new Set(blockers, "recovery_disabled")],
-      terminalResult: null,
-    };
-  }
+  if (blockers.length > 0) return result("recovery_checked", blockers);
 
   const terminalResult: ImportPublishPersistenceTerminalResult = {
     status: "failed",
@@ -199,40 +180,22 @@ export async function recoverExpiredImportReservation(
   });
 
   if (persisted.kind === "replayed") {
-    return {
-      mode: "replayed",
+    return result("replayed", [], {
       recoveryAttempted: true,
       recovered: persisted.terminalResult.status === "failed",
-      snapshotPreserved: true,
-      entityMutationAllowed: false,
-      automaticRetryAllowed: false,
-      blockers: [],
       terminalResult: persisted.terminalResult,
-    };
+    });
   }
 
   if (persisted.kind !== "persisted") {
-    blockers.push("terminal_persistence_failed");
-    return {
-      mode: "recovery_checked",
+    return result("recovery_checked", ["terminal_persistence_failed"], {
       recoveryAttempted: true,
-      recovered: false,
-      snapshotPreserved: true,
-      entityMutationAllowed: false,
-      automaticRetryAllowed: false,
-      blockers,
-      terminalResult: null,
-    };
+    });
   }
 
-  return {
-    mode: "recovered",
+  return result("recovered", [], {
     recoveryAttempted: true,
     recovered: true,
-    snapshotPreserved: true,
-    entityMutationAllowed: false,
-    automaticRetryAllowed: false,
-    blockers: [],
     terminalResult,
-  };
+  });
 }

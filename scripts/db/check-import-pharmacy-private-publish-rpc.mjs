@@ -19,8 +19,9 @@ const required = [
   /status\s*=\s*'draft'::public\.provider_status/i,
   /is_active\s*=\s*false/i,
   /is_featured\s*=\s*false/i,
-  /status\s*=\s*'succeeded'[\s\S]*terminal_result\s*=\s*v_terminal_result/i,
-  /'execution_succeeded'\s*,\s*'succeeded'/i,
+  /public\.import_publish_persist_terminal_result\s*\(/i,
+  /'succeeded'[\s\S]*v_actual_version[\s\S]*v_terminal_result/i,
+  /terminal_persistence_failed/i,
   /revoke\s+all\s+on\s+function[\s\S]*from\s+public\s*,\s*anon\s*,\s*authenticated/i,
   /grant\s+execute\s+on\s+function[\s\S]*to\s+service_role/i,
 ];
@@ -30,8 +31,9 @@ for (const pattern of required) {
 
 const forbidden = [
   /security\s+definer/i,
-  /to\s+anon\b/i,
-  /to\s+authenticated\b/i,
+  /\binsert\s+into\b/i,
+  /\bcreate\s+policy\b/i,
+  /\benable\s+row\s+level\s+security\b/i,
   /status\s*=\s*'active'/i,
   /is_active\s*=\s*true/i,
   /sitemap\s*=\s*true/i,

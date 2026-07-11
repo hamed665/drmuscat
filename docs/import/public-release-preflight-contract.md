@@ -28,8 +28,12 @@ Every PR that opens or expands imported public visibility must prove all of the 
 
 ## Hospital-specific hold
 
-Imported hospitals remain blocked until the hospital public hold contract is retired by a dedicated PR. That PR must reference the fixture that turns hospital release from blocked to eligible and must use the unified public provider projection.
+Imported hospital detail and discovery remain blocked until the hospital public hold contract is retired by a dedicated PR.
+
+Hospital sitemap eligibility remains guarded by import queue readiness and must not be enabled by a route-only or sitemap-only change.
+
+The retirement PR must reference the fixture that turns hospital release from blocked to eligible and must use the unified public provider projection.
 
 ## No shortcut rule
 
-A route, sitemap, or discovery PR must not create a family-specific parallel catalog to bypass the unified provider projection.
+A route, sitemap, or discovery PR must not create a family-specific parallel catalog to bypass the unified public provider projection.

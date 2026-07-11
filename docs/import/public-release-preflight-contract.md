@@ -30,7 +30,7 @@ Every PR that opens or expands imported public visibility must prove all of the 
 
 Imported hospital detail and discovery remain blocked until the hospital public hold contract is retired by a dedicated PR.
 
-Hospital sitemap eligibility remains guarded by import queue readiness and must not be enabled by a route-only or sitemap-only change.
+- hospital sitemap eligibility remains guarded by import queue readiness and must not be enabled by a route-only or sitemap-only change.
 
 The retirement PR must reference the fixture that turns hospital release from blocked to eligible and must use the unified public provider projection.
 

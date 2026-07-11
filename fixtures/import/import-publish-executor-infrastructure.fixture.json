@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "drkhaleej.import.publishExecutorInfrastructure.v1",
+  "cases": [
+    {
+      "id": "infrastructure-ready-executor-disabled",
+      "input": {
+        "controlledPublishContractReady": true,
+        "auditStoreAvailable": true,
+        "idempotencyStoreAvailable": true,
+        "rollbackStoreAvailable": true,
+        "transactionCoordinatorAvailable": true,
+        "optimisticLockAvailable": true,
+        "auditEventSchemaVersion": "v1",
+        "idempotencyTtlHours": 72,
+        "rollbackRetentionDays": 90,
+        "executorEnabled": false
+      },
+      "expected": {
+        "infrastructureReady": true,
+        "executionReady": false,
+        "mutationEnabled": false,
+        "bulkAllowed": false,
+        "blockers": ["executor_not_enabled"]
+      }
+    },
+    {
+      "id": "stores-unavailable",
+      "input": {
+        "controlledPublishContractReady": true,
+        "auditStoreAvailable": false,
+        "idempotencyStoreAvailable": false,
+        "rollbackStoreAvailable": false,
+        "transactionCoordinatorAvailable": true,
+        "optimisticLockAvailable": true,
+        "auditEventSchemaVersion": "v1",
+        "idempotencyTtlHours": 72,
+        "rollbackRetentionDays": 90,
+        "executorEnabled": false
+      },
+      "expected": {
+        "infrastructureReady": false,
+        "executionReady": false,
+        "mutationEnabled": false,
+        "bulkAllowed": false,
+        "blockers": [
+          "audit_store_unavailable",
+          "idempotency_store_unavailable",
+          "rollback_store_unavailable",
+          "executor_not_enabled"
+        ]
+      }
+    },
+    {
+      "id": "coordination-and-locking-unavailable",
+      "input": {
+        "controlledPublishContractReady": true,
+        "auditStoreAvailable": true,
+        "idempotencyStoreAvailable": true,
+        "rollbackStoreAvailable": true,
+        "transactionCoordinatorAvailable": false,
+        "optimisticLockAvailable": false,
+        "auditEventSchemaVersion": "v1",
+        "idempotencyTtlHours": 72,
+        "rollbackRetentionDays": 90,
+        "executorEnabled": false
+      },
+      "expected": {
+        "infrastructureReady": false,
+        "executionReady": false,
+        "mutationEnabled": false,
+        "bulkAllowed": false,
+        "blockers": [
+          "transaction_coordinator_unavailable",
+          "optimistic_lock_unavailable",
+          "executor_not_enabled"
+        ]
+      }
+    },
+    {
+      "id": "retention-and-schema-invalid",
+      "input": {
+        "controlledPublishContractReady": false,
+        "auditStoreAvailable": true,
+        "idempotencyStoreAvailable": true,
+        "rollbackStoreAvailable": true,
+        "transactionCoordinatorAvailable": true,
+        "optimisticLockAvailable": true,
+        "auditEventSchemaVersion": "",
+        "idempotencyTtlHours": 2,
+        "rollbackRetentionDays": 7,
+        "executorEnabled": false
+      },
+      "expected": {
+        "infrastructureReady": false,
+        "executionReady": false,
+        "mutationEnabled": false,
+        "bulkAllowed": false,
+        "blockers": [
+          "controlled_publish_contract_not_ready",
+          "audit_event_schema_missing",
+          "idempotency_ttl_invalid",
+          "rollback_retention_invalid",
+          "executor_not_enabled"
+        ]
+      }
+    }
+  ]
+}

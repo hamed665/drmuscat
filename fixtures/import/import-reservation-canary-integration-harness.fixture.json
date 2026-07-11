@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "drkhaleej.import.reservationCanaryIntegrationHarness.v1",
+  "rpcName": "import_publish_reserve_snapshot_audit",
+  "databaseConnected": false,
+  "entityMutationAttempted": false,
+  "terminalPersistenceAttempted": false,
+  "cases": [
+    {
+      "scenario": "reserved",
+      "expectedKind": "reserved",
+      "expectedRpcCalls": 1
+    },
+    {
+      "scenario": "replayed",
+      "expectedKind": "replayed",
+      "expectedRpcCalls": 1
+    },
+    {
+      "scenario": "conflict",
+      "expectedKind": "conflict",
+      "expectedReason": "idempotency_key_request_hash_mismatch",
+      "expectedRpcCalls": 1
+    },
+    {
+      "scenario": "failed",
+      "expectedKind": "failed",
+      "expectedReason": "rpc_failed",
+      "expectedRpcCalls": 1
+    }
+  ]
+}

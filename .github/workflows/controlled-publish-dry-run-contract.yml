@@ -26,5 +26,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Validate controlled publish dry-run contract
-        run: node scripts/import/check-import-controlled-publish-dry-run-executor.mjs
+      - name: Validate source contract
+        run: node scripts/import/check-import-controlled-publish-dry-run-executor.mjs --section=source
+      - name: Validate fixture contract
+        run: node scripts/import/check-import-controlled-publish-dry-run-executor.mjs --section=fixture
+      - name: Validate documentation contract
+        run: node scripts/import/check-import-controlled-publish-dry-run-executor.mjs --section=docs
+      - name: Validate audit wiring
+        run: node scripts/import/check-import-controlled-publish-dry-run-executor.mjs --section=audit

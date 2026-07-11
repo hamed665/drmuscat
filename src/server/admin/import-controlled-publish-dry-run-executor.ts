@@ -80,7 +80,10 @@ function canonicalJson(value: unknown): string {
 }
 
 function sha256(value: unknown): string {
-  return createHash("sha256").update(canonicalJson(value)).digest("hex");
+  const hash = createHash("sha256");
+  hash.write(canonicalJson(value));
+  hash.end();
+  return hash.digest("hex");
 }
 
 function hasCompleteState(state: ImportControlledPublishState): boolean {

@@ -10,6 +10,8 @@ import type {
   ImportPublishPersistenceTransactionResult,
 } from "./import-private-persistence-adapter";
 
+const EXPECTED_RESERVATION_RPC = "import_publish_reserve_snapshot_audit";
+
 export type ImportReservationCanaryScenario =
   | "reserved"
   | "replayed"
@@ -96,6 +98,12 @@ export async function runImportReservationCanaryHarness(
   const client: ImportSupabaseRpcClient = {
     async rpc(name: string): Promise<ImportSupabaseRpcResponse> {
       rpcCalls.push(name);
+      if (name !== EXPECTED_RESERVATION_RPC) {
+        return {
+          data: null,
+          error: { code: "UNEXPECTED_RPC", message: `Unexpected RPC: ${name}` },
+        };
+      }
       return responseForScenario(scenario);
     },
   };

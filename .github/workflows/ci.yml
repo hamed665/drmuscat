@@ -49,4 +49,10 @@ jobs:
       - name: Static seed tests
         run: pnpm test:db:seed
       - name: SEO check
-        run: pnpm seo:check
+        shell: bash
+        run: |
+          set +e
+          pnpm seo:check > seo-diagnostic.log 2>&1
+          status=$?
+          tail -n 260 seo-diagnostic.log
+          exit $status

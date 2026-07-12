@@ -38,7 +38,9 @@ for (const token of [
   'IMPORT_PHARMACY_PRIVATE_ADMIN_ACTION_ENABLED = false as const',
   'process.env.VERCEL_ENV',
   'IMPORT_PREVIEW_CANARY_ENTITY_IDS',
-  'Pharmacy private Admin action runtime is disabled.',
+  'IMPORT_PREVIEW_ALLOWED_ACTOR_IDS',
+  'createPharmacyPrivateAdminRuntimeContextReaderFromEnvironment',
+  'loadPharmacyPrivateAdminRuntimeContext',
 ]) {
   assert(action.includes(token), `${actionPath} must include ${token}`);
 }
@@ -67,4 +69,4 @@ for (const token of [
   assert(tests.includes(token), `${testPath} must cover ${token}`);
 }
 
-console.log('import pharmacy private admin server action check passed.');
+console.log('import pharmacy private Admin server action check passed.');

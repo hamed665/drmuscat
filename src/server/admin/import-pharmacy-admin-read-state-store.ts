@@ -8,22 +8,24 @@ import {
   type PharmacyAdminDiffField,
 } from "./import-pharmacy-admin-bounded-read-state";
 
+type PharmacyAdminReadStateResponse = Promise<{
+  data: Record<string, unknown> | null;
+  error: { message?: string } | null;
+}>;
+
+type PharmacyAdminReadStateQuery = {
+  eq(column: string, value: string): PharmacyAdminReadStateQuery;
+  order(column: string, options: { ascending: boolean }): PharmacyAdminReadStateQuery;
+  limit(count: number): PharmacyAdminReadStateQuery;
+  maybeSingle(): PharmacyAdminReadStateResponse;
+};
+
 export type PharmacyAdminReadStateClient = {
   from(table: "import_pharmacy_admin_read_states"): {
     upsert(values: Readonly<Record<string, unknown>>, options: { onConflict: string }): {
-      select(columns: string): {
-        maybeSingle(): Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>;
-      };
+      select(columns: string): { maybeSingle(): PharmacyAdminReadStateResponse };
     };
-    select(columns: string): {
-      eq(column: string, value: string): ReturnType<PharmacyAdminReadStateClient["from"]>["select"] & {
-        order(column: string, options: { ascending: boolean }): {
-          limit(count: number): {
-            maybeSingle(): Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>;
-          };
-        };
-      };
-    };
+    select(columns: string): PharmacyAdminReadStateQuery;
   };
 };
 

@@ -16,7 +16,8 @@ export type PharmacyPrivateAdminServerActionBlocker =
 
 export type PharmacyPrivateAdminServerActionResult =
   | { ok: true; workflow: PharmacyPrivateAdminWorkflowResult }
-  | { ok: false; blockers: readonly PharmacyPrivateAdminServerActionBlocker[] };
+  | { ok: false; blockers: readonly PharmacyPrivateAdminServerActionBlocker[] }
+  | { ok: false; blockers: readonly []; workflow: PharmacyPrivateAdminWorkflowResult };
 
 export type PharmacyPrivateAdminServerActionExecutor = (input: {
   operation: PharmacyPrivateAdminOperation;
@@ -92,6 +93,7 @@ export function createPharmacyPrivateAdminServerAction(
       publishReference,
     });
 
-    return { ok: workflow.status === "completed", workflow };
+    if (workflow.status !== "completed") return { ok: false, blockers: [], workflow };
+    return { ok: true, workflow };
   };
 }

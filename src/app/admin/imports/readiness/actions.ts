@@ -64,7 +64,7 @@ export async function runPharmacyPrivateAdminAction(
         operation,
         status: context?.ok ? "completed" : "failed",
         entityId,
-        blockers: context?.ok ? [] : (context?.blockers ?? []),
+        blockers: context?.ok ? [] : ["readiness_blocked"],
         publicVisibility: "private",
         indexEligible: false,
         sitemapEligible: false,

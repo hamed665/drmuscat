@@ -118,7 +118,7 @@ export async function loadPharmacyPrivateAdminRuntimeContext(
     return { ok: false, blockers: [...new Set(blockers)] };
   }
 
-  const canonicalRoute = `/en/pharmacies/${center.slug ?? center.id}`;
+  const canonicalRoute = `/en/om/pharmacies/${center.slug ?? center.id}`;
   const currentState: ImportControlledPublishState = {
     visibility: "private", indexPolicy: "noindex", sitemapPolicy: "excluded", publishStatus: "private_published",
     publicReady: false, projectionVersion, canonicalRoute,

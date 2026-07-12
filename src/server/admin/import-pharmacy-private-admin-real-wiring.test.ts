@@ -3,37 +3,44 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 import { createPharmacyPrivateAdminRealPorts } from "./import-pharmacy-private-admin-real-wiring";
-import type { ImportRealReservationCanaryInput } from "./import-real-reservation-canary";
-import type { ImportPharmacyPrivateMutationRequest } from "./import-pharmacy-private-mutation-adapter";
+import type {
+  ImportRealReservationCanaryInput,
+  ImportRealReservationCanaryResult,
+} from "./import-real-reservation-canary";
+import type {
+  ImportPharmacyPrivateMutationRequest,
+  ImportPharmacyPrivateMutationResult,
+} from "./import-pharmacy-private-mutation-adapter";
+import type { ImportPharmacyPrivateRollbackResult } from "./import-supabase-pharmacy-private-rollback-writer";
 
 function dependencies() {
-  const reservationRunner = vi.fn(async () => ({
-    mode: "preview_reservation_canary" as const,
+  const reservationRunner = vi.fn(async (): Promise<ImportRealReservationCanaryResult> => ({
+    mode: "preview_reservation_canary",
     attempted: true,
     reserved: true,
     verified: true,
     reservationResult: {
-      kind: "reserved" as const,
+      kind: "reserved",
       reservationId: "reservation-1",
       rollbackSnapshotId: "snapshot-1",
       auditEventId: "audit-1",
     },
     readbackResult: null,
     blockers: [],
-    terminalPersistenceAllowed: false as const,
-    entityMutationAllowed: false as const,
-    routeMutationAllowed: false as const,
-    sitemapMutationAllowed: false as const,
-    bulkAllowed: false as const,
+    terminalPersistenceAllowed: false,
+    entityMutationAllowed: false,
+    routeMutationAllowed: false,
+    sitemapMutationAllowed: false,
+    bulkAllowed: false,
   }));
-  const mutationRunner = vi.fn(async () => ({
-    kind: "mutated" as const,
+  const mutationRunner = vi.fn(async (): Promise<ImportPharmacyPrivateMutationResult> => ({
+    kind: "mutated",
     entityId: "pharmacy-1",
     actualVersion: "version-2",
-    visibility: "private" as const,
+    visibility: "private",
   }));
-  const rollbackWriter = vi.fn(async () => ({
-    kind: "rolled_back" as const,
+  const rollbackWriter = vi.fn(async (): Promise<ImportPharmacyPrivateRollbackResult> => ({
+    kind: "rolled_back",
     entityId: "pharmacy-1",
     actualVersion: "version-3",
   }));
@@ -132,8 +139,8 @@ describe("pharmacy private admin real wiring", () => {
     const deps = dependencies();
     const context = await deps.loadPublishContext({ actorId: "admin-1", entityId: "pharmacy-1" });
     deps.loadPublishContext.mockResolvedValueOnce({
-      ...context!,
-      mutationRequest: { ...context!.mutationRequest, actorId: "other-admin" },
+      ...context,
+      mutationRequest: { ...context.mutationRequest, actorId: "other-admin" },
     });
 
     const result = await createPharmacyPrivateAdminRealPorts(deps).privatePublish({

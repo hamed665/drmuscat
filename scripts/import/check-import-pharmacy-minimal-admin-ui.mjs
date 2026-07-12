@@ -15,6 +15,10 @@ const page = readFileSync(
   path.join(repoRoot, "src/app/admin/imports/readiness/page.tsx"),
   "utf8",
 );
+const model = readFileSync(
+  path.join(repoRoot, "src/server/admin/import-pharmacy-minimal-admin-ui-model.ts"),
+  "utf8",
+);
 
 function requirePattern(source, pattern, message) {
   if (!pattern.test(source)) {
@@ -38,17 +42,26 @@ for (const [pattern, message] of [
 
 for (const [pattern, message] of [
   [/ImportPharmacyPrivateAdminControlPanel/, "must mount on the existing readiness page"],
-  [/resolvePharmacyPreviewCanaryActivation/, "must derive state from the existing activation gate"],
+  [/getPharmacyMinimalAdminUiModel/, "must consume the server-side UI model"],
   [/Controlled boundary/, "must replace the obsolete read-only boundary copy truthfully"],
 ]) requirePattern(page, pattern, message);
 
 for (const [pattern, message] of [
-  [/<form\b/, "must not submit a form before runtime connection"],
-  [/runPharmacyPrivateAdminAction/, "must not call the Server Action before runtime connection"],
-  [/dangerouslySetInnerHTML/, "must not render unrestricted payload HTML"],
-  [/process\.env/, "client panel must not read environment variables"],
+  [/resolvePharmacyPreviewCanaryActivation/, "must derive state from the existing activation gate"],
+  [/publicVisibility:\s*"private"/, "must preserve private visibility"],
+  [/indexEligible:\s*false/, "must preserve noindex"],
+  [/sitemapEligible:\s*false/, "must remain outside sitemap"],
+  [/bulkAllowed:\s*false/, "must reject bulk"],
+]) requirePattern(model, pattern, message);
+
+for (const [source, pattern, message] of [
+  [panel, /<form\b/, "must not submit a form before runtime connection"],
+  [panel, /runPharmacyPrivateAdminAction/, "must not call the Server Action before runtime connection"],
+  [panel, /dangerouslySetInnerHTML/, "must not render unrestricted payload HTML"],
+  [panel, /process\.env/, "panel must not read environment variables"],
+  [page, /process\.env/, "route must not interpret runtime environment directly"],
 ]) {
-  if (pattern.test(panel)) {
+  if (pattern.test(source)) {
     console.error(`❌ IMPORT-ADMIN-C Pharmacy minimal UI: ${message}`);
     process.exit(1);
   }

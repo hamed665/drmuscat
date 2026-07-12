@@ -35,6 +35,7 @@ describe("pharmacy private Admin server action", () => {
     const execute = vi.fn(async () => completed("dry_run"));
     const action = createPharmacyPrivateAdminServerAction({
       executionEnabled: false,
+      enabledOperations: [],
       environment: "preview",
       allowedEntityIds: ["pharmacy-1"],
       execute,
@@ -45,14 +46,43 @@ describe("pharmacy private Admin server action", () => {
       formData: form({ operation: "dry_run", entityId: "pharmacy-1" }),
     });
 
-    expect(result).toEqual({ ok: false, blockers: ["action_disabled"] });
+    expect(result).toEqual({ ok: false, blockers: ["action_disabled", "operation_not_enabled"] });
     expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("allows only explicitly enabled read operations", async () => {
+    const execute = vi.fn(async ({ operation }: { operation: "dry_run" | "review" | "private_publish" | "rollback" }) => completed(operation));
+    const action = createPharmacyPrivateAdminServerAction({
+      executionEnabled: true,
+      enabledOperations: ["dry_run", "review"],
+      environment: "preview",
+      allowedEntityIds: ["pharmacy-1"],
+      execute,
+    });
+
+    const dryRun = await action({
+      actorId: "admin-1",
+      formData: form({ operation: "dry_run", entityId: "pharmacy-1" }),
+    });
+    expect(dryRun).toEqual({ ok: true, workflow: completed("dry_run") });
+
+    const publish = await action({
+      actorId: "admin-1",
+      formData: form({
+        operation: "private_publish",
+        entityId: "pharmacy-1",
+        confirmation: "PUBLISH PRIVATE PHARMACY",
+      }),
+    });
+    expect(publish).toEqual({ ok: false, blockers: ["operation_not_enabled"] });
+    expect(execute).toHaveBeenCalledTimes(1);
   });
 
   it("rejects duplicate fields, non-allowlisted entities, and production mutation", async () => {
     const execute = vi.fn(async () => completed("private_publish"));
     const action = createPharmacyPrivateAdminServerAction({
       executionEnabled: true,
+      enabledOperations: ["private_publish"],
       environment: "production",
       allowedEntityIds: ["pharmacy-1"],
       execute,
@@ -80,6 +110,7 @@ describe("pharmacy private Admin server action", () => {
     const execute = vi.fn(async () => completed("private_publish"));
     const action = createPharmacyPrivateAdminServerAction({
       executionEnabled: true,
+      enabledOperations: ["private_publish"],
       environment: "preview",
       allowedEntityIds: ["pharmacy-1"],
       execute,
@@ -108,6 +139,7 @@ describe("pharmacy private Admin server action", () => {
     const execute = vi.fn(async () => completed("rollback"));
     const action = createPharmacyPrivateAdminServerAction({
       executionEnabled: true,
+      enabledOperations: ["rollback"],
       environment: "preview",
       allowedEntityIds: ["pharmacy-1"],
       execute,

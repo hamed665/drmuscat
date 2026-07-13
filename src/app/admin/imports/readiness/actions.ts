@@ -8,6 +8,9 @@ import {
   type PharmacyAdminDiffField,
 } from "@/server/admin/import-pharmacy-admin-bounded-read-state";
 import { createPharmacyAdminReadStateStoreFromEnvironment } from "@/server/admin/import-pharmacy-admin-read-state-store";
+import type { PharmacyPublishAuthorizationEnvelope } from "@/server/admin/import-pharmacy-publish-authorization-envelope";
+import { createPharmacyPublishAuthorizationStoreFromEnvironment } from "@/server/admin/import-pharmacy-publish-authorization-store";
+import { issuePharmacyPreviewPublishAuthorization } from "@/server/admin/import-pharmacy-preview-publish-authorization-issue";
 import {
   buildPharmacyPreviewPublishConfirmation,
   resolvePharmacyPreviewPublishCapability,
@@ -28,6 +31,7 @@ const READ_STATE_TTL_MS = 15 * 60 * 1000;
 export type PharmacyPrivateAdminActionStateResult = PharmacyPrivateAdminServerActionResult & {
   readState?: PharmacyAdminBoundedReadState | null;
   publishCapability?: PharmacyPreviewPublishCapability | null;
+  publishAuthorization?: PharmacyPublishAuthorizationEnvelope | null;
 };
 
 function parseAllowlist(value: string | undefined): string[] {
@@ -106,6 +110,7 @@ export async function runPharmacyPrivateAdminAction(
   const confirmation = String(formData.get("publishConfirmation") ?? "");
   let persistedReadState: PharmacyAdminBoundedReadState | null = null;
   let publishCapability: PharmacyPreviewPublishCapability | null = null;
+  let publishAuthorization: PharmacyPublishAuthorizationEnvelope | null = null;
 
   const action = createPharmacyPrivateAdminServerAction({
     executionEnabled: process.env.VERCEL_ENV === "preview",
@@ -221,6 +226,18 @@ export async function runPharmacyPrivateAdminAction(
           expectedEntityFingerprint: context.context.canaryInput.expectedEntityFingerprint,
           now: createdAt,
         });
+
+        if (publishCapability.visible) {
+          const issuance = await issuePharmacyPreviewPublishAuthorization({
+            capability: publishCapability,
+            actorId,
+            entityId,
+            reviewState: readback,
+            store: createPharmacyPublishAuthorizationStoreFromEnvironment(),
+          });
+          publishCapability = issuance.capability;
+          publishAuthorization = issuance.authorization;
+        }
       }
       return {
         operation,
@@ -253,6 +270,7 @@ export async function runPharmacyPrivateAdminAction(
       routeEnabled: false,
       bulkAllowed: false,
     },
+    publishAuthorization,
   };
 }
 

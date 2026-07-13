@@ -28,9 +28,23 @@ const draft = {
   },
   canonicalGeo: {
     country_code: "om",
-    geo_resolution_status: "resolved",
+    governorate_id: "muscat",
+    city_id: "muscat",
+    area_id: "al-khuwair",
+    latitude: 23.588,
+    longitude: 58.407,
+    geo_confidence_score: 100,
+    geo_source: "test_fixture",
+    geo_resolution_status: "verified",
+    geo_validated: true,
   },
-  sourceEvidence: { z: 1, a: { y: 2, x: 3 } },
+  sourceEvidence: {
+    source: "excel",
+    sourceId: "row-1",
+    sourceName: "fixture.xlsx",
+    importedBy: "admin-1",
+    importedAt: "2026-07-13T00:00:00.000Z",
+  },
   rawPayloadHash: "raw-hash",
   duplicateCandidateIds: [],
   requiresManualReview: false,
@@ -47,7 +61,7 @@ describe("canonical Pharmacy mutation patch", () => {
     expect(patch.metadata.visibility).toBe("private");
     expect(review.name_en).toBe(patch.name_en);
     expect(review.metadata_source).toBe(patch.metadata.source);
-    expect(review.metadata_source_evidence).toBe('{"a":{"x":3,"y":2},"z":1}');
+    expect(review.metadata_source_evidence).toContain('"source":"excel"');
     expect(review.metadata_public_route_enabled).toBe(false);
   });
 

@@ -1,6 +1,10 @@
 import "server-only";
 
-import type { ImportUnifiedDraftEntity } from "./import-unified-draft-entity";
+import {
+  buildUnifiedDraftEntity,
+  type ImportUnifiedDraftEntity,
+  type ImportUnifiedDraftEntityInput,
+} from "./import-unified-draft-entity";
 
 export const PHARMACY_CANONICAL_MUTATION_REVIEW_FIELDS = [
   "name_en",
@@ -62,13 +66,22 @@ function canonicalize(value: unknown): unknown {
   );
 }
 
+function normalizeDraft(
+  draft: ImportUnifiedDraftEntity | ImportUnifiedDraftEntityInput,
+): ImportUnifiedDraftEntity {
+  return "status" in draft && "entityDomain" in draft
+    ? draft
+    : buildUnifiedDraftEntity(draft);
+}
+
 export function serializePharmacyMutationReviewValue(value: unknown): string {
   return JSON.stringify(canonicalize(value)) ?? "null";
 }
 
 export function buildPharmacyCanonicalMutationPatch(
-  draft: ImportUnifiedDraftEntity,
+  input: ImportUnifiedDraftEntity | ImportUnifiedDraftEntityInput,
 ): PharmacyCanonicalMutationPatch {
+  const draft = normalizeDraft(input);
   return {
     name_en: draft.name,
     legal_name: draft.legalName,

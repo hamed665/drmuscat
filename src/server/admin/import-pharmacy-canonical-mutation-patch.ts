@@ -66,12 +66,16 @@ function canonicalize(value: unknown): unknown {
   );
 }
 
+function isNormalizedDraft(
+  draft: ImportUnifiedDraftEntity | ImportUnifiedDraftEntityInput,
+): draft is ImportUnifiedDraftEntity {
+  return "status" in draft && "entityDomain" in draft;
+}
+
 function normalizeDraft(
   draft: ImportUnifiedDraftEntity | ImportUnifiedDraftEntityInput,
 ): ImportUnifiedDraftEntity {
-  return "status" in draft && "entityDomain" in draft
-    ? draft
-    : buildUnifiedDraftEntity(draft);
+  return isNormalizedDraft(draft) ? draft : buildUnifiedDraftEntity(draft);
 }
 
 export function serializePharmacyMutationReviewValue(value: unknown): string {

@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { ImportUnifiedDraftEntityInput } from "./import-unified-draft-entity";
+import type { ImportUnifiedDraftEntity } from "./import-unified-draft-entity";
 
 export const PHARMACY_CANONICAL_MUTATION_REVIEW_FIELDS = [
   "name_en",
@@ -67,17 +67,17 @@ export function serializePharmacyMutationReviewValue(value: unknown): string {
 }
 
 export function buildPharmacyCanonicalMutationPatch(
-  draft: ImportUnifiedDraftEntityInput,
+  draft: ImportUnifiedDraftEntity,
 ): PharmacyCanonicalMutationPatch {
   return {
     name_en: draft.name,
     legal_name: draft.legalName,
     slug: draft.slugCandidate,
     description_en: draft.description,
-    primary_phone: draft.contact?.phone ?? null,
-    whatsapp_phone: draft.contact?.whatsapp ?? null,
-    email: draft.contact?.email ?? null,
-    website_url: draft.contact?.website ?? null,
+    primary_phone: draft.contact.phone,
+    whatsapp_phone: draft.contact.whatsapp,
+    email: draft.contact.email,
+    website_url: draft.contact.website,
     default_country: "om",
     default_locale: "en",
     metadata: {

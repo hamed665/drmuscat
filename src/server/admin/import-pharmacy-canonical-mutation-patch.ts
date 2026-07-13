@@ -15,8 +15,6 @@ export const PHARMACY_CANONICAL_MUTATION_REVIEW_FIELDS = [
   "whatsapp_phone",
   "email",
   "website_url",
-  "default_country",
-  "default_locale",
   "metadata_source",
   "metadata_source_evidence",
   "metadata_raw_payload_hash",
@@ -111,7 +109,6 @@ export function buildPharmacyCanonicalMutationPatch(
 
 export function projectPharmacyCanonicalMutationPatchForReview(
   patch: PharmacyCanonicalMutationPatch,
-  current: PharmacyCanonicalMutationReviewProjection,
 ): PharmacyCanonicalMutationReviewProjection {
   return {
     name_en: patch.name_en,
@@ -122,8 +119,6 @@ export function projectPharmacyCanonicalMutationPatchForReview(
     whatsapp_phone: patch.whatsapp_phone,
     email: patch.email,
     website_url: patch.website_url,
-    default_country: current.default_country,
-    default_locale: current.default_locale,
     metadata_source: patch.metadata_patch.source,
     metadata_source_evidence: serializePharmacyMutationReviewValue(patch.metadata_patch.sourceEvidence),
     metadata_raw_payload_hash: patch.metadata_patch.rawPayloadHash,
@@ -159,8 +154,6 @@ export function projectPharmacyRollbackSnapshotForMutationReview(
     whatsapp_phone: readNullableString(center, "whatsappPhone"),
     email: readNullableString(center, "email"),
     website_url: readNullableString(center, "websiteUrl"),
-    default_country: readNullableString(center, "defaultCountry"),
-    default_locale: readNullableString(center, "defaultLocale"),
     metadata_source: readNullableString(metadata, "source"),
     metadata_source_evidence: serializePharmacyMutationReviewValue(metadata.sourceEvidence ?? null),
     metadata_raw_payload_hash: readNullableString(metadata, "rawPayloadHash"),

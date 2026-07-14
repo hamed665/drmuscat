@@ -131,7 +131,7 @@ export async function runPharmacyPrivateAdminAction(
   const admin = await requirePlatformAdmin();
   const allowedActorIds = parseAllowlist(process.env.IMPORT_PREVIEW_ALLOWED_ACTOR_IDS);
   const allowedEntityIds = parseAllowlist(process.env.IMPORT_PREVIEW_CANARY_ENTITY_IDS);
-  const confirmation = String(formData.get("publishConfirmation") ?? "");
+  const publishConfirmation = String(formData.get("publishConfirmation") ?? "");
   let persistedReadState: PharmacyAdminBoundedReadState | null = null;
   let publishCapability: PharmacyPreviewPublishCapability | null = null;
   let authorizationUiState: PharmacyPublishAuthorizationUiState | null = null;
@@ -142,7 +142,7 @@ export async function runPharmacyPrivateAdminAction(
     enabledOperations: IMPORT_PHARMACY_PRIVATE_ADMIN_ENABLED_OPERATIONS,
     environment: process.env.VERCEL_ENV,
     allowedEntityIds,
-    execute: async ({ operation, actorId, entityId }) => {
+    execute: async ({ operation, actorId, entityId, confirmation }) => {
       if (operation !== "dry_run" && operation !== "review" && operation !== "reserve_private_publish") {
         return { operation, status: "failed", entityId, blockers: [], publicVisibility: "private", indexEligible: false, sitemapEligible: false, routeEnabled: false, executionReference: null };
       }
@@ -256,7 +256,7 @@ export async function runPharmacyPrivateAdminAction(
           entityId,
           allowedActorIds,
           allowedEntityIds,
-          confirmation,
+          confirmation: publishConfirmation,
           reviewState: readback,
           expectedSnapshotHash: context.snapshotHash,
           expectedEntityFingerprint: context.context.canaryInput.expectedEntityFingerprint,

@@ -10,18 +10,20 @@ import type {
 
 type QueryResponse<T> = Promise<{ data: T | null; error: { message?: string } | null }>;
 
-type AuthorizationSelectQuery = {
-  eq(column: string, value: string): AuthorizationSelectQuery;
+type SelectQuery = {
+  eq(column: string, value: string): SelectQuery;
   maybeSingle(): QueryResponse<Record<string, unknown>>;
 };
 
-export type PharmacyPublishAuthorizationClient = {
-  from(table: "import_pharmacy_publish_authorizations"): {
-    insert(values: Readonly<Record<string, unknown>>): {
-      select(columns: string): { maybeSingle(): QueryResponse<Record<string, unknown>> };
-    };
-    select(columns: string): AuthorizationSelectQuery;
+type TableQuery = {
+  insert(values: Readonly<Record<string, unknown>>): {
+    select(columns: string): { maybeSingle(): QueryResponse<Record<string, unknown>> };
   };
+  select(columns: string): SelectQuery;
+};
+
+export type PharmacyPublishAuthorizationClient = {
+  from(table: "import_pharmacy_publish_authorizations" | "import_pharmacy_admin_read_states"): TableQuery;
   rpc(
     name: "import_pharmacy_consume_publish_authorization",
     args: Readonly<Record<string, unknown>>,
@@ -154,6 +156,18 @@ export function createPharmacyPublishAuthorizationStore(
   }
 
   return {
+    async resolveReviewStateId(operationAttemptId) {
+      const response = await client
+        .from("import_pharmacy_admin_read_states")
+        .select("id")
+        .eq("operation_attempt_id", operationAttemptId)
+        .eq("operation", "review")
+        .maybeSingle();
+
+      if (response.error || !response.data) return null;
+      return readString(response.data, "id");
+    },
+
     async create(record) {
       const response = await client
         .from("import_pharmacy_publish_authorizations")

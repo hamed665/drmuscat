@@ -55,9 +55,9 @@ if (!source.store.includes('.eq("operation_attempt_id", operationAttemptId)')) {
 
 // Inspect only the public handle type. Internal compatibility secrets are intentionally outside this slice.
 const envelopeTypeStart = source.envelope.indexOf('export type PharmacyPublishAuthorizationEnvelope =');
-const envelopeTypeEnd = source.envelope.indexOf('export type PharmacyPublishAuthorizationSecret =', envelopeTypeStart);
+const envelopeTypeEnd = source.envelope.indexOf('export type PharmacyPublishAuthorizationLegacySecret =', envelopeTypeStart);
 if (envelopeTypeStart < 0 || envelopeTypeEnd < 0) {
-  throw new Error('authorization envelope and internal secret types must be explicit');
+  throw new Error('authorization envelope and internal legacy secret types must be explicit');
 }
 const publicEnvelopeType = source.envelope.slice(envelopeTypeStart, envelopeTypeEnd);
 if (!publicEnvelopeType.includes('authorizationId: string') || !publicEnvelopeType.includes('expiresAt: string')) {

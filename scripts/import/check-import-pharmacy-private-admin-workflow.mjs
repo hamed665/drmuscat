@@ -17,7 +17,7 @@ const workflow = await readText(workflowPath);
 const tests = await readText(testPath);
 
 for (const token of [
-  '"dry_run" | "review" | "private_publish" | "rollback"',
+  '"dry_run" | "review" | "reserve_private_publish" | "private_publish" | "rollback"',
   'entityIds: readonly string[]',
   'input.entityIds.length !== 1',
   'input.family !== "pharmacy"',
@@ -31,6 +31,7 @@ for (const token of [
   'indexEligible: false as const',
   'sitemapEligible: false as const',
   'routeEnabled: false as const',
+  'ports.reservePrivatePublish',
   'ports.privatePublish',
   'ports.rollback',
   'ports.audit',
@@ -55,6 +56,7 @@ for (const forbidden of [
 
 for (const token of [
   'blocks bulk, wrong-family, unreviewed, unconfirmed, and production publish requests',
+  'executes exactly one reservation without public exposure or mutation',
   'executes exactly one private publish and preserves zero public exposure',
   'requires the source publish reference before rollback',
   'runs rollback only in preview with confirmation and audit',

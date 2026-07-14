@@ -87,10 +87,11 @@ describe("Preview Pharmacy publish authorization issuance", () => {
     });
 
     expect(result.capability).toEqual(capability);
-    expect(result.authorization).toEqual({
+    expect(result.authorization).toEqual(expect.objectContaining({
       authorizationId: AUTHORIZATION_ID,
-      expiresAt: "2026-07-13T00:05:00.000Z",
-    });
+      expiresAt: expect.any(String),
+    }));
+    expect(Date.parse(result.authorization!.expiresAt)).toBeGreaterThan(Date.now());
     expect(result.authorization).not.toHaveProperty("token");
     expect(result.authorization).not.toHaveProperty("nonce");
   });

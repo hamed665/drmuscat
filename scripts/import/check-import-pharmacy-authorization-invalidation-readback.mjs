@@ -30,7 +30,7 @@ for (const token of [
 for (const pattern of [
   /drop\s+index\s+if\s+exists\s+public\.import_pharmacy_publish_authorizations_attempt_scope_idx/i,
   /create\s+unique\s+index[\s\S]*review_state_id[\s\S]*operation_scope/i,
-  /where\s+status\s*=\s*'issued'/i,
+  /\bstatus\s*=\s*'issued'/i,
   /security\s+invoker/i,
   /set\s+search_path\s*=\s*pg_catalog,\s*public/i,
   /grant\s+execute[\s\S]*to\s+service_role/i,

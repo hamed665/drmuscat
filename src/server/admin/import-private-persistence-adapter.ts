@@ -18,6 +18,16 @@ export type ImportPublishRollbackSnapshot = ImportControlledPublishState & {
   center?: Readonly<Record<string, unknown>>;
 };
 
+export type ImportPharmacyReservationAuthorization = {
+  authorizationId: string;
+  reviewSnapshotHash: string;
+  entityFingerprint: string;
+  operationAttemptId: string;
+  patchHash: string;
+  entityFamily: "pharmacy";
+  operationScope: "reserve_private_publish";
+};
+
 export type ImportPublishPersistenceTransactionRequest = {
   entityId: string;
   actorId: string;
@@ -28,13 +38,7 @@ export type ImportPublishPersistenceTransactionRequest = {
   auditSchemaVersion: string;
   reservationExpiresAt: string;
   rollbackExpiresAt: string;
-  authorizationId: string;
-  reviewSnapshotHash: string;
-  entityFingerprint: string;
-  operationAttemptId: string;
-  patchHash: string;
-  entityFamily: "pharmacy";
-  operationScope: "reserve_private_publish";
+  authorization?: ImportPharmacyReservationAuthorization;
 };
 
 export type ImportPublishPersistenceTerminalResult = {

@@ -29,7 +29,6 @@ export async function issuePharmacyPreviewPublishAuthorization(input: {
   capability: PharmacyPreviewPublishCapability;
   actorId: string;
   entityId: string;
-  reviewStateId: string;
   reviewState: PharmacyAdminBoundedReadState;
   store: PharmacyPublishAuthorizationEnvelopeStore | null;
 }): Promise<PharmacyPreviewPublishAuthorizationIssueResult> {
@@ -46,7 +45,6 @@ export async function issuePharmacyPreviewPublishAuthorization(input: {
   const authorization = await createPharmacyPublishAuthorizationEnvelopeService(input.store).issue({
     actorId: input.actorId,
     entityId: input.entityId,
-    reviewStateId: input.reviewStateId,
     reviewSnapshotHash: input.reviewState.snapshotHash,
     entityFingerprint: input.reviewState.entityFingerprint,
     operationAttemptId: input.reviewState.operationAttemptId,

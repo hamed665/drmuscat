@@ -63,16 +63,18 @@ function readMigration(key) {
   return readFileSync(migrationPath, 'utf8');
 }
 
-function validateNoAdminPolicies(content, label) {
+function validateNoAdminPolicies(content, label, options = {}) {
   for (const [pattern, message] of [
     [/\bcreate\s+policy\b/i, `${label} must not create RLS policies.`],
     [/\bfor\s+select\b/i, `${label} must not add SELECT policies.`],
     [/\bfor\s+insert\b/i, `${label} must not add INSERT policies.`],
-    [/\bfor\s+update\b/i, `${label} must not add UPDATE policies.`],
     [/\bfor\s+delete\b/i, `${label} must not add DELETE policies.`],
     [/\bto\s+anon\b/i, `${label} must not expose anon access.`],
     [/\bto\s+authenticated\b/i, `${label} must not expose authenticated access.`],
   ]) forbidPattern(content, pattern, message);
+  if (!options.allowRowLocks) {
+    forbidPattern(content, /\bfor\s+update\b/i, `${label} must not add UPDATE policies.`);
+  }
 }
 
 function validateTaxonomyRlsMigration() {
@@ -115,7 +117,7 @@ function validateSpecialtyAliasRlsMigration() {
 
 function validateClosedMigration(key, label, requiredTables = [], options = {}) {
   const content = readMigration(key);
-  validateNoAdminPolicies(content, label);
+  validateNoAdminPolicies(content, label, { allowRowLocks: options.allowRowLocks === true });
   if (!options.allowServiceRoleGrant) {
     forbidPattern(content, /\bto\s+service_role\b/i, `${label} must not add explicit service_role grants.`);
   }
@@ -183,7 +185,7 @@ function validateLaterMigrations() {
     'pharmacyAtomicAuthorizationReservation',
     '0079',
     [],
-    { allowServiceRoleGrant: true },
+    { allowServiceRoleGrant: true, allowRowLocks: true },
   );
   requirePattern(atomicReservation, /revoke\s+all\s+on\s+function\s+public\.import_publish_reserve_snapshot_audit[\s\S]*from\s+public\s*,\s*anon\s*,\s*authenticated/i, '0079 must revoke atomic reservation RPC access from public roles.');
   requirePattern(atomicReservation, /grant\s+execute\s+on\s+function\s+public\.import_publish_reserve_snapshot_audit[\s\S]*to\s+service_role/i, '0079 must grant atomic reservation RPC only to service_role.');

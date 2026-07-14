@@ -50,10 +50,10 @@ for (const token of [
 ]) assert(action.includes(token), `${actionPath} must include ${token}`);
 
 for (const token of [
-  'name="publishConfirmation"',
+  'name={step.operation === "review" ? "publishConfirmation" : "confirmation"}',
   "publishCapability?.visible === true",
   "Preview eligible · execution disabled",
-  "no mutation execution",
+  "mutation execution remains disabled",
 ]) assert(panel.includes(token), `${panelPath} must include ${token}`);
 
 for (const forbidden of [

@@ -27,6 +27,7 @@ for (const token of [
   'formData.getAll(key)',
   'entity_not_allowed',
   'environment_not_preview',
+  'RESERVE PRIVATE PUBLISH',
   'PUBLISH PRIVATE PHARMACY',
   'ROLLBACK PRIVATE PHARMACY',
   'invalid_publish_reference',
@@ -38,16 +39,17 @@ for (const token of [
 for (const token of [
   '"use server"',
   'requirePlatformAdmin()',
-  'IMPORT_PHARMACY_PRIVATE_ADMIN_ENABLED_OPERATIONS = ["dry_run", "review"] as const',
+  'IMPORT_PHARMACY_PRIVATE_ADMIN_ENABLED_OPERATIONS = ["dry_run", "review", "reserve_private_publish"] as const',
   'executionEnabled: process.env.VERCEL_ENV === "preview"',
   'enabledOperations: IMPORT_PHARMACY_PRIVATE_ADMIN_ENABLED_OPERATIONS',
-  'operation !== "dry_run" && operation !== "review"',
+  'operation !== "dry_run" && operation !== "review" && operation !== "reserve_private_publish"',
   'runPharmacyPrivateAdminActionState',
   'process.env.VERCEL_ENV',
   'IMPORT_PREVIEW_CANARY_ENTITY_IDS',
   'IMPORT_PREVIEW_ALLOWED_ACTOR_IDS',
   'createPharmacyPrivateAdminRuntimeContextReaderFromEnvironment',
   'loadPharmacyPrivateAdminRuntimeContext',
+  'runPharmacyAdminReservationOperation',
 ]) {
   assert(action.includes(token), `${actionPath} must include ${token}`);
 }
@@ -72,6 +74,7 @@ for (const forbidden of [
 for (const token of [
   'fails closed while the production action switch is disabled',
   'allows only explicitly enabled read operations',
+  'requires exact entity-bound confirmation before one reservation',
   'rejects duplicate fields, non-allowlisted entities, and production mutation',
   'requires exact confirmation before one private publish',
   'requires an opaque publish reference before rollback',

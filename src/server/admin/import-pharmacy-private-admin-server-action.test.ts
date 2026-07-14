@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 import { createPharmacyPrivateAdminServerAction } from "./import-pharmacy-private-admin-server-action";
+import type { PharmacyPrivateAdminOperation } from "./import-pharmacy-private-admin-workflow";
 
 function form(values: Record<string, string | readonly string[]>): FormData {
   const data = new FormData();
@@ -16,7 +17,7 @@ function form(values: Record<string, string | readonly string[]>): FormData {
   return data;
 }
 
-function completed(operation: "dry_run" | "review" | "private_publish" | "rollback") {
+function completed(operation: PharmacyPrivateAdminOperation) {
   return {
     operation,
     status: "completed" as const,
@@ -51,7 +52,7 @@ describe("pharmacy private Admin server action", () => {
   });
 
   it("allows only explicitly enabled read operations", async () => {
-    const execute = vi.fn(async ({ operation }: { operation: "dry_run" | "review" | "private_publish" | "rollback" }) => completed(operation));
+    const execute = vi.fn(async ({ operation }: { operation: PharmacyPrivateAdminOperation }) => completed(operation));
     const action = createPharmacyPrivateAdminServerAction({
       executionEnabled: true,
       enabledOperations: ["dry_run", "review"],
@@ -75,6 +76,38 @@ describe("pharmacy private Admin server action", () => {
       }),
     });
     expect(publish).toEqual({ ok: false, blockers: ["operation_not_enabled"] });
+    expect(execute).toHaveBeenCalledTimes(1);
+  });
+
+  it("requires exact entity-bound confirmation before one reservation", async () => {
+    const execute = vi.fn(async () => completed("reserve_private_publish"));
+    const action = createPharmacyPrivateAdminServerAction({
+      executionEnabled: true,
+      enabledOperations: ["reserve_private_publish"],
+      environment: "preview",
+      allowedEntityIds: ["pharmacy-1"],
+      execute,
+    });
+
+    const blocked = await action({
+      actorId: "admin-1",
+      formData: form({
+        operation: "reserve_private_publish",
+        entityId: "pharmacy-1",
+        confirmation: "RESERVE PRIVATE PUBLISH pharmacy-2",
+      }),
+    });
+    expect(blocked).toEqual({ ok: false, blockers: ["invalid_confirmation"] });
+
+    const result = await action({
+      actorId: "admin-1",
+      formData: form({
+        operation: "reserve_private_publish",
+        entityId: "pharmacy-1",
+        confirmation: "RESERVE PRIVATE PUBLISH pharmacy-1",
+      }),
+    });
+    expect(result).toEqual({ ok: true, workflow: completed("reserve_private_publish") });
     expect(execute).toHaveBeenCalledTimes(1);
   });
 

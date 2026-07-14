@@ -52,6 +52,8 @@ if (!source.store.includes('from("import_pharmacy_admin_read_states")')) {
 if (!source.store.includes('.eq("operation_attempt_id", operationAttemptId)')) {
   throw new Error('authorization store must resolve Review by stable operation identity');
 }
+
+// Inspect only the public handle type. Internal compatibility secrets are intentionally outside this slice.
 const envelopeTypeStart = source.envelope.indexOf('export type PharmacyPublishAuthorizationEnvelope =');
 const envelopeTypeEnd = source.envelope.indexOf('export type PharmacyPublishAuthorizationSecret =', envelopeTypeStart);
 if (envelopeTypeStart < 0 || envelopeTypeEnd < 0) {

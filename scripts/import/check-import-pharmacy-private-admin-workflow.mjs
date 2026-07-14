@@ -56,7 +56,7 @@ for (const forbidden of [
 
 for (const token of [
   'blocks bulk, wrong-family, unreviewed, unconfirmed, and production publish requests',
-  'executes exactly one reservation without public exposure or mutation',
+  'dispatches one reviewed Preview reservation without mutation',
   'executes exactly one private publish and preserves zero public exposure',
   'requires the source publish reference before rollback',
   'runs rollback only in preview with confirmation and audit',

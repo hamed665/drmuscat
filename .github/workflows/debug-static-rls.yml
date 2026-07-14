@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: corepack enable
-      - run: corepack prepare pnpm@10.22.0 --activate
-      - run: pnpm install --frozen-lockfile
       - name: Run static RLS only
-        run: node scripts/db/test-rls-static-taxrlsa.mjs
+        shell: bash
+        run: |
+          set +e
+          node scripts/db/test-rls-static-taxrlsa.mjs > /tmp/static-rls.log 2>&1
+          status=$?
+          tac /tmp/static-rls.log | head -n 80
+          exit $status

@@ -16,7 +16,10 @@ import type {
   PharmacyPublishAuthorizationEnvelopeRecord,
   PharmacyPublishAuthorizationEnvelopeStore,
 } from "./import-pharmacy-publish-authorization-envelope";
-import { createPharmacyPublishAuthorizationStore } from "./import-pharmacy-publish-authorization-store";
+import {
+  createPharmacyPublishAuthorizationStore,
+  type PharmacyPublishAuthorizationClient,
+} from "./import-pharmacy-publish-authorization-store";
 
 export type PharmacyAdminReservationResult = {
   reserved: boolean;
@@ -101,9 +104,9 @@ export async function runPharmacyAdminReservationOperation(input: {
     review.expectedEntityVersion !== input.context.canaryInput.reservationRequest.expectedVersion
   ) return blocked("review_identity_mismatch");
 
-  const authorization = await input.dependencies.authorizationStore.readByReviewStateId(
-    await input.dependencies.authorizationStore.resolveReviewStateId(review.operationAttemptId) ?? "",
-  );
+  const reviewStateId = await input.dependencies.authorizationStore.resolveReviewStateId(review.operationAttemptId);
+  if (!reviewStateId) return blocked("authorization_unavailable");
+  const authorization = await input.dependencies.authorizationStore.readByReviewStateId(reviewStateId);
   if (!authorization || authorization.status !== "issued" || Date.parse(authorization.expiresAt) <= Date.parse(input.now)) {
     return blocked("authorization_unavailable");
   }
@@ -154,6 +157,6 @@ export function createPharmacyAdminReservationDependenciesFromEnvironment(
   });
   return {
     persistenceAdapter: createImportSupabasePublishPersistenceAdapter(client as unknown as ImportSupabaseRpcClient),
-    authorizationStore: createPharmacyPublishAuthorizationStore(client as never),
+    authorizationStore: createPharmacyPublishAuthorizationStore(client as unknown as PharmacyPublishAuthorizationClient),
   };
 }

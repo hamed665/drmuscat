@@ -186,10 +186,6 @@ function validatePharmacyAuthorizationLifecycleMigration() {
   requireCondition(existsSync(pharmacyAuthorizationLifecycleMigrationPath), `${pharmacyAuthorizationLifecycleMigrationName} is missing.`);
   execFileSync(process.execPath, [pharmacyAuthorizationLifecycleValidator], { cwd: repoRoot, stdio: 'inherit' });
 }
-function validatePharmacyAuthorizationLifecycleMigration() {
-  requireCondition(existsSync(pharmacyAuthorizationLifecycleMigrationPath), `${pharmacyAuthorizationLifecycleMigrationName} is missing.`);
-  execFileSync(process.execPath, [pharmacyAuthorizationLifecycleValidator], { cwd: repoRoot, stdio: 'inherit' });
-}
 
 function runLegacyValidatorWithoutCurrentOnlyMigrations() {
   for (const [migrationName, migrationPath, hiddenMigrationPath] of currentOnlyMigrations) {
@@ -224,7 +220,6 @@ validatePharmacyAuthorizationMigration();
 validatePharmacyMetadataLocaleMigration();
 validatePharmacyStableOperationIdentityMigration();
 validatePharmacyAuthorizationV2Migration();
-validatePharmacyAuthorizationLifecycleMigration();
 validatePharmacyAuthorizationLifecycleMigration();
 
 console.log('Current migration validation passed.');

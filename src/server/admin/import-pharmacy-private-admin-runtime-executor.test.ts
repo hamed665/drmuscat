@@ -8,6 +8,7 @@ function ports() {
   return {
     dryRun: vi.fn(async () => ({ ok: true, reference: "dry-run-1" })),
     review: vi.fn(async () => ({ ok: true, reference: "review-1" })),
+    reservePrivatePublish: vi.fn(async () => ({ ok: true, reference: "reservation-1" })),
     privatePublish: vi.fn(async () => ({ ok: true, reference: "publish-1" })),
     rollback: vi.fn(async () => ({ ok: true, reference: "publish-1" })),
     audit: vi.fn(async () => true),

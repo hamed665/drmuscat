@@ -76,9 +76,9 @@ Use `PHASED_BUILD_ONLY` mode.
 
 Do not build the full platform in one pass.
 
-Current repo state: **after TAX-RLS-A taxonomy public RLS and TAX-SEED-A planning**.
+Current import-readiness runtime baseline: **PR #943 at `74541b9f32acb201a9bf94d54d0be757842f5b8c`**. The current next implementation is **`RES-INTEGRITY-READBACK`**.
 
-Completed migrations: **`0001` through `0055`**. Migration validation is expected through `0055_taxonomy_public_rls.sql`.
+Completed migrations: **`0001` through `0079`**. Migration validation is expected through `0079_import_pharmacy_atomic_authorization_reservation.sql`.
 
 Approved current surfaces include localized public catalog/detail surfaces, static public article shell routes, contact/callback/media/license foundations, provider onboarding lead capture, protected root `/admin`, minimal admin login, admin provider onboarding lead list/detail, limited status/priority lead mutation, read-only lead history UI, status/priority lead history writes, draft center creation from provider onboarding lead, admin center subscription view/assignment foundation, base plan catalog initializer, admin quick navigation, admin commercial add-on assignment shell, healthcare vertical/category taxonomy foundation, and public read RLS for approved public taxonomy rows.
 

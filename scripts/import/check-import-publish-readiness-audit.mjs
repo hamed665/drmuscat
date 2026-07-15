@@ -78,5 +78,7 @@ import './check-import-validator-ci-audit.mjs';
 import './check-import-admin-action-contract.mjs';
 import './check-import-admin-action-result-contract.mjs';
 import './check-import-build-typecheck-guard.mjs';
+import './check-import-readiness-state-alignment.mjs';
+import './test-import-readiness-state-alignment.mjs';
 
 console.log('import publish readiness audit check passed.');

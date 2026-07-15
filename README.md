@@ -26,10 +26,17 @@ Build mode:
 
 ## Current project phase status
 
-- Current repo state: **after ADDON-A commercial add-on assignment shell and CENTER-A lead history event-type fix**.
-- Database/migration status: **validates through `0053_provider_onboarding_lead_events.sql`**.
-- Completed migration set: **`0001` through `0053`**.
+- Import-readiness runtime is aligned through **PR #943** at baseline **`74541b9f32acb201a9bf94d54d0be757842f5b8c`**.
+- Database/migration status: **validates through `0079_import_pharmacy_atomic_authorization_reservation.sql`**.
+- Completed migration set: **`0001` through `0079`**.
+- Current import-readiness implementation: **`RES-INTEGRITY-READBACK`**.
 - Implementation remains phase-gated. Do not infer approval for new business features from the existence of current public/admin baselines.
+
+Canonical current-state sources:
+
+- [`docs/project-state/CURRENT_STATE.md`](docs/project-state/CURRENT_STATE.md) — concise factual repository state.
+- [`docs/import/import-readiness-roadmap-after-933.md`](docs/import/import-readiness-roadmap-after-933.md) — authoritative import wave ledger and machine-readable alignment manifest.
+- [`docs/project-state/V10_4_PHASE_ALIGNMENT_MATRIX.md`](docs/project-state/V10_4_PHASE_ALIGNMENT_MATRIX.md) — mapping to the canonical phase systems; not a parallel roadmap.
 
 ## Completed database and platform foundation scope
 

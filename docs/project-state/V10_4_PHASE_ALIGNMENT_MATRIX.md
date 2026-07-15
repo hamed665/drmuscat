@@ -15,8 +15,9 @@ If this file conflicts with `docs/master-spec/`, the master spec wins. If it con
 
 ## Current Repository Baseline
 
-- Current repo state is after ADDON-A commercial add-on assignment shell and CENTER-A lead history event-type fix.
-- Migrations validate through `0053_provider_onboarding_lead_events.sql`.
+- Import-readiness runtime is aligned through PR #943 at baseline `74541b9f32acb201a9bf94d54d0be757842f5b8c` (last aligned 2026-07-15).
+- Migrations validate through `0079_import_pharmacy_atomic_authorization_reservation.sql`.
+- The current next implementation is `RES-INTEGRITY-READBACK`.
 - Current foundations include public catalog/detail pages, static public article shell routes, provider onboarding lead capture, callback request capture, protected root `/admin`, minimal admin login, lead list/detail, limited lead mutation, lead history, draft center creation from lead, center subscription view/assignment, base plan initializer, admin quick navigation, and admin commercial add-on assignment shell.
 - The commercial add-on shell creates draft/internal Homepage Ads and Special Offer Placement assignments only.
 - Article pages are still static shell pages only.
@@ -84,11 +85,11 @@ If this file conflicts with `docs/master-spec/`, the master spec wins. If it con
 | Callback request capture | Completed baseline | Phase 3 | Phase 4 | Phase 3 | CRM-style expansion remains gated. |
 | Admin shell and login | Completed baseline | Phase 4 | Phase 5 | Phase 4 / Phase 6 | Admin routes stay root-level and private. |
 | Admin lead list/detail | Completed baseline | Phase 4 | Phase 5 | Phase 6 / Phase 5 | Later contact workflows remain gated. |
-| Lead status/priority mutation and history | Partially completed baseline | Phase 4 | Phase 5 | Phase 6 / Phase 12 | Event types remain constrained by `0053`. |
+| Lead status/priority mutation and history | Partially completed baseline | Phase 4 | Phase 5 | Phase 6 / Phase 12 | Event types remain constrained by their existing migration contract. |
 | Draft center creation from lead | Completed admin baseline | Phase 4 / Phase 5 | Phase 5 / Phase 6 | Phase 5 / Phase 6 | Uses `note_added` with `event_kind: draft_center_created`. |
 | Center subscription view/assignment | Completed foundation | Phase 6 | Phase 9 / Phase 5 | Phase 7 / Phase 15 | Admin assignment only. |
 | Commercial add-on assignment shell | Completed draft/internal shell | Phase 6 | Phase 8 / Phase 5 | Phase 15 | Homepage Ads and Special Offer Placement only. |
-| Migrations through `0053` | Completed | Phase 2 | Phase 2 / Phase 3 | Phase 1 / Phase 2 | Existing SQL migrations must not be modified unless approved. |
+| Migrations through `0079` | Completed | Phase 2 | Phase 2 / Phase 3 | Phase 1 / Phase 2 | Existing SQL migrations must not be modified unless approved. |
 | Review companion foundation | Foundation only | Phase 2 | Phase 2 / Phase 3 | Phase 10 | Full review product is not implemented. |
 | Official Offers | Not started / phase-gated | Phase 6 | Phase 8 | Phase 13 | Needed before real Special Offer Placement. |
 | Article placement engine | Not started / phase-gated | Phase 3 / Phase 6 | Phase 4 / Phase 8 | Phase 9 / Phase 13 / Phase 15 | Future slot system only after approval. |
@@ -97,6 +98,55 @@ If this file conflicts with `docs/master-spec/`, the master spec wins. If it con
 | Real seed rows | Not started / phase-gated | Phase 2 | Phase 2 | Phase 1 / Phase 3 | Requires approved seed phase. |
 | Provider dashboard mutations | Not started / phase-gated | Phase 5 | Phase 7 | Phase 5 / Phase 12 | Requires explicit future approval. |
 | Business expansion features | Not started / phase-gated | Depends on scope | Depends on files | Depends on module | Requires explicit future approval. |
+
+## Import readiness baseline
+
+| Field | Value |
+| --- | --- |
+| Aligned through | PR #943 |
+| Runtime baseline | `74541b9f32acb201a9bf94d54d0be757842f5b8c` |
+| Last aligned | `2026-07-15` |
+| Current migration | `0079_import_pharmacy_atomic_authorization_reservation.sql` |
+| Current next | `RES-INTEGRITY-READBACK` |
+
+## Import readiness capability mapping
+
+This table maps current capability evidence to the canonical phase systems. The authoritative wave ledger remains in [`docs/import/import-readiness-roadmap-after-933.md`](../import/import-readiness-roadmap-after-933.md).
+
+| Capability | Current status | Evidence | Next gate |
+| --- | --- | --- | --- |
+| Client-safe authorization | Complete | #936 | Maintain static checks |
+| Canonical Pharmacy patch | Complete | #937 | Executor parity |
+| Metadata/locale preservation | Complete | #938 | Publish/rollback regression |
+| Stable operation identity | Complete | #939 | Replay proof |
+| Persisted authorization | Complete | #940 | Lifecycle regression |
+| Invalidation/readback | Complete | #941 | Bounded UI regression |
+| Atomic reservation transaction | Implemented/partial wave | #942 | DB safety proof and audit split |
+| Admin reserve operation | Implemented/partial wave | #943 | Integrity readback |
+| Reservation integrity proof | Open | — | `RES-INTEGRITY-READBACK` |
+| Existing private executor handoff | Open | — | `PRIVATE-RESERVATION-GATE` |
+| Exact rollback recovery | Open | — | Wave 4 |
+| Pharmacy public/index/sitemap | Disabled/Open | — | After Admin canary |
+| AI-assisted intake | Planned | — | After intake convergence |
+| Content/SEO Agent | Planned separate track | — | After CMS/automation authority |
+
+The current reservation audit signature is `event_type=execution_started` with `event_payload.phase=reservation`; `reservation_created` is not implemented.
+
+## Immediate task mapping
+
+| Subphase | Execution Phase | Lock Scope | Product Module |
+| --- | --- | --- | --- |
+| `ALIGN-CURRENT-STATE` | Phase 9 | Phase 10 | Phase 6 |
+| `RES-INTEGRITY-READBACK` | Phase 9 | Phase 10 | Phase 6 |
+| `RES-DB-SAFETY-PROOF` | Phase 2 | Phase 3 | Phase 2 |
+| `PRIVATE-RESERVATION-GATE` | Phase 2 | Phase 10 | Phase 6 |
+| `PRIVATE-ADMIN-WIRING` | Phase 4 | Phase 10 | Phase 6 |
+| `ROLLBACK-AUTHORITY-HARDENING` | Phase 9 | Phase 11 | Phase 6 |
+| `ROLLBACK-EXACT-RECOVERY` | Phase 9 | Phase 11 | Phase 18 |
+| `ADMIN-STATE-MACHINE` | Phase 4 | Phase 5 | Phase 6 |
+| `REAL-ADMIN-CANARY` | Phase 9 | Phase 11 | Phase 18 |
+
+This is the primary mapping and must be confirmed against current `main` before each PR. Program milestones do not replace the canonical phase systems.
 
 ## Future Subphase ID Namespace
 

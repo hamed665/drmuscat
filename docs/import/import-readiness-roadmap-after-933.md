@@ -8,9 +8,54 @@ This document is the repository source of truth for completing controlled import
 
 The implementation order is strict. Later waves must not be opened early merely to create activity. A pull request is complete only when its behavior, safety boundary, tests, readback, and required hosted checks are green.
 
+## Status
+
+This is the authoritative wave status. It must be updated in the same PR that completes a wave and must stay aligned with factual project-state references and Issue #934.
+
+```text
+Wave 0     COMPLETE  (#936–#939) Client-boundary authorization removal, canonical patch, metadata/locale, stable operation identity
+Wave 1     COMPLETE  (#940–#941) Server-owned authorization persistence, invalidation, bounded readback
+Wave 2.1   PARTIAL   (#942)      Atomic authorization/reservation complete; reservation audit-event separation open
+Wave 2.2   PARTIAL   (#943)      Admin reservation operation merged; authorization-linked integrity readback open
+Wave 3+    OPEN
+```
+
+PRs #919–#921 are earlier canary/readback infrastructure. They predate the current Reservation authority and do not complete Wave 2, but their verifier and integrity-report implementations must be extended instead of rebuilt.
+
+```text
+Aligned through: PR #943
+Baseline commit: 74541b9
+Last aligned: 2026-07-15
+```
+
+The full runtime baseline and the cross-document state tokens are machine-readable here. The alignment validator treats this manifest as the canonical state record.
+
+```json import-readiness-state
+{
+  "schemaVersion": "drkhaleej.importReadinessState.v1",
+  "alignedThroughPr": 943,
+  "runtimeBaseline": "74541b9f32acb201a9bf94d54d0be757842f5b8c",
+  "lastAligned": "2026-07-15",
+  "currentMigration": "0079_import_pharmacy_atomic_authorization_reservation.sql",
+  "currentNext": "RES-INTEGRITY-READBACK",
+  "waves": {
+    "0": "COMPLETE",
+    "1": "COMPLETE",
+    "2.1": "PARTIAL",
+    "2.2": "PARTIAL",
+    "3+": "OPEN"
+  },
+  "currentReservationAudit": {
+    "eventType": "execution_started",
+    "phase": "reservation"
+  },
+  "reservationCreatedImplemented": false
+}
+```
+
 ## Merge policy
 
-Every implementation pull request must satisfy all checks relevant to its scope before merge:
+Every implementation pull request must satisfy all checks relevant to its scope:
 
 - focused unit tests;
 - integration tests for cross-boundary behavior;
@@ -26,214 +71,281 @@ Every implementation pull request must satisfy all checks relevant to its scope 
 - `pnpm lint`;
 - `pnpm build`;
 - all required GitHub Actions green;
-- Vercel green.
+- Vercel green;
+- hosted Preview proof when runtime behavior changes.
 
 A write path must not merge without readback. A rollback path must not merge without exact logical recovery verification. A public promotion path must not merge before the Pharmacy Admin Preview canary and integrity report are green.
 
 ## Invariants
 
-1. One authority exists for each concept. Existing reservation, snapshot, private mutation, rollback, registry, route, geo, SEO, sitemap, duplicate, and relation authorities are extended rather than copied.
+1. One authority exists for each concept. Existing reservation, snapshot, mutation, rollback, registry, route, geo, SEO, sitemap, duplicate, and relation authorities are extended rather than copied.
 2. Raw authorization or rollback secrets never enter Server Action results, React state, hydration payloads, HTML, forms, browser storage, URLs, logs, analytics, tracing attributes, or displayable errors.
-3. Review represents the exact canonical patch that mutation will execute. No hidden field mutation is allowed.
+3. Review represents the exact canonical patch mutation will execute. Hidden field mutation is forbidden.
 4. Authorization is bound to actor, entity, family, review identity, snapshot hash, entity fingerprint, expected version, patch hash, request hash, operation scope, and expiry.
 5. Authorization consumption and reservation creation happen in one transaction.
 6. Public visibility, index eligibility, and sitemap inclusion are separate promotions.
-7. Bulk reuses the proven single-entity executor and remains blocked until single-entity recovery is repeatedly proven.
+7. Bulk reuses the proven single-entity executor and remains blocked until recovery is repeatedly proven.
+8. AI-assisted intake ends at Unified Draft/Review and cannot bypass controlled publication.
 
-## Wave 0 — Repair current security and contract debt
+## Wave 0 — Security and contract debt `COMPLETE (#936–#939)`
 
-### 0.1 Remove authorization material from the Client boundary
+### 0.1 Client boundary
 
-- Remove the raw authorization envelope from Server Action result types and return values.
-- Return only bounded status: unavailable, ready, expired, invalidated, or consumed, plus expiry.
-- Keep reservation and mutation disabled.
-- Add static checks proving token and nonce cannot be serialized or rendered.
+- Raw authorization material removed from Server Action results.
+- UI receives bounded lifecycle status only.
+- Reservation and mutation remained disabled while this boundary was repaired.
 
-### 0.2 Canonical reviewed mutation patch
+### 0.2 Canonical reviewed patch
 
-- Build one canonical Pharmacy mutation patch.
-- Generate the persisted Review diff from that patch.
-- Include every field the existing mutation writer can change.
-- Define stable normalization for absent values, nulls, empty strings, locale, country, metadata patching, and key ordering.
-- Persist or deterministically reconstruct patch hash and request hash.
-- Reject any mutation key outside the allowlist.
+- One canonical Pharmacy mutation patch.
+- Persisted Review diff derived from that patch.
+- Stable normalization and hash contracts.
+- Mutation-key allowlist.
 
-### 0.3 Preserve metadata and locale
+### 0.3 Metadata and locale
 
-- Replace destructive metadata replacement with an allowlisted merge.
-- Preserve canonical geo, projection version, unrelated metadata, and required evidence.
-- Stop forcing the locale to English.
-- Add publish and rollback tests for metadata and locale parity.
+- Protected metadata preserved with allowlisted merge.
+- Canonical geo and projection metadata preserved.
+- Locale no longer forced to English.
 
 ### 0.4 Stable operation identity
 
-- Stop generating a fresh reservation identity on every runtime-context load.
-- Persist or deterministically derive one idempotency identity per actor/entity/review/operation/patch.
-- Refresh, retries, back navigation, and multiple tabs must resolve the same attempt.
+- Stable idempotency identity per actor/entity/review/operation/patch.
+- Refresh, retry, back navigation and multiple tabs resolve one attempt.
 
-## Wave 1 — Server-owned authorization
+## Wave 1 — Server-owned authorization `COMPLETE (#940–#941)`
 
-### 1.1 Extend existing authorization persistence
+### 1.1 Persistence
 
-Extend the existing table rather than adding a parallel subsystem. Add review state, family, expected version, patch hash, request hash, operation scope, lifecycle status, invalidation fields, consumed reservation, and timestamps.
+The existing authorization persistence was extended with review/family/version/hash/scope/lifecycle identity instead of creating a second subsystem.
 
 Supported lifecycle:
 
 ```text
-issued -> consumed
-issued -> invalidated
-issued -> expired
+issued → consumed
+issued → invalidated
+issued → expired
 ```
 
-Do not add a persisted claimed state.
+No persisted claimed state is introduced.
 
 ### 1.2 Invalidation and bounded readback
 
-- A new Review invalidates the previous active authorization for the same actor/entity/operation.
-- Fingerprint, expected-version, patch-hash, request-hash, expiry, or scope changes invalidate old authorization.
-- Only one active authorization may exist for one actor/entity/review/operation identity.
+- New Review invalidates the previous active authorization for the same identity.
+- Fingerprint/version/hash/expiry/scope changes invalidate old authorization.
 - UI receives bounded status only.
 
-## Wave 2 — Atomic reservation
+## Wave 2 — Atomic reservation `PARTIAL`
 
-### 2.1 Extend `import_publish_reserve_snapshot_audit`
+### 2.1 Atomic authorization/reservation `PARTIAL (#942)`
 
-The existing RPC must atomically:
+Migration 0079 atomically:
 
-1. lock and verify the active authorization;
-2. verify Preview, actor, entity, Pharmacy family, Review, snapshot, fingerprint, expected version, patch hash, request hash, operation scope, and expiry;
-3. resolve replay or conflict by stable idempotency identity;
-4. create one reservation;
-5. capture one rollback snapshot;
-6. append `reservation_created` using a new audit schema version;
-7. consume and link authorization to the reservation;
-8. commit.
+1. locks and verifies active authorization;
+2. verifies Preview, actor, entity, Pharmacy family, Review, snapshot, fingerprint, expected version, patch hash, request hash, scope, and expiry;
+3. resolves replay/conflict by stable idempotency;
+4. creates one reservation;
+5. captures one rollback snapshot;
+6. appends a reservation-phase audit event;
+7. consumes and links authorization;
+8. commits.
 
-Any failure must leave zero reservation, zero snapshot, zero audit, an unconsumed authorization, and an unchanged entity.
+Any failure must leave zero reservation, snapshot and audit writes, an unconsumed authorization, and an unchanged entity.
 
-Old audit readers remain compatible. New writes use `reservation_created`; `execution_started` is reserved for mutation time.
+The atomic transaction is implemented. Audit-event separation is not complete: migration 0079 currently writes the backward-compatible signature:
 
-### 2.2 Admin reservation operation and readback
+```text
+event_type = execution_started
+event_payload.phase = reservation
+```
 
-Operation: `reserve_private_publish`
+`reservation_created` must be introduced during the Reservation→Execution handoff in Wave 3, with reader compatibility retained.
 
-Confirmation: `RESERVE PRIVATE PUBLISH <entity-id>`
+### 2.2 Admin reservation and readback `PARTIAL (#943)`
 
-Readback must prove exactly one linked reservation, snapshot, reservation audit, consumed authorization, matching hashes and version, no duplicate, no orphan, no audit gap, and no entity mutation.
+Operation:
 
-## Wave 3 — Existing Pharmacy private executor
+```text
+reserve_private_publish
+RESERVE PRIVATE PUBLISH <entity-id>
+```
 
-### 3.1 Admin wiring and publish readback
+The bounded operation is merged. The open `RES-INTEGRITY-READBACK` remainder must prove:
 
-Operation: `private_publish`
+- exactly one linked reservation;
+- exactly one snapshot;
+- exactly one reservation-phase audit;
+- consumed authorization linked to reservation;
+- matching entity/review/family/version/fingerprint/patch hash/request hash/scope;
+- no duplicate, orphan or audit gap;
+- no entity mutation.
 
-Confirmation: `EXECUTE PRIVATE PUBLISH <entity-id>`
+The verifier must recognize the current `execution_started + phase=reservation` signature and remain compatible with future `reservation_created`.
 
-The Admin path resolves the verified reservation and calls the existing guarded Pharmacy executor. It must not execute independent SQL mutation logic.
+This is a read-only runtime proof PR, not a docs-only PR. It requires server-only verifier code, unit/integration tests and Preview DB evidence. Existing verifier/integrity-report code must be extended.
 
-The mutation transaction appends `execution_started`, applies the reviewed canonical patch, persists the terminal result and audit, and creates or resolves the existing durable rollback reference.
+## Wave 3 — Existing Pharmacy private executor `OPEN`
 
-Readback must verify the terminal state, before/after versions, exact bounded patch, protected metadata preservation, private/noindex/no-sitemap/no-route state, one durable rollback authority, no duplicate execution, and no public leakage.
+### 3.1 Reservation→Execution gate
 
-## Wave 4 — Existing rollback path
+- Introduce `reservation_created` for new reservation writes.
+- Keep old audit readers compatible.
+- Reserve `execution_started` for real mutation time.
+- Resolve and consume the already-verified Admin Reservation.
+- Do not create a second Reservation inside private publish.
 
-### 4.1 Durable rollback authority hardening
+### 3.2 Admin wiring and publish readback
 
-Use the existing durable publish reference rather than adding a second rollback-authorization subsystem. Keep the raw reference server-side, bind it to the publish terminal identity and current version, and consume it atomically in rollback.
+Operation:
 
-Confirmation: `ROLLBACK PRIVATE PUBLISH <entity-id>`
+```text
+private_publish
+EXECUTE PRIVATE PUBLISH <entity-id>
+```
+
+Admin calls the existing guarded Pharmacy executor and adds no independent SQL mutation path.
+
+Mutation appends `execution_started`, applies the exact reviewed canonical patch, persists terminal result/audit, and creates or resolves the existing durable rollback reference.
+
+Readback verifies terminal state, versions, exact patch, protected metadata, private/noindex/no-sitemap/no-route state, one rollback authority, no duplicate execution, and no public leakage.
+
+## Wave 4 — Existing rollback path `OPEN`
+
+### 4.1 Durable rollback authority
+
+Use and harden the existing durable publish reference. Raw reference remains server-side, is bound to terminal publish identity/current version, and is consumed atomically.
+
+```text
+ROLLBACK PRIVATE PUBLISH <entity-id>
+```
 
 ### 4.2 Exact recovery
 
-Compare the original logical state with post-rollback state. All bounded entity fields, publication state, locale, country, canonical path, projection version, metadata content, relation state included by the snapshot contract, and deletion/sort state must match.
+Compare original logical state with post-rollback state. Bounded fields, publication state, locale, country, path, projection, metadata, relations included by snapshot contract, deletion and sort state must match.
 
 Only append-only audit/history timestamps, updated version metadata, rollback metadata, and consumed authority states may differ.
 
-## Wave 5 — Admin state machine and canary
+## Wave 5 — Admin state machine and canary `OPEN`
 
 Keep `/admin/imports/readiness` and the existing design system.
 
-The UI sequence is:
+```text
+Dry Run
+→ Exact Review
+→ Authorization Ready
+→ Reserve
+→ Reservation Verified
+→ Private Publish
+→ Publish Verified
+→ Rollback
+→ Exact Recovery Verified
+→ Bounded Audit History
+```
 
-1. Dry-run
-2. Exact Review
-3. Authorization ready
-4. Reserve
-5. Reservation verified
-6. Private publish
-7. Publish verified
-8. Rollback
-9. Exact recovery verified
-10. Bounded audit history
+Add server-authoritative refresh, stale detection, expiry countdown, double-submit protection, replay/fresh display, multi-tab collision handling, and readback-only safe retry. Never auto-retry reservation, mutation or rollback.
 
-Add server-authoritative refresh, stale-state detection, expiry countdowns, double-submit protection, replay versus fresh-success display, multi-tab collision handling, and safe retry only for readback. Never auto-retry reservation, mutation, or rollback.
+Run one real Preview Pharmacy through the complete Admin path. Integrity findings for orphan/duplicate/audit gap/unfinished execution/state mismatch/public/index/sitemap exposure/secret leakage/unrestricted payload must all be zero.
 
-Run one real Preview Pharmacy through the entire Admin path without bypass. Produce an integrity report requiring zero orphan authorizations, reservations, snapshots, references, duplicate operations, audit gaps, unfinished executions, state mismatches, public/search/sitemap exposure, secret leakage, or unrestricted payload leakage.
+Wave 5 فقط پس از تکمیل checklist مستقل Post-P09 Go/No-Go و ثبت `GO` کامل است. این GO فقط Registry/Pharmacy Public work را باز می‌کند؛ Agent، Content و Bulk Gateهای جدا دارند.
 
-## Wave 6 — Registry convergence before public route activation
+## Wave 6 — Registry convergence `OPEN`
 
-Audit and document the authoritative mapping:
+Audit and document:
 
 ```text
 ImportEntityType
--> PublicEntityFamily
--> PublicProviderRouteFamily
--> database storage family
--> SEO profile
--> schema projection
--> relation policy
--> sitemap family
+→ PublicEntityFamily
+→ PublicProviderRouteFamily
+→ database storage family
+→ SEO profile
+→ schema projection
+→ relation policy
+→ sitemap family
 ```
 
-Mark each mapping supported, planned, disabled, or unsupported. Extend existing registries only. Do not create routes, placeholders, category pages, or sitemap entries in this audit.
+Mark supported/planned/disabled/unsupported. Extend existing registries only. Do not add routes, placeholders, category pages or sitemap entries in this audit.
 
-## Wave 7 — Pharmacy public lifecycle
+## Wave 7 — Pharmacy public lifecycle `OPEN`
 
-1. Independent `public/noindex` promotion authorization and snapshot.
-2. Enable the approved bilingual public route while keeping robots noindex and sitemap excluded.
-3. Verify English and Arabic URLs, canonical, reciprocal hreflang, structured data, content completeness, links, mobile rendering, errors, query count, HTML/JS size, and the repository's existing performance budget.
-4. Promote independently to index after all live checks pass.
-5. Promote independently to sitemap after canonical-only, lastmod, index, duplicate, redirect, locale, and sitemap-eligibility checks pass.
+1. Independent public/noindex authorization and snapshot.
+2. Approved bilingual public route with noindex and sitemap excluded.
+3. EN/AR URL, canonical, hreflang, structured data, content, links, mobile, errors and performance verification.
+4. Independent index promotion.
+5. Independent sitemap promotion.
 
 Each promotion has an independent rollback path.
 
-## Wave 8 — Intake convergence and core families
+## Wave 8 — Intake convergence and core families `OPEN`
 
-Audit Manual, CSV, Excel, API, and AI-assisted ingestion. All must converge into Unified Draft, canonical geo, evidence, duplicate detection, readiness, exact Review, and controlled publish. Direct entity-table writes and entrypoint-specific publication logic are forbidden.
+Manual, CSV, Excel, API and AI-assisted ingestion converge into Unified Draft, canonical geo, evidence, duplicate detection, readiness, exact Review and controlled publish. Direct entity-table writes and entrypoint-specific publication are forbidden.
 
-Then complete the same lifecycle for Hospital followed by Doctor. Hospital and Doctor use the shared transaction and authorization authorities with family adapters; they do not receive copied reservation, authorization, or rollback subsystems.
+Entity Agent may create observations/evidence/drafts only. It cannot authorize, reserve, publish, index or add sitemap entries.
 
-## Wave 9 — Shared core and later families
+Then complete Hospital followed by Doctor. They reuse shared transaction/authorization/rollback authorities through family adapters. Hospital and Doctor are not implemented in parallel.
 
-Extract a generic controlled-publish core only after Pharmacy, Hospital, and Doctor are fully proven. Preserve their behavior during extraction.
+## Wave 9 — Shared core and later families `OPEN`
 
-Extend the existing family, capability, SEO, route, schema, relation, internal-link, and nearby registries for additional healthcare facilities, medical beauty, non-medical beauty, veterinary medical, pet retail/services, fitness, home healthcare, and ambulance.
+Extract generic controlled-publish core only after Pharmacy, Hospital and Doctor are proven.
 
-Only verified relations may create public internal links. Geographic proximity alone never creates an organizational relation.
+Extend existing registries and policy interfaces for:
 
-## Final wave — Bulk
+- additional human healthcare facilities;
+- medical retail;
+- medical and non-medical beauty;
+- veterinary medical;
+- pet retail/services;
+- fitness;
+- home healthcare;
+- ambulance;
+- operator/charity facets.
 
-Bulk remains blocked until at least ten successful private publishes, ten successful rollbacks, complete Pharmacy/Hospital/Doctor lifecycles, several additional facility canaries, and zero duplicate, orphan, audit-gap, public-leakage, or recovery findings.
+Only verified relations create public internal links. Geographic proximity alone never creates an organizational relation.
 
-Bulk uses per-entity jobs, concurrency initially equal to one, pause/cancel/kill-switch controls, bounded read retries, no automatic retry for ambiguous mutations, and the exact same single-entity executor. There is no blind Publish All control.
+## Final wave — Bulk `OPEN`
+
+Bulk remains blocked until:
+
+- at least ten successful private publishes;
+- at least ten successful rollbacks;
+- complete Pharmacy/Hospital/Doctor lifecycles;
+- representative later-family canaries;
+- zero duplicate/orphan/audit-gap/public-leakage/recovery findings.
+
+Bulk uses per-entity jobs, initial concurrency one, pause/cancel/kill-switch controls, bounded read retries, no automatic retry for ambiguous mutations, and the same single-entity executor. There is no blind Publish All.
 
 ## Explicitly stopped
 
 Do not add:
 
-- independent claim or claim-recovery lifecycle;
+- independent claim/claim-recovery lifecycle;
 - browser bearer-secret handoff;
-- encrypted authorization cookies or server-memory custody as a substitute for persisted authority;
-- parallel reservation, private publish, rollback, family, SEO, route, or sitemap subsystems;
-- direct Excel publish;
+- encrypted authorization cookies or server-memory custody as persisted authority replacement;
+- parallel reservation/private publish/rollback/family/SEO/route/sitemap subsystems;
+- direct Excel or Agent publish;
 - Hospital and Doctor implementation in parallel;
-- public/index before the Pharmacy Admin canary;
-- placeholder or empty category routes;
-- public links from candidate relations;
+- public/index before Pharmacy Admin canary;
+- placeholder or empty routes;
+- candidate-relation public links;
 - organizational inference from proximity;
 - Bulk Publish or Publish All before the final wave;
-- unrelated keyword, LLM-content, Search Console, or sitemap automation.
+- unrelated Content/SEO LLM automation before its own authority and tracked roadmap are opened.
 
 ## Current next implementation
 
-The next implementation PR removes authorization material from the Server Action/client boundary while keeping reservation and mutation disabled. The immediately following PR converges Review and the exact mutation patch. No execution capability opens before both are complete and green.
+```text
+RES-INTEGRITY-READBACK
+```
+
+Repository-state alignment is delivered by this documentation phase. The next runtime implementation is the authorization-linked reservation integrity readback; it requires server-only verifier code, focused tests, and Preview database evidence.
+
+After `RES-INTEGRITY-READBACK` is green:
+
+```text
+RES-DB-SAFETY-PROOF
+→ PRIVATE-RESERVATION-GATE
+→ PRIVATE-ADMIN-WIRING
+→ ROLLBACK-AUTHORITY-HARDENING
+→ ROLLBACK-EXACT-RECOVERY
+→ ADMIN-STATE-MACHINE
+→ REAL-ADMIN-CANARY
+```

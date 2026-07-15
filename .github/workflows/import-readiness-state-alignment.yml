@@ -1,0 +1,48 @@
+name: Import Readiness State Alignment
+
+on:
+  pull_request:
+    paths:
+      - "AGENTS.md"
+      - "README.md"
+      - "docs/import/import-readiness-roadmap-after-933.md"
+      - "docs/project-state/CURRENT_STATE.md"
+      - "docs/project-state/V10_4_PHASE_ALIGNMENT_MATRIX.md"
+      - "package.json"
+      - "scripts/import/check-import-readiness-state-alignment.mjs"
+      - "scripts/import/test-import-readiness-state-alignment.mjs"
+      - ".github/workflows/import-readiness-state-alignment.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "AGENTS.md"
+      - "README.md"
+      - "docs/import/import-readiness-roadmap-after-933.md"
+      - "docs/project-state/CURRENT_STATE.md"
+      - "docs/project-state/V10_4_PHASE_ALIGNMENT_MATRIX.md"
+      - "package.json"
+      - "scripts/import/check-import-readiness-state-alignment.mjs"
+      - "scripts/import/test-import-readiness-state-alignment.mjs"
+      - ".github/workflows/import-readiness-state-alignment.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate repository alignment
+        run: node scripts/import/check-import-readiness-state-alignment.mjs
+
+      - name: Prove drift detection
+        run: node scripts/import/test-import-readiness-state-alignment.mjs

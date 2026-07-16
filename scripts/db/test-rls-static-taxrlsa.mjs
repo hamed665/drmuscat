@@ -29,6 +29,7 @@ const migrations = {
   pharmacyPublishAuthorization: '0074_import_pharmacy_publish_authorizations.sql',
   pharmacyAuthorizationLifecycle: '0078_import_pharmacy_authorization_invalidation_readback.sql',
   pharmacyAtomicAuthorizationReservation: '0079_import_pharmacy_atomic_authorization_reservation.sql',
+  pharmacyReadStateUpsertIdentity: '0080_import_pharmacy_read_state_upsert_identity.sql',
 };
 
 const migrationPaths = Object.fromEntries(
@@ -193,6 +194,18 @@ function validateLaterMigrations() {
   requirePattern(atomicReservation, /set\s+search_path\s*=\s*pg_catalog\s*,\s*public/i, '0079 must pin the atomic reservation RPC search_path.');
 }
 
+function validatePharmacyReadStateUpsertIdentityMigration() {
+  const content = validateClosedMigration('pharmacyReadStateUpsertIdentity', '0080');
+  for (const [pattern, message] of [
+    [/drop\s+index\s+if\s+exists\s+public\.import_pharmacy_admin_read_states_attempt_operation_idx/i, '0080 must replace the partial operation-attempt index.'],
+    [/create\s+unique\s+index\s+import_pharmacy_admin_read_states_attempt_operation_idx[\s\S]*\(\s*operation_attempt_id\s*,\s*operation\s*\)\s*;/i, '0080 must create the operation-attempt UPSERT index.'],
+    [/drop\s+index\s+if\s+exists\s+public\.import_pharmacy_admin_read_states_idempotency_operation_idx/i, '0080 must replace the partial idempotency index.'],
+    [/create\s+unique\s+index\s+import_pharmacy_admin_read_states_idempotency_operation_idx[\s\S]*\(\s*idempotency_key\s*,\s*operation\s*\)\s*;/i, '0080 must create the idempotency UPSERT index.'],
+  ]) requirePattern(content, pattern, message);
+  forbidPattern(content, /where\s+(operation_attempt_id|idempotency_key)\s+is\s+not\s+null/i, '0080 UPSERT indexes must not be partial.');
+  forbidPattern(content, /\b(insert\s+into|update\s+public\.|delete\s+from|truncate\s+table)\b/i, '0080 must not mutate rows.');
+}
+
 function runLegacyStaticRlsTestWithoutLaterMigrations() {
   for (const [key, hiddenPath] of Object.entries(hiddenMigrationPaths)) {
     assert(!existsSync(hiddenPath), `Hidden migration file already exists for ${key}.`);
@@ -210,6 +223,7 @@ function runLegacyStaticRlsTestWithoutLaterMigrations() {
 validateTaxonomyRlsMigration();
 validateSpecialtyAliasRlsMigration();
 validateLaterMigrations();
+validatePharmacyReadStateUpsertIdentityMigration();
 runLegacyStaticRlsTestWithoutLaterMigrations();
 
 console.log('ADM-IMPORT-A static RLS validation passed.');

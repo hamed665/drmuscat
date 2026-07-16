@@ -6,7 +6,7 @@ This runbook collects the real Preview proof required by P02. It does not mark P
 
 - Use an isolated Preview Supabase project, never Production credentials.
 - Deploy the exact PR head under review and record its commit SHA and Vercel deployment URL.
-- Apply migrations through `0079_import_pharmacy_atomic_authorization_reservation.sql`.
+- Apply migrations through `0080_import_pharmacy_read_state_upsert_identity.sql`.
 - Configure exactly one Preview actor and one draft Pharmacy entity.
 - The actor must be the authenticated platform admin and must match `IMPORT_PREVIEW_ALLOWED_ACTOR_IDS`.
 - The entity must match `IMPORT_PREVIEW_CANARY_ENTITY_IDS`, remain `status=draft`, `is_active=false`, `is_featured=false`, and have no deleted timestamp.

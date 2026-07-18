@@ -68,7 +68,10 @@ for (const token of [
   'clients: 2',
   'runReplayAndConflict',
   'runFaultProof',
-  'await admin.query(faultSql)',
+  'withFreshClient',
+  'await client.query(faultSql)',
+  "'p03-concurrency-observer'",
+  "'p03-failure-cleanup'",
   'authorizationStillIssued: true',
   'verifyGlobalIntegrity',
   'cleanupFixtures',
@@ -83,8 +86,8 @@ for (const token of [
   assert(runner.includes(token), `${files.runner} must include ${token}.`);
 }
 assert(
-  !runner.includes('p03-fault-session'),
-  'P03 must keep the temporary fault wrapper on the active observer session.',
+  !runner.includes('const admin = new Client'),
+  'P03 must not keep one long-lived administrator session across the hosted proof.',
 );
 
 for (const boundary of [

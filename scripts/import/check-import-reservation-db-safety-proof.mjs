@@ -80,6 +80,8 @@ for (const token of [
   "'p03-concurrency-fixture'",
   'await client.query(faultSql)',
   "'p03-concurrency-observer'",
+  'const concurrentCallsSettled = Promise.allSettled([',
+  'const settled = await concurrentCallsSettled;',
   "'p03-failure-cleanup'",
   'authorizationStillIssued: true',
   'verifyGlobalIntegrity',
@@ -101,6 +103,10 @@ assert(
 assert(
   !runner.includes('for (let index = 0; index < fixtures.length; index += 1)'),
   'P03 must create each fixture immediately before its proof instead of churning all sessions up front.',
+);
+assert(
+  !runner.includes('const settled = await Promise.allSettled([firstPromise, secondPromise]);'),
+  'P03 must attach concurrent RPC rejection handlers before waiting for lock observation.',
 );
 
 for (const boundary of [

@@ -507,13 +507,19 @@ async function runConcurrencyProof(connectionString, item) {
       [item.authorizationId],
     );
 
-    const firstPromise = callProductionRpc(firstClient, item);
-    const secondPromise = callProductionRpc(secondClient, item);
+    // Attach rejection handlers at launch time. The lock observer intentionally
+    // waits before the blocker commits, so a pooler disconnect during that wait
+    // must be captured for the bounded idempotent recovery below instead of
+    // becoming an unhandled rejection that terminates the hosted proof.
+    const concurrentCallsSettled = Promise.allSettled([
+      callProductionRpc(firstClient, item),
+      callProductionRpc(secondClient, item),
+    ]);
     const lockWaitObserved = await waitForLockObservation(observer, [firstClient.processID, secondClient.processID]);
     assert(lockWaitObserved, 'Two-client proof did not observe PostgreSQL row-lock waiting.');
     await blocker.query('commit');
     await observer.end();
-    const settled = await Promise.allSettled([firstPromise, secondPromise]);
+    const settled = await concurrentCallsSettled;
     const results = [];
     let transientRetries = 0;
     for (let index = 0; index < settled.length; index += 1) {

@@ -82,13 +82,23 @@ async function openCheckedClient(connectionString, applicationName) {
   });
   try {
     await client.connect();
-    await client.query({
-      text: 'select 1 as p03_connection_ready',
+    const ready = await client.query({
+      text: `select 1 as p03_connection_ready,
+                    pg_backend_pid()::int as backend_pid,
+                    set_config('application_name', $1, false) as application_name`,
+      values: [applicationName],
       query_timeout: 5_000,
     });
+    assert(
+      ready.rows[0]?.application_name === applicationName,
+      'P03 database session did not retain its bounded application identity.',
+    );
+    const backendPid = ready.rows[0]?.backend_pid;
+    assert(Number.isInteger(backendPid) && backendPid > 0, 'P03 could not resolve the PostgreSQL backend identity.');
     if (idleConnectionError) throw idleConnectionError;
     return {
       client,
+      backendPid,
       getIdleConnectionError: () => idleConnectionError,
     };
   } catch (error) {
@@ -464,14 +474,36 @@ async function runReplayAndConflict(connectionString, item) {
   };
 }
 
-async function waitForLockObservation(observer, processIds) {
+async function waitForLockObservation(
+  observer,
+  participantBackendPids,
+  blockerBackendPid,
+) {
   const deadline = Date.now() + 8_000;
   while (Date.now() < deadline) {
     const result = await observer.query(
       `select count(*)::int as waiting
-       from pg_stat_activity
-       where pid = any($1::int[]) and wait_event_type = 'Lock'`,
-      [processIds],
+       from pg_stat_activity waiting_session
+       where (
+           waiting_session.pid = any($1::int[])
+           or waiting_session.application_name = any($2::text[])
+         )
+         and waiting_session.wait_event_type = 'Lock'
+         and exists (
+           select 1
+           from pg_stat_activity blocker_session
+           where blocker_session.pid = any(pg_blocking_pids(waiting_session.pid))
+             and (
+               blocker_session.pid = $3::int
+               or blocker_session.application_name = $4
+             )
+         )`,
+      [
+        participantBackendPids,
+        ['p03-concurrent-a', 'p03-concurrent-b'],
+        blockerBackendPid,
+        'p03-row-lock-blocker',
+      ],
     );
     if (result.rows[0].waiting > 0) return true;
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -515,7 +547,11 @@ async function runConcurrencyProof(connectionString, item) {
       callProductionRpc(firstClient, item),
       callProductionRpc(secondClient, item),
     ]);
-    const lockWaitObserved = await waitForLockObservation(observer, [firstClient.processID, secondClient.processID]);
+    const lockWaitObserved = await waitForLockObservation(
+      observer,
+      [firstConnection.backendPid, secondConnection.backendPid],
+      blockerConnection.backendPid,
+    );
     assert(lockWaitObserved, 'Two-client proof did not observe PostgreSQL row-lock waiting.');
     await blocker.query('commit');
     await observer.end();

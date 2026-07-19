@@ -71,6 +71,10 @@ for (const token of [
   'withFreshClient',
   'openCheckedClient',
   'select 1 as p03_connection_ready',
+  'pg_backend_pid()::int as backend_pid',
+  "set_config('application_name', $1, false)",
+  'pg_blocking_pids(waiting_session.pid)',
+  'blockerConnection.backendPid',
   'isTransientConnectionError',
   'callProductionRpcWithRetry',
   'maxAttempts = 3',
@@ -107,6 +111,10 @@ assert(
 assert(
   !runner.includes('const settled = await Promise.allSettled([firstPromise, secondPromise]);'),
   'P03 must attach concurrent RPC rejection handlers before waiting for lock observation.',
+);
+assert(
+  !runner.includes('firstClient.processID') && !runner.includes('secondClient.processID'),
+  'P03 lock observation must use real PostgreSQL backend identities, not pooler process IDs.',
 );
 
 for (const boundary of [

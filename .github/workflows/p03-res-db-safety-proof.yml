@@ -1,0 +1,69 @@
+name: P03 Reservation DB Safety Proof
+
+on:
+  pull_request:
+    paths:
+      - "scripts/import/run-p03-reservation-db-safety.mjs"
+      - "scripts/import/check-import-reservation-db-safety-proof.mjs"
+      - "scripts/import/test-import-reservation-db-safety-proof.mjs"
+      - "scripts/import/check-import-publish-readiness-audit.mjs"
+      - "scripts/import/sql/p03-reservation-fault-injection.sql"
+      - "docs/import/RES_DB_SAFETY_PROOF.md"
+      - "supabase/migrations/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/p03-res-db-safety-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p03-res-db-safety-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  isolated-preview-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      P03_PREVIEW_DATABASE_URL: ${{ secrets.P03_PREVIEW_DATABASE_URL }}
+      P03_PREVIEW_PROJECT_REF: ${{ secrets.P03_PREVIEW_PROJECT_REF }}
+      P03_PRODUCTION_PROJECT_REF: ${{ secrets.P03_PRODUCTION_PROJECT_REF }}
+      P03_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+      P03_RUN_ID: github-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.event.pull_request.head.sha || github.sha }}
+      P03_EVIDENCE_PATH: artifacts/p03/res-db-safety-proof.json
+
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.22.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate fail-closed P03 contract
+        run: pnpm import:reservation-db-safety:validate
+
+      - name: Run isolated Preview transaction proof
+        run: pnpm test:db:reservation-safety
+
+      - name: Upload redacted P03 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: p03-res-db-safety-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/p03/res-db-safety-proof.json
+          if-no-files-found: error
+          retention-days: 14

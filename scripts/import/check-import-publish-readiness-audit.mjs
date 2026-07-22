@@ -80,5 +80,7 @@ import './check-import-admin-action-result-contract.mjs';
 import './check-import-build-typecheck-guard.mjs';
 import './check-import-readiness-state-alignment.mjs';
 import './test-import-readiness-state-alignment.mjs';
+import './check-import-reservation-db-safety-proof.mjs';
+import './test-import-reservation-db-safety-proof.mjs';
 
 console.log('import publish readiness audit check passed.');

@@ -7,23 +7,17 @@ alter table public.import_pharmacy_publish_references
   add column if not exists consumed_result_hash text;
 
 alter table public.import_pharmacy_publish_references
-  drop constraint if exists import_pharmacy_publish_references_consumed_result_object_check;
-alter table public.import_pharmacy_publish_references
   add constraint import_pharmacy_publish_references_consumed_result_object_check
   check (consumed_result is null or jsonb_typeof(consumed_result) = 'object') not valid;
 alter table public.import_pharmacy_publish_references
   validate constraint import_pharmacy_publish_references_consumed_result_object_check;
 
 alter table public.import_pharmacy_publish_references
-  drop constraint if exists import_pharmacy_publish_references_consumed_result_hash_check;
-alter table public.import_pharmacy_publish_references
   add constraint import_pharmacy_publish_references_consumed_result_hash_check
   check (consumed_result_hash is null or consumed_result_hash ~ '^[a-f0-9]{64}$') not valid;
 alter table public.import_pharmacy_publish_references
   validate constraint import_pharmacy_publish_references_consumed_result_hash_check;
 
-alter table public.import_pharmacy_publish_references
-  drop constraint if exists import_pharmacy_publish_references_consumption_shape_check;
 alter table public.import_pharmacy_publish_references
   add constraint import_pharmacy_publish_references_consumption_shape_check
   check (

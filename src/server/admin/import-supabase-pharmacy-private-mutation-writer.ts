@@ -59,7 +59,9 @@ export function createSupabasePharmacyPrivateMutationWriter(
       const { data, error } = await client.rpc("import_publish_pharmacy_private", {
         p_idempotency_record_id: payload.reservationId,
         p_rollback_snapshot_id: payload.rollbackSnapshotId,
-        p_reservation_audit_id: payload.auditEventId,
+        // Existing PostgreSQL input name retained for CREATE OR REPLACE compatibility.
+        // The value is the verified reservation audit id; execution_started is created by the RPC.
+        p_execution_started_audit_id: payload.auditEventId,
         p_entity_id: payload.draft.draftId,
         p_actor_profile_id: payload.actorId,
         p_expected_version: payload.expectedVersion,

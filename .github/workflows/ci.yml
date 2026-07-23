@@ -49,12 +49,4 @@ jobs:
       - name: Static seed tests
         run: pnpm test:db:seed
       - name: SEO check
-        shell: bash
-        run: |
-          log_file="$(mktemp)"
-          if ! pnpm seo:check >"${log_file}" 2>&1; then
-            echo "SEO check failed. Showing the final 180 lines only."
-            tail -n 180 "${log_file}"
-            exit 1
-          fi
-          cat "${log_file}"
+        run: pnpm seo:check

@@ -6,6 +6,7 @@ on:
       - "scripts/import/run-p03-reservation-db-safety.mjs"
       - "scripts/import/check-import-reservation-db-safety-proof.mjs"
       - "scripts/import/test-import-reservation-db-safety-proof.mjs"
+      - "scripts/import/check-preview-database-url.mjs"
       - "scripts/import/check-import-reservation-audit-split.mjs"
       - "scripts/import/check-import-publish-readiness-audit.mjs"
       - "scripts/import/sql/p03-reservation-fault-injection.sql"
@@ -59,6 +60,16 @@ jobs:
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Validate isolated Preview connection contract
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/p03
+          {
+            node scripts/import/check-preview-database-url.mjs --self-test
+            node scripts/import/check-preview-database-url.mjs
+          } 2>&1 | tee artifacts/p03/hosted-proof.log
+
       - name: Validate fail-closed P03 contract
         run: pnpm import:reservation-db-safety:validate
 
@@ -69,8 +80,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p artifacts/p03
-          pnpm test:db:reservation-safety 2>&1 | tee artifacts/p03/hosted-proof.log
+          pnpm test:db:reservation-safety 2>&1 | tee -a artifacts/p03/hosted-proof.log
 
       - name: Upload redacted P03 evidence and diagnostics
         if: always()

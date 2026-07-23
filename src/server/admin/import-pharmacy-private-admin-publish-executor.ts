@@ -84,7 +84,7 @@ export function createPharmacyPrivateAdminPublishExecutor(
     if (!boundary) return { ok: false, reference: null, readback: null };
 
     const mutation = await runImportPharmacyPrivateMutation(request, dependencies.mutationWriter);
-    if (mutation.kind !== "mutated" && mutation.kind !== "replayed") {
+    if (mutation.kind !== "mutated") {
       return { ok: false, reference: null, readback: null };
     }
     const entityId = mutation.entityId;

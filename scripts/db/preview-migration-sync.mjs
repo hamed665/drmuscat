@@ -19,9 +19,12 @@ function required(name) {
   return value;
 }
 function hash(value) { return createHash('sha256').update(value).digest('hex'); }
+function sourceCommit() { return process.env.PREVIEW_SOURCE_COMMIT || process.env.GITHUB_SHA || null; }
 function redactError(error) {
   const raw = error instanceof Error ? error.message : String(error);
-  return raw.replace(/postgres(?:ql)?:\/\/[^\s]+/gi, '[REDACTED_DATABASE_URL]');
+  return raw
+    .replace(/postgres(?:ql)?:\/\/[^\s]+/gi, '[REDACTED_DATABASE_URL]')
+    .replace(/password=[^\s]+/gi, 'password=[REDACTED]');
 }
 function connectionConfig(connectionString) {
   const parsed = new URL(connectionString);
@@ -32,6 +35,7 @@ function connectionConfig(connectionString) {
     application_name: 'drmuscat-preview-migration-sync',
     statement_timeout: 60000,
     query_timeout: 65000,
+    connectionTimeoutMillis: 15000,
   };
 }
 function verifyIdentity(connectionString, previewRef, productionRef) {
@@ -67,7 +71,10 @@ async function inspectDatabase(client, expected) {
   await client.query('select pg_advisory_lock($1)', [advisoryLockKey]);
   try {
     const ledger = await client.query('select version::text as version from supabase_migrations.schema_migrations order by version');
-    const actual = ledger.rows.map((row) => row.version).filter((version) => /^\d{4}$/.test(version));
+    const allVersions = ledger.rows.map((row) => row.version);
+    const actual = allVersions.filter((version) => /^\d{4}$/.test(version));
+    const nonRepositoryVersions = allVersions.filter((version) => !/^\d{4}$/.test(version));
+    assert(nonRepositoryVersions.length === 0, 'Unexpected non-repository migration ledger entries detected.');
     assert(JSON.stringify(actual) === JSON.stringify(expected.versions), 'Migration ledger differs from repository migrations.');
 
     const pending = expected.versions.filter((version) => !actual.includes(version));
@@ -92,8 +99,8 @@ async function inspectDatabase(client, expected) {
       ledger: { first: actual[0], last: actual.at(-1), count: actual.length, exact: true },
       migrationGap: [],
       extraMigrations: [],
-      schemaDrift: { catalogFingerprintSha256: schemaFingerprint, ambiguous: false },
-      rls: { tableCount: rls.rows.length, disabledTables: rlsDisabled },
+      schemaInventory: { catalogFingerprintSha256: schemaFingerprint, captured: true },
+      rls: { tableCount: rls.rows.length, disabledTables: rlsDisabled, inventorySha256: hash(JSON.stringify(rls.rows)) },
       rpc: { count: rpc.rows.length, inventorySha256: hash(JSON.stringify(rpc.rows)) },
     };
   } finally {
@@ -121,7 +128,8 @@ async function main() {
     const evidence = {
       schemaVersion: 'drmuscat.previewMigrationSyncEvidence.v1',
       status: 'green',
-      commitSha: process.env.GITHUB_SHA || null,
+      stage: 'verified',
+      commitSha: sourceCommit(),
       runId: process.env.GITHUB_RUN_ID || null,
       identity,
       repository: { first: migrations.versions[0], last: migrations.versions.at(-1), count: migrations.files.length, checksumsSha256: hash(JSON.stringify(migrations.checksums)) },
@@ -142,7 +150,8 @@ main().catch(async (error) => {
   const evidence = {
     schemaVersion: 'drmuscat.previewMigrationSyncEvidence.v1',
     status: 'red',
-    commitSha: process.env.GITHUB_SHA || null,
+    stage: 'preflight_or_verify',
+    commitSha: sourceCommit(),
     runId: process.env.GITHUB_RUN_ID || null,
     error: redactError(error),
     secretRedaction: true,

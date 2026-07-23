@@ -31,6 +31,12 @@ export type PharmacyPrivateAdminRealWiringDependencies = {
     actorId: string;
     entityId: string;
   }): Promise<PharmacyPrivateAdminPublishContext | null>;
+  verifyPublishReview(input: {
+    actorId: string;
+    entityId: string;
+    expectedSnapshotHash: string;
+    expectedEntityFingerprint: string;
+  }): Promise<boolean>;
   loadVerifiedReservationEvidence(input: {
     actorId: string;
     entityId: string;
@@ -88,6 +94,14 @@ export function createPharmacyPrivateAdminRealPorts(
       if (!context || !identitiesMatch(context, actorId, entityId)) {
         return { ok: false, reference: null };
       }
+
+      const reviewApproved = await dependencies.verifyPublishReview({
+        actorId,
+        entityId,
+        expectedSnapshotHash: context.canaryInput.expectedSnapshotHash,
+        expectedEntityFingerprint: context.canaryInput.expectedEntityFingerprint,
+      });
+      if (!reviewApproved) return { ok: false, reference: null };
 
       const evidence = await dependencies.loadVerifiedReservationEvidence({ actorId, entityId });
       if (!evidence) return { ok: false, reference: null };

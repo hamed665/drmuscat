@@ -28,13 +28,29 @@ jobs:
         run: corepack prepare pnpm@10.22.0 --activate
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
-      - name: Run bounded SEO diagnostic
+      - name: Capture SEO diagnostic
         shell: bash
         run: |
-          log_file="$(mktemp)"
-          if ! pnpm seo:check >"${log_file}" 2>&1; then
-            echo "SEO_DIAGNOSTIC_FAILURE"
-            tail -n 220 "${log_file}"
-            exit 1
+          mkdir -p artifacts/p05-seo
+          set +e
+          pnpm seo:check > artifacts/p05-seo/seo.log 2>&1
+          status=$?
+          set -e
+          printf '%s\n' "${status}" > artifacts/p05-seo/exit-code.txt
+          tail -n 20 artifacts/p05-seo/seo.log || true
+      - name: Upload SEO diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p05-seo-diagnostic-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/p05-seo
+          if-no-files-found: error
+          retention-days: 2
+      - name: Enforce SEO result
+        shell: bash
+        run: |
+          status="$(cat artifacts/p05-seo/exit-code.txt)"
+          if [ "${status}" -ne 0 ]; then
+            echo "SEO diagnostic failed; inspect the uploaded bounded artifact."
+            exit "${status}"
           fi
-          echo "SEO_DIAGNOSTIC_SUCCESS"

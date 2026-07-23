@@ -39,6 +39,7 @@ const pharmacyAtomicAuthorizationMigrationName = '0079_import_pharmacy_atomic_au
 const pharmacyReadStateUpsertIdentityMigrationName = '0080_import_pharmacy_read_state_upsert_identity.sql';
 const pharmacyReservationAuditSplitMigrationName = '0081_import_pharmacy_reservation_audit_split.sql';
 const pharmacyPrivateExecutionAuditMigrationName = '0082_import_pharmacy_private_execution_audit.sql';
+const pharmacyAtomicRollbackAuthorityMigrationName = '0083_import_pharmacy_atomic_rollback_authority.sql';
 const scheduleRlsMigrationPath = path.join(migrationsDir, scheduleRlsMigrationName);
 const functionSearchPathMigrationPath = path.join(migrationsDir, functionSearchPathMigrationName);
 const helperSearchPathMigrationPath = path.join(migrationsDir, helperSearchPathMigrationName);
@@ -57,6 +58,7 @@ const pharmacyAtomicAuthorizationMigrationPath = path.join(migrationsDir, pharma
 const pharmacyReadStateUpsertIdentityMigrationPath = path.join(migrationsDir, pharmacyReadStateUpsertIdentityMigrationName);
 const pharmacyReservationAuditSplitMigrationPath = path.join(migrationsDir, pharmacyReservationAuditSplitMigrationName);
 const pharmacyPrivateExecutionAuditMigrationPath = path.join(migrationsDir, pharmacyPrivateExecutionAuditMigrationName);
+const pharmacyAtomicRollbackAuthorityMigrationPath = path.join(migrationsDir, pharmacyAtomicRollbackAuthorityMigrationName);
 const hiddenScheduleRlsMigrationPath = path.join(migrationsDir, `.schedule-rls-${scheduleRlsMigrationName}.hidden`);
 const hiddenFunctionSearchPathMigrationPath = path.join(migrationsDir, `.function-search-path-${functionSearchPathMigrationName}.hidden`);
 const hiddenHelperSearchPathMigrationPath = path.join(migrationsDir, `.helper-search-path-${helperSearchPathMigrationName}.hidden`);
@@ -75,6 +77,7 @@ const hiddenPharmacyAtomicAuthorizationMigrationPath = path.join(migrationsDir, 
 const hiddenPharmacyReadStateUpsertIdentityMigrationPath = path.join(migrationsDir, `.pharmacy-read-state-upsert-${pharmacyReadStateUpsertIdentityMigrationName}.hidden`);
 const hiddenPharmacyReservationAuditSplitMigrationPath = path.join(migrationsDir, `.pharmacy-reservation-audit-split-${pharmacyReservationAuditSplitMigrationName}.hidden`);
 const hiddenPharmacyPrivateExecutionAuditMigrationPath = path.join(migrationsDir, `.pharmacy-private-execution-audit-${pharmacyPrivateExecutionAuditMigrationName}.hidden`);
+const hiddenPharmacyAtomicRollbackAuthorityMigrationPath = path.join(migrationsDir, `.pharmacy-atomic-rollback-authority-${pharmacyAtomicRollbackAuthorityMigrationName}.hidden`);
 
 const currentOnlyMigrations = [
   [scheduleRlsMigrationName, scheduleRlsMigrationPath, hiddenScheduleRlsMigrationPath],
@@ -95,6 +98,7 @@ const currentOnlyMigrations = [
   [pharmacyReadStateUpsertIdentityMigrationName, pharmacyReadStateUpsertIdentityMigrationPath, hiddenPharmacyReadStateUpsertIdentityMigrationPath],
   [pharmacyReservationAuditSplitMigrationName, pharmacyReservationAuditSplitMigrationPath, hiddenPharmacyReservationAuditSplitMigrationPath],
   [pharmacyPrivateExecutionAuditMigrationName, pharmacyPrivateExecutionAuditMigrationPath, hiddenPharmacyPrivateExecutionAuditMigrationPath],
+  [pharmacyAtomicRollbackAuthorityMigrationName, pharmacyAtomicRollbackAuthorityMigrationPath, hiddenPharmacyAtomicRollbackAuthorityMigrationPath],
 ];
 
 function fail(message) {
@@ -173,6 +177,7 @@ function validatePharmacyPublishRpcMigration() {
 }
 function validatePharmacyRollbackMigration() {
   requireCondition(existsSync(pharmacyRollbackMigrationPath), `${pharmacyRollbackMigrationName} is missing.`);
+  requireCondition(existsSync(pharmacyAtomicRollbackAuthorityMigrationPath), `${pharmacyAtomicRollbackAuthorityMigrationName} is missing.`);
   execFileSync(process.execPath, [pharmacyRollbackValidator], { cwd: repoRoot, stdio: 'inherit' });
 }
 function validateDurableReferenceMigration() {

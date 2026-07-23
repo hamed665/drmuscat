@@ -1,0 +1,74 @@
+name: P05 fix function parameter replacement
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/p05-fix-function-parameter.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/private-admin-wiring-p05
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.22.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Replace the existing RPC signature atomically
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          migration = Path('supabase/migrations/0082_import_pharmacy_private_execution_audit.sql')
+          source = migration.read_text()
+          create_anchor = 'create or replace function public.import_publish_pharmacy_private(\n'
+          drop_sql = '''drop function if exists public.import_publish_pharmacy_private(
+  uuid, uuid, uuid, uuid, uuid, text, jsonb, text
+);
+
+'''
+          if drop_sql not in source:
+              if source.count(create_anchor) != 1:
+                  raise SystemExit('0082 function create anchor mismatch')
+              source = source.replace(create_anchor, drop_sql + create_anchor, 1)
+              migration.write_text(source)
+
+          validator = Path('scripts/db/check-import-pharmacy-private-publish-rpc.mjs')
+          check = validator.read_text()
+          required_anchor = '  /P05 PRIVATE-ADMIN-WIRING/i,\n'
+          required_drop = "  /drop\\s+function\\s+if\\s+exists\\s+public\\.import_publish_pharmacy_private\\s*\\([\\s\\S]*uuid\\s*,\\s*uuid\\s*,\\s*uuid\\s*,\\s*uuid\\s*,\\s*uuid\\s*,\\s*text\\s*,\\s*jsonb\\s*,\\s*text[\\s\\S]*\\)\\s*;/i,\n"
+          if required_drop not in check:
+              if check.count(required_anchor) != 1:
+                  raise SystemExit('P05 RPC validator required anchor mismatch')
+              check = check.replace(required_anchor, required_anchor + required_drop, 1)
+
+          forbidden_anchor = '  /security\\s+definer/i,\n'
+          forbidden_drop = '  /drop\\s+(table|schema|type|database)\\b/i,\n  /drop\\s+function[\\s\\S]*cascade/i,\n'
+          if forbidden_drop not in check:
+              if check.count(forbidden_anchor) != 1:
+                  raise SystemExit('P05 RPC validator forbidden anchor mismatch')
+              check = check.replace(forbidden_anchor, forbidden_anchor + forbidden_drop, 1)
+          validator.write_text(check)
+          PY
+
+          pnpm db:validate:migrations
+          pnpm test:db:rls
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/p05-fix-function-parameter.yml
+          git add supabase/migrations/0082_import_pharmacy_private_execution_audit.sql scripts/db/check-import-pharmacy-private-publish-rpc.mjs
+          git commit -m "fix(p05): recreate private publish RPC with renamed audit input"
+          git push origin HEAD:agent/private-admin-wiring-p05

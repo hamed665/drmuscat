@@ -135,7 +135,7 @@ for (const source of [action, serverAction, panel]) {
 for (const token of [
   'P04-B',
   'server-only',
-  'no second Reservation',
+  'No second Reservation',
   'stale',
   'foreign',
   'incomplete',

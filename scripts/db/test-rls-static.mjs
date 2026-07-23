@@ -113,10 +113,6 @@ const ALLOWED_ANON_POLICIES = new Set([
   'provider_license_records_public_select_anon',
 ]);
 
-const APPROVED_DATA_MUTATION_FILES = new Set([
-  '0082_import_pharmacy_private_execution_audit.sql',
-]);
-
 function fail(message) {
   console.error(`❌ ${message}`);
   process.exit(1);
@@ -150,10 +146,7 @@ for (const [file, contents] of contentsByFile) {
   }
 
   assert(!/\bdrop\b/i.test(contents), `DROP found in migration file: ${file}`);
-  assert(
-    APPROVED_DATA_MUTATION_FILES.has(file) || !/\binsert\s+into\b/i.test(contents),
-    `INSERT INTO found in migration file: ${file}`,
-  );
+  assert(!/\binsert\s+into\b/i.test(contents), `INSERT INTO found in migration file: ${file}`);
   assert(!/RLS test placeholder/i.test(contents), `Placeholder text found in migration file: ${file}`);
   assert(!/no policies allowed in Phase 2\.0/i.test(contents), `Phase 2.0 placeholder text found in migration file: ${file}`);
 }
@@ -204,6 +197,8 @@ for (const p of policyStatements) {
   }
 }
 
+
+
 const providerOnboardingLeadsContent = contentsByFile.get('0050_provider_onboarding_leads.sql') ?? '';
 assert(
   /alter\s+table\s+public\.provider_onboarding_leads\s+enable\s+row\s+level\s+security/i.test(providerOnboardingLeadsContent),
@@ -223,3 +218,221 @@ assert(
     && !/on\s+public\.provider_onboarding_leads[\s\S]*?to\s+authenticated/i.test(providerOnboardingLeadsContent),
   'provider_onboarding_leads must not grant authenticated broad access',
 );
+assert(
+  !/on\s+public\.provider_onboarding_leads[\s\S]*?for\s+(insert|update|delete)/i.test(providerOnboardingLeadsContent)
+    && !/for\s+(insert|update|delete)[\s\S]*?on\s+public\.provider_onboarding_leads/i.test(providerOnboardingLeadsContent),
+  'provider_onboarding_leads must not define public write policies',
+);
+
+
+const landingPageContentsContent = contentsByFile.get('0051_landing_page_contents.sql') ?? '';
+assert(
+  /alter\s+table\s+public\.landing_page_contents\s+enable\s+row\s+level\s+security/i.test(landingPageContentsContent),
+  '0051 must enable RLS on public.landing_page_contents',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.landing_page_contents/i.test(landingPageContentsContent),
+  '0051 must not create policies on public.landing_page_contents',
+);
+assert(
+  !/to\s+anon[\s\S]*?on\s+public\.landing_page_contents/i.test(landingPageContentsContent)
+    && !/on\s+public\.landing_page_contents[\s\S]*?to\s+anon/i.test(landingPageContentsContent),
+  'landing_page_contents must not grant anon access',
+);
+assert(
+  !/to\s+authenticated[\s\S]*?on\s+public\.landing_page_contents/i.test(landingPageContentsContent)
+    && !/on\s+public\.landing_page_contents[\s\S]*?to\s+authenticated/i.test(landingPageContentsContent),
+  'landing_page_contents must not grant authenticated broad access',
+);
+assert(
+  !/on\s+public\.landing_page_contents[\s\S]*?for\s+(select|insert|update|delete)/i.test(landingPageContentsContent)
+    && !/for\s+(select|insert|update|delete)[\s\S]*?on\s+public\.landing_page_contents/i.test(landingPageContentsContent),
+  'landing_page_contents must not define public SELECT or mutation policies',
+);
+assert(
+  !/\binsert\s+into\b/i.test(landingPageContentsContent),
+  '0051 must not seed landing_page_contents rows',
+);
+
+
+const mediaPublicRlsHardeningContent = contentsByFile.get('0049_media_public_rls_hardening.sql') ?? '';
+assert(
+  /alter\s+policy\s+entity_media_public_select\s+on\s+public\.entity_media/i.test(mediaPublicRlsHardeningContent),
+  '0049 must alter the existing entity_media_public_select policy on public.entity_media',
+);
+assert(
+  /to\s+anon\s*,\s*authenticated/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media public policy must remain scoped to anon and authenticated public reads',
+);
+assert(
+  /deleted_at\s+is\s+null/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must require entity_media.deleted_at IS NULL',
+);
+assert(
+  /public_media_visible\s*=\s*true/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must require public_media_visible = true',
+);
+assert(
+  /media_review_status\s*=\s*'approved'/i.test(mediaPublicRlsHardeningContent),
+  "0049 entity_media policy must require media_review_status = 'approved'",
+);
+assert(
+  /entity_type\s+in\s*\(\s*'center'\s*,\s*'doctor'\s*\)/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must only allow center and doctor entity types',
+);
+assert(
+  /usage_kind\s+in\s*\([\s\S]*'logo'[\s\S]*'cover'[\s\S]*'profile'[\s\S]*'gallery'[\s\S]*'thumbnail'[\s\S]*\)/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must allow only logo, cover, profile, gallery, and thumbnail usage kinds',
+);
+for (const forbiddenUsageKind of ['certificate', 'document', 'before_after']) {
+  assert(
+    !new RegExp(`usage_kind\\s+in\\s*\\([\\s\\S]*'${forbiddenUsageKind}'`, 'i').test(mediaPublicRlsHardeningContent),
+    `0049 entity_media policy must not publicly allow usage kind: ${forbiddenUsageKind}`,
+  );
+}
+assert(
+  /from\s+public\.media_assets/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must check linked public.media_assets rows',
+);
+assert(
+  /media_assets\.id\s*=\s*entity_media\.media_asset_id/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must link media_assets.id to entity_media.media_asset_id',
+);
+assert(
+  /media_assets\.deleted_at\s+is\s+null/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must require linked media_assets.deleted_at IS NULL',
+);
+assert(
+  /media_assets\.status\s*=\s*'approved'/i.test(mediaPublicRlsHardeningContent),
+  "0049 entity_media policy must require linked media_assets.status = 'approved'",
+);
+assert(
+  /media_assets\.mime_type\s+in\s*\([\s\S]*'image\/jpeg'[\s\S]*'image\/png'[\s\S]*'image\/webp'[\s\S]*'image\/avif'[\s\S]*\)/i.test(mediaPublicRlsHardeningContent),
+  '0049 entity_media policy must require the approved public image MIME allowlist',
+);
+assert(
+  !/on\s+public\.(entity_media|media_assets)[\s\S]*?for\s+(insert|update|delete)/i.test(mediaPublicRlsHardeningContent),
+  '0049 must not add INSERT/UPDATE/DELETE policies for entity_media or media_assets',
+);
+assert(
+  !/to\s+anon[\s\S]*?for\s+(insert|update|delete)/i.test(mediaPublicRlsHardeningContent)
+    && !/for\s+(insert|update|delete)[\s\S]*?to\s+anon/i.test(mediaPublicRlsHardeningContent),
+  '0049 must not grant anon INSERT/UPDATE/DELETE',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.entity_media[\s\S]*?to\s+anon[\s\S]*?using\s*\(\s*deleted_at\s+is\s+null\s*\)/i.test(mediaPublicRlsHardeningContent),
+  '0049 must not introduce a broad entity_media public SELECT policy',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.media_assets[\s\S]*?for\s+(insert|update|delete)/i.test(mediaPublicRlsHardeningContent),
+  '0049 must not add media_assets write policies',
+);
+
+const callbackRequestFoundationContent = contentsByFile.get('0046_callback_request_foundation.sql') ?? '';
+assert(
+  /alter\s+table\s+public\.callback_requests\s+enable\s+row\s+level\s+security/i.test(callbackRequestFoundationContent),
+  'callback_requests must have RLS enabled in 0046_callback_request_foundation.sql',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.callback_requests[\s\S]*?to\s+anon[\s\S]*?for\s+select/i.test(callbackRequestFoundationContent)
+    && !/create\s+policy[\s\S]*?on\s+public\.callback_requests[\s\S]*?for\s+select[\s\S]*?to\s+anon/i.test(callbackRequestFoundationContent),
+  'callback_requests must not grant anon SELECT',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.callback_requests[\s\S]*?to\s+anon[\s\S]*?for\s+insert/i.test(callbackRequestFoundationContent)
+    && !/create\s+policy[\s\S]*?on\s+public\.callback_requests[\s\S]*?for\s+insert[\s\S]*?to\s+anon/i.test(callbackRequestFoundationContent),
+  'callback_requests must not grant anon INSERT',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.callback_requests[\s\S]*?to\s+anon[\s\S]*?for\s+update/i.test(callbackRequestFoundationContent)
+    && !/create\s+policy[\s\S]*?on\s+public\.callback_requests[\s\S]*?for\s+update[\s\S]*?to\s+anon/i.test(callbackRequestFoundationContent),
+  'callback_requests must not grant anon UPDATE',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.callback_requests[\s\S]*?to\s+anon[\s\S]*?for\s+delete/i.test(callbackRequestFoundationContent)
+    && !/create\s+policy[\s\S]*?on\s+public\.callback_requests[\s\S]*?for\s+delete[\s\S]*?to\s+anon/i.test(callbackRequestFoundationContent),
+  'callback_requests must not grant anon DELETE',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.callback_requests[\s\S]*?for\s+select/i.test(callbackRequestFoundationContent),
+  'callback_requests must not have any public SELECT policy in this phase',
+);
+
+
+const providerLicenseRecordsContent = contentsByFile.get('0047_provider_license_verification_foundation.sql') ?? '';
+assert(
+  /alter\s+table\s+public\.provider_license_records\s+enable\s+row\s+level\s+security/i.test(providerLicenseRecordsContent),
+  'provider_license_records must have RLS enabled in 0047_provider_license_verification_foundation.sql',
+);
+
+for (const policyName of [
+  'provider_license_records_public_select_anon',
+  'provider_license_records_public_select_authenticated',
+]) {
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}\\s+on\\s+public\\.provider_license_records[\\s\\S]*?for\\s+select`, 'i').test(providerLicenseRecordsContent),
+    `provider_license_records missing SELECT policy: ${policyName}`,
+  );
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}[\\s\\S]*?public_license_visible\\s*=\\s*true`, 'i').test(providerLicenseRecordsContent),
+    `${policyName} must require public_license_visible = true`,
+  );
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}[\\s\\S]*?license_review_status\\s*=\\s*'approved'`, 'i').test(providerLicenseRecordsContent),
+    `${policyName} must require license_review_status = 'approved'`,
+  );
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}[\\s\\S]*?license_number\\s+is\\s+not\\s+null[\\s\\S]*?btrim\\s*\\(\\s*license_number\\s*\\)\\s*<>\\s*''`, 'i').test(providerLicenseRecordsContent),
+    `${policyName} must require a non-empty license_number`,
+  );
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}[\\s\\S]*?from\\s+public\\.centers\\s+as\\s+c[\\s\\S]*?c\\.deleted_at\\s+is\\s+null[\\s\\S]*?c\\.is_active\\s*=\\s*true[\\s\\S]*?c\\.status\\s*=\\s*'active'`, 'i').test(providerLicenseRecordsContent),
+    `${policyName} must require linked centers to be public active`,
+  );
+  assert(
+    new RegExp(`create\\s+policy\\s+${policyName}[\\s\\S]*?from\\s+public\\.doctors\\s+as\\s+d[\\s\\S]*?d\\.deleted_at\\s+is\\s+null[\\s\\S]*?d\\.is_active\\s*=\\s*true[\\s\\S]*?d\\.status\\s*=\\s*'active'`, 'i').test(providerLicenseRecordsContent),
+    `${policyName} must require linked doctors to be public active`,
+  );
+}
+
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.provider_license_records[\s\S]*?for\s+(insert|update|delete)/i.test(providerLicenseRecordsContent),
+  'provider_license_records must not have INSERT/UPDATE/DELETE policies',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.provider_license_records[\s\S]*?to\s+anon[\s\S]*?for\s+(insert|update|delete)/i.test(providerLicenseRecordsContent),
+  'provider_license_records must not grant anon write policies',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.provider_license_records[\s\S]*?to\s+authenticated[\s\S]*?for\s+(insert|update|delete)/i.test(providerLicenseRecordsContent),
+  'provider_license_records must not grant authenticated write policies',
+);
+assert(
+  !/create\s+policy(?!\s+provider_license_records_public_select_anon|\s+provider_license_records_public_select_authenticated)[\s\S]*?on\s+public\.provider_license_records[\s\S]*?for\s+select/i.test(providerLicenseRecordsContent),
+  'provider_license_records must not include broad or unexpected SELECT policies',
+);
+
+const providerOnboardingLeadEventsContent = contentsByFile.get('0053_provider_onboarding_lead_events.sql') ?? '';
+assert(
+  /alter\s+table\s+public\.provider_onboarding_lead_events\s+enable\s+row\s+level\s+security/i.test(providerOnboardingLeadEventsContent),
+  '0053 must enable RLS on public.provider_onboarding_lead_events',
+);
+assert(
+  !/create\s+policy[\s\S]*?on\s+public\.provider_onboarding_lead_events/i.test(providerOnboardingLeadEventsContent),
+  '0053 must not create policies on public.provider_onboarding_lead_events',
+);
+assert(
+  !/\bgrant\b[\s\S]*?\b(to\s+)?anon\b/i.test(providerOnboardingLeadEventsContent),
+  'provider_onboarding_lead_events must not grant anon access',
+);
+assert(
+  !/\bgrant\b[\s\S]*?\b(to\s+)?authenticated\b/i.test(providerOnboardingLeadEventsContent),
+  'provider_onboarding_lead_events must not grant authenticated access',
+);
+assert(
+  !/on\s+public\.provider_onboarding_lead_events[\s\S]*?for\s+(select|insert|update|delete)/i.test(providerOnboardingLeadEventsContent)
+    && !/for\s+(select|insert|update|delete)[\s\S]*?on\s+public\.provider_onboarding_lead_events/i.test(providerOnboardingLeadEventsContent),
+  'provider_onboarding_lead_events must not define direct SELECT or mutation policies',
+);
+
+console.log('✅ RLS static harness checks passed for required Phase 3 policy/helper migration rules.');

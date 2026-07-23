@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - .github/workflows/p04b-import-diagnostics.yml
+      - scripts/import/check-import-verified-reservation-handoff.mjs
+      - docs/import/VERIFIED_RESERVATION_HANDOFF.md
 
 permissions:
   contents: read

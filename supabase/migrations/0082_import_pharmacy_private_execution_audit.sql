@@ -2,18 +2,13 @@
 -- The existing mutation authority is preserved and aligned to the P04-A reservation audit split.
 -- This function appends execution_started only at real mutation time, persists the terminal result,
 -- and keeps the entity draft/private with no route, index, sitemap, or public activation.
-
--- PostgreSQL does not allow an input parameter to be renamed by CREATE OR REPLACE.
--- Drop and recreate this exact function signature inside the migration transaction; no table,
--- type, schema, policy, data, or Production object is dropped.
-drop function if exists public.import_publish_pharmacy_private(
-  uuid, uuid, uuid, uuid, uuid, text, jsonb, text
-);
+-- PostgreSQL keeps input parameter names as part of the existing function identity. The legacy
+-- third parameter name is therefore retained; in P05 it carries the verified reservation audit id.
 
 create or replace function public.import_publish_pharmacy_private(
   p_idempotency_record_id uuid,
   p_rollback_snapshot_id uuid,
-  p_reservation_audit_id uuid,
+  p_execution_started_audit_id uuid,
   p_entity_id uuid,
   p_actor_profile_id uuid,
   p_expected_version text,
@@ -43,7 +38,7 @@ declare
 begin
   if p_idempotency_record_id is null
     or p_rollback_snapshot_id is null
-    or p_reservation_audit_id is null
+    or p_execution_started_audit_id is null
     or p_entity_id is null
     or p_actor_profile_id is null then
     raise exception 'pharmacy_publish_identity_missing' using errcode = '22023';
@@ -120,7 +115,7 @@ begin
 
   select * into v_reservation_audit
   from public.import_publish_audit_events
-  where id = p_reservation_audit_id
+  where id = p_execution_started_audit_id
     and idempotency_record_id = p_idempotency_record_id
     and rollback_snapshot_id = p_rollback_snapshot_id
     and entity_id = p_entity_id
@@ -193,7 +188,7 @@ begin
     p_expected_version,
     jsonb_build_object(
       'phase', 'mutation',
-      'reservationAuditId', p_reservation_audit_id,
+      'reservationAuditId', p_execution_started_audit_id,
       'snapshotHash', v_snapshot.snapshot_hash
     )
   );
@@ -267,4 +262,4 @@ create unique index if not exists import_pharmacy_publish_references_reservation
 
 comment on function public.import_publish_pharmacy_private(
   uuid, uuid, uuid, uuid, uuid, text, jsonb, text
-) is 'Atomic service-role-only Pharmacy private mutation using an already verified Reservation, mutation-time execution_started, exact private patch, and terminal persistence.';
+) is 'Atomic service-role-only Pharmacy private mutation using an already verified Reservation, mutation-time execution_started, exact private patch, and terminal persistence. The legacy third parameter name carries the verified reservation audit id for signature compatibility.';

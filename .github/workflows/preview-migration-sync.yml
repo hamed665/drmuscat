@@ -12,6 +12,7 @@ on:
       - '.github/workflows/preview-migration-sync.yml'
       - 'scripts/db/validate-migrations-current.mjs'
       - 'scripts/db/test-rls-static-taxrlsa.mjs'
+      - 'scripts/db/test-rls-static.mjs'
       - 'package.json'
       - 'pnpm-lock.yaml'
 
@@ -85,6 +86,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: preview-migration-sync-${{ github.event.pull_request.head.sha || github.sha }}
-          path: artifacts/preview-migration-sync/evidence.json
+          path: artifacts/preview-migration-sync/
           if-no-files-found: error
           retention-days: 14

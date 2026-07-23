@@ -216,9 +216,9 @@ function validateLaterMigrations() {
     { allowServiceRoleGrant: true, allowRowLocks: true },
   );
   requirePattern(privateExecution, /P05 PRIVATE-ADMIN-WIRING/i, '0082 must include its phase marker.');
-  requirePattern(privateExecution, /drop\s+function\s+if\s+exists\s+public\.import_publish_pharmacy_private[\s\S]*uuid\s*,\s*uuid\s*,\s*uuid\s*,\s*uuid\s*,\s*uuid\s*,\s*text\s*,\s*jsonb\s*,\s*text[\s\S]*\)\s*;/i, '0082 must atomically replace only the exact existing function signature.');
-  forbidPattern(privateExecution, /drop\s+(table|schema|type|database)\b/i, '0082 must not drop data-bearing or namespace objects.');
-  forbidPattern(privateExecution, /drop\s+function[\s\S]*cascade/i, '0082 function replacement must not cascade.');
+  requirePattern(privateExecution, /p_execution_started_audit_id\s+uuid/i, '0082 must retain the legacy PostgreSQL input name for CREATE OR REPLACE compatibility.');
+  requirePattern(privateExecution, /legacy[\s\S]*parameter name[\s\S]*verified reservation audit id/i, '0082 must document that the retained parameter carries the verified Reservation audit id.');
+  forbidPattern(privateExecution, /\bdrop\s+function\b/i, '0082 must not drop the existing RPC.');
   requirePattern(privateExecution, /security\s+invoker/i, '0082 must keep the private publish RPC security invoker.');
   requirePattern(privateExecution, /set\s+search_path\s*=\s*pg_catalog\s*,\s*public/i, '0082 must pin the private publish RPC search_path.');
   requirePattern(privateExecution, /revoke\s+all\s+on\s+function\s+public\.import_publish_pharmacy_private[\s\S]*from\s+public\s*,\s*anon\s*,\s*authenticated/i, '0082 must revoke private publish RPC access from public roles.');

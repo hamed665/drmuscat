@@ -116,11 +116,13 @@ function harness() {
     }),
   );
   const loadPublishContext = vi.fn(async () => publishContext());
+  const verifyPublishReview = vi.fn(async () => true);
   const loadVerifiedReservationEvidence = vi.fn(async () => verifiedEvidence());
 
   const dependencies: PharmacyPrivateAdminRealWiringDependencies = {
     rollbackRpcClient: {} as never,
     loadPublishContext,
+    verifyPublishReview,
     loadVerifiedReservationEvidence,
     verifiedReservationExecutor: { acceptVerifiedReservation },
     resolveRollbackRequest: vi.fn(async () => ({
@@ -143,6 +145,7 @@ function harness() {
     acceptVerifiedReservation,
     rollbackWriter,
     loadPublishContext,
+    verifyPublishReview,
     loadVerifiedReservationEvidence,
   };
 }
@@ -157,6 +160,12 @@ describe("pharmacy private admin real wiring", () => {
 
     expect(result).toEqual({ ok: true, reference: "handoff-reference-1" });
     expect(test.loadPublishContext).toHaveBeenCalledTimes(1);
+    expect(test.verifyPublishReview).toHaveBeenCalledWith({
+      actorId: "admin-1",
+      entityId: "pharmacy-1",
+      expectedSnapshotHash: SNAPSHOT_HASH,
+      expectedEntityFingerprint: FINGERPRINT,
+    });
     expect(test.loadVerifiedReservationEvidence).toHaveBeenCalledTimes(1);
     expect(test.acceptVerifiedReservation).toHaveBeenCalledTimes(1);
     expect(test.acceptVerifiedReservation).toHaveBeenCalledWith(expect.objectContaining({
@@ -167,6 +176,20 @@ describe("pharmacy private admin real wiring", () => {
         auditEventId: "audit-1",
       },
     }));
+  });
+
+  it("fails closed before reading reservation evidence when persisted review is not approved", async () => {
+    const test = harness();
+    test.verifyPublishReview.mockResolvedValueOnce(false);
+
+    const result = await createPharmacyPrivateAdminRealPorts(test.dependencies).privatePublish({
+      actorId: "admin-1",
+      entityId: "pharmacy-1",
+    });
+
+    expect(result).toEqual({ ok: false, reference: null });
+    expect(test.loadVerifiedReservationEvidence).not.toHaveBeenCalled();
+    expect(test.acceptVerifiedReservation).not.toHaveBeenCalled();
   });
 
   it("keeps private publish disabled when the executor port is absent", async () => {
@@ -180,6 +203,7 @@ describe("pharmacy private admin real wiring", () => {
 
     expect(result).toEqual({ ok: false, reference: null });
     expect(test.loadPublishContext).not.toHaveBeenCalled();
+    expect(test.verifyPublishReview).not.toHaveBeenCalled();
     expect(test.loadVerifiedReservationEvidence).not.toHaveBeenCalled();
   });
 
@@ -199,7 +223,7 @@ describe("pharmacy private admin real wiring", () => {
     expect(test.acceptVerifiedReservation).not.toHaveBeenCalled();
   });
 
-  it("rejects mismatched publish context before reading reservation evidence", async () => {
+  it("rejects mismatched publish context before review or reservation evidence", async () => {
     const test = harness();
     const mismatched = publishContext();
     mismatched.mutationRequest = {
@@ -214,6 +238,7 @@ describe("pharmacy private admin real wiring", () => {
     });
 
     expect(result).toEqual({ ok: false, reference: null });
+    expect(test.verifyPublishReview).not.toHaveBeenCalled();
     expect(test.loadVerifiedReservationEvidence).not.toHaveBeenCalled();
     expect(test.acceptVerifiedReservation).not.toHaveBeenCalled();
   });

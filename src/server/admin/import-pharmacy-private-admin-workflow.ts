@@ -78,8 +78,7 @@ export function getPharmacyPrivateAdminBlockers(input: PharmacyPrivateAdminReque
 
   if (
     input.operation === "private_publish" &&
-    entityId !== null &&
-    input.confirmation !== `EXECUTE PRIVATE PUBLISH ${entityId}`
+    (entityId === null || input.confirmation !== `EXECUTE PRIVATE PUBLISH ${entityId}`)
   ) blockers.push("missing_confirmation");
   if (input.operation === "rollback" && input.confirmation !== "ROLLBACK PRIVATE PHARMACY") {
     blockers.push("missing_confirmation");

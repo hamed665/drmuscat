@@ -223,7 +223,7 @@ describe("pharmacy private admin real wiring", () => {
     expect(test.acceptVerifiedReservation).not.toHaveBeenCalled();
   });
 
-  it("rejects mismatched publish context before review or reservation evidence", async () => {
+  it("rejects mismatched publish context before reading reservation evidence", async () => {
     const test = harness();
     const mismatched = publishContext();
     mismatched.mutationRequest = {

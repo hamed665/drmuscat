@@ -4,14 +4,16 @@ import path from 'node:path';
 
 const legacyMigrationPath = path.resolve('supabase/migrations/0071_import_pharmacy_private_rollback_rpc.sql');
 const authorityMigrationPath = path.resolve('supabase/migrations/0083_import_pharmacy_atomic_rollback_authority.sql');
+const digestMigrationPath = path.resolve('supabase/migrations/0084_import_pharmacy_rollback_digest_schema.sql');
 const writerPath = path.resolve('src/server/admin/import-supabase-pharmacy-private-rollback-writer.ts');
 
-for (const file of [legacyMigrationPath, authorityMigrationPath, writerPath]) {
+for (const file of [legacyMigrationPath, authorityMigrationPath, digestMigrationPath, writerPath]) {
   if (!existsSync(file)) throw new Error(`required rollback file missing: ${file}`);
 }
 
 const legacySql = readFileSync(legacyMigrationPath, 'utf8');
 const authoritySql = readFileSync(authorityMigrationPath, 'utf8');
+const digestSql = readFileSync(digestMigrationPath, 'utf8');
 const writer = readFileSync(writerPath, 'utf8');
 
 for (const pattern of [
@@ -59,14 +61,37 @@ for (const pattern of [
 }
 
 for (const pattern of [
-  /security\s+definer/i,
-  /status\s*=\s*'active'/i,
-  /is_active\s*=\s*true/i,
-  /sitemapEligible['"]?\s*,?\s*true/i,
-  /indexable['"]?\s*,?\s*true/i,
-  /grant\s+execute[\s\S]*to\s+(public|anon|authenticated)/i,
+  /Forward-only correction after isolated Preview proved pgcrypto is installed in the extensions schema/i,
+  /create\s+or\s+replace\s+function\s+public\.import_rollback_pharmacy_private_by_authority/i,
+  /extensions\.digest\(r\.consumed_result::text,\s*'sha256'\)/i,
+  /extensions\.digest\(v_consumed_result::text,\s*'sha256'\)/i,
+  /for\s+update\s+of\s+r\s*,\s*i\s*,\s*s/i,
+  /public\.import_rollback_pharmacy_private\(/i,
+  /rollback_authority_atomic_consume_failed/i,
+  /'status',\s*'replayed'/i,
+  /security\s+invoker/i,
+  /set\s+search_path\s*=\s*pg_catalog\s*,\s*public/i,
+  /revoke\s+all\s+on\s+function[\s\S]*from\s+public\s*,\s*anon\s*,\s*authenticated/i,
+  /grant\s+execute\s+on\s+function[\s\S]*to\s+service_role/i,
 ]) {
-  if (pattern.test(authoritySql)) throw new Error(`0083 contains forbidden rollback authority pattern: ${pattern}`);
+  if (!pattern.test(digestSql)) throw new Error(`0084 missing rollback digest correction pattern: ${pattern}`);
+}
+
+for (const [sql, label] of [[authoritySql, '0083'], [digestSql, '0084']]) {
+  for (const pattern of [
+    /security\s+definer/i,
+    /status\s*=\s*'active'/i,
+    /is_active\s*=\s*true/i,
+    /sitemapEligible['"]?\s*,?\s*true/i,
+    /indexable['"]?\s*,?\s*true/i,
+    /grant\s+execute[\s\S]*to\s+(public|anon|authenticated)/i,
+  ]) {
+    if (pattern.test(sql)) throw new Error(`${label} contains forbidden rollback authority pattern: ${pattern}`);
+  }
+}
+
+for (const pattern of [/\balter\s+table\b/i, /\bdrop\b/i, /\bcreate\s+policy\b/i]) {
+  if (pattern.test(digestSql)) throw new Error(`0084 correction contains forbidden schema scope: ${pattern}`);
 }
 
 for (const pattern of [

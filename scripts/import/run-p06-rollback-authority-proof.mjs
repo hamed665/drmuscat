@@ -153,9 +153,9 @@ async function verifyMigrationAndRpc(client) {
   const ledger = await client.query(
     `select version::text as version
      from supabase_migrations.schema_migrations
-     where version = '0083'`,
+     where version = '0084'`,
   );
-  assert(ledger.rowCount === 1, 'Preview migration ledger does not include 0083.');
+  assert(ledger.rowCount === 1, 'Preview migration ledger does not include 0084.');
 
   const rpc = await client.query(
     `select pg_get_functiondef(
@@ -317,7 +317,7 @@ async function verifySuccessfulFixture(client, item, results) {
               min(consumed_by_profile_id::text) as consumed_by,
               min(consumed_result::text) as consumed_result,
               min(consumed_result_hash) as consumed_result_hash,
-              min(encode(digest(consumed_result::text, 'sha256'), 'hex')) as recomputed_hash
+              min(encode(extensions.digest(consumed_result::text, 'sha256'), 'hex')) as recomputed_hash
        from public.import_pharmacy_publish_references
        where id = $1 and actor_profile_id = $2 and entity_id = $3`,
       [item.referenceId, item.actorId, item.entityId],
@@ -513,7 +513,7 @@ async function main() {
       sourceCommit,
       runId: digest(runId),
       previewIdentityVerified: true,
-      migration0083Verified: true,
+      migration0084Verified: true,
       atomicRollbackVerified: true,
       concurrentFreshCount: results.filter((result) => result?.status === 'rolled_back').length,
       concurrentReplayCount: results.filter((result) => result?.status === 'replayed').length,

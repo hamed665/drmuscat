@@ -29,20 +29,19 @@ function context(): PharmacyVerifiedReservationPublishContext {
     batchSize: 1,
   } as unknown as Omit<ImportPharmacyPrivateMutationRequest, "reservationResult">;
 
-  return {
-    canaryInput: {
-      actorId: "admin-1",
-      entityId: "pharmacy-1",
-      expectedSnapshotHash: SNAPSHOT_HASH,
-      expectedEntityFingerprint: FINGERPRINT,
-      reservationRequest: {
-        idempotencyKey: "operation-1",
-        requestHash: REQUEST_HASH,
-        expectedVersion: "version-1",
-      },
+  const canaryInput = {
+    actorId: "admin-1",
+    entityId: "pharmacy-1",
+    expectedSnapshotHash: SNAPSHOT_HASH,
+    expectedEntityFingerprint: FINGERPRINT,
+    reservationRequest: {
+      idempotencyKey: "operation-1",
+      requestHash: REQUEST_HASH,
+      expectedVersion: "version-1",
     },
-    mutationRequest,
-  };
+  } as unknown as PharmacyVerifiedReservationPublishContext["canaryInput"];
+
+  return { canaryInput, mutationRequest };
 }
 
 function verificationResult(

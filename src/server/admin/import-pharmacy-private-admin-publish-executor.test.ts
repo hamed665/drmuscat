@@ -235,4 +235,24 @@ describe("Pharmacy private Admin publish executor", () => {
     await expect(executor.acceptVerifiedReservation(request())).resolves.toEqual({ ok: false, reference: null });
     expect(publishReferenceStore.create).not.toHaveBeenCalled();
   });
+
+  it("does not mint a second durable reference when a concurrent call observes replay", async () => {
+    const publishReferenceStore = {
+      create: vi.fn(async () => "opaque-reference-2"),
+      resolve: vi.fn(async () => null),
+    };
+    const readbackClient = { read: vi.fn() };
+    const executor = createPharmacyPrivateAdminPublishExecutor({
+      mutationWriter: {
+        mutateOne: vi.fn(async () => ({ kind: "replayed" as const, entityId: "pharmacy-1", actualVersion: "version-2" })),
+        rollbackOne: vi.fn(async () => false),
+      },
+      publishReferenceStore,
+      readbackClient,
+    });
+
+    await expect(executor.acceptVerifiedReservation(request())).resolves.toEqual({ ok: false, reference: null });
+    expect(publishReferenceStore.create).not.toHaveBeenCalled();
+    expect(readbackClient.read).not.toHaveBeenCalled();
+  });
 });

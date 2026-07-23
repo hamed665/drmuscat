@@ -1,11 +1,16 @@
 name: P05 typecheck diagnostics
 
 on:
-  push:
-    branches:
-      - agent/private-admin-wiring-p05
+  pull_request:
     paths:
       - .github/workflows/p05-typecheck-diagnostics.yml
+      - src/server/admin/import-pharmacy-private-admin-publish-operation.ts
+      - src/server/admin/import-pharmacy-private-admin-publish-executor.ts
+      - src/server/admin/import-pharmacy-private-publish-readback.ts
+      - src/server/admin/import-supabase-pharmacy-private-publish-readback.ts
+      - src/server/admin/import-pharmacy-verified-reservation-loader.ts
+      - src/server/admin/import-supabase-pharmacy-verified-reservation-loader.ts
+      - src/app/admin/imports/readiness/actions.ts
 
 permissions:
   contents: read
@@ -17,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: agent/private-admin-wiring-p05
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: pnpm/action-setup@v4
         with:
           version: 10.22.0
@@ -36,7 +41,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: p05-typecheck-${{ github.sha }}
+          name: p05-typecheck-${{ github.event.pull_request.head.sha || github.sha }}
           path: artifacts/p05/typecheck.log
           if-no-files-found: error
           retention-days: 2

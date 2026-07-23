@@ -23,6 +23,7 @@ export type PharmacyRollbackExactRecoveryReport = Readonly<{
 const MAX_MISMATCH_DIAGNOSTICS = 24;
 const ROOT_PATH = "$";
 const MISSING_VALUE = Object.freeze({ __drkhaleejMissingValue: true });
+const ALLOWED_DIFFERENCE = Object.freeze({ __drkhaleejAllowedDifference: true });
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -63,6 +64,26 @@ function pathAllowed(path: string, allowedPaths: readonly string[]): boolean {
 
 function childPath(parent: string, key: string): string {
   return parent === ROOT_PATH ? key : `${parent}.${key}`;
+}
+
+function maskAllowedDifferences(
+  value: unknown,
+  path: string,
+  allowedDifferencePaths: readonly string[],
+): unknown {
+  if (pathAllowed(path, allowedDifferencePaths)) return ALLOWED_DIFFERENCE;
+  if (Array.isArray(value)) {
+    return value.map((item, index) =>
+      maskAllowedDifferences(item, `${path}[${index}]`, allowedDifferencePaths),
+    );
+  }
+  if (!isRecord(value)) return value;
+  return Object.fromEntries(
+    Object.keys(value).map((key) => [
+      key,
+      maskAllowedDifferences(value[key], childPath(path, key), allowedDifferencePaths),
+    ]),
+  );
 }
 
 function compareValues(input: {
@@ -126,6 +147,7 @@ export function comparePharmacyRollbackExactRecovery(input: {
   actual: PharmacyRollbackLogicalSnapshot;
   allowedDifferencePaths?: readonly string[];
 }): PharmacyRollbackExactRecoveryReport {
+  const allowedDifferencePaths = input.allowedDifferencePaths ?? [];
   const mismatchState: {
     count: number;
     diagnostics: PharmacyRollbackRecoveryMismatch[];
@@ -135,12 +157,16 @@ export function comparePharmacyRollbackExactRecovery(input: {
     expected: input.expected,
     actual: input.actual,
     path: ROOT_PATH,
-    allowedDifferencePaths: input.allowedDifferencePaths ?? [],
+    allowedDifferencePaths,
     mismatchState,
   });
 
-  const expectedHash = sha256(input.expected);
-  const actualHash = sha256(input.actual);
+  const expectedHash = sha256(
+    maskAllowedDifferences(input.expected, ROOT_PATH, allowedDifferencePaths),
+  );
+  const actualHash = sha256(
+    maskAllowedDifferences(input.actual, ROOT_PATH, allowedDifferencePaths),
+  );
   return {
     verified: mismatchState.count === 0,
     expectedHash,

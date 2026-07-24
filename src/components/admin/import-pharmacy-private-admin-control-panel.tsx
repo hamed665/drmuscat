@@ -93,8 +93,25 @@ function statusClasses(status: PharmacyAdminStateMachineStageStatus): string {
   return "border-slate-200 bg-slate-100 text-slate-600";
 }
 
-function stageAllowsAction(status: PharmacyAdminStateMachineStageStatus | undefined): boolean {
-  return status === "available" || status === "expired" || status === "stale";
+function operationAvailable(input: {
+  operation: OperationDefinition["operation"];
+  stageById: ReadonlyMap<PharmacyAdminStateMachineStageId, { status: PharmacyAdminStateMachineStageStatus }>;
+}): boolean {
+  const { operation, stageById } = input;
+  const status = (stageId: PharmacyAdminStateMachineStageId) => stageById.get(stageId)?.status;
+  if (operation === "dry_run") {
+    return status("dry_run") === "available" || status("dry_run") === "expired" || status("exact_review") === "stale";
+  }
+  if (operation === "review") {
+    return status("exact_review") === "available" ||
+      status("exact_review") === "expired" ||
+      status("exact_review") === "stale" ||
+      status("authorization_ready") === "expired" ||
+      status("authorization_ready") === "stale";
+  }
+  if (operation === "reserve_private_publish") return status("reservation") === "available";
+  if (operation === "private_publish") return status("private_publish") === "available";
+  return status("rollback") === "available";
 }
 
 function remainingLabel(expiresAt: string | null, now: number): string {
@@ -143,7 +160,7 @@ export function ImportPharmacyPrivateAdminControlPanel({
             Server-authoritative Pharmacy workflow
           </h2>
           <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
-            Every stage below is rebuilt from persisted server readback. Submitting a form never paints an optimistic success state. Reservation, mutation, and rollback are never retried automatically, because duplicating writes is apparently a hobby best left to broken software.
+            Every stage below is rebuilt from persisted server readback. Submitting a form never creates an optimistic success state. Reservation, mutation, and rollback are never retried automatically.
           </p>
         </div>
         <div className="flex flex-col items-start gap-2 xl:items-end">
@@ -222,8 +239,7 @@ export function ImportPharmacyPrivateAdminControlPanel({
 
       <div className="mt-5 grid gap-4 xl:grid-cols-5" aria-label="Manual Pharmacy operations">
         {operations.map((operation) => {
-          const stageStatus = stageById.get(operation.stageId)?.status;
-          const actionEnabled = controlsEnabled && stageAllowsAction(stageStatus) && !pending;
+          const actionEnabled = controlsEnabled && operationAvailable({ operation: operation.operation, stageById }) && !pending;
           const confirmation = operation.confirmationPrefix && entityId
             ? `${operation.confirmationPrefix} ${entityId}`
             : null;

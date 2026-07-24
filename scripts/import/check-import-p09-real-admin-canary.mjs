@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 
 const files = {
   scope: "docs/import/REAL_ADMIN_CANARY_SCOPE.md",
+  decision: "docs/import/POST_P09_GO_NO_GO.md",
   action: "src/app/admin/imports/readiness/actions.ts",
   page: "src/app/admin/imports/readiness/page.tsx",
   panel: "src/components/admin/import-pharmacy-private-admin-control-panel.tsx",
@@ -31,6 +32,18 @@ for (const token of [
 ]) {
   assert(source.scope.toLowerCase().includes(token.toLowerCase()), `P09 scope is missing ${token}.`);
 }
+
+for (const token of [
+  "NO-GO_PENDING_LITERAL_UI_SESSION",
+  "browser session",
+  "is_platform_admin=true",
+  "exactly one allowed actor",
+  "exactly one fixed Pharmacy entity",
+  "Production remained disconnected and unchanged",
+]) {
+  assert(source.decision.includes(token), `Post-P09 decision is missing ${token}.`);
+}
+assert(!/^```text\s*\nGO\s*\n```/m.test(source.decision), "Post-P09 decision must not record GO before literal UI proof.");
 
 for (const token of [
   "requirePlatformAdmin",
@@ -108,6 +121,7 @@ for (const token of [
   "P09_SOURCE_COMMIT",
   "run-p09-real-admin-canary.mjs",
   "check-import-p09-real-admin-canary.mjs",
+  "POST_P09_GO_NO_GO.md",
   "p09-real-admin-canary-${{ github.event.pull_request.head.sha || github.sha }}",
   "github.event.pull_request.head.sha",
 ]) {

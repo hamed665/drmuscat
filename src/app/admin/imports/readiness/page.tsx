@@ -13,7 +13,9 @@ export default async function AdminImportReadinessPage() {
   const readinessReviewModel = getImportAdminReadinessReviewReadOnlyModel();
   const pharmacyUiModel = getPharmacyMinimalAdminUiModel();
   const stateReader = createPharmacyAdminStateMachineReaderFromEnvironment();
-  const initialStateMachine = pharmacyUiModel.activationEnabled && pharmacyUiModel.entityId && stateReader
+  const actorBoundActivation =
+    pharmacyUiModel.activationEnabled && pharmacyUiModel.actorId === admin.id;
+  const initialStateMachine = actorBoundActivation && pharmacyUiModel.entityId && stateReader
     ? await stateReader({
         actorId: admin.id,
         entityId: pharmacyUiModel.entityId,
@@ -27,13 +29,13 @@ export default async function AdminImportReadinessPage() {
       <ImportReadinessReviewReadOnlyPanel model={readinessReviewModel} />
       <ImportPharmacyPrivateAdminControlPanel
         entityId={pharmacyUiModel.entityId}
-        activationEnabled={pharmacyUiModel.activationEnabled}
+        activationEnabled={actorBoundActivation}
         initialStateMachine={initialStateMachine}
       />
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-bold text-slate-950">Controlled boundary</h2>
         <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
-          The Preview-only Pharmacy workflow now exposes manual dry-run, exact review, Reservation, private publish, and rollback only when bounded server readback makes the next stage available. Refresh is readback-only. Reservation, mutation, and rollback are never retried automatically. Public routing, indexing, sitemap inclusion, Production access, P09 automatic canary execution, and bulk remain locked.
+          The Preview-only Pharmacy workflow exposes manual dry-run, exact review, Reservation, private publish, and rollback only to the single allowlisted admin and only when bounded server readback makes the next stage available. Refresh is readback-only. Reservation, mutation, and rollback are never retried automatically. Public routing, indexing, sitemap inclusion, Production access, P09 automatic canary execution, and bulk remain locked.
         </p>
       </section>
     </div>

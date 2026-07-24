@@ -29,6 +29,7 @@ on:
       - 'docs/import/ROLLBACK_EXACT_RECOVERY.md'
       - 'docs/import/ADMIN_STATE_MACHINE_SCOPE.md'
       - 'docs/import/REAL_ADMIN_CANARY_SCOPE.md'
+      - 'docs/import/POST_P09_GO_NO_GO.md'
       - 'docs/import/import-readiness-roadmap-after-933.md'
       - 'docs/project-state/CURRENT_STATE.md'
       - 'docs/project-state/V10_4_PHASE_ALIGNMENT_MATRIX.md'
